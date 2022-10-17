@@ -71,7 +71,10 @@
               "browserTarget": "LiliShop:build:production"
             },
             "development": {
-              "browserTarget": "LiliShop:build:development"
+              "browserTarget": "LiliShop:build:development",
+              "sslKey": "ssl/server.key",
+              "sslCert": "ssl/server.crt",
+              "ssl": true
             }
           },
           "defaultConfiguration": "development"
