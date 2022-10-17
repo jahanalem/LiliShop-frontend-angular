@@ -1,1 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+@import "../node_modules/ngx-bootstrap/datepicker/bs-datepicker.css";
+@import "../node_modules/font-awesome/css/font-awesome.min.css";
+@import "../node_modules/nouislider/dist/nouislider.css";
+@import "../node_modules/swiper/swiper-bundle.css";
+@import "../node_modules/leaflet/dist/leaflet.css";
+@import "../node_modules/universal-parallax/dist/universal-parallax.min.css";
+@import "../node_modules/choices.js/public/assets/styles/choices.css";
+@import "../node_modules/glightbox/dist/css/glightbox.css";
+@import "../node_modules/nouislider/dist/nouislider.min.css";
+@import "../src/assets/scss/style.default.scss";
