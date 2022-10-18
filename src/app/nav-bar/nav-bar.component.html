@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-4 px-lg-4">
+
+  <div class="container-fluid"><a class="navbar-brand" href="index.html"><img src="../assets/img/logo.png" alt="..."
+        width="180"></a>
+
+    <button (click)="isCollapsed = !isCollapsed" class="navbar-toggler rounded-0" type="button"
+    data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+      aria-label="Toggle navigation">
+
+      <span class="navbar-toggler-icon"></span>
+
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed">
+      <ul class="navbar-nav mx-auto">
+
+        <li class="nav-item">
+          <a routerLink="/" class="nav-link fw-normal text-uppercase active" id="homepageVariants" role="button"
+            data-bs-toggle="dropdown" aria-expanded="false">Home</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link fw-normal text-uppercase text-dark" href="#">Shop</a>
+        </li>
+
+        <li class="nav-item">
+          <a routerLink="/contact" class="nav-link fw-normal text-uppercase text-dark" href="#">Contact</a>
+        </li>
+
+        <li class="nav-item">
+          <a routerLink="/about" class="nav-link fw-normal text-uppercase text-dark" href="#">About</a>
+        </li>
+
+      </ul>
+      <ul class="navbar-nav flex-row mb-2 mb-lg-0 ms-lg-5 actions-nav-menu">
+
+        <li class="nav-item dropdown mx-2 mx-lg-0 px-3 px-lg-0 d-none d-lg-block">
+          <a class="nav-link position-relative no-caret me-2" id="cartDropdown" href="#" aria-expanded="false">
+            <i class="fa fa-shopping-cart fa-lg me-3"></i>
+            <span class="cart-no">5</span>
+          </a>
+        </li>
+
+
+        <li class="nav-item mx-2 mx-lg-0 px-lg-0">
+          <a routerLink="/account/login" class="btn btn-outline-primary me-2" href="#">Login</a>
+        </li>
+
+        <li class="nav-item mx-2 mx-lg-0 px-lg-0">
+          <a routerLink="/account/register" class="btn btn-outline-primary me-2" href="#">Sign up</a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
