@@ -1,5 +1,8 @@
 $templateColour: green;
 
-@import "core"; 
+@import "core";
 
- 
+:root {
+  --template-color: green;
+}
+

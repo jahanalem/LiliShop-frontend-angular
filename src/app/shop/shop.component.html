@@ -1,0 +1,142 @@
+<main class="py-5">
+  <div class="container py-5">
+    <div class="row gx-lg-5">
+      <div class="col-xl-3 col-lg-4">
+        <!-- Product categories-->
+        <h6 class="text-uppercase mb-4">Product Categories</h6>
+        <ul class="list-unstyled">
+          <li>
+            <a class="d-flex justify-content-between align-items-center sidebar-link-header" href="#"><span>Men's
+                Collection</span><small class="badge fw-normal bg-dark rounded-pill text-white">200</small></a>
+            <ul class="list-unstyled ms-4">
+              <li> <a class="sidebar-link" href="#">T-shirts</a></li>
+              <li> <a class="sidebar-link" href="#">Hoodies</a></li>
+              <li> <a class="sidebar-link" href="#">Shorts</a></li>
+            </ul>
+          </li>
+          <li class="active">
+            <a class="d-flex justify-content-between align-items-center sidebar-link-header active"
+              href="#"><span>Women's Collection</span><small
+                class="badge fw-normal bg-white rounded-pill text-dark">120</small></a>
+            <ul class="list-unstyled ms-4">
+              <li> <a class="sidebar-link" href="#">T-shirts</a></li>
+              <li> <a class="sidebar-link" href="#">Dresses</a></li>
+              <li> <a class="sidebar-link" href="#">Pants</a></li>
+              <li> <a class="sidebar-link" href="#">Shorts</a></li>
+            </ul>
+          </li>
+          <li>
+            <a class="d-flex justify-content-between align-items-center sidebar-link-header"
+              href="#"><span>Accessories</span><small
+                class="badge fw-normal bg-dark rounded-pill text-white">80</small></a>
+            <ul class="list-unstyled ms-4 mb-0">
+              <li> <a class="sidebar-link" href="#">Wallets</a></li>
+              <li> <a class="sidebar-link" href="#">Backpacks</a></li>
+              <li> <a class="sidebar-link" href="#">Belts</a></li>
+              <li> <a class="sidebar-link" href="#">Necklaces</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="border-bottom my-5"></div>
+        <!-- Price range-->
+        <h6 class="text-uppercase mb-4">Filter By Price</h6>
+        <div class="price-range pt-4 mb-5">
+          <div id="priceRange"></div>
+          <div class="row pt-2 mb-3">
+            <div class="col-6"><strong class="small font-weight-bold">From</strong></div>
+            <div class="col-6 text-end"><strong class="small font-weight-bold">To</strong></div>
+          </div><a class="btn btn-dark btn-sm" href="#">filter</a>
+        </div>
+        <div class="border-bottom my-4"></div>
+        <!-- Brands-->
+        <h6 class="text-uppercase mb-4">Show by brand</h6>
+        <!-- <ng-container *ngFor="let brand of brands" >
+          <div class="mb-2 form-check">
+            <input class="form-check-input" id="{{brand.id}}" type="checkbox" name="clothes-brand">
+            <label class="form-check-label" for="{{brand.id}}">{{brand.name}} <small class="text-xs text-muted">(18)
+              </small></label>
+          </div>
+        </ng-container> -->
+        <div>
+          <ul class="list-group mb-3">
+            <li class="list-group-item" *ngFor="let brand of brands" [value]="brand.id"
+              (click)="onBrandSelected(brand.id)">
+              {{brand.name}}
+            </li>
+          </ul>
+        </div>
+
+        <div class="border-bottom my-4"></div>
+
+        <h6 class="text-uppercase mb-4">Show by Type</h6>
+        <div>
+          <ul class="list-group my-3">
+            <li class="list-group-item" *ngFor="let type of types"
+              [value]="type.id" (click)="onTypeSelected(type.id)">
+              {{type.name}}
+            </li>
+          </ul>
+        </div>
+
+        <div class="border-bottom my-4"></div>
+        <!-- Sizes-->
+        <h6 class="text-uppercase mb-4">Size </h6>
+        <form action="#">
+          <div class="form-check mb-1">
+            <input class="form-check-input" id="size0" type="radio" name="size" checked>
+            <label class="form-check-label" for="size0">Small </label>
+          </div>
+          <div class="form-check mb-1">
+            <input class="form-check-input" id="size1" type="radio" name="size">
+            <label class="form-check-label" for="size1">Medium </label>
+          </div>
+          <div class="form-check mb-1">
+            <input class="form-check-input" id="size2" type="radio" name="size">
+            <label class="form-check-label" for="size2">Large </label>
+          </div>
+          <div class="form-check mb-1">
+            <input class="form-check-input" id="size3" type="radio" name="size">
+            <label class="form-check-label" for="size3">X-Large </label>
+          </div>
+        </form>
+      </div>
+      <!-- Grid -->
+      <div class="col-xl-9 col-lg-8">
+        <!-- Filters-->
+        <header class="d-flex justify-content-between align-items-start mb-5">
+          <span class="visible-items">Showing <strong>1-15 </strong>of <strong>158 </strong>results</span>
+          <select class="form-select" style="max-width:14.375rem;" name="sort">
+            <option value="">Sort by</option>
+            <option value="Option1">Price: low to high</option>
+            <option value="Option2">Price: high to low</option>
+            <option value="Option3">Best match</option>
+            <option value="Option4">Top rated</option>
+            <option value="Option5">Popularity</option>
+          </select>
+        </header>
+        <div class="row gy-5 mb-5">
+          <!-- item-->
+          <div class="item col-xl-4 col-md-6" *ngFor="let item of products">
+            <app-product-item [product]="item"></app-product-item>
+          </div>
+
+        </div>
+        <!-- Pagination-->
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Prev</a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">5</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          </ul>
+        </nav>
+      </div>
+      <!-- / Grid End-->
+    </div>
+  </div>
+</main>
+<!--  Modal -->

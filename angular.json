@@ -29,7 +29,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/choices.js/public/assets/scripts/choices.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -99,7 +101,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/choices.js/public/assets/scripts/choices.js"
+            ]
           }
         }
       }

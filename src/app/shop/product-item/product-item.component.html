@@ -1,0 +1,26 @@
+<div class="product">
+  <div class="image d-flex align-items-center justify-content-center bg-light">
+    <div class="ribbon ribbon-primary text-uppercase">Sale</div>
+    <img class="img-fluid" src="{{product.pictureUrl}}" alt="{{product.name}}">
+    <div class="hover-overlay d-flex align-items-center justify-content-center">
+      <div class="CTA d-flex align-items-center justify-content-center">
+        <a href="#">
+          <i class="fa fa-shopping-cart"></i>
+        </a>
+        <a class="active" href="detail.html">
+          <i class="fa fa-search"></i> View
+        </a>
+        <a href="#" data-bs-toggle="modal" data-bs-target="#productView">
+          <i class="fa fa-expand"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="pt-3">
+    <small class="text-muted">Men Wear</small>
+    <a class="reset-anchor" href="#">
+      <h3 class="h6 mb-0 text-uppercase">{{product.name}}</h3>
+    </a>
+    <span class="text-muted">{{product.price | currency}}</span>
+  </div>
+</div>
