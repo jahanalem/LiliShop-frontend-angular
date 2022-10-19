@@ -21,15 +21,19 @@ export class ShopService {
 
   constructor(private http: HttpClient) { }
 
-  getProducts(brandId?: number, typeId?: number) {
+  getProducts() {
     let params = new HttpParams();
 
-    if (brandId) {
-      params = params.append("brandId", brandId.toString());
+    if (this.shopParams.brandId !== 0) {
+      params = params.append('brandId', this.shopParams.brandId.toString());
     }
-    if (typeId) {
-      params = params.append("typeId", typeId.toString());
+    if (this.shopParams.typeId !== 0) {
+      params = params.append("typeId", this.shopParams.typeId.toString());
     }
+
+    params = params.append('sort', this.shopParams.sort);
+    params = params.append('pageIndex', this.shopParams.pageNumber.toString());
+    params = params.append('pageSize', this.shopParams.pageSize.toString());
 
     return this.http.get<Pagination>(this.baseUrl + 'products', { observe: 'response', params })
       .pipe(

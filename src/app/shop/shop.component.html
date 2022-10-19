@@ -53,7 +53,7 @@
 
           <!-- Brands-->
           <h6 class="text-uppercase mb-4">Show by brand</h6>
-                    <!-- <ng-container *ngFor="let brand of brands" >
+          <!-- <ng-container *ngFor="let brand of brands" >
             <div class="mb-2 form-check">
               <input class="form-check-input" id="{{brand.id}}" type="checkbox" name="clothes-brand">
               <label class="form-check-label" for="{{brand.id}}">{{brand.name}} <small class="text-xs text-muted">(18)
@@ -62,8 +62,7 @@
           </ng-container> -->
           <div>
             <ul class="list-group mb-3">
-              <li class="list-group-item" *ngFor="let brand of brands"
-              [class.active]="brand.id === shopParams.brandId"
+              <li class="list-group-item" *ngFor="let brand of brands" [class.active]="brand.id === shopParams.brandId"
                 [value]="brand.id" (click)="onBrandSelected(brand.id)">
                 {{brand.name}}
               </li>
@@ -112,14 +111,12 @@
         <!-- Filters-->
         <header class="d-flex justify-content-between align-items-start mb-5">
           <span class="visible-items">Showing <strong>1-15 </strong>of <strong>158 </strong>results</span>
-          <!-- <select class="form-select" style="max-width:14.375rem;" name="sort">
-            <option value="">Sort by</option>
-            <option value="Option1">Price: low to high</option>
-            <option value="Option2">Price: high to low</option>
-            <option value="Option3">Best match</option>
-            <option value="Option4">Top rated</option>
-            <option value="Option5">Popularity</option>
-          </select> -->
+          <select name="sort" class="form-select mb-4" (change)="onSortSelected($event.target!)"
+            style="max-width:14.375rem;">
+            <option *ngFor="let sort of sortOptions" [selected]="shopParams.sort === sort.value" [value]="sort.value">
+              {{sort.name}}
+            </option>
+          </select>
         </header>
         <div class="row gy-5 mb-5">
           <!-- item-->
