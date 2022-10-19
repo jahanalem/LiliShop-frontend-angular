@@ -21,8 +21,12 @@ export class ShopComponent implements OnInit {
     { name: 'Price: Low to high', value: 'priceAsc' },
     { name: 'Price: High to low', value: 'priceDesc' },
   ]
+  brandIdSelected: number = 0;
+  typeIdSelected: number = 0;
 
-  constructor(private shopService: ShopService) { }
+  constructor(private shopService: ShopService) {
+    this.shopParams = this.shopService.getShopParams();
+  }
 
   ngOnInit(): void {
     this.getProducts();
@@ -31,9 +35,11 @@ export class ShopComponent implements OnInit {
   }
 
   getProducts() {
-    this.shopService.getProducts().subscribe(response => {
-      this.products = response.data;
-      this.totalCount = response.count;
+    this.shopService.getProducts(this.brandIdSelected, this.typeIdSelected).subscribe(response => {
+      if (response) {
+        this.products = response.data;
+        this.totalCount = response.count;
+      }
     }, error => {
       console.log(error);
     });
@@ -56,6 +62,7 @@ export class ShopComponent implements OnInit {
   }
 
   onBrandSelected(brandId: number) {
+    this.brandIdSelected = brandId;
     const params = this.shopService.getShopParams();
     params.brandId = brandId;
     params.pageNumber = 1;
@@ -64,14 +71,11 @@ export class ShopComponent implements OnInit {
   }
 
   onTypeSelected(typeId: number) {
+    this.typeIdSelected = typeId;
     const params = this.shopService.getShopParams();
     params.typeId = typeId;
     params.pageNumber = 1;
     this.shopService.setShopParams(params);
     this.getProducts();
-  }
-
-  getShopParams() {
-    return this.shopParams;
   }
 }

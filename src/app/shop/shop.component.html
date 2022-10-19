@@ -48,37 +48,44 @@
           </div><a class="btn btn-dark btn-sm" href="#">filter</a>
         </div>
         <div class="border-bottom my-4"></div>
-        <!-- Brands-->
-        <h6 class="text-uppercase mb-4">Show by brand</h6>
-        <!-- <ng-container *ngFor="let brand of brands" >
-          <div class="mb-2 form-check">
-            <input class="form-check-input" id="{{brand.id}}" type="checkbox" name="clothes-brand">
-            <label class="form-check-label" for="{{brand.id}}">{{brand.name}} <small class="text-xs text-muted">(18)
-              </small></label>
+
+        <ng-container *ngIf="types && brands">
+
+          <!-- Brands-->
+          <h6 class="text-uppercase mb-4">Show by brand</h6>
+                    <!-- <ng-container *ngFor="let brand of brands" >
+            <div class="mb-2 form-check">
+              <input class="form-check-input" id="{{brand.id}}" type="checkbox" name="clothes-brand">
+              <label class="form-check-label" for="{{brand.id}}">{{brand.name}} <small class="text-xs text-muted">(18)
+                </small></label>
+            </div>
+          </ng-container> -->
+          <div>
+            <ul class="list-group mb-3">
+              <li class="list-group-item" *ngFor="let brand of brands"
+              [class.active]="brand.id === shopParams.brandId"
+                [value]="brand.id" (click)="onBrandSelected(brand.id)">
+                {{brand.name}}
+              </li>
+            </ul>
           </div>
-        </ng-container> -->
-        <div>
-          <ul class="list-group mb-3">
-            <li class="list-group-item" *ngFor="let brand of brands" [value]="brand.id"
-              (click)="onBrandSelected(brand.id)">
-              {{brand.name}}
-            </li>
-          </ul>
-        </div>
 
-        <div class="border-bottom my-4"></div>
+          <div class="border-bottom my-4"></div>
 
-        <h6 class="text-uppercase mb-4">Show by Type</h6>
-        <div>
-          <ul class="list-group my-3">
-            <li class="list-group-item" *ngFor="let type of types"
-              [value]="type.id" (click)="onTypeSelected(type.id)">
-              {{type.name}}
-            </li>
-          </ul>
-        </div>
+          <h6 class="text-uppercase mb-4">Show by Type</h6>
+          <div>
+            <ul class="list-group my-3">
+              <li class="list-group-item" *ngFor="let type of types" [value]="type.id"
+                [class.active]="type.id === shopParams.typeId" (click)="onTypeSelected(type.id)">
+                {{type.name}}
+              </li>
+            </ul>
+          </div>
 
-        <div class="border-bottom my-4"></div>
+          <div class="border-bottom my-4"></div>
+
+        </ng-container>
+
         <!-- Sizes-->
         <h6 class="text-uppercase mb-4">Size </h6>
         <form action="#">
@@ -105,14 +112,14 @@
         <!-- Filters-->
         <header class="d-flex justify-content-between align-items-start mb-5">
           <span class="visible-items">Showing <strong>1-15 </strong>of <strong>158 </strong>results</span>
-          <select class="form-select" style="max-width:14.375rem;" name="sort">
+          <!-- <select class="form-select" style="max-width:14.375rem;" name="sort">
             <option value="">Sort by</option>
             <option value="Option1">Price: low to high</option>
             <option value="Option2">Price: high to low</option>
             <option value="Option3">Best match</option>
             <option value="Option4">Top rated</option>
             <option value="Option5">Popularity</option>
-          </select>
+          </select> -->
         </header>
         <div class="row gy-5 mb-5">
           <!-- item-->
