@@ -3,7 +3,7 @@
     <div class="row gx-lg-5">
       <div class="col-xl-3 col-lg-4">
         <!-- Product categories-->
-        <h6 class="text-uppercase mb-4">Product Categories</h6>
+        <!-- <h6 class="text-uppercase mb-4">Product Categories</h6>
         <ul class="list-unstyled">
           <li>
             <a class="d-flex justify-content-between align-items-center sidebar-link-header" href="#"><span>Men's
@@ -37,9 +37,9 @@
             </ul>
           </li>
         </ul>
-        <div class="border-bottom my-5"></div>
+        <div class="border-bottom my-5"></div> -->
         <!-- Price range-->
-        <h6 class="text-uppercase mb-4">Filter By Price</h6>
+        <!-- <h6 class="text-uppercase mb-4">Filter By Price</h6>
         <div class="price-range pt-4 mb-5">
           <div id="priceRange"></div>
           <div class="row pt-2 mb-3">
@@ -47,7 +47,7 @@
             <div class="col-6 text-end"><strong class="small font-weight-bold">To</strong></div>
           </div><a class="btn btn-dark btn-sm" href="#">filter</a>
         </div>
-        <div class="border-bottom my-4"></div>
+        <div class="border-bottom my-4"></div> -->
 
         <ng-container *ngIf="types && brands">
 
@@ -109,15 +109,20 @@
       <!-- Grid -->
       <div class="col-xl-9 col-lg-8">
         <!-- Filters-->
-        <header class="d-flex justify-content-between align-items-start mb-5">
-          <span class="visible-items">Showing <strong>1-15 </strong>of <strong>158 </strong>results</span>
+        <div class="d-flex justify-content-between align-items-start mb-5">
+
+          <app-paging-header [pageNumber]="this.shopParams.pageNumber" [pageSize]="this.shopParams.pageSize"
+            [totalCount]="this.totalCount">
+          </app-paging-header>
+
           <select name="sort" class="form-select mb-4" (change)="onSortSelected($event.target!)"
             style="max-width:14.375rem;">
             <option *ngFor="let sort of sortOptions" [selected]="shopParams.sort === sort.value" [value]="sort.value">
               {{sort.name}}
             </option>
           </select>
-        </header>
+
+        </div>
         <div class="row gy-5 mb-5">
           <!-- item-->
           <div class="item col-xl-4 col-md-6" *ngFor="let item of products">
@@ -126,17 +131,14 @@
 
         </div>
         <!-- Pagination-->
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-center">
-            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Prev</a>
-            </li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">4</a></li>
-            <li class="page-item"><a class="page-link" href="#">5</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-          </ul>
+        <nav class="pagination justify-content-center" aria-label="Page navigation example">
+
+        <app-pager
+            [pageSize]="this.shopParams.pageSize"
+            [totalCount]="this.totalCount"
+            (pageChanged)="onPageChanged($event)">
+        </app-pager>
+
         </nav>
       </div>
       <!-- / Grid End-->
