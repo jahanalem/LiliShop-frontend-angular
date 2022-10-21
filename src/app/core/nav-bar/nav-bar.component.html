@@ -1,10 +1,9 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-4 px-lg-4">
 
-  <div class="container-fluid"><a class="navbar-brand" href="index.html"><img src="../assets/img/logo.png" alt="..."
-        width="180"></a>
+  <div class="container-fluid"><a class="navbar-brand" href="index.html">
+      <img src="../assets/img/logo.png" routerLink="/" class="logo" alt="logo" width="180"></a>
 
-    <button (click)="toggleCollapse()" class="navbar-toggler rounded-0" type="button"
-    data-bs-toggle="collapse"
+    <button (click)="toggleCollapse()" class="navbar-toggler rounded-0" type="button" data-bs-toggle="collapse"
       data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
       aria-label="Toggle navigation">
 
@@ -16,20 +15,30 @@
       <ul class="navbar-nav mx-auto">
 
         <li class="nav-item">
-          <a routerLink="/" class="nav-link fw-normal text-uppercase active" id="homepageVariants" role="button"
-            data-bs-toggle="dropdown" aria-expanded="false">Home</a>
+          <a [routerLink]="['/']"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{exact:true}"
+             class="nav-link fw-normal text-uppercase"
+             id="homepageVariants"
+             role="button"
+             data-bs-toggle="dropdown"
+            aria-expanded="false">Home
+          </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link fw-normal text-uppercase text-dark" href="#">Shop</a>
+          <a routerLink="/shop"
+             routerLinkActive="active"
+             class="nav-link fw-normal text-uppercase">Shop
+          </a>
         </li>
 
         <li class="nav-item">
-          <a routerLink="/contact" class="nav-link fw-normal text-uppercase text-dark" href="#">Contact</a>
+          <a routerLink="/contact" routerLinkActive="active" class="nav-link fw-normal text-uppercase">Contact</a>
         </li>
 
         <li class="nav-item">
-          <a routerLink="/about" class="nav-link fw-normal text-uppercase text-dark" href="#">About</a>
+          <a routerLink="/about" routerLinkActive="active" class="nav-link fw-normal text-uppercase">About</a>
         </li>
 
       </ul>

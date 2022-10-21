@@ -10,3 +10,20 @@
   top: 0;
   right: 10px;
 }
+
+a {
+  text-decoration: none;
+  color: #343a40;
+
+  &.active {
+      color: var(--template-color);
+  }
+}
+
+.logo {
+  cursor: pointer;
+
+  &:focus {
+      outline: none;
+  }
+}

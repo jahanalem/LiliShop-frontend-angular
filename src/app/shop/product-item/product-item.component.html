@@ -7,7 +7,7 @@
         <a href="#">
           <i class="fa fa-shopping-cart"></i>
         </a>
-        <a class="active" href="detail.html">
+        <a routerLink="/shop/{{product.id}}" routerLinkActive="router-link-active" class="active">
           <i class="fa fa-search"></i> View
         </a>
         <a href="#" data-bs-toggle="modal" data-bs-target="#productView">
@@ -18,7 +18,7 @@
   </div>
   <div class="pt-3">
     <small class="text-muted">Men Wear</small>
-    <a class="reset-anchor" href="#">
+    <a routerLink="/shop/{{product.id}}" class="reset-anchor">
       <h3 class="h6 mb-0 text-uppercase">{{product.name}}</h3>
     </a>
     <span class="text-muted">{{product.price | currency}}</span>
