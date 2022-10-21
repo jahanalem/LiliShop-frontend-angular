@@ -31,6 +31,10 @@ export class ShopService {
       params = params.append("typeId", this.shopParams.typeId.toString());
     }
 
+    if (this.shopParams.search) {
+      params = params.append('search', this.shopParams.search);
+    }
+
     params = params.append('sort', this.shopParams.sort);
     params = params.append('pageIndex', this.shopParams.pageNumber.toString());
     params = params.append('pageSize', this.shopParams.pageSize.toString());
