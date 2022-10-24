@@ -30,6 +30,7 @@
     "leaflet": "^1.9.2",
     "masonry-layout": "^4.2.2",
     "ngx-bootstrap": "^9.0.0",
+    "ngx-toastr": "^15.2.1",
     "nouislider": "^15.6.1",
     "rxjs": "~7.5.0",
     "swiper": "^8.4.4",

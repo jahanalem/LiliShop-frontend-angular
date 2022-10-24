@@ -4,6 +4,10 @@
       <h1 class="vc-heading">500</h1>
       <p class="vc-sub-heading">Internal Server <span class="blink-infinite">Error</span></p>
       <a routerLink="/" class="btn btn-outline-primary mt-4">back to home page</a>
+      <ng-container *ngIf="error">
+        <h5 class="text-danger">Error: {{error.message}}</h5>
+        <code class="mt-5" style="background-color: whitesmoke;">{{error.details}}</code>
+      </ng-container>
     </div>
   </div>
 </div>
