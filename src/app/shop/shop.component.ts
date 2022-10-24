@@ -13,7 +13,7 @@ import { ShopParams } from '../shared/models/shopParams';
 export class ShopComponent implements OnInit {
   // { static: true } needs to be set when you want to access the ViewChild in ngOnInit.
   // { static: false } can only be accessed in ngAfterViewInit. This is also what you want to go for when you have a structural directive (i.e. *ngIf) on your element in your template.
-  @ViewChild('search', { static: true }) searchTerm!: ElementRef;
+  @ViewChild('search', { static: false }) searchTerm!: ElementRef;
   products: IProduct[] = [];
   brands: IBrand[] = [];
   types: IType[] = [];
