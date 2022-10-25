@@ -47,17 +47,17 @@
         <li class="nav-item dropdown mx-2 mx-lg-0 px-3 px-lg-0 d-none d-lg-block">
           <a routerLink="/basket" class="nav-link position-relative no-caret me-2" id="cartDropdown" >
             <i class="fa fa-shopping-cart fa-lg me-3"></i>
-            <span *ngIf="(basket$ | async) as basket" class="cart-no">{{basket.items.length}}</span>
+            <span *ngIf="(basket$ | async) as basket" class="cart-no">{{basket?.items?.length}}</span>
           </a>
         </li>
 
 
         <li class="nav-item mx-2 mx-lg-0 px-lg-0">
-          <a routerLink="/account/login" class="btn btn-outline-primary me-2" href="#">Login</a>
+          <a routerLink="/account/login" class="btn btn-outline-primary me-2">Login</a>
         </li>
 
         <li class="nav-item mx-2 mx-lg-0 px-lg-0">
-          <a routerLink="/account/register" class="btn btn-outline-primary me-2" href="#">Sign up</a>
+          <a routerLink="/account/register" class="btn btn-outline-primary me-2">Sign up</a>
         </li>
 
       </ul>

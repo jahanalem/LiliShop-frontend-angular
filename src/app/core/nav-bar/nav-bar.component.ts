@@ -10,13 +10,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavBarComponent implements OnInit {
   public isCollapsed = true;
-  basket$: Observable<IBasket | null> = of(null);
+  basket$: Observable<IBasket> = of({} as IBasket);
 
   constructor(private basketService: BasketService) { }
 
   ngOnInit(): void {
-    if (this.basketService.basket$)
-      this.basket$ = this.basketService.basket$;
+    this.basket$ = this.basketService.basket$;
   }
 
   toggleCollapse() {
