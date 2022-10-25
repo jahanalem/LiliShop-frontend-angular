@@ -4,9 +4,11 @@
     <img class="img-fluid" src="{{product.pictureUrl}}" alt="{{product.name}}">
     <div class="hover-overlay d-flex align-items-center justify-content-center">
       <div class="CTA d-flex align-items-center justify-content-center">
-        <a href="#">
-          <i class="fa fa-shopping-cart"></i>
-        </a>
+        <button (click)="addItemToBasket()" title="add" type="button"
+        class="btn btn-outline-primary fa fa-shopping-cart"></button>
+        <!-- <a href="#">
+          <i (click)="addItemToBasket()"class="fa fa-shopping-cart"></i>
+        </a> -->
         <a routerLink="/shop/{{product.id}}" routerLinkActive="router-link-active" class="active">
           <i class="fa fa-search"></i> View
         </a>
@@ -18,7 +20,7 @@
   </div>
   <div class="pt-3">
     <small class="text-muted">Men Wear</small>
-    <a routerLink="/shop/{{product.id}}" class="reset-anchor">
+    <a class="reset-anchor" href="#">
       <h3 class="h6 mb-0 text-uppercase">{{product.name}}</h3>
     </a>
     <span class="text-muted">{{product.price | currency}}</span>

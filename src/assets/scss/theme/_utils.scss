@@ -491,8 +491,8 @@ $value in $theme-colors {
         border: 1px solid #999;
         text-align: center;
         cursor: pointer;
-        user-select: none !important;
         -webkit-user-select: none !important;
+        user-select: none !important;
     }
     input {
         width: 30px;
