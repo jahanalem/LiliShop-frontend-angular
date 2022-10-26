@@ -15,21 +15,14 @@
       <ul class="navbar-nav mx-auto">
 
         <li class="nav-item">
-          <a [routerLink]="['/']"
-             routerLinkActive="active"
-             [routerLinkActiveOptions]="{exact:true}"
-             class="nav-link fw-normal text-uppercase"
-             id="homepageVariants"
-             role="button"
-             data-bs-toggle="dropdown"
+          <a [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}"
+            class="nav-link fw-normal text-uppercase" id="homepageVariants" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">Home
           </a>
         </li>
 
         <li class="nav-item">
-          <a routerLink="/shop"
-             routerLinkActive="active"
-             class="nav-link fw-normal text-uppercase">Shop
+          <a routerLink="/shop" routerLinkActive="active" class="nav-link fw-normal text-uppercase">Shop
           </a>
         </li>
 
@@ -45,21 +38,39 @@
       <ul class="navbar-nav flex-row mb-2 mb-lg-0 ms-lg-5 actions-nav-menu">
 
         <li class="nav-item dropdown mx-2 mx-lg-0 px-3 px-lg-0 d-none d-lg-block">
-          <a routerLink="/basket" class="nav-link position-relative no-caret me-2" id="cartDropdown" >
+          <a routerLink="/basket" class="nav-link position-relative no-caret me-2" id="cartDropdown">
             <i class="fa fa-shopping-cart fa-lg me-3"></i>
             <span *ngIf="(basket$ | async) as basket" class="cart-no">{{basket?.items?.length}}</span>
           </a>
         </li>
 
-
-        <li class="nav-item mx-2 mx-lg-0 px-lg-0">
-          <a routerLink="/account/login" class="btn btn-outline-primary me-2">Login</a>
-        </li>
-
-        <li class="nav-item mx-2 mx-lg-0 px-lg-0">
-          <a routerLink="/account/register" class="btn btn-outline-primary me-2">Sign up</a>
-        </li>
-
+        <ng-container *ngIf="(currentUser$ | async) === null">
+          <li class="nav-item mx-2 mx-lg-0 px-lg-0">
+            <a routerLink="/account/login" class="btn btn-outline-primary me-2">Login</a>
+          </li>
+          <li class="nav-item mx-2 mx-lg-0 px-lg-0">
+            <a routerLink="/account/register" class="btn btn-outline-primary me-2">Sign up</a>
+          </li>
+        </ng-container>
+        <ng-container *ngIf="currentUser$ | async">
+          <div class="dropdown ml-3 mr-5" dropdown>
+            <a class="dropdown-toggle" style="cursor: pointer;" dropdownToggle>
+              <strong> Welcome {{(currentUser$ | async)?.displayName}}</strong>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right"  style="cursor: pointer;" *dropdownMenu>
+              <a routerLink="/basket" class="dropdown-item d-flex align-items-center py-2">
+                <i class="fa fa-shopping-cart me-3"></i> View Basket
+              </a>
+              <a routerLink="/orders" class="dropdown-item d-flex align-items-center py-2">
+                <i class="fa fa-history me-3"></i> View Orders
+              </a>
+              <div class="dropdown-divider"></div>
+              <a (click)="logout()" class="dropdown-item d-flex align-items-center py-2">
+                <i class="fa fa-sign-out me-3"></i> Logout
+              </a>
+            </div>
+          </div>
+        </ng-container>
       </ul>
     </div>
   </div>
