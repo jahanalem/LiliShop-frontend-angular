@@ -5,6 +5,7 @@ import { PagingHeaderComponent } from './components/paging-header/paging-header.
 import { PagerComponent } from './components/pager/pager.component';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { OrderTotalsComponent } from './components/order-totals/order-totals.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -16,11 +17,14 @@ import { OrderTotalsComponent } from './components/order-totals/order-totals.com
     CommonModule,
     PaginationModule.forRoot(), // as the pagination module has its own provider's array and those providers need to be injected into our routes module and start-up. So this is effectively acting as a singleton anyway. And if we take off the forRoot(), then it won't load with its providers and will have errors.
     CarouselModule.forRoot(),
+    ReactiveFormsModule
   ],
   exports: [PaginationModule,
     PagingHeaderComponent,
     PagerComponent,
     CarouselModule,
-    OrderTotalsComponent]
+    OrderTotalsComponent,
+    ReactiveFormsModule
+  ]
 })
 export class SharedModule { }
