@@ -9,10 +9,10 @@ import { IBasket, IBasketItem, IBasketTotals } from '../shared/models/basket';
   styleUrls: ['./basket.component.scss']
 })
 export class BasketComponent implements OnInit {
-  basket$!: Observable<IBasket>;
-  basketTotals$!: Observable<IBasketTotals>;
+  basket$!: Observable<IBasket | null>;
+  basketTotals$!: Observable<IBasketTotals | null>;
 
-  constructor(private basketService: BasketService) { }
+  constructor(private basketService: BasketService) { } 
 
   ngOnInit(): void {
     this.basket$ = this.basketService.basket$;

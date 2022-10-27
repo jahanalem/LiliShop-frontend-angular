@@ -19,7 +19,7 @@ export class TextInputComponent implements OnInit, ControlValueAccessor {
     We’re injecting the NgControl which is the super class of both formControlName and ngModel,
     with that, we’re not coupling our form control to any of the template or reactive module.
     NgControl already provides the NG_VALUE_ACCESSOR and the NG_VALIDATOR tokens.
-    If we provide them in the GenericComponent class we might run into circular dependency issues
+    If we provide them in the TextInputComponent class we might run into circular dependency issues
     https://medium.com/angular-in-depth/reducing-the-forms-boilerplate-make-your-angular-forms-reusable-ee06d7c07f47
 
     In order to access the validation, we need to get access to the control itself.
@@ -27,10 +27,11 @@ export class TextInputComponent implements OnInit, ControlValueAccessor {
     And that means we'll be able to access its properties and validated inside these components.
   */
   constructor(@Self() public controlDir: NgControl) {
+
     /*
-    And what 'this' does, this binds this to our class.
-    And now we've got access to our control Directive inside our component
-    and will have access to it inside our template as well.
+      And what 'this' does, this binds this to our class.
+      And now we've got access to our control Directive inside our component
+      and will have access to it inside our template as well.
     */
     this.controlDir.valueAccessor = this;
   }

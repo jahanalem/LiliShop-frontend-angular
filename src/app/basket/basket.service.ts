@@ -9,19 +9,19 @@ import { IProduct } from '../shared/models/product';
   providedIn: 'root'
 })
 export class BasketService {
-  baseUrl = environment.apiUrl;
+  baseUrl = environment.apiUrl; 
   /*
     BehaviorSubject is a special kind of Observable that allows for multicasting of the Observable itself and allows for multiple subscribers to list as well.
     And this is something we're going to make use of for our basket because a basket will need to be accessible by multiple different components.
   */
-  private basketSource = new BehaviorSubject<IBasket>({} as IBasket);
+  private basketSource = new BehaviorSubject<IBasket | null>(null);
   basket$ = this.basketSource.asObservable();
 
-  private basketTotalSource = new BehaviorSubject<IBasketTotals>({} as IBasketTotals);
+  private basketTotalSource = new BehaviorSubject<IBasketTotals | null>(null);
   basketTotal$ = this.basketTotalSource.asObservable();
 
   constructor(private http: HttpClient) {
-    let x = this.basketSource.asObservable()
+    this.basketSource.asObservable()
   }
 
   getBasket(id: string) {
@@ -42,7 +42,7 @@ export class BasketService {
     })
   }
 
-  getCurrentBasketValue(): IBasket {
+  getCurrentBasketValue(): IBasket | null {
     return this.basketSource.value;
   }
 
@@ -86,6 +86,9 @@ export class BasketService {
 
   private calculateTotals() {
     const basket = this.getCurrentBasketValue();
+    if(!basket){
+      return;
+    }
     const shipping = 0;
     const subtotal = basket.items.reduce((a, b) => (b.price * b.quantity) + a, 0);
     const total = subtotal + shipping;
@@ -94,13 +97,19 @@ export class BasketService {
 
   incrementItemQuantity(item: IBasketItem) {
     const basket = this.getCurrentBasketValue();
-    const foundItemIndex = basket.items.findIndex(x => x.id === item.id);
+    if(!basket){
+      return;
+    }
+    const foundItemIndex = basket?.items.findIndex(x => x.id === item.id);
     basket.items[foundItemIndex].quantity++;
     this.setBasket(basket);
   }
 
   decrementItemQuantity(item: IBasketItem) {
     const basket = this.getCurrentBasketValue();
+    if(!basket){
+      return;
+    }
     const foundItemIndex = basket.items.findIndex(x => x.id === item.id);
     if (basket.items[foundItemIndex].quantity > 1) {
       basket.items[foundItemIndex].quantity--;
@@ -112,6 +121,9 @@ export class BasketService {
 
   removeItemFromBasket(item: IBasketItem) {
     const basket = this.getCurrentBasketValue();
+    if(!basket){
+      return;
+    }
     if (basket.items.some(x => x.id === item.id)) {
       basket.items = basket.items.filter(i => i.id !== item.id);
       if (basket.items.length > 0) {

@@ -9,8 +9,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./order-totals.component.scss']
 })
 export class OrderTotalsComponent implements OnInit {
-  basketTotal$: Observable<IBasketTotals> = of({} as IBasketTotals);
-  
+  basketTotal$: Observable<IBasketTotals | null> = of(null);
+
   constructor(private basketService: BasketService) { }
 
   ngOnInit(): void {
