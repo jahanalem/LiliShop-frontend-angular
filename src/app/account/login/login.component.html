@@ -4,31 +4,12 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <!-- Email input -->
         <div class="form-floating  mb-4">
-          <input formControlName="email" type="email" id="emailAddress" class="form-control"
-            placeholder="name@example.com">
-          <label for="emailAddress">Email address</label>
-          <span class="text-danger" *ngIf="this.loginForm.get('email')?.invalid &&
-            this.loginForm.get('email')?.touched &&
-            this.loginForm.hasError('required','email')">
-            Email address is required
-          </span>
-          <span class="text-danger" *ngIf="this.loginForm.get('email')?.invalid &&
-            this.loginForm.get('email')?.touched &&
-            this.loginForm.hasError('pattern','email')">
-            Email address is not valid
-          </span>
+          <app-text-input formControlName="email" [label]="'Email address'"></app-text-input>
         </div>
 
         <!-- Password input -->
         <div class="form-floating mb-4">
-          <input formControlName="password" type="password" id="password" class="form-control"
-            placeholder="name@example.com">
-          <label for="password">Password</label>
-          <span class="text-danger" *ngIf="this.loginForm.get('password')?.invalid &&
-          this.loginForm.get('password')?.touched &&
-          this.loginForm.hasError('required','password')">
-            Password is required
-          </span>
+          <app-text-input formControlName="password" [label]="'Password'" [type]="'password'"></app-text-input>
         </div>
 
         <!-- 2 column grid layout for inline styling -->
@@ -48,7 +29,8 @@
         </div>
 
         <!-- Submit button -->
-        <button [disabled]="loginForm.invalid" type="submit" class="btn btn-primary btn-block mb-4"><i class="fa fa-sign-in me-2"></i>Sign in</button>
+        <button [disabled]="loginForm.invalid" type="submit" class="btn btn-primary btn-block mb-4"><i
+            class="fa fa-sign-in me-2"></i>Sign in</button>
 
         <!-- Register buttons -->
         <div class="text-center">
