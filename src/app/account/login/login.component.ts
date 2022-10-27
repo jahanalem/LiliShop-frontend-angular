@@ -3,6 +3,7 @@ import { AccountService } from './../account.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
+/* sample form: https://mdbootstrap.com/docs/standard/extended/login/ */
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
