@@ -74,4 +74,8 @@ export class TextInputComponent implements OnInit, ControlValueAccessor {
   isEmailAddressInvalid(): boolean | null {
     return this.controlDir?.control?.errors ? this.controlDir?.control?.errors['pattern'] ? true : false : null;
   }
+
+  isEmailAlreadyTaken() {
+    return this.controlDir?.control?.errors ? this.controlDir?.control?.errors['emailExists'] ? true : false : null;
+  }
 }
