@@ -21,7 +21,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     HttpClientModule,
     CoreModule,
     HomeModule,
-    NgxSpinnerModule 
+    NgxSpinnerModule  
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },

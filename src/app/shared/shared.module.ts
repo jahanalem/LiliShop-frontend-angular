@@ -8,19 +8,23 @@ import { OrderTotalsComponent } from './components/order-totals/order-totals.com
 import { ReactiveFormsModule } from '@angular/forms';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TextInputComponent } from './components/text-input/text-input.component';
+import { CdkStepperModule } from '@angular/cdk/stepper';
+import { StepperComponent } from './components/stepper/stepper.component';
 @NgModule({
   declarations: [
     PagingHeaderComponent,
     PagerComponent,
     OrderTotalsComponent,
-    TextInputComponent
+    TextInputComponent,
+    StepperComponent
   ],
   imports: [
     CommonModule,
     PaginationModule.forRoot(), // as the pagination module has its own provider's array and those providers need to be injected into our routes module and start-up. So this is effectively acting as a singleton anyway. And if we take off the forRoot(), then it won't load with its providers and will have errors.
     CarouselModule.forRoot(),
     BsDropdownModule.forRoot(),
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    CdkStepperModule,
   ],
   exports: [PaginationModule,
     PagingHeaderComponent,
@@ -30,6 +34,8 @@ import { TextInputComponent } from './components/text-input/text-input.component
     ReactiveFormsModule,
     BsDropdownModule,
     TextInputComponent,
+    CdkStepperModule,
+    StepperComponent
   ]
 })
 export class SharedModule { }

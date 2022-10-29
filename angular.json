@@ -30,7 +30,7 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/choices.js/public/assets/scripts/choices.js"
+               
             ]
           },
           "configurations": {
