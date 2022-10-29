@@ -1,3 +1,4 @@
+import { IDeliveryMethod } from './../shared/models/deliveryMethod';
 import { Basket, IBasket, IBasketItem, IBasketTotals } from './../shared/models/basket';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -9,19 +10,24 @@ import { IProduct } from '../shared/models/product';
   providedIn: 'root'
 })
 export class BasketService {
-  baseUrl = environment.apiUrl; 
+  baseUrl = environment.apiUrl;
   /*
     BehaviorSubject is a special kind of Observable that allows for multicasting of the Observable itself and allows for multiple subscribers to list as well.
     And this is something we're going to make use of for our basket because a basket will need to be accessible by multiple different components.
   */
   private basketSource = new BehaviorSubject<IBasket | null>(null);
   basket$ = this.basketSource.asObservable();
-
   private basketTotalSource = new BehaviorSubject<IBasketTotals | null>(null);
   basketTotal$ = this.basketTotalSource.asObservable();
+  shipping = 0;
 
   constructor(private http: HttpClient) {
     this.basketSource.asObservable()
+  }
+
+  setShippingPrice(deliveryMethod: IDeliveryMethod) {
+    this.shipping = deliveryMethod.price;
+    this.calculateTotals();
   }
 
   getBasket(id: string) {
@@ -86,10 +92,10 @@ export class BasketService {
 
   private calculateTotals() {
     const basket = this.getCurrentBasketValue();
-    if(!basket){
+    if (!basket) {
       return;
     }
-    const shipping = 0;
+    const shipping = this.shipping;
     const subtotal = basket.items.reduce((a, b) => (b.price * b.quantity) + a, 0);
     const total = subtotal + shipping;
     this.basketTotalSource.next({ shipping, subtotal, total });
@@ -97,7 +103,7 @@ export class BasketService {
 
   incrementItemQuantity(item: IBasketItem) {
     const basket = this.getCurrentBasketValue();
-    if(!basket){
+    if (!basket) {
       return;
     }
     const foundItemIndex = basket?.items.findIndex(x => x.id === item.id);
@@ -107,7 +113,7 @@ export class BasketService {
 
   decrementItemQuantity(item: IBasketItem) {
     const basket = this.getCurrentBasketValue();
-    if(!basket){
+    if (!basket) {
       return;
     }
     const foundItemIndex = basket.items.findIndex(x => x.id === item.id);
@@ -121,7 +127,7 @@ export class BasketService {
 
   removeItemFromBasket(item: IBasketItem) {
     const basket = this.getCurrentBasketValue();
-    if(!basket){
+    if (!basket) {
       return;
     }
     if (basket.items.some(x => x.id === item.id)) {

@@ -10,8 +10,10 @@
         <ul *ngIf="(basketTotal$ | async) as basketTotal" class="list-unstyled">
           <li class="d-flex justify-content-between py-3 border-bottom"><span>Order Subtotal </span><strong
               class="fw-normal">{{basketTotal.subtotal | currency}}</strong></li>
-          <li class="d-flex justify-content-between py-3 border-bottom"><span>Shipping and handling</span><strong
-              class="fw-normal">{{basketTotal.shipping | currency}}</strong></li>
+          <li class="d-flex justify-content-between py-3 border-bottom">
+            <span>Shipping and handling</span>
+            <strong class="fw-normal">{{basketTotal.shipping | currency}}</strong>
+          </li>
           <li class="d-flex justify-content-between py-3 border-bottom"><span>Total</span><strong
               class="text-primary h5 mb-0">{{basketTotal.total | currency}}</strong></li>
         </ul>
