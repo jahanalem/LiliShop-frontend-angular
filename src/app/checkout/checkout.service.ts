@@ -1,3 +1,4 @@
+import { IOrder, IOrderToCreate } from './../shared/models/order';
 import { map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from './../../environments/environment';
@@ -18,5 +19,9 @@ export class CheckoutService {
         return dm.sort((a, b) => b.price - a.price);
       })
     )
+  }
+
+  createOrder(order: IOrderToCreate): Observable<IOrder> {
+    return this.http.post<IOrder>(this.baseUrl + 'orders', order);
   }
 }
