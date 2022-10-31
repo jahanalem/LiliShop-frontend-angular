@@ -12,14 +12,17 @@ import { IUser } from 'src/app/shared/models/user';
 })
 export class CheckoutSuccessComponent implements OnInit {
   protected currentUser$: Observable<IUser | null> = of(null);
-  order!: IOrder;
+  protected order!: IOrder;
 
   constructor(private router: Router, private accountService: AccountService) {
     const navigation = this.router.getCurrentNavigation();
     this.currentUser$ = this.accountService.currentUser$;
     const state = navigation?.extras?.state;
+    console.log(state);
     if (state && state['order']) {
-      this.order = state as IOrder;
+      console.log("true..................");
+      this.order = state['order'] as IOrder;
+      console.log("order id = ", this.order.id);
     }
   }
 
