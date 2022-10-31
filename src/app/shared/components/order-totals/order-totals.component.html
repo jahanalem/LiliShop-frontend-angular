@@ -7,15 +7,15 @@
       </div>
       <div class="p-4">
         <p class="text-muted">Shipping and additional costs are calculated based on values you have entered.</p>
-        <ul *ngIf="(basketTotal$ | async) as basketTotal" class="list-unstyled">
+        <ul class="list-unstyled">
           <li class="d-flex justify-content-between py-3 border-bottom"><span>Order Subtotal </span><strong
-              class="fw-normal">{{basketTotal.subtotal | currency}}</strong></li>
+              class="fw-normal">{{subtotal | currency}}</strong></li>
           <li class="d-flex justify-content-between py-3 border-bottom">
             <span>Shipping and handling</span>
-            <strong class="fw-normal">{{basketTotal.shipping | currency}}</strong>
+            <strong class="fw-normal">{{shippingPrice | currency}}</strong>
           </li>
           <li class="d-flex justify-content-between py-3 border-bottom"><span>Total</span><strong
-              class="text-primary h5 mb-0">{{basketTotal.total | currency}}</strong></li>
+              class="text-primary h5 mb-0">{{total | currency}}</strong></li>
         </ul>
       </div>
     </div>

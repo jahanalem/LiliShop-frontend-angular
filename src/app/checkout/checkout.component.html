@@ -19,8 +19,13 @@
       </div>
       <div class="col-lg-4">
         <div class="card rounded-0">
-          <div class="card-body py-5">
-            <app-order-totals></app-order-totals>
+          <div>
+            <app-order-totals
+            *ngIf="(basketTotals$ | async) as basketTotals"
+              [shippingPrice]="basketTotals.shipping"
+              [subtotal]="basketTotals.subtotal"
+              [total]="basketTotals.total">
+            </app-order-totals>
           </div>
         </div>
       </div>

@@ -2,61 +2,13 @@
   <div class="container">
     <div class="cart-outer">
       <div class="cart-inner">
-        <div class="bg-light rounded-pill px-4 py-3">
-          <div class="row fw-normal text-uppercase">
-            <div class="col-6">Product</div>
-            <div class="col-2">Price</div>
-            <div class="col-2">Quantity</div>
-            <div class="col-2 text-end">Total</div>
-          </div>
-        </div>
         <!-- Product-->
-        <div *ngFor="let item of order?.orderItems" class="p-4 border-bottom">
-          <div class="row d-flex align-items-center bord">
-            <div class="col-6">
-              <div class="d-flex align-items-center"><img class="img-fluid" src="{{item.pictureUrl}}" alt="..."
-                  width="70">
-                <div class="ms-3">
-                  <a href="detail.html">
-                    <h6 class="mb-0 text-dark">{{item.productName}}</h6>
-                    <span class="text-muted text-sm">Size: Large</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="col-2"><span>{{item.price | currency}}</span></div>
-            <div class="col-2"><span>{{item.quantity}}</span></div>
-            <div class="col-2 text-end"><span>{{(item.price * item.quantity) | currency}}</span></div>
-          </div>
-        </div>
-        <!-- Product-->
-        <div class="border-bottom py-3">
-          <div class="row">
-            <div class="col-md-4 col-6 ms-md-auto"><strong>Order subtotal</strong></div>
-            <div class="col-md-2 col-6 text-end"><strong>{{order.subtotal}}</strong></div>
-          </div>
-        </div>
-        <div class="border-bottom py-3">
-          <div class="row">
-            <div class="col-md-4 col-6 ms-md-auto"><strong>Shipping and handling</strong></div>
-            <div class="col-md-2 col-6 text-end"><strong>{{order.shippingPrice}}</strong></div>
-          </div>
-        </div>
-        <div class="border-bottom py-3">
-          <div class="row">
-            <div class="col-md-4 col-6 ms-md-auto"><strong>Tax</strong></div>
-            <div class="col-md-2 col-6 text-end"><strong>$0.00</strong></div>
-          </div>
-        </div>
-        <div class="border-bottom py-3">
-          <div class="row">
-            <div class="col-md-4 col-6 ms-md-auto"><strong>Total</strong></div>
-            <div class="col-md-2 col-6 text-end"><strong>{{order.total}}</strong></div>
-          </div>
-        </div>
+        <app-basket-summary [isOrder]="true" [isBasket]="false" [items]="order.orderItems"></app-basket-summary>
+        <app-order-totals [shippingPrice]="order.shippingPrice" [subtotal]="order.subtotal" [total]="order.total">
+        </app-order-totals>
       </div>
     </div>
-    <div class="row gy-4 pt-5">
+    <div class="row gy-4">
       <div class="col-sm-6">
         <div class="bg-light rounded-pill px-4 py-3">
           <h6 class="mb-0 text-uppercase">Shipping address</h6>

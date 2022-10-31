@@ -5,10 +5,12 @@
   <div class="container">
 
     <app-basket-summary
-        (increment)="incrementItemQuantity($event)"
-        (decrement)="decrementItemQuantity($event)"
-        (remove)="removeBasketItem($event)"
-    ></app-basket-summary>
+      *ngIf="(basket$ | async) as basket"
+      (increment)="incrementItemQuantity($event)"
+      (decrement)="decrementItemQuantity($event)"
+      (remove)="removeBasketItem($event)"
+      [items]="basket.items">
+    </app-basket-summary>
     <div class="py-1">
       <div class="d-flex justify-content-end flex-column flex-lg-row">
         <a routerLink="/shop" class="btn btn-outline-secondary px-sm-5 my-1 ms-2">
@@ -16,7 +18,12 @@
         </a>
       </div>
     </div>
-    <app-order-totals></app-order-totals>
+    <app-order-totals
+    *ngIf="(basketTotals$ | async) as basketTotals"
+      [shippingPrice]="basketTotals.shipping"
+      [subtotal]="basketTotals.subtotal"
+      [total]="basketTotals.total">
+    </app-order-totals>
 
     <div class="col-lg-12 text-center py-4">
       <a routerLink="/checkout" class="btn btn-primary btn-lg px-5">Proceed to checkout
