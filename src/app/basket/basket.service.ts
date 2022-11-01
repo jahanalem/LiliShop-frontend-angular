@@ -25,15 +25,30 @@ export class BasketService {
     this.basketSource.asObservable()
   }
 
-  setShippingPrice(deliveryMethod: IDeliveryMethod) {
+  createPaymentIntent() {
+    return this.http.post<IBasket>(this.baseUrl + 'payments/' + this.getCurrentBasketValue()?.id, {})
+      .pipe(map((basket: IBasket) => {
+        this.basketSource.next(basket);
+      }));
+  }
+
+  setShippingPrice(deliveryMethod: IDeliveryMethod): void {
     this.shipping = deliveryMethod.price;
+    const basket = this.getCurrentBasketValue();
+    if (!basket) {
+      return;
+    }
+    basket.deliveryMethodId = deliveryMethod.id;
+    basket.shippingPrice = deliveryMethod.price;
     this.calculateTotals();
+    this.setBasket(basket);
   }
 
   getBasket(id: string) {
     return this.http.get<IBasket>(this.baseUrl + 'basket?id=' + id).pipe(
       map((basket: IBasket) => {
         this.basketSource.next(basket);
+        this.shipping = basket.shippingPrice ?? 0;
         this.calculateTotals();
       })
     );
@@ -150,7 +165,7 @@ export class BasketService {
     })
   }
 
-  deleteLocalBasket(id:string){
+  deleteLocalBasket(id: string) {
     this.basketSource.next(null);
     this.basketTotalSource.next(null);
     localStorage.removeItem('basket_id');
