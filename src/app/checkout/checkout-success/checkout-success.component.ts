@@ -20,9 +20,7 @@ export class CheckoutSuccessComponent implements OnInit {
     const state = navigation?.extras?.state;
     console.log(state);
     if (state && state['order']) {
-      console.log("true..................");
       this.order = state['order'] as IOrder;
-      console.log("order id = ", this.order.id);
     }
   }
 

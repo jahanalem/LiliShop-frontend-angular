@@ -10,7 +10,7 @@
             <app-checkout-delivery [checkoutForm]="checkoutForm"></app-checkout-delivery>
           </cdk-step>
           <cdk-step [label]="'Review'">
-            <app-checkout-review></app-checkout-review>
+            <app-checkout-review [appStepper]="appStepper"></app-checkout-review>
           </cdk-step>
           <cdk-step [label]="'Payment'">
             <app-checkout-payment [checkoutForm]="checkoutForm"></app-checkout-payment>
@@ -20,11 +20,8 @@
       <div class="col-lg-4">
         <div class="card rounded-0">
           <div>
-            <app-order-totals
-            *ngIf="(basketTotals$ | async) as basketTotals"
-              [shippingPrice]="basketTotals.shipping"
-              [subtotal]="basketTotals.subtotal"
-              [total]="basketTotals.total">
+            <app-order-totals *ngIf="(basketTotals$ | async) as basketTotals" [shippingPrice]="basketTotals.shipping"
+              [subtotal]="basketTotals.subtotal" [total]="basketTotals.total">
             </app-order-totals>
           </div>
         </div>
