@@ -1,3 +1,4 @@
+import { IPagination } from './../shared/models/pagination';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
@@ -18,10 +19,22 @@ export class ShopService {
   types: IType[] = [];
   pagination = new Pagination();
   shopParams = new ShopParams();
+  productCache = new Map();
 
   constructor(private http: HttpClient) { }
 
-  getProducts() {
+  getProducts(useCache: boolean) {
+    if (!useCache) {
+      this.productCache = new Map();
+    }
+
+    if (this.productCache.size > 0 && useCache === true) {
+      const key = Object.values(this.shopParams).join('-');
+      if (this.productCache.has(key)) {
+        this.pagination.data = this.productCache.get(key);
+        return of(this.pagination);
+      }
+    }
     let params = new HttpParams();
 
     if (this.shopParams.brandId !== 0) {
@@ -42,12 +55,23 @@ export class ShopService {
     return this.http.get<Pagination>(this.baseUrl + 'products', { observe: 'response', params })
       .pipe(
         map(response => {
-          return response.body;
+          const data: IProduct[] = response.body?.data ?? ([] as IProduct[]);
+          this.productCache.set(Object.values(this.shopParams).join('-'), response.body?.data);
+          this.pagination = response.body ?? ({} as IPagination);
+          return this.pagination;
         })
       );
   }
 
   getProduct(id: number): Observable<IProduct> {
+    let product: IProduct | undefined;
+    this.productCache.forEach((products: IProduct[]) => {
+      product = products.find(p => p.id === id);
+    });
+    if (product) {
+      return of(product);
+    }
+
     return this.http.get<IProduct>(this.baseUrl + 'products/' + id);
   }
 
@@ -55,6 +79,7 @@ export class ShopService {
     if (this.brands.length > 0) {
       return of(this.brands);
     }
+
     return this.http.get<IBrand[]>(this.baseUrl + 'products/brands').pipe(
       map(response => {
         this.brands = response;
@@ -67,6 +92,7 @@ export class ShopService {
     if (this.types.length > 0) {
       return of(this.types);
     }
+    
     return this.http.get<IType[]>(this.baseUrl + 'products/types').pipe(
       map(response => {
         this.types = response;
@@ -75,11 +101,11 @@ export class ShopService {
     );
   }
 
-  setShopParams(params: ShopParams) {
+  setShopParams(params: ShopParams): void {
     this.shopParams = params;
   }
 
-  getShopParams() {
+  getShopParams(): ShopParams {
     return this.shopParams;
   }
 

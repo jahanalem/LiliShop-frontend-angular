@@ -1,6 +1,7 @@
 <ng-container *ngIf="totalCount>0">
   <pagination
     (pageChanged)="onPagerChange($event)"
+    [ngModel]="pageNumber"
     [itemsPerPage]="pageSize"
     [boundaryLinks]="true"
     [totalItems]="totalCount"

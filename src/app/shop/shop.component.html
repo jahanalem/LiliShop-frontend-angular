@@ -18,7 +18,9 @@
         <!-- Sort-->
         <h6 class="text-uppercase mb-4">Sort</h6>
         <select name="sort" class="form-select mb-4" (change)="onSortSelected($event.target!)">
-          <option *ngFor="let sort of sortOptions" [selected]="shopParams.sort === sort.value" [value]="sort.value">
+          <option *ngFor="let sort of sortOptions"
+                  [selected]="shopParams.sort === sort.value"
+                  [value]="sort.value">
             {{sort.name}}
           </option>
         </select>
@@ -83,7 +85,7 @@
         </div>
         <div class="row gy-5 mb-5">
           <!-- item-->
-          <div class="item col-xl-4 col-md-6" *ngFor="let item of products">
+          <div *ngFor="let item of products" class="item col-xl-4 col-md-6">
             <app-product-item [product]="item"></app-product-item>
           </div>
 
@@ -91,7 +93,10 @@
         <!-- Pagination-->
         <nav class="pagination justify-content-center" aria-label="Page navigation example">
 
-          <app-pager [pageSize]="this.shopParams.pageSize" [totalCount]="this.totalCount"
+          <app-pager
+             [pageSize]="this.shopParams.pageSize"
+             [totalCount]="this.totalCount"
+             [pageNumber]="shopParams.pageNumber"
             (pageChanged)="onPageChanged($event)">
           </app-pager>
 
