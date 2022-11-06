@@ -2,7 +2,7 @@ import { of, switchMap } from 'rxjs';
 import { ShopService } from './../shop.service';
 import { IProduct } from 'src/app/shared/models/product';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap, Params } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { BasketService } from 'src/app/basket/basket.service';
 

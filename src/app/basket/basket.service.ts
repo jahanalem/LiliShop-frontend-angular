@@ -165,7 +165,7 @@ export class BasketService {
     })
   }
 
-  deleteLocalBasket(id: string) {
+  deleteLocalBasket(_id: string) {
     this.basketSource.next(null);
     this.basketTotalSource.next(null);
     localStorage.removeItem('basket_id');

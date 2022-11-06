@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Self } from '@angular/core';
-import { ControlValueAccessor, NgControl, ValidationErrors } from '@angular/forms';
+import { ControlValueAccessor, NgControl } from '@angular/forms';
 
 @Component({
   selector: 'app-text-input',
@@ -10,6 +10,9 @@ export class TextInputComponent implements OnInit, ControlValueAccessor {
   @ViewChild('input', { static: true }) input: ElementRef = {} as ElementRef;
   @Input() type = 'text';
   @Input() label: string = {} as string;
+
+  protected onChange!: Function;
+  protected onTouched!: Function;
 
   /*
     The @Self decorator instructs Angular to look for the dependency only in the local injector.
@@ -54,17 +57,6 @@ export class TextInputComponent implements OnInit, ControlValueAccessor {
   }
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
-  }
-  setDisabledState?(isDisabled: boolean): void {
-    throw new Error('Method not implemented.');
-  }
-
-  onChange(event: any) {
-
-  }
-
-  onTouched() {
-
   }
 
   isThereAnyRequiredErrorType(): boolean | null {

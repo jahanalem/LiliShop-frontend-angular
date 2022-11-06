@@ -55,7 +55,6 @@ export class ShopService {
     return this.http.get<Pagination>(this.baseUrl + 'products', { observe: 'response', params })
       .pipe(
         map(response => {
-          const data: IProduct[] = response.body?.data ?? ([] as IProduct[]);
           this.productCache.set(Object.values(this.shopParams).join('-'), response.body?.data);
           this.pagination = response.body ?? ({} as IPagination);
           return this.pagination;
@@ -92,7 +91,7 @@ export class ShopService {
     if (this.types.length > 0) {
       return of(this.types);
     }
-    
+
     return this.http.get<IType[]>(this.baseUrl + 'products/types').pipe(
       map(response => {
         this.types = response;
