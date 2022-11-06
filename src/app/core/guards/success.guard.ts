@@ -8,7 +8,7 @@ export class SuccessGuard implements CanActivate {
   constructor(private router: Router) {
 
   }
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivate(_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): boolean {
     const navigation = this.router.getCurrentNavigation();
     const extraState = navigation?.extras?.state;
     if (extraState && extraState['order']) {

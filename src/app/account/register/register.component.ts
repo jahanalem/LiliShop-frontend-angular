@@ -35,7 +35,7 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    this.accountService.register(this.registerForm.value).subscribe(response => {
+    this.accountService.register(this.registerForm.value).subscribe(() => {
       this.router.navigateByUrl('/shop');
     }, error => {
       console.log(error);

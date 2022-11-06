@@ -1,7 +1,6 @@
 import { BasketComponent } from './basket.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 
 const routes: Routes = [
