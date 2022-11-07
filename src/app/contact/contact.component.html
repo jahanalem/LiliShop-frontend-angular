@@ -1,0 +1,50 @@
+<section class="py-1">
+  <div class="container py-5">
+    <header class="mb-5">
+      <h2>Contact form</h2>
+    </header>
+    <div class="row">
+      <div class="col-md-7">
+        <form [formGroup]="contactForm" class="custom-form form" id="contact-form">
+          <div class="row gy-3">
+            <div class="col-sm-6">
+              <app-text-input [label]="'First name'" formControlName="firstName"></app-text-input>
+            </div>
+            <div class="col-sm-6">
+              <app-text-input [label]="'Last name'" formControlName="lastName"></app-text-input>
+            </div>
+            <div class="col-sm-12">
+              <app-text-input formControlName="email" [label]="'Email address'"></app-text-input>
+            </div>
+            <div class="col-sm-12">
+              <textarea class="rounded form-control" rows="4" name="message" id="message"
+                placeholder="Enter your message" required="required"></textarea>
+            </div>
+            <div class="col-sm-12">
+              <button class="btn btn-primary" type="submit">Send message</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-5">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
+          est laborum.</p>
+        <ul class="list-inline">
+          <li class="list-inline-item mr-2"><a rel="noopener" href="https://www.facebook.com/saidroohullah.allem"
+              class="reset-anchor text-primary" target="_blank"><i class="fa fa-facebook-f"></i></a></li>
+          <li class="list-inline-item mr-2"><a rel="noopener" href="https://www.instagram.com/roohicode"
+              class="reset-anchor text-primary" target="_blank"><i class="fa fa-instagram"></i></a></li>
+          <li class="list-inline-item mr-2"><a rel="noopener" href="https://www.xing.com/profile/SaidRoohullah_Allem/cv"
+              class="reset-anchor text-primary" target="_blank"><i class="fa fa-xing"></i></a></li>
+          <li class="list-inline-item mr-2"><a rel="noopener" href="https://www.linkedin.com/in/said-roohullah-allem"
+              class="reset-anchor text-primary" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+          <li class="list-inline-item mr-2"><a rel="noopener" href="https://github.com/jahanalem"
+              class="reset-anchor text-primary" target="_blank"><i class="fa fa-github"></i></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
