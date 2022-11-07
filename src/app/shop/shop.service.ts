@@ -23,7 +23,7 @@ export class ShopService {
 
   constructor(private http: HttpClient) { }
 
-  getProducts(useCache: boolean) {
+  getProducts(useCache: boolean, isActive?: boolean): Observable<Pagination> {
     if (!useCache) {
       this.productCache = new Map();
     }
@@ -36,7 +36,9 @@ export class ShopService {
       }
     }
     let params = new HttpParams();
-
+    if (isActive !== undefined) {
+      params = params.append('isActive', isActive);
+    }
     if (this.shopParams.brandId !== 0) {
       params = params.append('brandId', this.shopParams.brandId.toString());
     }
@@ -74,12 +76,15 @@ export class ShopService {
     return this.http.get<IProduct>(this.baseUrl + 'products/' + id);
   }
 
-  getBrands(): Observable<IBrand[]> {
+  getBrands(isActive: boolean | null = null): Observable<IBrand[]> {
     if (this.brands.length > 0) {
       return of(this.brands);
     }
-
-    return this.http.get<IBrand[]>(this.baseUrl + 'products/brands').pipe(
+    let params: HttpParams = new HttpParams();
+    if (isActive !== null) {
+      params = params.append("isActive", isActive);
+    }
+    return this.http.get<IBrand[]>(this.baseUrl + 'products/brands', { params: params }).pipe(
       map(response => {
         this.brands = response;
         return response;
@@ -87,12 +92,15 @@ export class ShopService {
     );
   }
 
-  getTypes(): Observable<IType[]> {
+  getTypes(isActive: boolean | null = null): Observable<IType[]> {
     if (this.types.length > 0) {
       return of(this.types);
     }
-
-    return this.http.get<IType[]>(this.baseUrl + 'products/types').pipe(
+    let params: HttpParams = new HttpParams();
+    if (isActive !== null) {
+      params = params.append("isActive", isActive);
+    }
+    return this.http.get<IType[]>(this.baseUrl + 'products/types', { params: params }).pipe(
       map(response => {
         this.types = response;
         return response;

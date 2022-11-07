@@ -35,8 +35,8 @@ export class ShopComponent implements OnInit {
     this.getTypes();
   }
 
-  getProducts(useCache = false): void {
-    this.shopService.getProducts(useCache).subscribe(response => {
+  getProducts(useCache = false, isActive?: boolean): void {
+    this.shopService.getProducts(useCache, isActive).subscribe(response => {
       if (response) {
         this.products = response.data;
         this.totalCount = response.count;
@@ -47,7 +47,7 @@ export class ShopComponent implements OnInit {
   }
 
   getBrands(): void {
-    this.shopService.getBrands().subscribe(response => {
+    this.shopService.getBrands(true).subscribe(response => {
       this.brands = [{ id: 0, name: 'All' }, ...response];
     }, error => {
       console.log(error);
@@ -55,7 +55,7 @@ export class ShopComponent implements OnInit {
   }
 
   getTypes(): void {
-    this.shopService.getTypes().subscribe(response => {
+    this.shopService.getTypes(true).subscribe(response => {
       this.types = [{ id: 0, name: 'All' }, ...response];
     }, error => {
       console.log(error);
