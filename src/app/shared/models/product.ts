@@ -1,3 +1,5 @@
+import { IProductSize } from "./productSize";
+
 export interface IProduct {
   id: number;
   name: string;
@@ -7,4 +9,5 @@ export interface IProduct {
   productType: string;
   productBrand: string;
   isActive: boolean;
+  productSizes: IProductSize[];
 }

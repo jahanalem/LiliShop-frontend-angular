@@ -1,3 +1,4 @@
+import { ISizeClassification } from './../shared/models/productSize';
 import { IPagination } from './../shared/models/pagination';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from './../../environments/environment';
@@ -17,6 +18,7 @@ export class ShopService {
   products: IProduct[] = [];
   brands: IBrand[] = [];
   types: IType[] = [];
+  sizes: ISizeClassification[] = [];
   pagination = new Pagination();
   shopParams = new ShopParams();
   productCache = new Map();
@@ -45,6 +47,9 @@ export class ShopService {
     if (this.shopParams.typeId !== 0) {
       params = params.append("typeId", this.shopParams.typeId.toString());
     }
+    if (this.shopParams.sizeId !== 0) {
+      params = params.append("sizeId", this.shopParams.sizeId.toString());
+    }
 
     if (this.shopParams.search) {
       params = params.append('search', this.shopParams.search);
@@ -59,6 +64,7 @@ export class ShopService {
         map(response => {
           this.productCache.set(Object.values(this.shopParams).join('-'), response.body?.data);
           this.pagination = response.body ?? ({} as IPagination);
+          console.log(this.pagination);
           return this.pagination;
         })
       );
@@ -103,6 +109,22 @@ export class ShopService {
     return this.http.get<IType[]>(this.baseUrl + 'products/types', { params: params }).pipe(
       map(response => {
         this.types = response;
+        return response;
+      })
+    );
+  }
+
+  getSizes(isActive: boolean | null = null): Observable<ISizeClassification[]> {
+    if (this.sizes.length > 0) {
+      return of(this.sizes);
+    }
+    let params: HttpParams = new HttpParams();
+    if (isActive !== null) {
+      params = params.append("isActive", isActive);
+    }
+    return this.http.get<ISizeClassification[]>(this.baseUrl + 'products/sizes', { params: params }).pipe(
+      map(response => {
+        this.sizes = response;
         return response;
       })
     );
