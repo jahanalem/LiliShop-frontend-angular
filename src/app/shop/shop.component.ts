@@ -4,6 +4,7 @@ import { IProduct } from '../shared/models/product';
 import { IBrand } from '../shared/models/brand';
 import { IType } from '../shared/models/productType';
 import { ShopParams } from '../shared/models/shopParams';
+import { ISizeClassification } from '../shared/models/productSize';
 
 @Component({
   selector: 'app-shop',
@@ -17,6 +18,7 @@ export class ShopComponent implements OnInit {
   products: IProduct[] = [];
   brands: IBrand[] = [];
   types: IType[] = [];
+  sizes: ISizeClassification[] = [];
   shopParams: ShopParams;
   totalCount: number = 0;
   sortOptions = [
@@ -33,6 +35,7 @@ export class ShopComponent implements OnInit {
     this.getProducts(true);
     this.getBrands();
     this.getTypes();
+    this.getSizes();
   }
 
   getProducts(useCache = false, isActive?: boolean): void {
@@ -60,6 +63,22 @@ export class ShopComponent implements OnInit {
     }, error => {
       console.log(error);
     })
+  }
+  getSizes(): void {
+    this.shopService.getSizes(true).subscribe(response => {
+      this.sizes = [{ id: 0, size: 'All', isActive: false }, ...response];
+      console.log("size = ",this.sizes);
+    }, error => {
+      console.log(error);
+    })
+  }
+  onSizeSelected(eventTarget: EventTarget): void {
+    const sizeId = +(eventTarget as HTMLInputElement).value;
+    const params = this.shopService.getShopParams();
+    params.sizeId = sizeId;
+    params.pageNumber = 1;
+    this.shopService.setShopParams(params);
+    this.getProducts();
   }
 
   onBrandSelected(eventTarget: EventTarget): void {

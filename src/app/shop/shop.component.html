@@ -50,8 +50,19 @@
           </div>
 
           <div class="border-bottom my-4"></div>
+
+          <h6 class="text-uppercase mb-4">Show by Size</h6>
+          <div>
+            <select name="type" class="form-select mb-4" (change)="onSizeSelected($event.target!)">
+              <option *ngFor="let size of sizes" [selected]="size.id ===  shopParams.sizeId" [value]="size.id">
+                {{size.size}}
+              </option>
+            </select>
+          </div>
+
+          <div class="border-bottom my-4"></div>
         </ng-container>
-        
+
       </div>
       <!-- Grid -->
       <div class="col-xl-9 col-lg-8">
