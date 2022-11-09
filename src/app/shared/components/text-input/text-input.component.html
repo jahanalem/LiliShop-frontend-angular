@@ -16,7 +16,7 @@
       <br>
       <span *ngIf="isEmailAddressInvalid()">Invalid email address</span>
   </div>
-
+  
   <div class="invalid-feedback d-block" *ngIf="(!controlDir?.control?.valid && controlDir?.control?.dirty)" >
       <span *ngIf="isEmailAlreadyTaken()">Email address is in use</span>
   </div>
