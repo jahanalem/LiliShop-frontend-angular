@@ -67,7 +67,6 @@ export class ShopComponent implements OnInit {
   getSizes(): void {
     this.shopService.getSizes(true).subscribe(response => {
       this.sizes = [{ id: 0, size: 'All', isActive: false }, ...response];
-      console.log("size = ",this.sizes);
     }, error => {
       console.log(error);
     })
