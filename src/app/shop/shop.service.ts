@@ -64,7 +64,6 @@ export class ShopService {
         map(response => {
           this.productCache.set(Object.values(this.shopParams).join('-'), response.body?.data);
           this.pagination = response.body ?? ({} as IPagination);
-          console.log(this.pagination);
           return this.pagination;
         })
       );
