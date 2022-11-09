@@ -18,6 +18,7 @@ export class ContactComponent implements OnInit {
     this.contactForm = new FormGroup({
       firstName: new FormControl('', [Validators.required]),
       lastName: new FormControl('', [Validators.required]),
+      message: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.pattern('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')]),
     });
   }

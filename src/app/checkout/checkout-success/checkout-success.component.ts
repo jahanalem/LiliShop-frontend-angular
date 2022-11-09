@@ -18,7 +18,6 @@ export class CheckoutSuccessComponent implements OnInit {
     const navigation = this.router.getCurrentNavigation();
     this.currentUser$ = this.accountService.currentUser$;
     const state = navigation?.extras?.state;
-    console.log(state);
     if (state && state['order']) {
       this.order = state['order'] as IOrder;
     }

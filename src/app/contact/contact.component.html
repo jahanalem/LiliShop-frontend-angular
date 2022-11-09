@@ -17,8 +17,7 @@
               <app-text-input formControlName="email" [label]="'Email address'"></app-text-input>
             </div>
             <div class="col-sm-12">
-              <textarea class="rounded form-control" rows="4" name="message" id="message"
-                placeholder="Enter your message" required="required"></textarea>
+              <app-text-textarea [label]="'message'" [rows]="4" formControlName="message"></app-text-textarea>
             </div>
             <div class="col-sm-12">
               <button class="btn btn-primary" type="submit">Send message</button>
