@@ -39,6 +39,14 @@ export class ProductDetailsComponent implements OnInit {
   When SwitchMap creates the second observable it unsubscribes from all the previous observable.
   Hence even if the Product 1 data arrives late, it would be discarded as there are no subscribers
   https://www.tektutorialshub.com/angular/using-switchmap-in-angular/#comment-48220
+
+  The paramMap processing is a bit tricky.
+  When the map changes, you’ll get() the ID parameter from the changed parameters.
+  You might think now is the time to use the RxJS map operator but the ShopService operator returns an Observable.
+  So, you flatten the observable with the switchMap operator instead.
+  The switchMap operator also cancels previous in-flight requests.
+  If the user re-navigates to this route with a new ID while the ShopService is still retrieving the old ID,
+   switchMap discards the old request and returns the product for the new ID.
 */
   loadProduct() {
     this.activatedRoute.paramMap.pipe(

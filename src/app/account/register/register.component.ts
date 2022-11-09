@@ -1,4 +1,4 @@
-import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountService } from '../account.service';
@@ -29,7 +29,8 @@ export class RegisterComponent implements OnInit {
             [Validators.required, Validators.pattern('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')],
             [this.validateEmailNotTaken()]
           ],
-        password: [null, Validators.required],
+        password: [null, [Validators.required, this.matchPasswordValidator('confirmPassword', true)]],
+        confirmPassword: [null, [Validators.required, this.matchPasswordValidator('password')]]
       }
     );
   }
@@ -58,5 +59,19 @@ export class RegisterComponent implements OnInit {
         })
       )
     }
+  }
+
+  matchPasswordValidator(matchTo: string, reverse?: boolean): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (control.parent && reverse) {
+        const confirmControl = (control.parent?.controls as any)[matchTo] as AbstractControl;
+        if (confirmControl) {
+          confirmControl.updateValueAndValidity();
+        }
+        return null;
+      }
+      return !!control.parent && !!control.parent.value &&
+        control.value === (control.parent?.controls as any)[matchTo].value ? null : { matching: true };
+    };
   }
 }
