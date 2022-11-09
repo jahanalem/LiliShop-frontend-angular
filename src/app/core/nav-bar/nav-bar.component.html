@@ -37,7 +37,7 @@
       </ul>
       <ul class="navbar-nav flex-row mb-2 mb-lg-0 ms-lg-5 actions-nav-menu">
 
-        <li class="nav-item dropdown mx-2 mx-lg-0 px-3 px-lg-0 d-none d-lg-block">
+        <li class="nav-item dropdown mx-2 mx-lg-0 px-3 px-lg-0  d-lg-block" style="margin-top: -7px;">
           <a routerLink="/basket" class="nav-link position-relative no-caret me-2" id="cartDropdown">
             <i class="fa fa-shopping-cart fa-lg me-3"></i>
             <span *ngIf="(basket$ | async) as basket" class="cart-no">{{basket?.items?.length}}</span>
