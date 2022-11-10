@@ -20,6 +20,14 @@
       <span>Invalid email address</span>
       <br>
     </ng-container>
+    <ng-container *ngIf="isPasswordInvalid()">
+      <div>Password must have 1 Uppercase,
+                               1 Lowercase,
+                               1 number,
+                               1 non alphanumeric
+                               and at least 6 characters</div>
+      <br>
+    </ng-container>
     <ng-container *ngIf="isThereMatchEmailErrorType()">
       <span>Confirm Password does not match</span>
     </ng-container>

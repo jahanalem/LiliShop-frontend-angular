@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountService } from '../account.service';
 import { switchMap, timer, map, of } from 'rxjs';
+import { pattern } from 'src/app/shared/constants/patterns';
+import { errorType } from 'src/app/shared/constants/error-types';
 
 @Component({
   selector: 'app-register',
@@ -26,10 +28,15 @@ export class RegisterComponent implements OnInit {
         email:
           [
             null,
-            [Validators.required, Validators.pattern('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')],
+            [Validators.required, Validators.pattern(pattern.EMAIL)],
             [this.validateEmailNotTaken()]
           ],
-        password: [null, [Validators.required, this.matchPasswordValidator('confirmPassword', true)]],
+        password: [null,
+          [
+            Validators.required,
+            this.matchPasswordValidator('confirmPassword', true),
+            Validators.pattern(pattern.PASSWORD)
+          ]],
         confirmPassword: [null, [Validators.required, this.matchPasswordValidator('password')]]
       }
     );
@@ -53,7 +60,7 @@ export class RegisterComponent implements OnInit {
           }
           return this.accountService.checkEmailExists(control.value).pipe(
             map(res => {
-              return res ? { emailExists: true } : null;
+              return res ? { [errorType.EMAIL_EXISTS]: true } : null;
             })
           );
         })
@@ -71,7 +78,7 @@ export class RegisterComponent implements OnInit {
         return null;
       }
       return !!control.parent && !!control.parent.value &&
-        control.value === (control.parent?.controls as any)[matchTo].value ? null : { matching: true };
+        control.value === (control.parent?.controls as any)[matchTo].value ? null : { [errorType.MATCHING]: true };
     };
   }
 }

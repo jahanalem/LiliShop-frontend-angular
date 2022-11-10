@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Self } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
+import { errorType } from '../../constants/error-types';
 
 @Component({
   selector: 'app-text-input',
@@ -64,14 +65,19 @@ export class TextInputComponent implements OnInit, ControlValueAccessor {
   }
 
   isEmailAddressInvalid(): boolean | null {
-    return this.controlDir?.control?.errors ? this.controlDir?.control?.errors['pattern'] ? true : false : null;
+    return this.controlDir?.control?.errors ? (this.controlDir?.name === 'email' && this.controlDir?.control?.errors['pattern']) ? true : false : null;
   }
 
   isEmailAlreadyTaken() {
-    return this.controlDir?.control?.errors ? this.controlDir?.control?.errors['emailExists'] ? true : false : null;
+    return this.controlDir?.control?.errors ? this.controlDir?.control?.errors[errorType.EMAIL_EXISTS] ? true : false : null;
   }
 
-  isThereMatchEmailErrorType(): boolean | null{
-    return this.controlDir.control?.errors ? this.controlDir.control?.errors['matching'] ? true : false : null;
+  isThereMatchEmailErrorType(): boolean | null {
+    console.log(errorType.EMAIL_EXISTS);
+    return this.controlDir.control?.errors ? this.controlDir.control?.errors[errorType.MATCHING] ? true : false : null;
+  }
+
+  isPasswordInvalid(): boolean | null {
+    return this.controlDir?.control?.errors ? (this.controlDir?.name === 'password' && this.controlDir?.control?.errors['pattern']) ? true : false : null;
   }
 }
