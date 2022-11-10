@@ -1,5 +1,12 @@
 <div *ngIf="(basket$ | async) === null" class="py-5">
-  <p>There are no items in your basket</p>
+  <div class="alert alert-warning d-flex align-items-center" role="alert">
+    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:">
+      <use xlink:href="#exclamation-triangle-fill" />
+    </svg>
+    <div>
+      There are no items in your basket
+    </div>
+  </div>
 </div>
 <ng-container *ngIf="(basket$ | async) as basket">
   <div class="container">
@@ -19,7 +26,7 @@
       </div>
     </div>
     <app-order-totals
-    *ngIf="(basketTotals$ | async) as basketTotals"
+      *ngIf="(basketTotals$ | async) as basketTotals"
       [shippingPrice]="basketTotals.shipping"
       [subtotal]="basketTotals.subtotal"
       [total]="basketTotals.total">
