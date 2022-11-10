@@ -2,6 +2,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AccountService } from './../account.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { pattern } from 'src/app/shared/constants/patterns';
 
 /* sample form: https://mdbootstrap.com/docs/standard/extended/login/ */
 @Component({
@@ -23,7 +24,7 @@ export class LoginComponent implements OnInit {
 
   createLoginForm() {
     this.loginForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.pattern('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')]),
+      email: new FormControl('', [Validators.required, Validators.pattern(pattern.EMAIL)]),
       password: new FormControl('', Validators.required),
     });
   }
