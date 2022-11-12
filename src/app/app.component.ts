@@ -1,6 +1,8 @@
-import { AccountService } from './account/account.service';
-import { BasketService } from './basket/basket.service';
+
 import { Component, OnInit } from '@angular/core';
+import { AccountService } from './core/services/account.service';
+import { BasketService } from './core/services/basket.service';
+
 
 @Component({
   selector: 'app-root',
@@ -10,9 +12,7 @@ import { Component, OnInit } from '@angular/core';
 export class AppComponent implements OnInit {
   title = 'LiliShop';
 
-
   constructor(private basketService: BasketService, private accountService: AccountService) {
-
   }
 
   ngOnInit(): void {

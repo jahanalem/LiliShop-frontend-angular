@@ -1,9 +1,10 @@
-import { AccountService } from './../../account/account.service';
+
 import { IBasket } from './../../shared/models/basket';
 import { Observable, of } from 'rxjs';
-import { BasketService } from './../../basket/basket.service';
 import { Component, OnInit } from '@angular/core';
 import { IUser } from 'src/app/shared/models/user';
+import { BasketService } from '../services/basket.service';
+import { AccountService } from '../services/account.service';
 
 @Component({
   selector: 'app-nav-bar',
