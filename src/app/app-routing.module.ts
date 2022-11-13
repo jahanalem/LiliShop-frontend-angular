@@ -9,7 +9,7 @@ const routes: Routes = [
   { path: '', loadChildren: () => import('./features/user-area/user-layout.module').then(mod => mod.UserLayoutModule) },
   { path: 'not-found', component: NotFoundComponent, data: { breadcrumb: 'Not Found' } },
   { path: 'server-error', component: ServerErrorComponent, data: { breadcrumb: 'Server Error' } },
-  { path: 'admin', loadChildren: () => import('./features/admin-area/admin/admin.module').then(mod => mod.AdminModule), data: { breadcrumb: 'Admin' } },
+  { path: 'admin', loadChildren: () => import('./features/admin-area/admin/admin.module').then(mod => mod.AdminModule) },
   { path: '**', redirectTo: 'not-found', pathMatch: 'full' },
 ];
 
