@@ -1,6 +1,27 @@
-// @import "@angular/material/prebuilt-themes/purple-green.css";
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
 
+a.active {
+  background-color: black;
+  font-weight: bold;
+}
 
+ul>li {
+  background-color: #fafafa;
+  padding: 0;
+
+  &>a {
+    width: 100%;
+    padding: .5rem;
+  }
+}
+
+li:hover {
+  background-color: black !important;
+}
 
 mat-toolbar {
   background: #004a9f;
@@ -11,8 +32,8 @@ mat-sidenav {
   margin: 16px;
   width: 200px;
   border-right: none;
-  background: #002b5c;
-  color: white;
+  background-color: #fafafa;
+  color: white !important;
   border-radius: 10px;
   padding: 16px;
   text-align: center;
