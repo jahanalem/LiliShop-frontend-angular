@@ -1,3 +1,4 @@
+import { AccountService } from 'src/app/core/services/account.service';
 import { Component, ViewChild, OnDestroy } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
@@ -14,7 +15,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 export default class AdminComponent implements OnDestroy {
   @ViewChild(MatSidenav) sidenav!: MatSidenav;
 
-  constructor(private observer: BreakpointObserver, private router: Router) { }
+  constructor(private observer: BreakpointObserver, private router: Router, private accountService: AccountService) { }
   ngOnDestroy(): void {
     this.observer.ngOnDestroy();
   }
@@ -43,6 +44,10 @@ export default class AdminComponent implements OnDestroy {
           this.sidenav.close();
         }
       });
+  }
+
+  logout() {
+    this.accountService.logout();
   }
 
 }

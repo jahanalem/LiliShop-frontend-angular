@@ -1,3 +1,5 @@
+import { PERMISSION_KIND, PERMISSION_NAME } from 'src/app/shared/constants/auth';
+import { IUser } from 'src/app/shared/models/user';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -31,7 +33,17 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     this.accountService.login(this.loginForm.value).subscribe(() => {
-      this.router.navigateByUrl(this.returnUrl);
+      this.accountService.currentUser$.subscribe((user: IUser | null) => {
+        if (user) {
+          console.log(PERMISSION_KIND[PERMISSION_NAME.PRIVATE_ACCESS]);
+          if (PERMISSION_KIND[PERMISSION_NAME.PRIVATE_ACCESS].includes(user.role)) {
+            this.router.navigateByUrl('/admin');
+          }
+          else {
+            this.router.navigateByUrl(this.returnUrl);
+          }
+        }
+      });
     }, () => { console.log("Submit failed!"); })
   }
 }

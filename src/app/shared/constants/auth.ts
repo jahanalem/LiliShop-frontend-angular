@@ -1,8 +1,8 @@
 
 export const ROLE = {
-  SUPERADMIN: "SuperAdmin",
+  SUPERADMIN:    "SuperAdmin",
   ADMINISTRATOR: "Administrator",
-  STANDARD: "Standard"
+  STANDARD:      "Standard"
 };
 Object.freeze(ROLE);
 
@@ -19,10 +19,10 @@ export const PERMISSION_KIND: permissionType = {
 Object.freeze(PERMISSION_KIND);
 
 export const PERMISSION_NAME = {
-  DELETE_CAN: 'DELETE_CAN',
-  CREATE_CAN: 'CREATE_CAN',
-  UPDATE_CAN: 'UPDATE_CAN',
-  PUBLIC_ACCESS: 'PUBLIC_ACCESS',
+  DELETE_CAN:     'DELETE_CAN',
+  CREATE_CAN:     'CREATE_CAN',
+  UPDATE_CAN:     'UPDATE_CAN',
+  PUBLIC_ACCESS:  'PUBLIC_ACCESS',
   PRIVATE_ACCESS: 'PRIVATE_ACCESS',
 };
 Object.freeze(PERMISSION_NAME);
