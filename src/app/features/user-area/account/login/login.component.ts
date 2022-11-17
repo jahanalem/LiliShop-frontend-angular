@@ -35,7 +35,6 @@ export class LoginComponent implements OnInit {
     this.accountService.login(this.loginForm.value).subscribe(() => {
       this.accountService.currentUser$.subscribe((user: IUser | null) => {
         if (user) {
-          console.log(PERMISSION_KIND[PERMISSION_NAME.PRIVATE_ACCESS]);
           if (PERMISSION_KIND[PERMISSION_NAME.PRIVATE_ACCESS].includes(user.role)) {
             this.router.navigateByUrl('admin');
           }
