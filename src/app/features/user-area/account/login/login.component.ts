@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
         if (user) {
           console.log(PERMISSION_KIND[PERMISSION_NAME.PRIVATE_ACCESS]);
           if (PERMISSION_KIND[PERMISSION_NAME.PRIVATE_ACCESS].includes(user.role)) {
-            this.router.navigateByUrl('/admin');
+            this.router.navigateByUrl('admin');
           }
           else {
             this.router.navigateByUrl(this.returnUrl);
