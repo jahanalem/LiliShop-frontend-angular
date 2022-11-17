@@ -73,7 +73,6 @@ export class TextInputComponent implements OnInit, ControlValueAccessor {
   }
 
   isThereMatchEmailErrorType(): boolean | null {
-    console.log(errorType.EMAIL_EXISTS);
     return this.controlDir.control?.errors ? this.controlDir.control?.errors[errorType.MATCHING] ? true : false : null;
   }
 

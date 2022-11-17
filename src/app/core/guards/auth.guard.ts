@@ -16,7 +16,9 @@ export class AuthGuard implements CanActivate {
   canActivate(_route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.accountService.currentUser$.pipe(
       map((auth: IUser | null) => {
-        if (auth) {
+        let access: string[] | undefined = _route.data['access'] as string[];
+        const authorization = access?.includes(auth?.role ?? '');
+        if ((auth && !access) || authorization) {
           return true;
         }
         this.router.navigate(['account/login'], { queryParams: { returnUrl: state.url } });
