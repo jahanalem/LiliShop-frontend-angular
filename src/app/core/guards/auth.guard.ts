@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable, map } from 'rxjs';
+import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IUser } from 'src/app/shared/models/user';
 import { AccountService } from '../services/account.service';
 
@@ -9,8 +11,7 @@ import { AccountService } from '../services/account.service';
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private accountService: AccountService, private router: Router) {
-
+  constructor(private accountService: AccountService, private router: Router, public dialog: MatDialog) {
   }
 
   canActivate(_route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
@@ -26,13 +27,12 @@ export class AuthGuard implements CanActivate {
           return false;
         }
         else if (!authorization) {
-          console.log("You don't have persmission for that.");
-          this.router.navigate(['shop'], { queryParams: { returnUrl: state.url } });
+          this.dialog.open(DialogComponent, { data: { title: "Access Denied!", content: "You don't have permission to view this page" } })
+          this.router.navigate(['/'], { queryParams: { returnUrl: state.url } });
           return false;
         }
         return false;
       })
     );
   }
-
 }
