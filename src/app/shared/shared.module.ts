@@ -13,6 +13,8 @@ import { StepperComponent } from './components/stepper/stepper.component';
 import { BasketSummaryComponent } from './components/basket-summary/basket-summary.component';
 import { RouterModule } from '@angular/router';
 import { TextTextareaComponent } from './components/text-textarea/text-textarea.component';
+import { DialogComponent } from './components/dialog/dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const components = [
   PagingHeaderComponent,
@@ -21,7 +23,8 @@ const components = [
   TextInputComponent,
   StepperComponent,
   BasketSummaryComponent,
-  TextTextareaComponent
+  TextTextareaComponent,
+  DialogComponent,
 ]
 @NgModule({
   declarations: [
@@ -35,7 +38,8 @@ const components = [
     ReactiveFormsModule,
     FormsModule,
     CdkStepperModule,
-    RouterModule
+    RouterModule,
+    MatDialogModule,
   ],
   exports: [
     PaginationModule,
