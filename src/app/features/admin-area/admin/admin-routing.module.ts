@@ -8,7 +8,11 @@ import { PERMISSION_KIND, PERMISSION_NAME } from 'src/app/shared/constants/auth'
 
 const routes: Routes = [
   {
-    path: '', component: AdminComponent, canActivate: [AuthGuard], data: { access: PERMISSION_KIND[PERMISSION_NAME.PRIVATE_ACCESS] }, children: [
+    path: '',
+    component: AdminComponent,
+    canActivate: [AuthGuard],
+    data: { access: PERMISSION_KIND[PERMISSION_NAME.PRIVATE_ACCESS] },
+    children: [
       { path: 'product', loadChildren: () => import('./product/product.module').then(m => m.ProductModule) },
       { path: 'brand', loadChildren: () => import('./brand/brand.module').then(m => m.BrandModule) },
     ]
