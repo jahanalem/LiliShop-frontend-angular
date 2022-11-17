@@ -16,10 +16,10 @@ export class NavBarComponent implements OnInit, OnDestroy {
   public isCollapsed = true;
   basket$: Observable<IBasket | null> = of(null);
   currentUser$: Observable<IUser | null> = of(null);
-  subscription!: Subscription;
+  subscription: Subscription | undefined;
   constructor(private basketService: BasketService, private accountService: AccountService) { }
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.subscription?.unsubscribe();
   }
 
   ngOnInit(): void {
