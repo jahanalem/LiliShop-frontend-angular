@@ -8,10 +8,8 @@
 
 <mat-sidenav-container>
   <mat-sidenav #sidenav="matSidenav" class="mat-elevation-z8">
-    <!-- <img alt="xxx" class="avatar mat-elevation-z8" src="../../../../assets/img/logo-s.png" />
-    <h4 class="name">Lili Shop</h4>
-    <p class="designation">E-Store</p>
-    <mat-divider></mat-divider> -->
+    <img routerLink="/" alt="logo" class="avatar mat-elevation-z8 logo-admin" src="../../../../assets/img/logo-s.png" />
+    <mat-divider></mat-divider>
 
     <ul class="list-group list-group-flush justify-content-start d-flex">
       <li class="d-flex list-group-item">
@@ -38,6 +36,12 @@
         <a class="d-inline-flex align-items-center" routerLink="/admin/brand" routerLinkActive="active">
           <mat-icon class="mx-1">branding_watermark</mat-icon>
           <span>Brands</span>
+        </a>
+      </li>
+      <li class="d-flex list-group-item">
+        <a (click)="logout()" class="d-inline-flex align-items-center logout" routerLinkActive="active">
+          <i class="fa fa-sign-out fa-2x me-3"></i>
+          <span>logout</span>
         </a>
       </li>
       <!-- <li class="d-flex list-group-item">
