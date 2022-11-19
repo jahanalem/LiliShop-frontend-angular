@@ -4,11 +4,11 @@
   min-width: 20px;
   border-radius: 50%;
   font-size: 1em;
-
+  background: blue;
   color: white;
   text-align: center;
-  top: 0;
-  right: 10px;
+  top: -4px;
+  right: 11px;
 }
 
 a {
@@ -16,7 +16,7 @@ a {
   color: #343a40;
 
   &.active {
-      color: var(--template-color);
+      color: var(--template-color) !important;
   }
 }
 
