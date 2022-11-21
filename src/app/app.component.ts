@@ -1,4 +1,3 @@
-
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { AccountService } from './core/services/account.service';
 import { BasketService } from './core/services/basket.service';

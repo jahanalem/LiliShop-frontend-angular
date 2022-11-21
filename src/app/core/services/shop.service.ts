@@ -50,12 +50,18 @@ export class ShopService {
     if (this.shopParams.sizeId !== 0) {
       params = params.append("sizeId", this.shopParams.sizeId.toString());
     }
+    if (this.shopParams.sort) {
+      params = params.append("sort", this.shopParams.sort.toString());
+    }
 
     if (this.shopParams.search) {
       params = params.append('search', this.shopParams.search);
     }
 
+    console.log("this.shopParams.sort = ",this.shopParams.sort);
+    console.log("this.shopParams.sortDirection = ",this.shopParams.sortDirection);
     params = params.append('sort', this.shopParams.sort);
+    params = params.append('sortDirection', this.shopParams.sortDirection);
     params = params.append('pageIndex', this.shopParams.pageNumber.toString());
     params = params.append('pageSize', this.shopParams.pageSize.toString());
 
