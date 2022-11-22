@@ -13,7 +13,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { access: PERMISSION_KIND[PERMISSION_NAME.PRIVATE_ACCESS] },
     children: [
-      { path: 'product', loadChildren: () => import('./product/product.module').then(m => m.ProductModule) },
+      { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) },
       { path: 'brand', loadChildren: () => import('./brand/brand.module').then(m => m.BrandModule) },
     ]
   }

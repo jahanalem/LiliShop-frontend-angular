@@ -58,8 +58,6 @@ export class ShopService {
       params = params.append('search', this.shopParams.search);
     }
 
-    console.log("this.shopParams.sort = ",this.shopParams.sort);
-    console.log("this.shopParams.sortDirection = ",this.shopParams.sortDirection);
     params = params.append('sort', this.shopParams.sort);
     params = params.append('sortDirection', this.shopParams.sortDirection);
     params = params.append('pageIndex', this.shopParams.pageNumber.toString());
