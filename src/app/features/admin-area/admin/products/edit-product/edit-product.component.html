@@ -1,0 +1,27 @@
+<div>
+
+  <ng-container *ngIf="brands">
+    <h6 class="text-uppercase mb-4">brand</h6>
+    <div>
+      <select name="brand" class="form-select mb-4" (change)="onBrandSelected($event.target!)">
+        <option *ngFor="let brand of brands" [selected]="brand.id === (this.product?.productBrandId ?? 0)"
+          [value]="brand.id">
+          {{brand.name}}
+        </option>
+      </select>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="types">
+    <h6 class="text-uppercase mb-4">Type</h6>
+    <div>
+      <select name="type" class="form-select mb-4" (change)="onTypeSelected($event.target!)">
+        <option *ngFor="let type of types" [selected]="type.id === (this.product?.productTypeId ?? 0)"
+          [value]="type.id">
+          {{type.name}}
+        </option>
+      </select>
+    </div>
+  </ng-container>
+
+</div>
