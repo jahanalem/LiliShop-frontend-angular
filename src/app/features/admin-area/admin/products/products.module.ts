@@ -8,12 +8,14 @@ import { ProductsComponent } from './products.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input'
 import { MatTableModule } from '@angular/material/table';
+import { EditProductComponent } from './edit-product/edit-product.component';
 
 
 
 @NgModule({
   declarations: [
-    ProductsComponent
+    ProductsComponent,
+    EditProductComponent
   ],
   imports: [
     CommonModule,

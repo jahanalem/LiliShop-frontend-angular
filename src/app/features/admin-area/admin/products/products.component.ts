@@ -5,6 +5,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { IProduct } from 'src/app/shared/models/product';
 import { ShopParams } from 'src/app/shared/models/shopParams';
 import { merge } from 'rxjs';
+import { Router } from '@angular/router';
 
 export declare interface IPageEvent {
   /** The current page index. */
@@ -36,7 +37,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   totalCount: number = 0;
   isLoadingResults = true;
 
-  constructor(private _shopService: ShopService) {
+  constructor(private _shopService: ShopService, private router: Router) {
     this.shopParams = this._shopService.getShopParams();
   }
   ngOnInit(): void {
@@ -87,5 +88,9 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       this.paginator.firstPage();
     }
     this.getProducts(false);
+  }
+
+  editProduct(id:number) {
+    this.router.navigateByUrl("/admin/products/edit/" + id );
   }
 }
