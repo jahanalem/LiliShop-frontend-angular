@@ -21,15 +21,15 @@ export declare interface IPageEvent {
 }
 
 @Component({
-  selector: 'app-product',
-  templateUrl: './product.component.html',
-  styleUrls: ['./product.component.scss']
+  selector: 'app-products',
+  templateUrl: './products.component.html',
+  styleUrls: ['./products.component.scss']
 })
-export class ProductComponent implements OnInit, AfterViewInit {
+export class ProductsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns: string[] = ['id', 'name', 'price', 'productType', 'productBrand'];
+  displayedColumns: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'Action'];
   public dataSource!: IProduct[];
   products: IProduct[] = [];
   shopParams: ShopParams;
