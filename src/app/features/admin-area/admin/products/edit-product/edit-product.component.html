@@ -1,27 +1,50 @@
 <div>
-
-  <ng-container *ngIf="brands">
-    <h6 class="text-uppercase mb-4">brand</h6>
+  <ng-container *ngIf="product">
+    <mat-checkbox [checked]="product.isActive" (change)="onIsActiveChange($event.checked)" [color]="colorCheckbox">Is
+      Active?</mat-checkbox>
+    <div class="mb-3">
+      <mat-form-field hintLabel="Max 50 characters" appearance="outline" class="product-name">
+        <mat-label>Enter product name</mat-label>
+        <input matInput #input [value]="product.name" maxlength="50" placeholder="product name">
+        <mat-hint align="end">{{input.value.length}}/50</mat-hint>
+      </mat-form-field>
+    </div>
     <div>
-      <select name="brand" class="form-select mb-4" (change)="onBrandSelected($event.target!)">
-        <option *ngFor="let brand of brands" [selected]="brand.id === (this.product?.productBrandId ?? 0)"
-          [value]="brand.id">
-          {{brand.name}}
-        </option>
-      </select>
+      <mat-form-field [style.fontSize]="18" appearance="outline" class="product-description">
+        <mat-label>Description</mat-label>
+        <textarea title="description" matInput #inputDsc cdkTextareaAutosize #autosize="cdkTextareaAutosize"
+          cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50" maxlength="300" [value]="product.description"></textarea>
+        <mat-hint align="end">{{inputDsc.value.length}}/300</mat-hint>
+      </mat-form-field>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="brands">
+    <div>
+      <mat-form-field appearance="outline">
+        <mat-label>brand</mat-label>
+        <mat-select (selectionChange)="onTypeSelected($event.value!)" [value]="(this.product?.productBrandId ?? 0)"
+          placeholder="product brands">
+          <mat-option *ngFor="let brand of brands" [value]="brand.id">
+            {{brand.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
   </ng-container>
 
   <ng-container *ngIf="types">
-    <h6 class="text-uppercase mb-4">Type</h6>
     <div>
-      <select name="type" class="form-select mb-4" (change)="onTypeSelected($event.target!)">
-        <option *ngFor="let type of types" [selected]="type.id === (this.product?.productTypeId ?? 0)"
-          [value]="type.id">
-          {{type.name}}
-        </option>
-      </select>
+      <mat-form-field appearance="outline">
+        <mat-label>type</mat-label>
+        <mat-select (selectionChange)="onTypeSelected($event.value!)" [value]="(this.product?.productTypeId ?? 0)"
+          placeholder="product types">
+          <mat-option *ngFor="let type of types" [value]="type.id">
+            {{type.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
   </ng-container>
+
 
 </div>

@@ -6,6 +6,7 @@ import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IType } from 'src/app/shared/models/productType';
 import { ISizeClassification } from 'src/app/shared/models/productSize';
+import { ThemePalette } from '@angular/material/core';
 
 @Component({
   selector: 'app-edit-product',
@@ -17,6 +18,7 @@ export class EditProductComponent implements AfterViewInit, OnInit {
   brands: IBrand[] = [];
   types: IType[] = [];
   sizes: ISizeClassification[] = [];
+  protected colorCheckbox: ThemePalette;
   constructor(private shopService: ShopService, private activatedRoute: ActivatedRoute) {
 
   }
@@ -27,7 +29,6 @@ export class EditProductComponent implements AfterViewInit, OnInit {
     this.getProduct();
   }
   ngAfterViewInit(): void {
-
   }
 
 
@@ -37,33 +38,31 @@ export class EditProductComponent implements AfterViewInit, OnInit {
         const id = params.get('id');
         return id ? this.shopService.getProduct(+id) : of();
       })
-    ).subscribe(prod => {
-      this.product = prod;
-      this.product.productBrandId = this.brands.find(b => b.name === prod.productBrand)?.id;
-      this.product.productTypeId = this.types.find(t => t.name === prod.productType)?.id;
-    }, error => {
-      console.log(error);
+    ).subscribe({
+      next: (prod) => {
+        this.product = prod;
+        this.product.productBrandId = this.brands.find(b => b.name === prod.productBrand)?.id;
+        this.product.productTypeId = this.types.find(t => t.name === prod.productType)?.id;
+      },
+      error: (error: any) => { console.log(error); }
     });
   }
   getBrands(): void {
-    this.shopService.getBrands(true).subscribe(response => {
-      this.brands = [{ id: 0, name: 'All' }, ...response];
-    }, error => {
-      console.log(error);
-    })
+    this.shopService.getBrands(true).subscribe({
+      next: (response) => { this.brands = [...response]; },
+      error: (error: any) => { console.log(error); }
+    });
   }
   getTypes(): void {
-    this.shopService.getTypes(true).subscribe(response => {
-      this.types = [{ id: 0, name: 'All' }, ...response];
-    }, error => {
-      console.log(error);
+    this.shopService.getTypes(true).subscribe({
+      next: (response) => { this.types = [...response]; },
+      error: (error: any) => { console.log(error); }
     })
   }
   getSizes(): void {
-    this.shopService.getSizes(true).subscribe(response => {
-      this.sizes = [{ id: 0, size: 'All', isActive: false }, ...response];
-    }, error => {
-      console.log(error);
+    this.shopService.getSizes(true).subscribe({
+      next: (response) => { this.sizes = [...response]; },
+      error: (error: any) => { console.log(error); }
     })
   }
 
@@ -80,5 +79,10 @@ export class EditProductComponent implements AfterViewInit, OnInit {
     const typeId = +(eventTarget as HTMLInputElement).value;
     console.log(typeId);
   }
-
+  onIsActiveChange(event: boolean) {
+    if (!this.product) {
+      return;
+    }
+    this.product.isActive = event;
+  }
 }
