@@ -9,6 +9,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input'
 import { MatTableModule } from '@angular/material/table';
 import { EditProductComponent } from './edit-product/edit-product.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 
 
@@ -26,6 +28,8 @@ import { EditProductComponent } from './edit-product/edit-product.component';
     MatInputModule,
     MatTableModule,
     MatIconModule,
+    MatSelectModule,
+    MatCheckboxModule,
   ]
 })
 export class ProductsModule { }
