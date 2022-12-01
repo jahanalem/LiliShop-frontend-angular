@@ -5,7 +5,7 @@ import { map, Observable, of } from 'rxjs';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IPagination, Pagination } from 'src/app/shared/models/pagination';
 import { IProduct } from 'src/app/shared/models/product';
-import { ISizeClassification } from 'src/app/shared/models/productSize';
+import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { IType } from 'src/app/shared/models/productType';
 import { ShopParams } from 'src/app/shared/models/shopParams';
 import { environment } from 'src/environments/environment';

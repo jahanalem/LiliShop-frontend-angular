@@ -1,4 +1,5 @@
-import { IProductSize } from "./productSize";
+import { IProductCharacteristic } from "./productCharacteristic";
+
 
 export interface IProduct {
   id: number;
@@ -11,5 +12,5 @@ export interface IProduct {
   productBrand: string;
   productBrandId?: number;
   isActive: boolean;
-  productSizes: IProductSize[];
+  productCharacteristics: IProductCharacteristic[];
 }

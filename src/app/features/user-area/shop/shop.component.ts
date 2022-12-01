@@ -3,7 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ShopService } from 'src/app/core/services/shop.service';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProduct } from 'src/app/shared/models/product';
-import { ISizeClassification } from 'src/app/shared/models/productSize';
+import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { IType } from 'src/app/shared/models/productType';
 import { ShopParams } from 'src/app/shared/models/shopParams';
 

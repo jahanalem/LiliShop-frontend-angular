@@ -11,6 +11,7 @@ import { MatTableModule } from '@angular/material/table';
 import { EditProductComponent } from './edit-product/edit-product.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -30,6 +31,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatIconModule,
     MatSelectModule,
     MatCheckboxModule,
+    ReactiveFormsModule,
   ]
 })
 export class ProductsModule { }
