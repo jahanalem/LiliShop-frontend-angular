@@ -3,7 +3,7 @@ import { of, switchMap } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
 import { ShopService } from './../../../../../core/services/shop.service';
-import { Component, AfterViewInit, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, AfterViewInit, OnInit, OnDestroy } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IType } from 'src/app/shared/models/productType';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
@@ -14,7 +14,7 @@ import { ThemePalette } from '@angular/material/core';
   templateUrl: './edit-product.component.html',
   styleUrls: ['./edit-product.component.scss']
 })
-export class EditProductComponent implements AfterViewInit, OnInit, OnChanges {
+export class EditProductComponent implements AfterViewInit, OnInit, OnDestroy {
   productForm!: FormGroup;
   product: IProduct | null = null;
   brands: IBrand[] = [];
@@ -22,15 +22,14 @@ export class EditProductComponent implements AfterViewInit, OnInit, OnChanges {
   sizes: ISizeClassification[] = [];
   productCharacteristics: IProductCharacteristic[] = [];
   protected colorCheckbox: ThemePalette;
-  localStorageProductKey: string = "productKey_";
+
   constructor(private shopService: ShopService,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder) {
 
   }
-  ngOnChanges(_changes: SimpleChanges): void {
-    this.getProduct();
-    this.getProductFormValues();
+  ngOnDestroy(): void {
+    localStorage.removeItem(this.getProductKeyFromLocalStorage());
   }
   ngOnInit(): void {
     this.getBrands();
@@ -62,11 +61,10 @@ export class EditProductComponent implements AfterViewInit, OnInit, OnChanges {
     // if we refresh the page, we dont'n access to the product object and then we cannot get id from it.
     // Therefore we need to get id from activatedRoute.
     if (!this.product) {
-      const id = this.activatedRoute.snapshot.paramMap.get('id')
-      this.localStorageProductKey = `productKey_${id}`;
-      const product = localStorage.getItem(this.localStorageProductKey);
-      if (product !== null)
+      const product = localStorage.getItem(this.getProductKeyFromLocalStorage());
+      if (product) {
         this.product = JSON.parse(product) as IProduct;
+      }
     }
     this.productForm?.patchValue({
       isActive: this.product?.isActive,
@@ -86,8 +84,7 @@ export class EditProductComponent implements AfterViewInit, OnInit, OnChanges {
     ).subscribe({
       next: (prod) => {
         this.product = prod;
-        this.localStorageProductKey = `productKey_${this.product?.id}`;
-        localStorage.setItem(this.localStorageProductKey, JSON.stringify(this.product));
+        this.setProductInLocalStorage();
         this.getProductFormValues();
       },
       error: (error: any) => { console.log(error); },
@@ -125,10 +122,18 @@ export class EditProductComponent implements AfterViewInit, OnInit, OnChanges {
     const typeId = +(eventTarget as HTMLInputElement).value;
     console.log(typeId);
   }
-  onIsActiveChange(event: boolean) {
+  onIsActiveChange(event: boolean): void {
     if (!this.product) {
       return;
     }
     this.product.isActive = event;
+  }
+
+  setProductInLocalStorage(): void {
+    const key = `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
+    localStorage.setItem(key, JSON.stringify(this.product));
+  }
+  getProductKeyFromLocalStorage(): string {
+    return `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
   }
 }
