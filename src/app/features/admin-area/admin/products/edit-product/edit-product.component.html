@@ -1,28 +1,30 @@
-<div>
+<form *ngIf="productForm" [formGroup]="productForm" (ngSubmit)="onSubmit()">
+
   <ng-container *ngIf="product">
-    <mat-checkbox [checked]="product.isActive" (change)="onIsActiveChange($event.checked)" [color]="colorCheckbox">Is
+    <mat-checkbox formControlName="isActive" (change)="onIsActiveChange($event.checked)" [color]="colorCheckbox">Is
       Active?</mat-checkbox>
     <div class="mb-3">
       <mat-form-field hintLabel="Max 50 characters" appearance="outline" class="product-name">
         <mat-label>Enter product name</mat-label>
-        <input matInput #input [value]="product.name" maxlength="50" placeholder="product name">
+        <input formControlName="name" matInput #input maxlength="50" placeholder="product name">
         <mat-hint align="end">{{input.value.length}}/50</mat-hint>
       </mat-form-field>
     </div>
     <div>
       <mat-form-field [style.fontSize]="18" appearance="outline" class="product-description">
         <mat-label>Description</mat-label>
-        <textarea title="description" matInput #inputDsc cdkTextareaAutosize #autosize="cdkTextareaAutosize"
-          cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50" maxlength="300" [value]="product.description"></textarea>
+        <textarea formControlName="description" title="description" matInput #inputDsc cdkTextareaAutosize #autosize="cdkTextareaAutosize"
+          cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50" maxlength="300"></textarea>
         <mat-hint align="end">{{inputDsc.value.length}}/300</mat-hint>
       </mat-form-field>
     </div>
   </ng-container>
+
   <ng-container *ngIf="brands">
     <div>
       <mat-form-field appearance="outline">
         <mat-label>brand</mat-label>
-        <mat-select (selectionChange)="onTypeSelected($event.value!)" [value]="(this.product?.productBrandId ?? 0)"
+        <mat-select formControlName="productBrandId" (selectionChange)="onTypeSelected($event.value!)"
           placeholder="product brands">
           <mat-option *ngFor="let brand of brands" [value]="brand.id">
             {{brand.name}}
@@ -36,7 +38,7 @@
     <div>
       <mat-form-field appearance="outline">
         <mat-label>type</mat-label>
-        <mat-select (selectionChange)="onTypeSelected($event.value!)" [value]="(this.product?.productTypeId ?? 0)"
+        <mat-select formControlName="productTypeId" (selectionChange)="onTypeSelected($event.value!)"
           placeholder="product types">
           <mat-option *ngFor="let type of types" [value]="type.id">
             {{type.name}}
@@ -46,5 +48,26 @@
     </div>
   </ng-container>
 
+  <!-- <ng-container *ngIf="product?.productCharacteristics as pcs">
+    <div *ngFor="let pc of pcs" class="w-100 d-flex">
+      <div class="w-25">
+        <mat-form-field appearance="outline">
+          <mat-label>size</mat-label>
+          <mat-select (selectionChange)="onSizeSelected($event.value!)" [value]="(this.pc?.sizeId ?? 0)"
+            placeholder="product sizes">
+            <mat-option *ngFor="let size of sizes" [value]="size.id">
+              {{size.size}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="w-25">
+        <mat-form-field class="example-full-width">
+          <mat-label>Quantity</mat-label>
+          <input type="number" matInput placeholder="0" [value]="pc.quantity">
+        </mat-form-field>
+      </div>
+    </div>
+  </ng-container> -->
 
-</div>
+</form>

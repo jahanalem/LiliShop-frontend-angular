@@ -1,4 +1,4 @@
-export interface IProductSize {
+export interface IProductCharacteristic {
   sizeId: number,
   sizeName: string,
   quantity: number,
