@@ -3,18 +3,19 @@ import { of, switchMap } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
 import { ShopService } from './../../../../../core/services/shop.service';
-import { Component, AfterViewInit, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IType } from 'src/app/shared/models/productType';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ThemePalette } from '@angular/material/core';
+import { formHelper } from 'src/app/core/helpers/form-helper';
 
 @Component({
   selector: 'app-edit-product',
   templateUrl: './edit-product.component.html',
   styleUrls: ['./edit-product.component.scss']
 })
-export class EditProductComponent implements AfterViewInit, OnInit, OnDestroy {
+export class EditProductComponent implements OnInit, OnDestroy {
   productForm!: FormGroup;
   product: IProduct | null = null;
   brands: IBrand[] = [];
@@ -28,9 +29,11 @@ export class EditProductComponent implements AfterViewInit, OnInit, OnDestroy {
     private formBuilder: FormBuilder) {
 
   }
+
   ngOnDestroy(): void {
     localStorage.removeItem(this.getProductKeyFromLocalStorage());
   }
+
   ngOnInit(): void {
     this.getBrands();
     this.getTypes();
@@ -39,12 +42,14 @@ export class EditProductComponent implements AfterViewInit, OnInit, OnDestroy {
     this.createProductForm();
     this.getProductFormValues();
   }
-  ngAfterViewInit(): void {
-
-  }
 
   onSubmit() {
-
+    const changedValues = formHelper.getChangedValues<IProduct>(this.productForm);
+    const updatedProduct = { ...this.product, ...changedValues }
+    console.log(updatedProduct);
+    this.shopService.updateProduct(updatedProduct).subscribe((p) => {
+      console.log(p);
+    });
   }
 
   createProductForm(): void {

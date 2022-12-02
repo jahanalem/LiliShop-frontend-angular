@@ -141,4 +141,7 @@ export class ShopService {
     return this.shopParams;
   }
 
+  updateProduct(product: IProduct): Observable<IProduct> {
+    return this.http.put<IProduct>(`${this.baseUrl}products/update/${product.id}`, product);
+  }
 }
