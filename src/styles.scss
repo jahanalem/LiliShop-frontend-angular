@@ -1,10 +1,11 @@
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
-@import "../src/assets/scss/style.default.scss";
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
 @import "../node_modules/font-awesome/css/font-awesome.min.css";
 @import "../node_modules/ngx-toastr/toastr.css";
 @import "../node_modules/ngx-bootstrap/datepicker/bs-datepicker.css";
 @import "../node_modules/ngx-spinner/animations/ball-spin.css";
+@import "../src/assets/scss/style.default.scss";
+
 
 .form-control,
 .btn,
