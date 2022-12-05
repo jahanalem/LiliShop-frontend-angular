@@ -13,8 +13,8 @@
     <div>
       <mat-form-field [style.fontSize]="18" appearance="outline" class="product-description">
         <mat-label>Description</mat-label>
-        <textarea formControlName="description" title="description" matInput #inputDsc cdkTextareaAutosize #autosize="cdkTextareaAutosize"
-          cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50" maxlength="300"></textarea>
+        <textarea formControlName="description" title="description" matInput #inputDsc cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50" maxlength="300"></textarea>
         <mat-hint align="end">{{inputDsc.value.length}}/300</mat-hint>
       </mat-form-field>
     </div>
@@ -48,27 +48,33 @@
     </div>
   </ng-container>
 
-  <!-- <ng-container *ngIf="product?.productCharacteristics as pcs">
-    <div *ngFor="let pc of pcs" class="w-100 d-flex">
-      <div class="w-25">
-        <mat-form-field appearance="outline">
-          <mat-label>size</mat-label>
-          <mat-select (selectionChange)="onSizeSelected($event.value!)" [value]="(this.pc?.sizeId ?? 0)"
-            placeholder="product sizes">
-            <mat-option *ngFor="let size of sizes" [value]="size.id">
-              {{size.size}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="w-25">
-        <mat-form-field class="example-full-width">
-          <mat-label>Quantity</mat-label>
-          <input type="number" matInput placeholder="0" [value]="pc.quantity">
-        </mat-form-field>
-      </div>
-    </div>
-  </ng-container> -->
+  <ng-container *ngIf="product?.productCharacteristics as pcs">
+    <ng-container formArrayName="dynamicDropDownSize">
+      <ng-container *ngFor="let sizeFormCtrl of dynamicDropDownSize.controls; let i=index">
+        <div [formGroup]="getFormGroup(sizeFormCtrl)">
+          <div class="w-100 d-flex">
+            <div class="w-25">
+              <mat-form-field appearance="outline">
+                <mat-label>size</mat-label>
+                <mat-select formControlName="size" (selectionChange)="onSizeSelected($event.value!)"
+                  placeholder="product sizes">
+                  <mat-option *ngFor="let size of sizes" [value]="size.id">
+                    {{size.size}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="w-25">
+              <mat-form-field class="example-full-width">
+                <mat-label>Quantity</mat-label>
+                <input formControlName="quantity" type="number" matInput placeholder="0">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
 
   <button type="submit" mat-raised-button class="btn btn-primary">Save</button>
 </form>
