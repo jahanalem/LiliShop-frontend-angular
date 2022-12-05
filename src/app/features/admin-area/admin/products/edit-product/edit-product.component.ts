@@ -1,4 +1,4 @@
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { of, switchMap } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
@@ -41,6 +41,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
     this.getProduct();
     this.createProductForm();
     this.getProductFormValues();
+    this.loadArrayOfDropDownSize();
   }
 
   onSubmit() {
@@ -59,6 +60,23 @@ export class EditProductComponent implements OnInit, OnDestroy {
       description: [null, Validators.required],
       productBrandId: [null, Validators.required],
       productTypeId: [null, Validators.required],
+      dynamicDropDownSize: this.formBuilder.array([]),
+    });
+  }
+
+  get dynamicDropDownSize() {
+    return this.productForm.controls['dynamicDropDownSize'] as FormArray;
+  }
+  addDynamicDropDownSize(sizeId: number | string = '', qty: number = 0) {
+    const sizeForm = this.formBuilder.group({
+      size: [sizeId],
+      quantity: [qty]
+    });
+    this.dynamicDropDownSize.push(sizeForm);
+  }
+  loadArrayOfDropDownSize() {
+    this.product?.productCharacteristics.forEach((_pc, _index) => {
+      this.addDynamicDropDownSize(_pc.sizeId, _pc.quantity);
     });
   }
 
@@ -77,7 +95,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
       description: this.product?.description,
       productBrandId: this.product?.productBrandId,
       productTypeId: this.product?.productTypeId
-    }, { emitEvent: false });
+    });
   }
 
   getProduct(): void {
@@ -140,5 +158,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
   getProductKeyFromLocalStorage(): string {
     return `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
+  }
+
+  getFormGroup(control: AbstractControl) {
+    return control as FormGroup;
   }
 }
