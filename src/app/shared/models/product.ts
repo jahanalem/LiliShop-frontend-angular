@@ -7,9 +7,9 @@ export interface IProduct {
   description: string;
   price: number;
   pictureUrl: string;
-  productType: string;
+  productType?: string;
   productTypeId?: number;
-  productBrand: string;
+  productBrand?: string;
   productBrandId?: number;
   isActive: boolean;
   productCharacteristics: IProductCharacteristic[];
