@@ -49,16 +49,18 @@
   </ng-container>
 
   <ng-container *ngIf="product?.productCharacteristics as pcs">
-    <ng-container formArrayName="dynamicDropDownSize">
+    <ng-container formArrayName="productCharacteristics">
       <ng-container *ngFor="let sizeFormCtrl of dynamicDropDownSize.controls; let i=index">
         <div [formGroup]="getFormGroup(sizeFormCtrl)">
+          <input type="hidden" formControlName="id"/>
+          <input type="hidden" formControlName="productId"/>
           <div class="w-100 d-flex">
             <div class="w-25">
               <mat-form-field appearance="outline">
                 <mat-label>size</mat-label>
-                <mat-select formControlName="size" (selectionChange)="onSizeSelected($event.value!)"
+                <mat-select formControlName="sizeId" (selectionChange)="onSizeSelected($event.value!)"
                   placeholder="product sizes">
-                  <mat-option *ngFor="let size of sizes" [value]="size.id">
+                  <mat-option *ngFor="let size of getAvailableSizeList(sizeFormCtrl)" [value]="size.id">
                     {{size.size}}
                   </mat-option>
                 </mat-select>
@@ -70,9 +72,16 @@
                 <input formControlName="quantity" type="number" matInput placeholder="0">
               </mat-form-field>
             </div>
+            <div class="w-25">
+              <button type="button" (click)="removeSize(i)" mat-stroked-button class="mx-1" color="warn"><mat-icon class="delete-icon">delete</mat-icon></button>
+            </div>
           </div>
         </div>
+
       </ng-container>
+      <div>
+        <button [disabled]="disabledAddSizeButton" type="button" (click)="addSize()" mat-raised-button>Add Size</button>
+      </div>
     </ng-container>
   </ng-container>
 

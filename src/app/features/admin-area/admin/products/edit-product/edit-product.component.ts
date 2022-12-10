@@ -3,31 +3,35 @@ import { of, switchMap } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
 import { ShopService } from './../../../../../core/services/shop.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterContentChecked } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IType } from 'src/app/shared/models/productType';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ThemePalette } from '@angular/material/core';
-import { formHelper } from 'src/app/core/helpers/form-helper';
 
 @Component({
   selector: 'app-edit-product',
   templateUrl: './edit-product.component.html',
   styleUrls: ['./edit-product.component.scss']
 })
-export class EditProductComponent implements OnInit, OnDestroy {
+export class EditProductComponent implements OnInit, OnDestroy, AfterContentChecked {
   productForm!: FormGroup;
   product: IProduct | null = null;
   brands: IBrand[] = [];
   types: IType[] = [];
   sizes: ISizeClassification[] = [];
+  protected validSizeList: ISizeClassification[] = [];
+  protected disabledAddSizeButton: boolean = false;
   productCharacteristics: IProductCharacteristic[] = [];
   protected colorCheckbox: ThemePalette;
-
   constructor(private shopService: ShopService,
     private activatedRoute: ActivatedRoute,
-    private formBuilder: FormBuilder) {
+    private formBuilder: FormBuilder,
+    private cdr: ChangeDetectorRef) {
 
+  }
+  ngAfterContentChecked(): void {
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy(): void {
@@ -45,8 +49,11 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    const changedValues = formHelper.getChangedValues<IProduct>(this.productForm);
-    const updatedProduct = { ...this.product, ...changedValues }
+    const formValues = this.productForm.value as IProduct;
+    const updatedProduct = { ...this.product, ...formValues }
+
+    delete updatedProduct['productType'];
+    delete updatedProduct['productBrand'];
     console.log(updatedProduct);
     this.shopService.updateProduct(updatedProduct).subscribe((p) => {
       console.log(p);
@@ -60,23 +67,25 @@ export class EditProductComponent implements OnInit, OnDestroy {
       description: [null, Validators.required],
       productBrandId: [null, Validators.required],
       productTypeId: [null, Validators.required],
-      dynamicDropDownSize: this.formBuilder.array([]),
+      productCharacteristics: this.formBuilder.array([]),
     });
   }
 
   get dynamicDropDownSize() {
-    return this.productForm.controls['dynamicDropDownSize'] as FormArray;
+    return this.productForm.controls['productCharacteristics'] as FormArray;
   }
-  addDynamicDropDownSize(sizeId: number | string = '', qty: number = 0) {
+  addDynamicDropDownSize(sizeId: number | string = '', qty: number = 0, id: number, productId: number) {
     const sizeForm = this.formBuilder.group({
-      size: [sizeId],
-      quantity: [qty]
+      id: [id],
+      productId: [productId],
+      sizeId: [sizeId],
+      quantity: [qty],
     });
     this.dynamicDropDownSize.push(sizeForm);
   }
   loadArrayOfDropDownSize() {
     this.product?.productCharacteristics.forEach((_pc, _index) => {
-      this.addDynamicDropDownSize(_pc.sizeId, _pc.quantity);
+      this.addDynamicDropDownSize(_pc.sizeId, _pc.quantity, _pc.id, _pc.productId);
     });
   }
 
@@ -162,5 +171,46 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   getFormGroup(control: AbstractControl) {
     return control as FormGroup;
+  }
+
+  removeSize(index: number) {
+    this.dynamicDropDownSize.removeAt(index);
+    this.disabledAddSizeButton = false;
+  }
+
+  addSize() {
+    if (this.product) {
+      this.validSizeList = this.getValidSizeList();
+      if (this.validSizeList.length > 0) {
+        const defaultSizeId = this.validSizeList[0].id;
+        this.addDynamicDropDownSize(defaultSizeId, 1, 0, this.product?.id);
+        if (this.validSizeList.length - 1 <= 0) {
+          this.disabledAddSizeButton = true;
+        }
+      }
+      else {
+        this.disabledAddSizeButton = true;
+      }
+    }
+  }
+
+  getAvailableSizeList(control: AbstractControl): ISizeClassification[] {
+    const x = control as FormGroup;
+    const currentSizeId = x.controls['sizeId'].value as number;
+    const result = this.getValidSizeList(currentSizeId);
+    this.validSizeList = result;
+    return result;
+  }
+  getValidSizeList(ignoreSizeId: number = -1): ISizeClassification[] {
+    const specs: IProductCharacteristic[] = this.dynamicDropDownSize.value as IProductCharacteristic[];
+    const result = this.sizes.filter(s => {
+      for (let index = 0; index < specs.length; index++) {
+        if (s.id === specs[index].sizeId && s.id !== ignoreSizeId) {
+          return false;
+        }
+      }
+      return true;
+    });
+    return result;
   }
 }
