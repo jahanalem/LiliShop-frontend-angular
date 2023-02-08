@@ -12,26 +12,28 @@ import { EditProductComponent } from './edit-product/edit-product.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from "../../../../shared/shared.module";
 
 
 
 @NgModule({
-  declarations: [
-    ProductsComponent,
-    EditProductComponent
-  ],
-  imports: [
-    CommonModule,
-    ProductsRoutingModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatTableModule,
-    MatIconModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    ReactiveFormsModule,
-  ]
+    declarations: [
+        ProductsComponent,
+        EditProductComponent
+    ],
+    imports: [
+        CommonModule,
+        ProductsRoutingModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatTableModule,
+        MatIconModule,
+        MatSelectModule,
+        MatCheckboxModule,
+        ReactiveFormsModule,
+        SharedModule
+    ]
 })
 export class ProductsModule { }

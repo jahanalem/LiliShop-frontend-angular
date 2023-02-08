@@ -15,6 +15,8 @@ import { RouterModule } from '@angular/router';
 import { TextTextareaComponent } from './components/text-textarea/text-textarea.component';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { PhotoEditorComponent } from './components/photo-editor/photo-editor.component';
+import { FileUploadModule } from 'ng2-file-upload';
 
 const components = [
   PagingHeaderComponent,
@@ -25,6 +27,7 @@ const components = [
   BasketSummaryComponent,
   TextTextareaComponent,
   DialogComponent,
+  PhotoEditorComponent,
 ]
 @NgModule({
   declarations: [
@@ -40,6 +43,7 @@ const components = [
     CdkStepperModule,
     RouterModule,
     MatDialogModule,
+    FileUploadModule,
   ],
   exports: [
     PaginationModule,
@@ -48,6 +52,7 @@ const components = [
     FormsModule,
     BsDropdownModule,
     CdkStepperModule,
+    FileUploadModule,
     ...components
   ]
 })

@@ -1,3 +1,4 @@
+import { IProductPhoto } from './productPhoto';
 import { IProductCharacteristic } from "./productCharacteristic";
 
 
@@ -13,4 +14,5 @@ export interface IProduct {
   productBrandId?: number;
   isActive: boolean;
   productCharacteristics: IProductCharacteristic[];
+  productPhotos: IProductPhoto[];
 }

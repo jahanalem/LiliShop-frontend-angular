@@ -16,7 +16,7 @@ import { ThemePalette } from '@angular/material/core';
 })
 export class EditProductComponent implements OnInit, OnDestroy, AfterContentChecked {
   productForm!: FormGroup;
-  product: IProduct | null = null;
+  product: IProduct | undefined;
   brands: IBrand[] = [];
   types: IType[] = [];
   sizes: ISizeClassification[] = [];

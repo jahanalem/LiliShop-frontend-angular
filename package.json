@@ -33,6 +33,7 @@
     "jest-editor-support": "*",
     "leaflet": "^1.9.3",
     "masonry-layout": "^4.2.2",
+    "ng2-file-upload": "^3.0.0",
     "ngx-bootstrap": "^9.0.0",
     "ngx-spinner": "^14.0.0",
     "ngx-toastr": "^16.0.1",
