@@ -24,6 +24,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   protected disabledAddSizeButton: boolean = false;
   productCharacteristics: IProductCharacteristic[] = [];
   protected colorCheckbox: ThemePalette;
+
   constructor(private shopService: ShopService,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
@@ -50,11 +51,12 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
 
   onSubmit() {
     const formValues = this.productForm.value as IProduct;
+
     const updatedProduct = { ...this.product, ...formValues }
 
     delete updatedProduct['productType'];
     delete updatedProduct['productBrand'];
-    console.log(updatedProduct);
+
     this.shopService.updateProduct(updatedProduct).subscribe((p) => {
       console.log(p);
     });
@@ -68,6 +70,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
       productBrandId: [null, Validators.required],
       productTypeId: [null, Validators.required],
       productCharacteristics: this.formBuilder.array([]),
+      productPhotos: [null]
     });
   }
 
@@ -213,4 +216,6 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     });
     return result;
   }
+
+
 }

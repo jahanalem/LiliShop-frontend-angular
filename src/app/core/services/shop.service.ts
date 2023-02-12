@@ -144,4 +144,8 @@ export class ShopService {
   updateProduct(product: IProduct): Observable<IProduct> {
     return this.http.put<IProduct>(`${this.baseUrl}products/update/${product.id}`, product);
   }
+
+  setMainPhoto(photoId: number) {
+    return this.http.put(this.baseUrl + 'products/set-main-photo/' + photoId, {});
+  }
 }

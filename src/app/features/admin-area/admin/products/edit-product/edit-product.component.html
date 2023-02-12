@@ -93,10 +93,12 @@
 
         <button type="submit" mat-raised-button class="btn btn-primary">Save</button>
       </div>
-      <div class="col-6">
-        Upload Photo
-        <app-photo-editor [product]="product"></app-photo-editor>
-      </div>
+      <ng-container *ngIf="product">
+        <div class="col-6">
+          Upload Photo
+          <app-photo-editor formControlName="productPhotos" [product]="product"></app-photo-editor>
+        </div>
+      </ng-container>
     </div>
   </div>
 </form>
