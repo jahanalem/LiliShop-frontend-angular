@@ -68,15 +68,17 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "sslCert":"ssl/server.crt",
+            "sslKey": "ssl/server.key",
+            "ssl": true
+          },
           "configurations": {
             "production": {
               "browserTarget": "LiliShop:build:production"
             },
             "development": {
-              "browserTarget": "LiliShop:build:development",
-              "sslKey": "ssl/server.key",
-              "sslCert": "ssl/server.crt",
-              "ssl": true
+              "browserTarget": "LiliShop:build:development"
             }
           },
           "defaultConfiguration": "development"
