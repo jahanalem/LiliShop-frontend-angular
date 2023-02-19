@@ -148,4 +148,8 @@ export class ShopService {
   setMainPhoto(photoId: number) {
     return this.http.put(this.baseUrl + 'products/set-main-photo/' + photoId, {});
   }
+
+  deletePhoto(photoId: number) {
+    return this.http.delete(`${this.baseUrl}products/delete-photo/${photoId}`);
+  }
 }

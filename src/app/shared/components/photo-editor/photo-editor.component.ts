@@ -75,7 +75,7 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
     });
 
     this.uploader.onAfterAddingFile = (file) => {
-      file.withCredentials = false; // If we don't do this, we'd need to adjust our course configuration and we don't really want to do that
+      file.withCredentials = false;  // If we don't do this, we'd need to adjust our course configuration and we don't really want to do that
     };
 
     this.uploader.onSuccessItem = (_item, response, _status, _headers) => {
@@ -106,4 +106,14 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
       }
     });
   }
+
+  deletePhoto(photoId: number) {
+    this.shopService.deletePhoto(photoId).subscribe({
+      next: _ => {
+        if (this.product) {
+          this.product.productPhotos = this.product.productPhotos.filter(p => p.id !== photoId);
+        }
+      }
+    })
+  };
 }

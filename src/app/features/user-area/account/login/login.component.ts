@@ -6,15 +6,15 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { pattern } from 'src/app/shared/constants/patterns';
 import { AccountService } from 'src/app/core/services/account.service';
 
-/* sample form: https://mdbootstrap.com/docs/standard/extended/login/ */
+  /* sample form: https://mdbootstrap.com/docs/standard/extended/login/ */
 @Component({
-  selector: 'app-login',
+  selector   : 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls  : ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
-  returnUrl: string = '/';
+  returnUrl : string = '/';
 
   constructor(private accountService: AccountService,
     private router: Router, private activatedRoute: ActivatedRoute) { }
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
 
   createLoginForm() {
     this.loginForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.pattern(pattern.EMAIL)]),
+      email   : new FormControl('', [Validators.required, Validators.pattern(pattern.EMAIL)]),
       password: new FormControl('', Validators.required),
     });
   }
