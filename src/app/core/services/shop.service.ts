@@ -14,14 +14,14 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ShopService {
-  baseUrl = environment.apiUrl;
-  products: IProduct[] = [];
-  brands: IBrand[] = [];
-  types: IType[] = [];
-  sizes: ISizeClassification[] = [];
-  pagination = new Pagination();
-  shopParams = new ShopParams();
-  productCache = new Map();
+  baseUrl      :string                 = environment.apiUrl;
+  products     :IProduct[]             = [];
+  brands       :IBrand[]               = [];
+  types        :IType[]                = [];
+  sizes        :ISizeClassification[]  = [];
+  pagination   :Pagination             = new Pagination();
+  shopParams   :ShopParams             = new ShopParams();
+  productCache :Map<any,any>           = new Map();
 
   constructor(private http: HttpClient) { }
 

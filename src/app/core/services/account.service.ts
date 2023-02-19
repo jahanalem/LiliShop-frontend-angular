@@ -10,9 +10,9 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class AccountService {
-  baseUrl = environment.apiUrl;
+          baseUrl           = environment.apiUrl;
   private currentUserSource = new ReplaySubject<IUser | null>(1);
-  currentUser$ = this.currentUserSource.asObservable();
+          currentUser$      = this.currentUserSource.asObservable();
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -22,7 +22,7 @@ export class AccountService {
       return of();
     }
     let headers = new HttpHeaders();
-    headers = headers.set('Authorization', `Bearer ${token}`);
+        headers = headers.set('Authorization', `Bearer ${token}`);
 
     return this.http.get<IUser>(this.baseUrl + 'account/currentuser', {headers: headers }).pipe(
       map((user: IUser) => {
