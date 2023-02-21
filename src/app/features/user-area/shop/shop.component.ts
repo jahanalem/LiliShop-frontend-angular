@@ -41,13 +41,14 @@ export class ShopComponent implements OnInit {
   }
 
   getProducts(useCache = false, isActive?: boolean): void {
-    this.shopService.getProducts(useCache, isActive).subscribe(response => {
-      if (response) {
-        this.products = response.data;
-        this.totalCount = response.count;
-      }
-    }, error => {
-      console.log(error);
+    this.shopService.getProducts(useCache, isActive).subscribe({
+      next: (response) => {
+        if (response) {
+          this.products = response.data;
+          this.totalCount = response.count;
+        }
+      },
+      error: (error) => { console.log(error); }
     });
   }
 
