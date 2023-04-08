@@ -1,101 +1,87 @@
-ul {
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.mat-toolbar {
+  background: #004a9f;
+  color: white;
+}
+
+.admin-panel-title {
+  margin-left: 8px;
+}
+
+.mat-sidenav {
+  width: 240px;
+  background-color: #fafafa;
+}
+
+.mat-sidenav-container,
+.content {
+  height: calc(100vh - 65px);
+}
+
+.content {
+  padding: 16px;
+  overflow: auto;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.nav-list {
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
 
-a.active {
-  background-color: black;
+.nav-item {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.nav-item a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.nav-item a.active {
+  background-color: rgba(0, 0, 0, 0.1);
   font-weight: bold;
 }
 
-ul>li {
-  background-color: #fafafa;
-  padding: 0;
-
-  &>a {
-    width: 100%;
-    padding: .5rem;
-  }
+.nav-item a:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
-li:hover {
-  background-color: black !important;
+.nav-icon {
+  margin-right: 16px;
 }
 
-mat-toolbar {
-  background: #004a9f;
-  color: white;
-}
-
-mat-sidenav {
-  margin: 16px;
-  width: 200px;
-  border-right: none;
-  background-color: #fafafa;
-  color: white !important;
-  border-radius: 10px;
-  padding: 16px;
-  text-align: center;
-}
-
-.content {
-  height: calc(100vh - 130px);
-  border-radius: 10px;
-  margin: 16px;
-  margin-left: 32px;
-
-  padding: 16px;
-
-  overflow: auto;
-}
-
-mat-sidenav-container {
-  height: calc(100vh - 65px);
-}
-
-.menu-button {
-  width: 100%;
+.nav-item-logout {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.87);
+  text-decoration: none;
+}
 
-  mat-icon {
-    margin-right: 8px;
-  }
+.nav-icon-logout {
+  margin-right: 8px;
 }
 
 .avatar {
-  margin-top: 16px;
   width: 100px;
   height: 100px;
   border-radius: 50%;
 }
 
-.name {
-  margin-top: 8px;
-  font-weight: normal;
-}
-
-.designation {
-  margin-top: 2px;
-  font-size: 0.7rem;
-  color: lightgrey;
-}
-
-mat-divider {
+.mat-divider {
   margin-top: 16px;
   margin-bottom: 16px;
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.logo-admin:hover
-{
-  background-color: whitesmoke;
-  cursor: pointer;
-}
-
-.logout{
-  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.12);
 }

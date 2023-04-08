@@ -1,63 +1,44 @@
-<mat-toolbar class="mat-elevation-z8">
+<mat-toolbar color="primary" class="mat-elevation-z8">
   <button mat-icon-button *ngIf="sidenav.mode === 'over'" (click)="sidenav.toggle()">
-    <mat-icon *ngIf="!sidenav.opened"> menu </mat-icon>
-    <mat-icon *ngIf="sidenav.opened"> close </mat-icon>
+    <mat-icon *ngIf="!sidenav.opened">menu</mat-icon>
+    <mat-icon *ngIf="sidenav.opened">close</mat-icon>
   </button>
-  Admin Panel
+  <span class="admin-panel-title">Admin Panel</span>
 </mat-toolbar>
 
 <mat-sidenav-container>
   <mat-sidenav #sidenav="matSidenav" class="mat-elevation-z8">
-    <img routerLink="/" alt="logo" class="avatar mat-elevation-z8 logo-admin" src="../../../../assets/img/logo-s.png" />
+    <div class="logo-container">
+      <img routerLink="/" alt="logo" class="avatar mat-elevation-z8 logo-admin" src="../../../../assets/img/logo-s.png" />
+    </div>
     <mat-divider></mat-divider>
 
-    <ul class="list-group list-group-flush justify-content-start d-flex">
-      <li class="d-flex list-group-item">
-        <a
-        class="d-inline-flex align-items-center"
-        routerLink="/admin" routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact:true}">
-
-          <mat-icon class="mx-1">home</mat-icon><span>Dashboard</span>
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+          <mat-icon class="nav-icon">home</mat-icon>
+          <span>Dashboard</span>
         </a>
       </li>
-      <!-- <li class="d-flex list-group-item">
-        <a class="d-inline-flex align-items-center" routerLink="/admin/users" routerLinkActive="active">
-          <mat-icon class="mx-1">supervised_user_circle</mat-icon><span>Users</span>
-        </a>
-      </li> -->
-      <li class="d-flex list-group-item">
-        <a class="d-inline-flex align-items-center" routerLink="/admin/products" routerLinkActive="active">
-          <mat-icon class="mx-1">library_books</mat-icon>
+      <li class="nav-item">
+        <a routerLink="/admin/products" routerLinkActive="active">
+          <mat-icon class="nav-icon">library_books</mat-icon>
           <span>Products</span>
         </a>
       </li>
-      <li class="d-flex list-group-item">
-        <a class="d-inline-flex align-items-center" routerLink="/admin/brand" routerLinkActive="active">
-          <mat-icon class="mx-1">branding_watermark</mat-icon>
+      <li class="nav-item">
+        <a routerLink="/admin/brand" routerLinkActive="active">
+          <mat-icon class="nav-icon">branding_watermark</mat-icon>
           <span>Brands</span>
         </a>
       </li>
-      <li class="d-flex list-group-item">
-        <a (click)="logout()" class="d-inline-flex align-items-center logout" routerLinkActive="active">
-          <i class="fa fa-sign-out fa-2x me-3"></i>
-          <span>logout</span>
+      <li class="nav-item">
+        <a (click)="logout()" class="nav-item-logout" routerLinkActive="active">
+          <i class="fa fa-sign-out fa-2x nav-icon-logout"></i>
+          <span>Logout</span>
         </a>
       </li>
-      <!-- <li class="d-flex list-group-item">
-        <a class="d-inline-flex align-items-center" routerLink="/admin/type" routerLinkActive="active">
-          <mat-icon class="mx-1">merge_type</mat-icon>
-          <span>Types</span>
-        </a>
-      </li> -->
-      <!-- <li class="d-flex list-group-item">
-        <a class="d-inline-flex align-items-center" routerLink="/admin/about" routerLinkActive="active">
-          <mat-icon class="mx-1">info</mat-icon>
-          <span>About</span>
-        </a>
-      </li> -->
     </ul>
-
 
     <mat-divider></mat-divider>
   </mat-sidenav>
