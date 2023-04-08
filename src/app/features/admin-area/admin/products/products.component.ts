@@ -30,7 +30,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'Action'];
+  columnsToDisplay: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'Action'];
   public dataSource!: IProduct[];
   products: IProduct[] = [];
   shopParams: ShopParams;
@@ -80,8 +80,8 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
+  applyFilter(filterValueEvent: Event) {
+    const filterValue = (filterValueEvent.target as HTMLInputElement).value;
     this.shopParams.search = filterValue.trim().toLowerCase();
 
     if (this.shopParams.search) {

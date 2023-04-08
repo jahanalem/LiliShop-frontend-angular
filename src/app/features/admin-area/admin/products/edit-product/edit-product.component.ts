@@ -3,7 +3,7 @@ import { of, switchMap } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
 import { ShopService } from './../../../../../core/services/shop.service';
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterContentChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterContentChecked, ChangeDetectionStrategy } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IType } from 'src/app/shared/models/productType';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
@@ -12,7 +12,8 @@ import { ThemePalette } from '@angular/material/core';
 @Component({
   selector: 'app-edit-product',
   templateUrl: './edit-product.component.html',
-  styleUrls: ['./edit-product.component.scss']
+  styleUrls: ['./edit-product.component.scss'],
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class EditProductComponent implements OnInit, OnDestroy, AfterContentChecked {
   productForm!: FormGroup;

@@ -17,6 +17,7 @@ import { DialogComponent } from './components/dialog/dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { PhotoEditorComponent } from './components/photo-editor/photo-editor.component';
 import { FileUploadModule } from 'ng2-file-upload';
+import { FormatValuePipe } from './pipes/format-value.pipe';
 
 const components = [
   PagingHeaderComponent,
@@ -32,6 +33,7 @@ const components = [
 @NgModule({
   declarations: [
     ...components,
+    FormatValuePipe,
   ],
   imports: [
     CommonModule,
@@ -53,6 +55,7 @@ const components = [
     BsDropdownModule,
     CdkStepperModule,
     FileUploadModule,
+    FormatValuePipe,
     ...components
   ]
 })
