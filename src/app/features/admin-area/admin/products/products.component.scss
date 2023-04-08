@@ -1,34 +1,41 @@
+/* General styles */
+mat-form-field {
+  width: 100%;
+  max-width: 300px;
+}
+
+/* Table styles */
 table {
   width: 100%;
+  border-collapse: collapse;
 }
 
-.mat-mdc-form-field {
-  font-size: 14px;
-  width: 100%;
+th, td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-td, th {
-  width: calc(100%/6);
+th {
+  font-weight: bold;
 }
 
-.details-icon
-{
-  &:hover{
-    color: var(--bs-primary);
-  }
+tr.mat-row:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
-.edit-icon
-{
-  &:hover{
-    color: var(--bs-warning);
-  }
+tr.mat-row:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
-.delete-icon
-{
-  &:hover{
-    color: var(--bs-danger);
-  }
+/* Paginator styles */
+mat-paginator {
+  padding: 8px 0;
+  display: flex;
+  justify-content: center;
+  background-color: #fafafa;
 }
 
+mat-form-field {
+  margin-bottom: 16px;
+}
