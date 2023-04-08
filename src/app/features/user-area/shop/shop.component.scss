@@ -1,24 +1,74 @@
-.list-group{
-  max-height: 20rem;
-  overflow-y: auto;
+/* General */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f5f5;
 }
-.list-group-item {
-  cursor: pointer;
-  border: none;
-  padding: 10px 20px;
-  font-size: 1.1em;
 
-  &:focus {
-    outline: none;
-  }
+h6.text-uppercase {
+  font-weight: 600;
+  color: #333;
+}
 
-  &.active {
-    border-radius: 10px;
-  }
+.border-bottom {
+  border-bottom: 1px solid #dee2e6 !important;
+}
 
-  &:not(.active):hover {
-    color: #fff;
-    background-color: var(--template-color);
-    border-radius: 10px;
-  }
+/* Search and Filter */
+.input-group {
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.input-group .btn-outline-secondary {
+  background-color: #f8f9fa;
+  border-color: #ced4da;
+  color: #495057;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.input-group .btn-outline-secondary:hover {
+  background-color: #495057;
+  color: #fff;
+}
+
+.form-select {
+  background-color: #fff;
+  border-color: #ced4da;
+}
+
+/* Grid and Product Items */
+.item {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-4px);
+}
+
+/* Pagination */
+.pagination {
+  margin-top: 1rem;
+}
+
+.app-pager a {
+  background-color: #fff;
+  color: #495057;
+  border-color: #ced4da;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.app-pager a:hover {
+  background-color: #495057;
+  color: #fff;
+}
+
+.app-pager .active a {
+  background-color: #495057;
+  color: #fff;
 }
