@@ -1,5 +1,5 @@
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { of, switchMap } from 'rxjs';
+import { EMPTY, Observable, switchMap } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
 import { ShopService } from './../../../../../core/services/shop.service';
@@ -13,7 +13,7 @@ import { ThemePalette } from '@angular/material/core';
   selector: 'app-edit-product',
   templateUrl: './edit-product.component.html',
   styleUrls: ['./edit-product.component.scss'],
-  changeDetection:ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditProductComponent implements OnInit, OnDestroy, AfterContentChecked {
   productForm!: FormGroup;
@@ -96,12 +96,9 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   getProductFormValues(): void {
     // if we refresh the page, we dont'n access to the product object and then we cannot get id from it.
     // Therefore we need to get id from activatedRoute.
-    if (!this.product) {
-      const product = localStorage.getItem(this.getProductKeyFromLocalStorage());
-      if (product) {
-        this.product = JSON.parse(product) as IProduct;
-      }
-    }
+
+    this.product ??= JSON.parse(localStorage.getItem(this.getProductKeyFromLocalStorage()) || 'null') as IProduct;
+
     this.productForm?.patchValue({
       isActive: this.product?.isActive,
       name: this.product?.name,
@@ -115,7 +112,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     this.activatedRoute.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const id = params.get('id');
-        return id ? this.shopService.getProduct(+id) : of();
+        return id ? this.shopService.getProduct(+id) : EMPTY;
       })
     ).subscribe({
       next: (prod) => {
@@ -126,23 +123,16 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
       error: (error: any) => { console.log(error); },
     });
   }
+
   getBrands(): void {
-    this.shopService.getBrands(true).subscribe({
-      next: (response) => { this.brands = [...response]; },
-      error: (error: any) => { console.log(error); }
-    });
+    this.fetchData(() => this.shopService.getBrands(true), (response) => { this.brands = [...response]; });
   }
+
   getTypes(): void {
-    this.shopService.getTypes(true).subscribe({
-      next: (response) => { this.types = [...response]; },
-      error: (error: any) => { console.log(error); }
-    });
+    this.fetchData(() => this.shopService.getTypes(true), (response) => { this.types = [...response]; });
   }
   getSizes(): void {
-    this.shopService.getSizes(true).subscribe({
-      next: (response) => { this.sizes = [...response]; },
-      error: (error: any) => { console.log(error); }
-    });
+    this.fetchData(() => this.shopService.getSizes(true), (response) => { this.sizes = [...response]; });
   }
 
 
@@ -185,38 +175,37 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   addSize() {
     if (this.product) {
       this.validSizeList = this.getValidSizeList();
+
       if (this.validSizeList.length > 0) {
         const defaultSizeId = this.validSizeList[0].id;
         this.addDynamicDropDownSize(defaultSizeId, 1, 0, this.product?.id);
-        if (this.validSizeList.length - 1 <= 0) {
-          this.disabledAddSizeButton = true;
-        }
       }
-      else {
-        this.disabledAddSizeButton = true;
-      }
+
+      this.disabledAddSizeButton = this.validSizeList.length <= 1;
     }
   }
 
   getAvailableSizeList(control: AbstractControl): ISizeClassification[] {
-    const x = control as FormGroup;
-    const currentSizeId = x.controls['sizeId'].value as number;
-    const result = this.getValidSizeList(currentSizeId);
-    this.validSizeList = result;
-    return result;
-  }
-  getValidSizeList(ignoreSizeId: number = -1): ISizeClassification[] {
-    const specs: IProductCharacteristic[] = this.dynamicDropDownSize.value as IProductCharacteristic[];
-    const result = this.sizes.filter(s => {
-      for (let index = 0; index < specs.length; index++) {
-        if (s.id === specs[index].sizeId && s.id !== ignoreSizeId) {
-          return false;
-        }
-      }
-      return true;
-    });
-    return result;
+    const formGroup = control as FormGroup;
+    const currentSizeId = formGroup.controls['sizeId'].value as number;
+    this.validSizeList = this.getValidSizeList(currentSizeId);
+
+    return this.validSizeList;
   }
 
+  getValidSizeList(ignoreSizeId: number = -1): ISizeClassification[] {
+    const specs: IProductCharacteristic[] = this.dynamicDropDownSize.value as IProductCharacteristic[];
+
+    return this.sizes.filter(size => {
+      return !specs.some(spec => size.id === spec.sizeId && size.id !== ignoreSizeId);
+    });
+  }
+
+  private fetchData<T>(fetchDataFn: () => Observable<T>, updateFn: (data: T) => void): void {
+    fetchDataFn().subscribe({
+      next: (response) => updateFn(response),
+      error: (error: any) => console.log(error),
+    });
+  }
 
 }
