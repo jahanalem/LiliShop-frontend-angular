@@ -1,9 +1,42 @@
-.product-description
-{
-  width: 55%;
-}
-.product-name
-{
-  width: 55%;
+.product-form {
+  margin: 20px 0;
 }
 
+.form-left,
+.form-right {
+  padding: 20px;
+  border-radius: 4px;
+}
+
+.form-left {
+  background-color: #f5f5f5;
+}
+
+.form-right {
+  background-color: #e9ecef;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.btn {
+  margin-top: 20px;
+}
+
+.add-size-btn {
+  margin-bottom: 20px;
+}
+
+.size-group {
+  margin-bottom: 20px;
+}
+
+.add-size-btn {
+  margin-bottom: 20px;
+}
+
+.input-width {
+  width: 100%;
+  /* Adjust the width percentage as needed */
+}

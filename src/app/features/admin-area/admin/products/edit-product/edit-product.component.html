@@ -1,20 +1,19 @@
-<form *ngIf="productForm" [formGroup]="productForm" (ngSubmit)="onSubmit()">
+<form *ngIf="productForm" [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
   <div class="container">
     <div class="row">
-      <div class="col-6">
+      <div class="col-6 form-left">
         <ng-container *ngIf="product">
           <mat-checkbox formControlName="isActive" (change)="onIsActiveChange($event.checked)"
-            [color]="colorCheckbox">Is
-            Active?</mat-checkbox>
-          <div class="mb-3">
-            <mat-form-field hintLabel="Max 50 characters" appearance="outline" class="product-name">
+            [color]="colorCheckbox">Is Active?</mat-checkbox>
+          <div class="form-group">
+            <mat-form-field hintLabel="Max 50 characters" appearance="outline" class="input-width">
               <mat-label>Enter product name</mat-label>
               <input formControlName="name" matInput #input maxlength="50" placeholder="product name">
               <mat-hint align="end">{{input.value.length}}/50</mat-hint>
             </mat-form-field>
           </div>
-          <div>
-            <mat-form-field [style.fontSize]="18" appearance="outline" class="product-description">
+          <div class="form-group">
+            <mat-form-field [style.fontSize]="18" appearance="outline" class="input-width">
               <mat-label>Description</mat-label>
               <textarea formControlName="description" title="description" matInput #inputDsc cdkTextareaAutosize
                 #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50"
@@ -25,9 +24,9 @@
         </ng-container>
 
         <ng-container *ngIf="brands">
-          <div>
+          <div class="form-group">
             <mat-form-field appearance="outline">
-              <mat-label>brand</mat-label>
+              <mat-label>Brand</mat-label>
               <mat-select formControlName="productBrandId" (selectionChange)="onTypeSelected($event.value!)"
                 placeholder="product brands">
                 <mat-option *ngFor="let brand of brands" [value]="brand.id">
@@ -39,9 +38,9 @@
         </ng-container>
 
         <ng-container *ngIf="types">
-          <div>
+          <div class="form-group">
             <mat-form-field appearance="outline">
-              <mat-label>type</mat-label>
+              <mat-label>Type</mat-label>
               <mat-select formControlName="productTypeId" (selectionChange)="onTypeSelected($event.value!)"
                 placeholder="product types">
                 <mat-option *ngFor="let type of types" [value]="type.id">
@@ -55,7 +54,7 @@
         <ng-container *ngIf="product?.productCharacteristics as pcs">
           <ng-container formArrayName="productCharacteristics">
             <ng-container *ngFor="let sizeFormCtrl of dynamicDropDownSize.controls; let i=index">
-              <div [formGroup]="getFormGroup(sizeFormCtrl)">
+              <div [formGroup]="getFormGroup(sizeFormCtrl)" class="size-group">
                 <input type="hidden" formControlName="id" />
                 <input type="hidden" formControlName="productId" />
                 <div class="w-100 d-flex">
@@ -82,9 +81,8 @@
                   </div>
                 </div>
               </div>
-
             </ng-container>
-            <div>
+            <div class="add-size-btn">
               <button [disabled]="disabledAddSizeButton" type="button" (click)="addSize()" mat-raised-button>Add
                 Size</button>
             </div>
@@ -94,7 +92,7 @@
         <button type="submit" mat-raised-button class="btn btn-primary">Save</button>
       </div>
       <ng-container *ngIf="product">
-        <div class="col-6">
+        <div class="col-6 form-right">
           Upload Photo
           <app-photo-editor formControlName="productPhotos" [product]="product"></app-photo-editor>
         </div>
