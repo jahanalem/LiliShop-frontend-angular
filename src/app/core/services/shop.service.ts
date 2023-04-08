@@ -32,9 +32,7 @@ export class ShopService {
     }
 
     const key = Object.values(this.shopParams).join('-');
-    console.log("key = ", key);
     if (useCache && this.productCache.has(key)) {
-      console.log("TRUE-----------------------------");
       this.pagination.data = this.productCache.get(key);
       return of(this.pagination);
     }
@@ -66,7 +64,7 @@ export class ShopService {
     return this.http.get<Pagination>(this.baseUrl + 'products', { observe: 'response', params })
       .pipe(
         map(response => {
-          this.productCache.set(Object.values(this.shopParams).join('-'), response.body?.data);
+          this.productCache.set(key, response.body?.data);
           this.pagination = response.body ?? ({} as IPagination);
           return this.pagination;
         })

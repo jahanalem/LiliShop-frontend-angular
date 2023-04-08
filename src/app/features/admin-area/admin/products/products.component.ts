@@ -38,11 +38,13 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   isLoadingResults = true;
 
   constructor(private _shopService: ShopService, private router: Router) {
+    this._shopService.setShopParams(new ShopParams());
     this.shopParams = this._shopService.getShopParams();
   }
+  
   ngOnInit(): void {
-
   }
+
   ngAfterViewInit() {
     // If the user changes the sort order, reset back to the first page.
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
@@ -90,7 +92,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     this.getProducts(false);
   }
 
-  editProduct(id:number) {
-    this.router.navigateByUrl("/admin/products/edit/" + id );
+  editProduct(id: number) {
+    this.router.navigateByUrl("/admin/products/edit/" + id);
   }
 }
