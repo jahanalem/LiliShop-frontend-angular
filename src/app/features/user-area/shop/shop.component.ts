@@ -1,5 +1,6 @@
 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs';
 import { ShopService } from 'src/app/core/services/shop.service';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProduct } from 'src/app/shared/models/product';
@@ -23,7 +24,7 @@ export class ShopComponent implements OnInit {
   sizes: ISizeClassification[] = [];
   shopParams: ShopParams;
   totalCount: number = 0;
-  sortOptions = [
+  readonly sortOptions = [
     { name: 'Alphabetical', value: 'name' },
     { name: 'Price: Low to high', value: 'priceAsc' },
     { name: 'Price: High to low', value: 'priceDesc' },
@@ -35,9 +36,7 @@ export class ShopComponent implements OnInit {
 
   ngOnInit(): void {
     this.getProducts(false);
-    this.getBrands();
-    this.getTypes();
-    this.getSizes();
+    this.getFilters();
   }
 
   getProducts(useCache = false, isActive?: boolean): void {
@@ -52,61 +51,18 @@ export class ShopComponent implements OnInit {
     });
   }
 
-  getBrands(): void {
-    this.shopService.getBrands(true).subscribe(response => {
+  getFilters(): void {
+    this.getData(this.shopService.getBrands(true), (response) => {
       this.brands = [{ id: 0, name: 'All' }, ...response];
-    }, error => {
-      console.log(error);
-    })
-  }
+    });
 
-  getTypes(): void {
-    this.shopService.getTypes(true).subscribe(response => {
+    this.getData(this.shopService.getTypes(true), (response) => {
       this.types = [{ id: 0, name: 'All' }, ...response];
-    }, error => {
-      console.log(error);
-    })
-  }
-  getSizes(): void {
-    this.shopService.getSizes(true).subscribe(response => {
+    });
+
+    this.getData(this.shopService.getSizes(true), (response) => {
       this.sizes = [{ id: 0, size: 'All', isActive: false }, ...response];
-    }, error => {
-      console.log(error);
-    })
-  }
-  onSizeSelected(eventTarget: EventTarget): void {
-    const sizeId = +(eventTarget as HTMLInputElement).value;
-    const params = this.shopService.getShopParams();
-    params.sizeId = sizeId;
-    params.pageNumber = 1;
-    this.shopService.setShopParams(params);
-    this.getProducts();
-  }
-
-  onBrandSelected(eventTarget: EventTarget): void {
-    const brandId = +(eventTarget as HTMLInputElement).value;
-    const params = this.shopService.getShopParams();
-    params.brandId = brandId;
-    params.pageNumber = 1;
-    this.shopService.setShopParams(params);
-    this.getProducts();
-  }
-
-  onTypeSelected(eventTarget: EventTarget): void {
-    const typeId = +(eventTarget as HTMLInputElement).value;
-    const params = this.shopService.getShopParams();
-    params.typeId = typeId;
-    params.pageNumber = 1;
-    this.shopService.setShopParams(params);
-    this.getProducts();
-  }
-
-  onSortSelected(eventTarget: EventTarget): void {
-    const sort = (eventTarget as HTMLInputElement).value;
-    const params = this.shopService.getShopParams();
-    params.sort = sort;
-    this.shopService.setShopParams(params);
-    this.getProducts();
+    });
   }
 
   onPageChanged(event: number): void {
@@ -130,5 +86,45 @@ export class ShopComponent implements OnInit {
     this.shopParams = new ShopParams();
     this.shopService.setShopParams(this.shopParams);
     this.getProducts();
+  }
+
+  onFilterSelected(inputElement: EventTarget | null, filterType: string): void {
+    if (!inputElement) {
+      return;
+    }
+
+    const selectElement = inputElement as HTMLSelectElement;
+    const filterValue = +selectElement.value;
+    const params = this.shopService.getShopParams();
+
+    switch (filterType) {
+      case 'size':
+        params.sizeId = filterValue;
+        break;
+      case 'brand':
+        params.brandId = filterValue;
+        break;
+      case 'type':
+        params.typeId = filterValue;
+        break;
+      case 'sort':
+        params.sort = selectElement.value;
+        break;
+      default:
+        break;
+    }
+
+    params.pageNumber = 1;
+    this.shopService.setShopParams(params);
+    this.getProducts();
+  }
+
+  private getData<T>(apiCall: Observable<T>, successCallback: (response: T) => void): void {
+    apiCall.subscribe({
+      next: successCallback,
+      error: (error) => {
+        console.log(error);
+      }
+    });
   }
 }

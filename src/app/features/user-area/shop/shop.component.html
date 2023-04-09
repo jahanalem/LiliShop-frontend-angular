@@ -20,7 +20,7 @@
 
         <!-- Sort -->
         <h6 class="text-uppercase mb-4">Sort</h6>
-        <select name="sort" class="form-select mb-4" (change)="onSortSelected($event.target!)">
+        <select name="sort" class="form-select mb-4" (change)="onFilterSelected($event.target, 'sort')">
           <option *ngFor="let sort of sortOptions" [selected]="shopParams.sort === sort.value" [value]="sort.value">
             {{sort.name}}
           </option>
@@ -32,7 +32,7 @@
           <!-- Brands -->
           <h6 class="text-uppercase mb-4">Show by brand</h6>
           <div>
-            <select name="brand" class="form-select mb-4" (change)="onBrandSelected($event.target!)">
+            <select name="brand" class="form-select mb-4" (change)="onFilterSelected($event.target, 'brand')">
               <option *ngFor="let brand of brands" [selected]="brand.id ===  shopParams.brandId" [value]="brand.id">
                 {{brand.name}}
               </option>
@@ -44,7 +44,7 @@
           <!-- Type -->
           <h6 class="text-uppercase mb-4">Show by type</h6>
           <div>
-            <select name="type" class="form-select mb-4" (change)="onTypeSelected($event.target!)">
+            <select name="type" class="form-select mb-4" (change)="onFilterSelected($event.target, 'type')">
               <option *ngFor="let type of types" [selected]="type.id ===  shopParams.typeId" [value]="type.id">
                 {{type.name}}
               </option>
@@ -56,7 +56,7 @@
           <!-- Size -->
           <h6 class="text-uppercase mb-4">Show by size</h6>
           <div>
-            <select name="type" class="form-select mb-4" (change)="onSizeSelected($event.target!)">
+            <select name="size" class="form-select mb-4" (change)="onFilterSelected($event.target, 'size')">
               <option *ngFor="let size of sizes" [selected]="size.id ===  shopParams.sizeId" [value]="size.id">
                 {{size.size}}
               </option>
