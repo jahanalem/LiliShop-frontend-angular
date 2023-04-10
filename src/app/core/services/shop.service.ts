@@ -28,7 +28,6 @@ export class ShopService {
   getProducts(useCache: boolean, isActive?: boolean): Observable<Pagination> {
     if (!useCache) {
       this.productCache.clear();
-
     }
 
     const key = Object.values(this.shopParams).join('-');
@@ -42,26 +41,25 @@ export class ShopService {
       params = params.append('isActive', isActive.toString());
     }
 
-    const nonZeroParams: (keyof ShopParams)[] = ['brandId', 'typeId', 'sizeId'];
-    for (const param of nonZeroParams) {
-      if (this.shopParams[param] !== 0) {
-        params = params.append(param, this.shopParams[param].toString());
+    const paramMappings: [keyof ShopParams, string][] = [
+      ['brandId', 'brandId'],
+      ['typeId', 'typeId'],
+      ['sizeId', 'sizeId'],
+      ['sort', 'sort'],
+      ['search', 'search'],
+      ['sortDirection', 'sortDirection'],
+      ['pageNumber', 'pageIndex'],
+      ['pageSize', 'pageSize']
+    ];
+
+    paramMappings.forEach(([shopParamKey, paramName]) => {
+      const value = this.shopParams[shopParamKey];
+      if (value !== undefined && value !== 0 && value !== '') {
+        params = params.append(paramName, value.toString());
       }
-    }
+    });
 
-    if (this.shopParams.sort) {
-      params = params.append("sort", this.shopParams.sort.toString());
-    }
-
-    if (this.shopParams.search) {
-      params = params.append('search', this.shopParams.search);
-    }
-
-    params = params.append('sortDirection', this.shopParams.sortDirection);
-    params = params.append('pageIndex', this.shopParams.pageNumber.toString());
-    params = params.append('pageSize', this.shopParams.pageSize.toString());
-
-    return this.http.get<Pagination>(this.baseUrl + 'products', { observe: 'response', params })
+    return this.http.get<Pagination>(`${this.baseUrl}products`, { observe: 'response', params })
       .pipe(
         map(response => {
           this.productCache.set(key, response.body?.data);
