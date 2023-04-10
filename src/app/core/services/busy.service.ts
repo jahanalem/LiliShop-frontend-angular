@@ -13,7 +13,6 @@ export class BusyService {
   busy() {
     this.busyRequestCount++;
     this.spinnerService.show();
-
   }
 
   idle() {

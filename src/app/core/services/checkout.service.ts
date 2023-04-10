@@ -21,7 +21,6 @@ export class CheckoutService {
     );
   }
 
-
   createOrder(order: IOrderToCreate): Observable<IOrder> {
     return this.http.post<IOrder>(`${this.baseUrl}orders`, order);
   }
