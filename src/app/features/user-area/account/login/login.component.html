@@ -1,7 +1,7 @@
 <section class="pb-4">
   <div class="bg-white border rounded-5">
-    <section class="w-100 p-4 d-flex justify-content-center pb-4">
-      <form class="w-100 w-sm-50 w-md-50 w-lg-50" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <section class="p-4 d-flex justify-content-center pb-4">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-100 w-md-50">
         <!-- Email input -->
         <app-text-input formControlName="email" [label]="'Email address'"></app-text-input>
         <!-- Password input -->
