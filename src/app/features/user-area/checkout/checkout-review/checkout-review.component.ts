@@ -11,7 +11,7 @@ import { IBasket } from 'src/app/shared/models/basket';
   styleUrls: ['./checkout-review.component.scss']
 })
 export class CheckoutReviewComponent implements OnInit {
-  @Input() appStepper!:CdkStepper;
+  @Input() appStepper!: CdkStepper;
   basket$: Observable<IBasket | null> = of(null);
   constructor(private basketService: BasketService) { }
 
@@ -20,10 +20,10 @@ export class CheckoutReviewComponent implements OnInit {
   }
 
   createPaymentIntent() {
-    this.basketService.createPaymentIntent().subscribe(() => {
-      this.appStepper.next();
-    }, error => {
-      console.log(error);
-    });
+    this.basketService.createPaymentIntent().subscribe(
+      {
+        next: () => { this.appStepper.next(); },
+        error: error => { console.log(error); }
+      });
   }
 }

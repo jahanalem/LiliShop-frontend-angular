@@ -25,18 +25,16 @@ export class AppComponent implements OnInit, AfterViewInit {
   loadBasket() {
     const basketId = localStorage.getItem('basket_id');
     if (basketId) {
-      this.basketService.getBasket(basketId).subscribe(() => {
-      }, error => {
-        console.log(error);
+      this.basketService.getBasket(basketId).subscribe({
+        error: error => { console.log(error); }
       });
     }
   }
 
   private loadCurrentUser() {
     const token = localStorage.getItem('token');
-    this.accountService.loadCurrentUser(token).subscribe(() => {
-    }, (error: any) => {
-      console.log(error);
+    this.accountService.loadCurrentUser(token).subscribe({
+      error: (error: any) => { console.log(error); }
     });
   }
 }
