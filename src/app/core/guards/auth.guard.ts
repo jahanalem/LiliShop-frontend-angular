@@ -10,29 +10,49 @@ import { AccountService } from '../services/account.service';
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
+  constructor(
+    private accountService: AccountService,
+    private router: Router,
+    public dialog: MatDialog
+  ) { }
 
-  constructor(private accountService: AccountService, private router: Router, public dialog: MatDialog) {
-  }
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    const requiredRoles = route.data['access'] as string[] | undefined;
 
-  canActivate(_route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.accountService.currentUser$.pipe(
       map((authenticatedUser: IUser | null) => {
-        let permissionKind: string[] | undefined = _route.data['access'] as string[];
-        const authorization = permissionKind?.includes(authenticatedUser?.role ?? '');
-        if ((authenticatedUser && !permissionKind) || authorization) {
+        if (!authenticatedUser) {
+          this.redirectToLoginPage(state.url);
+          return false;
+        }
+        // If requiredRoles is undefined or falsy, it returns true because no specific role is required to access the page.
+        //If requiredRoles is truthy (it contains one or more roles), then it calls the hasPermission method
+        if (!requiredRoles || this.hasPermission(requiredRoles, authenticatedUser)) {
           return true;
         }
-        else if (!authenticatedUser) {
-          this.router.navigate(['account/login'], { queryParams: { returnUrl: state.url } });
-          return false;
-        }
-        else if (!authorization) {
-          this.dialog.open(DialogComponent, { data: { title: "Access Denied!", content: "You don't have permission to view this page" } })
-          this.router.navigate(['/'], { queryParams: { returnUrl: state.url } });
-          return false;
-        }
+
+        this.showAccessDeniedDialog();
+        this.redirectToHomePage(state.url);
         return false;
       })
     );
+  }
+
+  private hasPermission(permissionKind: string[], authenticatedUser: IUser): boolean {
+    return permissionKind.includes(authenticatedUser.role);
+  }
+
+  private redirectToLoginPage(returnUrl: string): void {
+    this.router.navigate(['account/login'], { queryParams: { returnUrl } });
+  }
+
+  private showAccessDeniedDialog(): void {
+    this.dialog.open(DialogComponent, {
+      data: { title: 'Access Denied!', content: "You don't have permission to view this page" },
+    });
+  }
+
+  private redirectToHomePage(returnUrl: string): void {
+    this.router.navigate(['/'], { queryParams: { returnUrl } });
   }
 }

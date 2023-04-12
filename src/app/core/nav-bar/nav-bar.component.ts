@@ -5,7 +5,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IUser } from 'src/app/shared/models/user';
 import { BasketService } from '../services/basket.service';
 import { AccountService } from '../services/account.service';
-import { PERMISSION_KIND, PERMISSION_NAME } from 'src/app/shared/constants/auth';
+import { PERMISSION_LABELS, PERMISSIONS } from 'src/app/shared/constants/auth';
+
 
 @Component({
   selector: 'app-nav-bar',
@@ -42,7 +43,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
         hasAccess = false;
         return hasAccess;
       }
-      if (PERMISSION_KIND[PERMISSION_NAME.PRIVATE_ACCESS].includes(user.role)) {
+      if (PERMISSIONS[PERMISSION_LABELS.PRIVATE_ACCESS].includes(user.role)) {
         hasAccess = true;
         return hasAccess;
       }
