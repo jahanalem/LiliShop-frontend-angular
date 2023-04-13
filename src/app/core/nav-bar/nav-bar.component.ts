@@ -1,6 +1,5 @@
 
-import { IBasket } from './../../shared/models/basket';
-import { Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Observable, Subject, takeUntil } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IUser } from 'src/app/shared/models/user';
 import { BasketService } from '../services/basket.service';
@@ -15,17 +14,25 @@ import { PERMISSION_LABELS, PERMISSIONS } from 'src/app/shared/constants/auth';
 })
 export class NavBarComponent implements OnInit, OnDestroy {
   public isCollapsed = true;
-  basket$: Observable<IBasket | null> = of(null);
-  currentUser$: Observable<IUser | null> = of(null);
-  subscription: Subscription | undefined;
+  basket$ = this.basketService.basket$;
+  private currentUserSource = new BehaviorSubject<IUser | null>(null);
+  public currentUser$ = this.currentUserSource.asObservable();
+  hasAccessToAdminPanel$: Observable<boolean> = this.currentUserSource.pipe(
+    map(user => !!user && PERMISSIONS[PERMISSION_LABELS.PRIVATE_ACCESS].includes(user.role))
+  );
+  private destroy$ = new Subject<void>();
+
   constructor(private basketService: BasketService, private accountService: AccountService) { }
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
-  }
 
   ngOnInit(): void {
-    this.basket$ = this.basketService.basket$;
-    this.currentUser$ = this.accountService.currentUser$;
+    this.accountService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(currentUser => this.currentUserSource.next(currentUser));
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   toggleCollapse() {
@@ -35,21 +42,5 @@ export class NavBarComponent implements OnInit, OnDestroy {
   logout() {
     this.accountService.logout();
   }
-
-  hasAccessToAdminPanel(): boolean {
-    let hasAccess = false;
-    this.subscription = this.currentUser$.subscribe((user: IUser | null) => {
-      if (!user) {
-        hasAccess = false;
-        return hasAccess;
-      }
-      if (PERMISSIONS[PERMISSION_LABELS.PRIVATE_ACCESS].includes(user.role)) {
-        hasAccess = true;
-        return hasAccess;
-      }
-      hasAccess = false;
-      return hasAccess;
-    });
-    return hasAccess;
-  }
 }
+
