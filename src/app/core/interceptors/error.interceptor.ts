@@ -19,28 +19,32 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(error => {
         if (error) {
-          if (error.status === 400) {
-            if (error.error.errors) {
-              throw error.error; // It's for validation error.
-            } else {
+          switch (error.status) {
+            case 400:
+              if (error.error.errors) {
+                throw error.error; // It's for validation error.
+              } else {
+                this.toastr.error(error.error.message, error.error.statusCode);
+              }
+              break;
+            case 401:
               this.toastr.error(error.error.message, error.error.statusCode);
-            }
-          }
-          if (error.status === 401) {
-            this.toastr.error(error.error.message, error.error.statusCode);
-          }
-          if (error.status === 404) {
-            this.router.navigateByUrl('/not-found');
-          }
-          if (error.status === 500) {
-            const navigationExtras: NavigationExtras = { state: { error: error.error } }
-            this.router.navigateByUrl('/server-error', navigationExtras);
-          }
-          if (error.status === 0) {
-            this.toastr.error(error.message, error.statusText);
+              break;
+            case 404:
+              this.router.navigateByUrl('/not-found');
+              break;
+            case 500:
+              const navigationExtras: NavigationExtras = { state: { error: error.error } };
+              this.router.navigateByUrl('/server-error', navigationExtras);
+              break;
+            case 0:
+              this.toastr.error(error.message, error.statusText);
+              break;
+            default:
+              break;
           }
         }
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }
