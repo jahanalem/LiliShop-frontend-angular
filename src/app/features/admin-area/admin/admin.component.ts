@@ -2,46 +2,42 @@ import { AccountService } from 'src/app/core/services/account.service';
 import { Component, ViewChild, OnDestroy } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
-import { delay, filter } from 'rxjs';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { delay, filter, Subject, takeUntil } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
-@UntilDestroy()
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss']
 })
 export default class AdminComponent implements OnDestroy {
-  @ViewChild(MatSidenav) sidenav!: MatSidenav;
+  @ViewChild(MatSidenav, { static: false }) sidenav!: MatSidenav;
+  private destroy$ = new Subject<void>();
+  constructor(private observer: BreakpointObserver,
+    private router: Router,
+    private accountService: AccountService) { }
 
-  constructor(private observer: BreakpointObserver, private router: Router, private accountService: AccountService) { }
   ngOnDestroy(): void {
-    this.observer.ngOnDestroy();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngAfterViewInit() {
     this.observer
       .observe(['(max-width: 800px)'])
-      .pipe(delay(1), untilDestroyed(this))
-      .subscribe((res: any) => {
-        if (res.matches) {
-          this.sidenav.mode = 'over';
-          this.sidenav.close();
-        } else {
-          this.sidenav.mode = 'side';
-          this.sidenav.open();
-        }
+      .pipe(takeUntil(this.destroy$), delay(1))
+      .subscribe((res: { matches: boolean } ) => {
+        this.setSidenav(res.matches);
       });
 
     this.router.events
       .pipe(
-        untilDestroyed(this),
+        takeUntil(this.destroy$),
         filter((e) => e instanceof NavigationEnd)
       )
       .subscribe(() => {
         if (this.sidenav.mode === 'over') {
-          this.sidenav.close();
+          this.setSidenav(false);
         }
       });
   }
@@ -50,4 +46,13 @@ export default class AdminComponent implements OnDestroy {
     this.accountService.logout();
   }
 
+  private setSidenav(matches: boolean) {
+    if (matches) {
+      this.sidenav.mode = 'over';
+      this.sidenav.close();
+    } else {
+      this.sidenav.mode = 'side';
+      this.sidenav.open();
+    }
+  }
 }
