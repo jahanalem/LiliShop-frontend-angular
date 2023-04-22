@@ -10,12 +10,14 @@ import { BasketService } from './core/services/basket.service';
 })
 export class AppComponent implements OnInit, AfterViewInit {
   title = 'LiliShop';
-
+  isTesting = false;
   constructor(private basketService: BasketService, private accountService: AccountService) {
   }
   ngAfterViewInit(): void {
-    this.loadBasket();
-    this.loadCurrentUser();
+    if (!this.isTesting) {
+      this.loadBasket();
+      this.loadCurrentUser();
+    }
   }
 
   ngOnInit() {
@@ -31,8 +33,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private loadCurrentUser() {
+  public loadCurrentUser() {
     const token = localStorage.getItem('token');
+    if (!token) {
+      return;
+    }
     this.accountService.loadCurrentUser(token).subscribe({
       error: (error: any) => { console.log(error); }
     });
