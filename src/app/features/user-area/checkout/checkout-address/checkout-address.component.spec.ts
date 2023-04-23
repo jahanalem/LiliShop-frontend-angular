@@ -1,4 +1,3 @@
-import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators, FormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
@@ -13,27 +12,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
 
-@Component({
-  template: `
-    <app-checkout-address [checkoutForm]="testForm"></app-checkout-address>
-  `
-})
-class TestHostComponent {
-  testForm = new FormGroup({
-    addressForm: new FormGroup({
-      firstName: new FormControl('', Validators.required),
-      lastName: new FormControl('', Validators.required),
-      street: new FormControl('', Validators.required),
-      city: new FormControl('', Validators.required),
-      state: new FormControl('', Validators.required),
-      zipCode: new FormControl('', Validators.required)
-    })
-  });
-}
 
 describe('CheckoutAddressComponent', () => {
-  let testHost: TestHostComponent;
-  let fixture: ComponentFixture<TestHostComponent>;
+  let component: CheckoutAddressComponent;
+  let fixture: ComponentFixture<CheckoutAddressComponent>;
   let mockAccountService: jasmine.SpyObj<AccountService>;
 
   beforeEach(() => {
@@ -50,19 +32,29 @@ describe('CheckoutAddressComponent', () => {
         MatInputModule,
         MatFormFieldModule
       ],
-      declarations: [CheckoutAddressComponent, TestHostComponent, TextInputComponent],
+      declarations: [CheckoutAddressComponent, TextInputComponent],
       providers: [
         { provide: AccountService, useValue: mockAccountService }
       ]
     });
 
-    fixture = TestBed.createComponent(TestHostComponent);
-    testHost = fixture.componentInstance;
+    fixture = TestBed.createComponent(CheckoutAddressComponent);
+    component = fixture.componentInstance;
+    component.checkoutForm = new FormGroup({
+      addressForm: new FormGroup({
+        firstName: new FormControl('', Validators.required),
+        lastName: new FormControl('', Validators.required),
+        street: new FormControl('', Validators.required),
+        city: new FormControl('', Validators.required),
+        state: new FormControl('', Validators.required),
+        zipCode: new FormControl('', Validators.required)
+      })
+    });
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(testHost).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 
   it('should save user address on success', () => {
@@ -85,7 +77,7 @@ describe('CheckoutAddressComponent', () => {
   it('should show error message on updateAddress error', () => {
     const testError = { message: 'Error updating address.' };
     const component = fixture.debugElement.children[0].componentInstance as CheckoutAddressComponent;
-    mockAccountService.updateAddress.and.returnValue(throwError(testError));
+    mockAccountService.updateAddress.and.returnValue(throwError(() => testError));
 
     component.saveUserAddress();
 
