@@ -28,16 +28,16 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
      It's a JavaScript library and we are in the murky world of pure JavaScript and goodbye type safety, in other words.
   */
 
-  stripe!    : Stripe;
+  stripe!: Stripe;
   cardNumber!: StripeCardNumberElement;
   cardExpiry!: StripeCardExpiryElement;
-  cardCvc!   : StripeCardCvcElement;
-  cardErrors : any;
-  cardHandler     = this.onChange.bind(this);
+  cardCvc!: StripeCardCvcElement;
+  cardErrors: any;
+  cardHandler = this.onChange.bind(this);
   cardNumberValid = false;
   cardExpiryValid = false;
-  cardCvcValid    = false;
-  loading         = false;
+  cardCvcValid = false;
+  loading = false;
 
   constructor(
     private basketService: BasketService,
@@ -45,11 +45,22 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
     private toastr: ToastrService,
     private router: Router) { }
 
-  ngOnDestroy(): void {
-    this.cardNumber.destroy();
-    this.cardExpiry.destroy();
-    this.cardCvc.destroy();
-  }
+    ngOnDestroy(): void {
+      try {
+        if (this.cardNumber) {
+          this.cardNumber.destroy();
+        }
+        if (this.cardExpiry) {
+          this.cardExpiry.destroy();
+        }
+        if (this.cardCvc) {
+          this.cardCvc.destroy();
+        }
+      } catch (error) {
+        console.error('Error during component cleanup:', error);
+      }
+    }
+
 
   ngAfterViewInit(): void {
     this.stripe = getStripeInstance('pk_test_51Lz52AF9mJP0HDJlqVT7v9BgFVtpfr5opjM1vm376whHSJx1SkoPvVKC1KtPhM4xVwIe1fcd3jjl2wJ25ekymjsR00JKVfDqJi');
@@ -115,7 +126,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  private async createOrder(basket: IBasket): Promise<IOrder> {
+  public async createOrder(basket: IBasket): Promise<IOrder> {
     try {
       const orderToCreate = this.getOrderToCreate(basket);
       return await lastValueFrom(this.checkoutService.createOrder(orderToCreate));
