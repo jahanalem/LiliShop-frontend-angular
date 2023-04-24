@@ -42,24 +42,24 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   constructor(
     private basketService: BasketService,
     private checkoutService: CheckoutService,
-    private toastr: ToastrService,
+    public toastr: ToastrService,
     private router: Router) { }
 
-    ngOnDestroy(): void {
-      try {
-        if (this.cardNumber) {
-          this.cardNumber.destroy();
-        }
-        if (this.cardExpiry) {
-          this.cardExpiry.destroy();
-        }
-        if (this.cardCvc) {
-          this.cardCvc.destroy();
-        }
-      } catch (error) {
-        console.error('Error during component cleanup:', error);
+  ngOnDestroy(): void {
+    try {
+      if (this.cardNumber) {
+        this.cardNumber.destroy();
       }
+      if (this.cardExpiry) {
+        this.cardExpiry.destroy();
+      }
+      if (this.cardCvc) {
+        this.cardCvc.destroy();
+      }
+    } catch (error) {
+      console.error('Error during component cleanup:', error);
     }
+  }
 
 
   ngAfterViewInit(): void {
@@ -112,9 +112,11 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private async confirmPaymentWithStripe(basket: IBasket): Promise<PaymentIntentResult> {
+  public async confirmPaymentWithStripe(basket: IBasket): Promise<PaymentIntentResult> {
     if (!basket.clientSecret) {
-      throw new Error('Client secret is missing');
+      const errorMsg = 'Client secret is missing';
+      this.toastr.error(errorMsg);
+      throw new Error(errorMsg);
     }
     return this.stripe.confirmCardPayment(basket.clientSecret, {
       payment_method: {

@@ -122,6 +122,76 @@ describe('CheckoutPaymentComponent', () => {
     expect(mockCheckoutService.createOrder).toHaveBeenCalled();
     expect(component.stripe.confirmCardPayment).toHaveBeenCalled();
   });
+
+  // it('should create and mount Stripe elements after view initialization', () => {
+  //   const fakeStripeElement = {
+  //     mount: jasmine.createSpy('mount'),
+  //     on: jasmine.createSpy('on'),
+  //     once: jasmine.createSpy('once'),
+  //     off: jasmine.createSpy('off'),
+  //     update: jasmine.createSpy('update'),
+  //     blur: jasmine.createSpy('blur'),
+  //     clear: jasmine.createSpy('clear'),
+  //     destroy: jasmine.createSpy('destroy'),
+  //     focus: jasmine.createSpy('focus'),
+  //     unmount: jasmine.createSpy('unmount'),
+  //   };
+
+  //   const mockElements = component.stripe.elements();
+  //   spyOn(mockElements, 'create').and.returnValue(fakeStripeElement);
+  //   spyOn(component.stripe, 'elements').and.returnValue(mockElements);
+
+  //   component.ngAfterViewInit();
+
+  //   expect(mockElements.create).toHaveBeenCalledTimes(3);
+  //   expect(mockElements.create).toHaveBeenCalledWith('cardNumber' as any, jasmine.any(Object));
+  //   expect(mockElements.create).toHaveBeenCalledWith('cardExpiry' as any, jasmine.any(Object));
+  //   expect(mockElements.create).toHaveBeenCalledWith('cardCvc' as any, jasmine.any(Object));
+  //   expect(component.cardNumber).toBeDefined();
+  //   expect(component.cardExpiry).toBeDefined();
+  //   expect(component.cardCvc).toBeDefined();
+  // });
+
+  it('should show an error when the card is invalid', () => {
+    const cardError = { error: { message: 'Invalid card' }, elementType: 'cardNumber', complete: false };
+    component.onChange(cardError);
+
+    expect(component.cardErrors).toEqual('Invalid card');
+    expect(component.cardNumberValid).toBe(false);
+  });
+
+  it('should not execute submitOrder() when there is no basket value', async () => {
+    mockBasketService.getCurrentBasketValue.and.returnValue(null);
+    spyOn(component, 'createOrder');
+    spyOn(component, 'confirmPaymentWithStripe');
+
+    await component.submitOrder();
+
+    expect(component.createOrder).not.toHaveBeenCalled();
+    expect(component.confirmPaymentWithStripe).not.toHaveBeenCalled();
+  });
+
+  it('should display an error message when the client secret is missing', async () => {
+    const mockBasket: IBasket = {
+      id: 'testBasketId',
+      items: [],
+      clientSecret: undefined,
+    };
+    mockBasketService.getCurrentBasketValue.and.returnValue(mockBasket);
+    spyOn(component.toastr, 'error');
+
+    try {
+      await component.confirmPaymentWithStripe(mockBasket);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        expect(error.message).toEqual('Client secret is missing');
+        expect(component.toastr.error).toHaveBeenCalledWith('Client secret is missing');
+      } else {
+        console.log(`Unknown error occurred: ${error}`);
+      }
+    }
+  });
+
 });
 
 @Component({ template: '' })
