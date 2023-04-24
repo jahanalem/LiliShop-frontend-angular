@@ -18,10 +18,10 @@ describe('CheckoutAddressComponent', () => {
   let fixture: ComponentFixture<CheckoutAddressComponent>;
   let mockAccountService: jasmine.SpyObj<AccountService>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockAccountService = jasmine.createSpyObj('AccountService', ['updateAddress']);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -36,8 +36,10 @@ describe('CheckoutAddressComponent', () => {
       providers: [
         { provide: AccountService, useValue: mockAccountService }
       ]
-    });
+    }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(CheckoutAddressComponent);
     component = fixture.componentInstance;
     component.checkoutForm = new FormGroup({
@@ -52,6 +54,7 @@ describe('CheckoutAddressComponent', () => {
     });
     fixture.detectChanges();
   });
+
 
   it('should create', () => {
     expect(component).toBeTruthy();

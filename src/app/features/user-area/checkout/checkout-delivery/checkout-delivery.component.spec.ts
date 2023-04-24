@@ -15,7 +15,7 @@ describe('CheckoutDeliveryComponent', () => {
   let mockCheckoutService: jasmine.SpyObj<CheckoutService>;
   let mockBasketService: jasmine.SpyObj<BasketService>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockCheckoutService = jasmine.createSpyObj('CheckoutService', ['getDeliveryMethods']);
     mockBasketService = jasmine.createSpyObj('BasketService', ['setShippingPrice']);
 
@@ -25,7 +25,7 @@ describe('CheckoutDeliveryComponent', () => {
     ];
     mockCheckoutService.getDeliveryMethods.and.returnValue(of(testDeliveryMethods));
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -37,8 +37,10 @@ describe('CheckoutDeliveryComponent', () => {
         { provide: CheckoutService, useValue: mockCheckoutService },
         { provide: BasketService, useValue: mockBasketService }
       ]
-    });
+    }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(CheckoutDeliveryComponent);
     component = fixture.componentInstance;
     component.checkoutForm = new FormGroup({
