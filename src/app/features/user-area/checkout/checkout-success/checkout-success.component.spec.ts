@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -12,7 +12,7 @@ describe('CheckoutSuccessComponent', () => {
   let mockAccountService: jasmine.SpyObj<AccountService>;
   let mockRouter: jasmine.SpyObj<Router>;
 
-  beforeEach(() => {
+  beforeEach(waitForAsync(() => {
     mockAccountService = jasmine.createSpyObj('AccountService', [], { currentUser$: of<IUser | null>(null) });
     mockRouter = jasmine.createSpyObj('Router', ['getCurrentNavigation']);
 
@@ -22,10 +22,13 @@ describe('CheckoutSuccessComponent', () => {
         { provide: AccountService, useValue: mockAccountService },
         { provide: Router, useValue: mockRouter }
       ]
-    });
+    }).compileComponents();
+  }));
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(CheckoutSuccessComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
