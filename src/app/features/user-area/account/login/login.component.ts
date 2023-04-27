@@ -35,8 +35,11 @@ export class LoginComponent implements OnInit {
     });
   }
 
-
   onSubmit() {
+    if (this.loginForm.invalid) {
+      return
+    }
+
     this.accountService.login(this.loginForm.value)
       .subscribe({
         next: (user: IUser | null) => {
