@@ -1,7 +1,7 @@
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { switchMap, timer, map, of } from 'rxjs';
+import { switchMap, timer, map, of, catchError, throwError } from 'rxjs';
 import { pattern } from 'src/app/shared/constants/patterns';
 import { errorType } from 'src/app/shared/constants/error-types';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -43,12 +43,20 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    this.accountService.register(this.registerForm.value).subscribe(() => {
-      this.router.navigateByUrl('/shop');
-    }, error => {
-      console.log(error);
-      this.errors = error.errors;
-    })
+    this.accountService
+      .register(this.registerForm.value)
+      .pipe(
+        catchError((error) => {
+          this.errors = error.errors;
+          return throwError(error);
+        })
+      )
+      .subscribe(
+        (_response) => {
+          this.router.navigateByUrl('/shop');
+        },
+        (error) => {console.log(error); }
+      );
   }
 
   validateEmailNotTaken(): AsyncValidatorFn {
