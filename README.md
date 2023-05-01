@@ -9,7 +9,7 @@ In addition, there is a breadcrumb navigation bar at the top of the page, and us
 ## Serverside:
 https://github.com/jahanalem/LiliShop-backend-dotnet
 
-tech stack: .NET 6, C#, Postgresql, Redis, and Entity Framework as an ORM
+tech stack: .NET 7, C#, Postgresql, Redis, and Entity Framework as an ORM
 
 Redis is utilized to keep the customer's shopping cart in server memory. This is a memory-based data repository. Its primary function in the world is typically for caching. It operates on a key-value pair data structure and is extremely quick and persistent in memory.
 
