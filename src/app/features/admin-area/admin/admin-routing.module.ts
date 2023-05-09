@@ -15,7 +15,7 @@ const routes: Routes = [
     data: { access: PERMISSIONS[PERMISSION_LABELS.PRIVATE_ACCESS] },
     children: [
       { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) },
-      { path: 'brand', loadChildren: () => import('./brand/brand.module').then(m => m.BrandModule) },
+      { path: 'brands', loadChildren: () => import('./brands/brands.module').then(m => m.BrandsModule) },
     ]
   }
 ]
