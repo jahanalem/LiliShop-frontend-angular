@@ -5,9 +5,7 @@ import { BrandsComponent } from './brands.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { SharedModule } from 'src/app/shared/shared.module';
-
-
-
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -18,6 +16,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
     BrandsRoutingModule,
     MatTableModule,
     MatIconModule,
+    MatPaginatorModule,
     SharedModule
   ]
 })

@@ -37,11 +37,11 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   totalCount: number = 0;
   isLoadingResults = true;
 
-  constructor(private _shopService: ShopService, private router: Router) {
-    this._shopService.setShopParams(new ShopParams());
-    this.shopParams = this._shopService.getShopParams();
+  constructor(private shopService: ShopService, private router: Router) {
+    this.shopService.setShopParams(new ShopParams());
+    this.shopParams = this.shopService.getShopParams();
   }
-  
+
   ngOnInit(): void {
   }
 
@@ -69,12 +69,12 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   getProducts(useCache = false, isActive?: boolean): void {
-    this._shopService.getProducts(useCache, isActive).subscribe(response => {
+    this.shopService.getProducts(useCache, isActive).subscribe(response => {
       if (response) {
         this.products = response.data;
         this.totalCount = response.count;
         this.dataSource = (this.products);
-        this.paginator = this.paginator;
+        //this.paginator = this.paginator;
         this.sort = this.sort;
       }
     }, error => {

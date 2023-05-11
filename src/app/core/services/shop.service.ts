@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, of, tap } from 'rxjs';
 import { IBrand } from 'src/app/shared/models/brand';
-import { IPagination, Pagination } from 'src/app/shared/models/pagination';
+import { IProductPagination, ProductPagination } from 'src/app/shared/models/pagination';
 import { IProduct } from 'src/app/shared/models/product';
 import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { IType } from 'src/app/shared/models/productType';
@@ -19,13 +19,13 @@ export class ShopService {
   brands: IBrand[] = [];
   types: IType[] = [];
   sizes: ISizeClassification[] = [];
-  pagination: Pagination = new Pagination();
+  pagination: ProductPagination = new ProductPagination();
   shopParams: ShopParams = new ShopParams();
   productCache: Map<any, any> = new Map();
 
   constructor(private http: HttpClient) { }
 
-  getProducts(useCache: boolean, isActive?: boolean): Observable<Pagination> {
+  getProducts(useCache: boolean, isActive?: boolean): Observable<ProductPagination> {
     if (!useCache) {
       this.productCache.clear();
     }
@@ -59,11 +59,11 @@ export class ShopService {
       }
     });
 
-    return this.http.get<Pagination>(`${this.baseUrl}products`, { observe: 'response', params })
+    return this.http.get<ProductPagination>(`${this.baseUrl}products`, { observe: 'response', params })
       .pipe(
         map(response => {
           this.productCache.set(key, response.body?.data);
-          this.pagination = response.body ?? ({} as IPagination);
+          this.pagination = response.body ?? ({} as IProductPagination);
           return this.pagination;
         })
       );
