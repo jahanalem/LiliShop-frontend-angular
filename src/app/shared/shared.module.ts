@@ -18,6 +18,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { PhotoEditorComponent } from './components/photo-editor/photo-editor.component';
 import { FileUploadModule } from 'ng2-file-upload';
 import { FormatValuePipe } from './pipes/format-value.pipe';
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
+import { MatIconModule } from '@angular/material/icon';
 
 const components = [
   PagingHeaderComponent,
@@ -29,6 +31,7 @@ const components = [
   TextTextareaComponent,
   DialogComponent,
   PhotoEditorComponent,
+  ConfirmationDialogComponent
 ]
 @NgModule({
   declarations: [
@@ -46,6 +49,7 @@ const components = [
     RouterModule,
     MatDialogModule,
     FileUploadModule,
+    MatIconModule,
   ],
   exports: [
     PaginationModule,

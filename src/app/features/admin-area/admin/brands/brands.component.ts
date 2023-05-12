@@ -1,10 +1,13 @@
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { BrandService } from 'src/app/core/services/brand.service';
+import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
 import { BrandParams } from 'src/app/shared/models/BrandParams';
 import { IBrand } from 'src/app/shared/models/brand';
+import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
 
 @Component({
   selector: 'app-brands',
@@ -20,7 +23,9 @@ export class BrandsComponent implements OnInit, AfterViewInit {
 
   private unsubscribe$ = new Subject<void>();
 
-  constructor(private brandService: BrandService, private router: Router) {
+  constructor(private brandService: BrandService,
+    private router: Router,
+    private dialog: MatDialog) {
   }
 
   ngOnDestroy() {
@@ -45,6 +50,25 @@ export class BrandsComponent implements OnInit, AfterViewInit {
     this.brandService.getBrands(this.brandParams).subscribe((response) => {
       this.brands = response.data;
       this.totalCount = response.count;
+    });
+  }
+
+  deleteBrand(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.brandService.deleteBrand(id).subscribe((response: DeleteResponse) => {
+          if (response.success) {
+            // Handle successful deletion
+            this.brands = this.brands.filter(c => c.id !== id);
+            --this.totalCount;
+            console.log(response.message);
+          } else {
+            // Handle failure
+            console.error(response.message);
+          }
+        });
+      }
     });
   }
 
