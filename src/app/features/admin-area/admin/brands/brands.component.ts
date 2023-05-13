@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
@@ -25,7 +25,9 @@ export class BrandsComponent implements OnInit, AfterViewInit {
 
   constructor(private brandService: BrandService,
     private router: Router,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+    private changeDetectorRef: ChangeDetectorRef
+    ) {
   }
 
   ngOnDestroy() {
@@ -50,6 +52,7 @@ export class BrandsComponent implements OnInit, AfterViewInit {
     this.brandService.getBrands(this.brandParams).subscribe((response) => {
       this.brands = response.data;
       this.totalCount = response.count;
+      this.changeDetectorRef.detectChanges();
     });
   }
 
@@ -62,6 +65,7 @@ export class BrandsComponent implements OnInit, AfterViewInit {
             // Handle successful deletion
             this.brands = this.brands.filter(c => c.id !== id);
             --this.totalCount;
+            this.changeDetectorRef.detectChanges();
             console.log(response.message);
           } else {
             // Handle failure

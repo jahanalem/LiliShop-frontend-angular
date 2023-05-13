@@ -5,7 +5,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { ShopParams } from 'src/app/shared/models/shopParams';
 import { of } from 'rxjs';
-import { Pagination } from 'src/app/shared/models/pagination';
+import { IProductPagination } from 'src/app/shared/models/pagination';
 
 describe('ShopComponent', () => {
   let component: ShopComponent;
@@ -61,9 +61,9 @@ describe('ShopComponent', () => {
   });
 
   it('should call shopService.getProducts() when getProducts() is called', () => {
-    const dummyPagination: Pagination = {
+    const dummyPagination: IProductPagination = {
       pageIndex: 1,
-      pageSize: 6,
+      pageSize: 5,
       count: 0,
       data: []
     };
