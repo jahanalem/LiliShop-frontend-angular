@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { BrandsComponent } from './brands.component';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -78,7 +78,7 @@ describe('BrandsComponent', () => {
 
   it('should load data when initialized', fakeAsync( () => {
     component.ngAfterViewInit();
-    tick();
+
     fixture.detectChanges();
 
     expect(component.brands.length).toBe(mockBrands.length);
@@ -90,7 +90,7 @@ describe('BrandsComponent', () => {
     const initialCount = component.brands.length;
 
     component.deleteBrand(brandId);
-    tick();
+
     fixture.detectChanges();
 
     expect(component.brands.length).toBe(initialCount - 1);
