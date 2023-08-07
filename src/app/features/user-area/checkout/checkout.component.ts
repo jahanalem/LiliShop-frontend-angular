@@ -1,7 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of, tap } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { IAddress } from 'src/app/shared/models/address';
@@ -48,13 +48,23 @@ export class CheckoutComponent implements OnInit {
   }
 
   getAddressFormValues() {
-    this.accountService.getUserAddress().subscribe((address: IAddress) => {
-      if (address) {
-        this.checkoutForm.get('addressForm')?.patchValue(address);
-      }
-    }, error => {
-      console.log(error);
-    });
+    const addressForm = this.checkoutForm.get('addressForm');
+    if (!addressForm) {
+      console.warn('Address form group is missing!');
+      return;
+    }
+
+    this.accountService.getUserAddress().pipe(
+      tap((address: IAddress) => {
+        if (address) {
+          addressForm.patchValue(address);
+        }
+      }),
+      catchError((error: any) => {
+        console.error(error);
+        return of(); // This will ensure the observable stream is not broken due to an error.(Swallow the error and continue the observable stream)
+      })
+    ).subscribe();
   }
 
   getDeliveryMethodValue() {

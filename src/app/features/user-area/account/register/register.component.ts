@@ -1,7 +1,7 @@
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { switchMap, timer, map, of, catchError, throwError } from 'rxjs';
+import { switchMap, timer, map, of, catchError, tap, EMPTY, Observable, filter } from 'rxjs';
 import { pattern } from 'src/app/shared/constants/patterns';
 import { errorType } from 'src/app/shared/constants/error-types';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -20,6 +20,7 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {
     this.createRegisterForm();
   }
+
 
   createRegisterForm() {
     this.registerForm = this.fb.group(
@@ -42,39 +43,37 @@ export class RegisterComponent implements OnInit {
     );
   }
 
+
   onSubmit() {
-    this.accountService
-      .register(this.registerForm.value)
+    this.accountService.register(this.registerForm.value)
       .pipe(
+        tap(() => {
+          this.router.navigateByUrl('/shop');
+        }),
         catchError((error) => {
           this.errors = error.errors;
-          return throwError(error);
+          console.error(error);
+          return EMPTY; // Use EMPTY, which is an observable that does nothing (doesn't emit values) and completes immediately.
         })
       )
-      .subscribe(
-        (_response) => {
-          this.router.navigateByUrl('/shop');
-        },
-        (error) => {console.log(error); }
-      );
+      .subscribe();
   }
 
+
   validateEmailNotTaken(): AsyncValidatorFn {
-    return (control: AbstractControl) => {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (!control.value) {
+        return of(null);
+      }
+
       return timer(500).pipe(
-        switchMap(() => {
-          if (!control.value) {
-            return of(null);
-          }
-          return this.accountService.checkEmailExists(control.value).pipe(
-            map(res => {
-              return res ? { [errorType.EMAIL_EXISTS]: true } : null;
-            })
-          );
-        })
-      )
+        filter(() => !!control.value),
+        switchMap(() => this.accountService.checkEmailExists(control.value)),
+        map(res => res ? { [errorType.EMAIL_EXISTS]: true } : null)
+      );
     }
   }
+
 
   matchPasswordValidator(matchTo: string, reverse?: boolean): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
