@@ -3,7 +3,7 @@ import { ShopComponent } from './shop.component';
 import { ShopService } from 'src/app/core/services/shop.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
-import { ShopParams } from 'src/app/shared/models/shopParams';
+import { ShopParams } from 'src/app/shared/models/productQueryParams';
 import { of } from 'rxjs';
 import { IProductPagination } from 'src/app/shared/models/pagination';
 

@@ -1,9 +1,8 @@
-import { ShopService } from 'src/app/core/services/shop.service';
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { IProduct } from 'src/app/shared/models/product';
-import { ShopParams } from 'src/app/shared/models/shopParams';
+import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { merge } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProductService } from 'src/app/core/services/product.service';
@@ -13,7 +12,6 @@ export declare interface IPageEvent {
   pageIndex: number;
   /**
    * Index of the page that was selected previously.
-   * @breaking-change 8.0.0 To be made into a required property.
    */
   previousPageIndex?: number;
   /** The current page size. */
@@ -34,13 +32,13 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   columnsToDisplay: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'Action'];
   public dataSource!: IProduct[];
   products: IProduct[] = [];
-  shopParams: ShopParams;
+  shopParams: ProductQueryParams;
   totalCount: number = 0;
   isLoadingResults = true;
 
-  constructor(private shopService: ShopService, private productService: ProductService, private router: Router) {
-    this.shopService.setShopParams(new ShopParams());
-    this.shopParams = this.shopService.getShopParams();
+  constructor(private productService: ProductService, private router: Router) {
+    this.productService.setShopParams(new ProductQueryParams());
+    this.shopParams = this.productService.getShopParams();
   }
 
   ngOnInit(): void {
@@ -64,7 +62,6 @@ export class ProductsComponent implements OnInit, AfterViewInit {
           this.shopParams.sort = this.sort.active;
           this.shopParams.sortDirection = this.sort.direction;
         }
-
         this.getProducts(false);
       });
   }
@@ -75,7 +72,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
         this.products = response.data;
         this.totalCount = response.count;
         this.dataSource = (this.products);
-        //this.paginator = this.paginator;
+        this.paginator = this.paginator;
         this.sort = this.sort;
       }
     }, error => {

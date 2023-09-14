@@ -6,7 +6,7 @@ import { IProductPagination, ProductPagination } from 'src/app/shared/models/pag
 import { IProduct } from 'src/app/shared/models/product';
 import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { IType } from 'src/app/shared/models/productType';
-import { ShopParams } from 'src/app/shared/models/shopParams';
+import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -18,11 +18,18 @@ export class ProductService {
   types: IType[] = [];
   sizes: ISizeClassification[] = [];
   productCache: Map<any, any> = new Map();
-  shopParams: ShopParams = new ShopParams();
+  shopParams: ProductQueryParams = new ProductQueryParams();
   pagination: ProductPagination = new ProductPagination();
 
   constructor(private http: HttpClient) { }
 
+  setShopParams(params: ProductQueryParams): void {
+    this.shopParams = params;
+  }
+
+  getShopParams(): ProductQueryParams {
+    return this.shopParams;
+  }
 
   getProduct(id: number): Observable<IProduct> {
     const product = this.findProductInCache(id);
@@ -50,7 +57,7 @@ export class ProductService {
       params = params.append('isActive', isActive.toString());
     }
 
-    const paramMappings: [keyof ShopParams, string][] = [
+    const paramMappings: [keyof ProductQueryParams, string][] = [
       ['brandId', 'brandId'],
       ['typeId', 'typeId'],
       ['sizeId', 'sizeId'],
@@ -101,7 +108,7 @@ export class ProductService {
   deletePhoto(photoId: number) {
     return this.http.delete(`${this.baseUrl}products/delete-photo/${photoId}`);
   }
-  
+
   private fetchData<T>(cache: T[], endpoint: string, isActive: boolean | null = null): Observable<T[]> {
     if (cache.length > 0) {
       return of(cache);

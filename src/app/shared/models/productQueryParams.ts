@@ -1,6 +1,6 @@
 import { IPaginationParams, ISearchParams, ISortParams } from "./queryParams";
 
-export class ShopParams implements ISortParams, IPaginationParams, ISearchParams {
+export class ProductQueryParams implements ISortParams, IPaginationParams, ISearchParams {
   brandId      : number = 0;
   typeId       : number = 0;
   sizeId       : number = 0;
@@ -10,6 +10,6 @@ export class ShopParams implements ISortParams, IPaginationParams, ISearchParams
 
   pageNumber   : number = 1;
   pageSize     : number = 6;
-  
+
   search       : string = '';
 }
