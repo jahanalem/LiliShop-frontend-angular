@@ -15,9 +15,11 @@ export class CheckoutAddressComponent implements OnInit, OnDestroy {
   private subscription!: Subscription;
 
   constructor(private accountService: AccountService, private toastr: ToastrService) { }
-  
+
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   ngOnInit(): void {

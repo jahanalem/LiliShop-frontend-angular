@@ -2,12 +2,12 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '
 import { EMPTY, Observable, catchError, switchMap, tap } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
-import { ShopService } from './../../../../../core/services/shop.service';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterContentChecked, ChangeDetectionStrategy } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IType } from 'src/app/shared/models/productType';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ThemePalette } from '@angular/material/core';
+import { ProductService } from 'src/app/core/services/product.service';
 
 @Component({
   selector: 'app-edit-product',
@@ -26,7 +26,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   productCharacteristics: IProductCharacteristic[] = [];
   protected colorCheckbox: ThemePalette;
 
-  constructor(private shopService: ShopService,
+  constructor(private productService: ProductService,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private cdr: ChangeDetectorRef) {
@@ -58,7 +58,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     delete updatedProduct['productType'];
     delete updatedProduct['productBrand'];
 
-    this.shopService.updateProduct(updatedProduct).subscribe((p) => {
+    this.productService.updateProduct(updatedProduct).subscribe((p) => {
       console.log(p);
     });
   }
@@ -112,7 +112,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     this.activatedRoute.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const id = params.get('id');
-        return id ? this.shopService.getProduct(+id) : EMPTY;
+        return id ? this.productService.getProduct(+id) : EMPTY;
       }),
       tap((prod) => {
         this.product = prod;
@@ -130,14 +130,14 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   }
 
   getBrands(): void {
-    this.fetchData(() => this.shopService.getBrands(true), (response) => { this.brands = [...response]; });
+    this.fetchData(() => this.productService.getBrands(true), (response) => { this.brands = [...response]; });
   }
 
   getTypes(): void {
-    this.fetchData(() => this.shopService.getTypes(true), (response) => { this.types = [...response]; });
+    this.fetchData(() => this.productService.getTypes(true), (response) => { this.types = [...response]; });
   }
   getSizes(): void {
-    this.fetchData(() => this.shopService.getSizes(true), (response) => { this.sizes = [...response]; });
+    this.fetchData(() => this.productService.getSizes(true), (response) => { this.sizes = [...response]; });
   }
 
 

@@ -3,8 +3,8 @@ import { IProduct } from 'src/app/shared/models/product';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { BreadcrumbService } from 'xng-breadcrumb';
-import { ShopService } from 'src/app/core/services/shop.service';
 import { BasketService } from 'src/app/core/services/basket.service';
+import { ProductService } from 'src/app/core/services/product.service';
 
 
 @Component({
@@ -16,10 +16,10 @@ export class ProductDetailsComponent implements OnInit {
   product!: IProduct;
   quantity: number = 1;
 
-  constructor(private shopService: ShopService,
-    private activatedRoute: ActivatedRoute,
+  constructor(private activatedRoute: ActivatedRoute,
     private bcService: BreadcrumbService,
-    private basketService: BasketService) {
+    private basketService: BasketService,
+    private productService: ProductService) {
 
     this.bcService.set('@productDetails', ' ');
   }
@@ -53,7 +53,7 @@ export class ProductDetailsComponent implements OnInit {
     this.activatedRoute.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const id = params.get('id'); // === this.activatedRoute.snapshot.paramMap.get('id')
-        return id ? this.shopService.getProduct(+id) : of();
+        return id ? this.productService.getProduct(+id) : of();
       })
     ).subscribe(product => {
       this.product = product;

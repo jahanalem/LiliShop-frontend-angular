@@ -6,6 +6,7 @@ import { IProduct } from 'src/app/shared/models/product';
 import { ShopParams } from 'src/app/shared/models/shopParams';
 import { merge } from 'rxjs';
 import { Router } from '@angular/router';
+import { ProductService } from 'src/app/core/services/product.service';
 
 export declare interface IPageEvent {
   /** The current page index. */
@@ -37,7 +38,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   totalCount: number = 0;
   isLoadingResults = true;
 
-  constructor(private shopService: ShopService, private router: Router) {
+  constructor(private shopService: ShopService, private productService: ProductService, private router: Router) {
     this.shopService.setShopParams(new ShopParams());
     this.shopParams = this.shopService.getShopParams();
   }
@@ -69,7 +70,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   getProducts(useCache = false, isActive?: boolean): void {
-    this.shopService.getProducts(useCache, isActive).subscribe(response => {
+    this.productService.getProducts(useCache, isActive).subscribe(response => {
       if (response) {
         this.products = response.data;
         this.totalCount = response.count;
@@ -100,7 +101,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     window.open(`/shop/${id}`, "_blank");
   }
 
-  deleteProduct(){
+  deleteProduct() {
 
   }
 }

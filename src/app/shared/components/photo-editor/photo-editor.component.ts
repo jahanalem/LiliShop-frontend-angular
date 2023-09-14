@@ -1,4 +1,3 @@
-import { ShopService } from 'src/app/core/services/shop.service';
 import { AccountService } from './../../../core/services/account.service';
 import { environment } from './../../../../environments/environment';
 import { FileUploader } from 'ng2-file-upload';
@@ -8,6 +7,7 @@ import { IUser } from '../../models/user';
 import { take } from 'rxjs';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IProductPhoto } from '../../models/productPhoto';
+import { ProductService } from 'src/app/core/services/product.service';
 
 @Component({
   selector: 'app-photo-editor',
@@ -32,7 +32,7 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
   onChange = (_photo: IProductPhoto[]) => { };
   onTouched = () => { };
 
-  constructor(private accountService: AccountService, private shopService: ShopService) {
+  constructor(private accountService: AccountService, private productService: ProductService) {
     this.accountService.currentUser$.pipe(take(1)).subscribe({
       next: user => {
         if (user) {
@@ -90,7 +90,7 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
   }
 
   setMainPhoto(productPhoto: IProductPhoto) {
-    this.shopService.setMainPhoto(productPhoto.id).subscribe({
+    this.productService.setMainPhoto(productPhoto.id).subscribe({
       next: () => {
         if (this.product) {
           this.product.pictureUrl = productPhoto.url;
@@ -108,7 +108,7 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
   }
 
   deletePhoto(photoId: number) {
-    this.shopService.deletePhoto(photoId).subscribe({
+    this.productService.deletePhoto(photoId).subscribe({
       next: _ => {
         if (this.product) {
           this.product.productPhotos = this.product.productPhotos.filter(p => p.id !== photoId);

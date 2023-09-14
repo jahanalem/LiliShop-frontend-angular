@@ -1,6 +1,7 @@
 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ProductService } from 'src/app/core/services/product.service';
 import { ShopService } from 'src/app/core/services/shop.service';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProduct } from 'src/app/shared/models/product';
@@ -30,7 +31,7 @@ export class ShopComponent implements OnInit {
     { name: 'Price: High to low', value: 'priceDesc' },
   ]
 
-  constructor(private shopService: ShopService) {
+  constructor(private shopService: ShopService, private productService: ProductService) {
     this.shopParams = this.shopService.getShopParams();
   }
 
@@ -40,7 +41,7 @@ export class ShopComponent implements OnInit {
   }
 
   getProducts(useCache = false, isActive?: boolean): void {
-    this.shopService.getProducts(useCache, isActive).subscribe({
+    this.productService.getProducts(useCache, isActive).subscribe({
       next: (response) => {
         if (response) {
           this.products = response.data;
@@ -52,15 +53,15 @@ export class ShopComponent implements OnInit {
   }
 
   getFilters(): void {
-    this.getData(this.shopService.getBrands(true), (response) => {
+    this.getData(this.productService.getBrands(true), (response) => {
       this.brands = [{ id: 0, name: 'All' }, ...response];
     });
 
-    this.getData(this.shopService.getTypes(true), (response) => {
+    this.getData(this.productService.getTypes(true), (response) => {
       this.types = [{ id: 0, name: 'All' }, ...response];
     });
 
-    this.getData(this.shopService.getSizes(true), (response) => {
+    this.getData(this.productService.getSizes(true), (response) => {
       this.sizes = [{ id: 0, size: 'All', isActive: false }, ...response];
     });
   }
