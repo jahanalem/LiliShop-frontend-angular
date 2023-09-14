@@ -93,6 +93,14 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   editProduct(id: number) {
-    this.router.navigateByUrl("/admin/products/edit/" + id);
+    this.router.navigateByUrl(`/admin/products/edit/${id}`);
+  }
+
+  showProduct(id: number) {
+    window.open(`/shop/${id}`, "_blank");
+  }
+
+  deleteProduct(){
+
   }
 }

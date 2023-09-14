@@ -1,5 +1,5 @@
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EMPTY, Observable, switchMap } from 'rxjs';
+import { EMPTY, Observable, catchError, switchMap, tap } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
 import { ShopService } from './../../../../../core/services/shop.service';
@@ -94,7 +94,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   }
 
   getProductFormValues(): void {
-    // if we refresh the page, we dont'n access to the product object and then we cannot get id from it.
+    // if we refresh the page, we don't have access to the product object and then we cannot get id from it.
     // Therefore we need to get id from activatedRoute.
 
     this.product ??= JSON.parse(localStorage.getItem(this.getProductKeyFromLocalStorage()) || 'null') as IProduct;
@@ -113,15 +113,20 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
       switchMap((params: ParamMap) => {
         const id = params.get('id');
         return id ? this.shopService.getProduct(+id) : EMPTY;
-      })
-    ).subscribe({
-      next: (prod) => {
+      }),
+      tap((prod) => {
         this.product = prod;
         this.setProductInLocalStorage();
-        this.getProductFormValues();
-      },
-      error: (error: any) => { console.log(error); },
-    });
+      }),
+      catchError((error: any) => {
+        this.handleApiError(error);
+        return EMPTY;
+      })
+    ).subscribe(() => this.getProductFormValues());
+  }
+
+  handleApiError(error: any): void {
+    console.error(error);
   }
 
   getBrands(): void {
