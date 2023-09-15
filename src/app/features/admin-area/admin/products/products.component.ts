@@ -6,6 +6,9 @@ import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { merge } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProductService } from 'src/app/core/services/product.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
+import { DialogData } from 'src/app/shared/models/dialog-data.interface';
 
 export declare interface IPageEvent {
   /** The current page index. */
@@ -36,7 +39,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   totalCount: number = 0;
   isLoadingResults = true;
 
-  constructor(private productService: ProductService, private router: Router) {
+  constructor(private productService: ProductService, private router: Router, public dialog: MatDialog) {
     this.productService.setShopParams(new ProductQueryParams());
     this.shopParams = this.productService.getShopParams();
   }
@@ -98,7 +101,31 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     window.open(`/shop/${id}`, "_blank");
   }
 
-  deleteProduct() {
+  deleteProduct(id: number) {
 
+    const dialogData: DialogData = {
+      title: 'Delete Dialog',
+      content: 'Would you like to delete this item?',
+      showConfirmationButtons: true
+    };
+
+    const dialogRef = this.dialog.open<DialogComponent, DialogData>(DialogComponent, { data: dialogData });
+
+    dialogRef.afterClosed().subscribe({
+      next: (result?: boolean | undefined) => {
+        if (!result) {
+          return;
+        }
+        console.log(result);
+        this.productService.deleteProduct(id).subscribe({
+          next: () => {
+            console.log("product deleted!");
+            this.getProducts(false);
+          },
+          error: (error) => { console.error(error) }
+        })
+      },
+      error: (error) => { console.error(error) }
+    })
   }
 }

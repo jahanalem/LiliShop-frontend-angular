@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, map, of, tap } from 'rxjs';
+import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProductPagination, ProductPagination } from 'src/app/shared/models/pagination';
 import { IProduct } from 'src/app/shared/models/product';
@@ -87,6 +87,14 @@ export class ProductService {
 
   updateProduct(product: IProduct): Observable<IProduct> {
     return this.http.put<IProduct>(`${this.baseUrl}products/update/${product.id}`, product);
+  }
+
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}products/delete/${id}`)
+      .pipe(catchError(error => {
+        console.error(error);
+        return throwError(() => error);
+      }));
   }
 
   getBrands(isActive: boolean | null = null): Observable<IBrand[]> {

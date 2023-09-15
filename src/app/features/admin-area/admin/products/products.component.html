@@ -16,7 +16,7 @@
               class="details-icon">open_in_new</mat-icon></button>
           <button (click)="editProduct(row.id)" mat-icon-button class="mx-1" color="accent"><mat-icon
               class="edit-icon">edit</mat-icon></button>
-          <button (click)="deleteProduct()" mat-stroked-button class="mx-1" color="warn"><mat-icon class="delete-icon">delete</mat-icon></button>
+          <button (click)="deleteProduct(row.id)" mat-stroked-button class="mx-1" color="warn"><mat-icon class="delete-icon">delete</mat-icon></button>
         </ng-container>
 
         <!-- If not Action, show the regular cell content -->
