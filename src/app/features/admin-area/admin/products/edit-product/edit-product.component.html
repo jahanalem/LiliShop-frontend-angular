@@ -1,3 +1,7 @@
+<button mat-raised-button color="primary" (click)="goBack()" >
+  <mat-icon class="arrow-back">arrow_back</mat-icon>
+  Back
+</button>
 <form *ngIf="productForm" [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
   <div class="container">
     <div class="row">

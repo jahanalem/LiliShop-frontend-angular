@@ -40,7 +40,6 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   isLoadingResults = true;
 
   constructor(private productService: ProductService, private router: Router, public dialog: MatDialog) {
-    this.productService.setShopParams(new ProductQueryParams());
     this.shopParams = this.productService.getShopParams();
   }
 
@@ -129,7 +128,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     })
   }
 
-  createProduct(){
+  createProduct() {
     this.router.navigateByUrl(`/admin/products/edit/${-1}`);
   }
 }

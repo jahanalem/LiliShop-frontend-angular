@@ -1,6 +1,6 @@
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EMPTY, Observable, catchError, switchMap, tap } from 'rxjs';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterContentChecked, ChangeDetectionStrategy } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
@@ -8,6 +8,9 @@ import { IType } from 'src/app/shared/models/productType';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ThemePalette } from '@angular/material/core';
 import { ProductService } from 'src/app/core/services/product.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogData } from 'src/app/shared/models/dialog-data.interface';
+import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 
 @Component({
   selector: 'app-edit-product',
@@ -28,7 +31,9 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   protected colorCheckbox: ThemePalette;
 
   constructor(private productService: ProductService,
+    private dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
+    private router: Router,
     private formBuilder: FormBuilder,
     private cdr: ChangeDetectorRef) {
 
@@ -222,6 +227,29 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
       return !specs.some(spec => size.id === spec.sizeId && size.id !== ignoreSizeId);
     });
   }
+
+  goBack() {
+    if (this.productForm.dirty) {
+      const dialogData: DialogData = {
+        title: 'Discard change',
+        content: 'Would you like to discard your changes?',
+        showConfirmationButtons: true
+      };
+      const dialogRef = this.dialog.open<DialogComponent, DialogData>(DialogComponent, { data: dialogData });
+
+      dialogRef.afterClosed().subscribe({
+        next: (result?: boolean | undefined) => {
+          if (result) {
+            this.router.navigateByUrl('/admin/products');
+          }
+        },
+        error: (error) => { console.error(error); }
+      });
+    } else {
+      this.router.navigateByUrl('/admin/products');
+    }
+  }
+
 
   private fetchData<T>(fetchDataFn: () => Observable<T>, updateFn: (data: T) => void): void {
     fetchDataFn().subscribe({

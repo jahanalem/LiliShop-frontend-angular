@@ -40,3 +40,18 @@
   width: 100%;
   /* Adjust the width percentage as needed */
 }
+
+/* Button mit Icon */
+button.mat-raised-button {
+  margin: 20px 0;
+  font-size: 18px;
+  padding: 12px 24px;
+  display: inline-flex;
+  align-items: center;  /* Vertikale Ausrichtung */
+}
+
+.arrow-back {
+  margin-right: 8px;  /* Abstand zwischen Icon und Text */
+  vertical-align: middle;  /* Vertikale Ausrichtung */
+  color: green;  /* Ändern der Icon-Farbe */
+}
