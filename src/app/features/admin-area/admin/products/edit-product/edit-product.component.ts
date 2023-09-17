@@ -21,6 +21,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   brands: IBrand[] = [];
   types: IType[] = [];
   sizes: ISizeClassification[] = [];
+  productIdFromUrl: number = 0; // 0 means new product
   protected validSizeList: ISizeClassification[] = [];
   protected disabledAddSizeButton: boolean = false;
   productCharacteristics: IProductCharacteristic[] = [];
@@ -52,16 +53,22 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
 
   onSubmit() {
     const formValues = this.productForm.value as IProduct;
+    const { productType, productBrand, ...restOfProduct } = this.product || {}; // Destructuring to exclude unwanted fields
 
-    const updatedProduct = { ...this.product, ...formValues }
+    // Merge form values into existing product while avoiding the unwanted fields
+    const productPayload = { ...restOfProduct, ...formValues };
 
-    delete updatedProduct['productType'];
-    delete updatedProduct['productBrand'];
+    // Determine the action: update or create
+    const productAction = productPayload.id && productPayload.id > 0
+      ? this.productService.updateProduct(productPayload)
+      : this.productService.createProduct(productPayload);
 
-    this.productService.updateProduct(updatedProduct).subscribe((p) => {
+    // Execute the action and handle the response
+    productAction.subscribe((p) => {
       console.log(p);
     });
   }
+
 
   createProductForm(): void {
     this.productForm = this.formBuilder.group({
@@ -112,7 +119,12 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     this.activatedRoute.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const id = params.get('id');
-        return id ? this.productService.getProduct(+id) : EMPTY;
+        this.productIdFromUrl = (id === null ? 0 : +id);
+        if (this.productIdFromUrl && +this.productIdFromUrl > 0) {
+          return this.productService.getProduct(+this.productIdFromUrl);
+        } else {
+          return EMPTY;
+        }
       }),
       tap((prod) => {
         this.product = prod;
@@ -178,17 +190,22 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   }
 
   addSize() {
-    if (this.product) {
-      this.validSizeList = this.getValidSizeList();
+    const effectiveProductId = this.product ? this.product.id : (this.productIdFromUrl > 0 ? this.productIdFromUrl : 0);
 
-      if (this.validSizeList.length > 0) {
-        const defaultSizeId = this.validSizeList[0].id;
-        this.addDynamicDropDownSize(defaultSizeId, 1, 0, this.product?.id);
-      }
-
-      this.disabledAddSizeButton = this.validSizeList.length <= 1;
+    if (effectiveProductId < 0) {
+      return;
     }
+
+    this.validSizeList = this.getValidSizeList();
+
+    if (this.validSizeList.length > 0) {
+      const defaultSizeId = this.validSizeList[0].id;
+      this.addDynamicDropDownSize(defaultSizeId, 1, 0, effectiveProductId);
+    }
+
+    this.disabledAddSizeButton = this.validSizeList.length <= 1;
   }
+
 
   getAvailableSizeList(control: AbstractControl): ISizeClassification[] {
     const formGroup = control as FormGroup;

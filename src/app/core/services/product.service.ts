@@ -89,6 +89,10 @@ export class ProductService {
     return this.http.put<IProduct>(`${this.baseUrl}products/update/${product.id}`, product);
   }
 
+  createProduct(product: IProduct): Observable<IProduct> {
+    return this.http.post<IProduct>(`${this.baseUrl}products/create/`, product);
+  }
+
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}products/delete/${id}`)
       .pipe(catchError(error => {

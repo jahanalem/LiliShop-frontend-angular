@@ -128,4 +128,8 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       error: (error) => { console.error(error) }
     })
   }
+
+  createProduct(){
+    this.router.navigateByUrl(`/admin/products/edit/${-1}`);
+  }
 }

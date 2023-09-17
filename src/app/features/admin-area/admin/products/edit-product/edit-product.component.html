@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-6 form-left">
-        <ng-container *ngIf="product">
+        <ng-container>
           <mat-checkbox formControlName="isActive" (change)="onIsActiveChange($event.checked)"
             [color]="colorCheckbox">Is Active?</mat-checkbox>
           <div class="form-group">
@@ -51,7 +51,7 @@
           </div>
         </ng-container>
 
-        <ng-container *ngIf="product?.productCharacteristics as pcs">
+        <ng-container>
           <ng-container formArrayName="productCharacteristics">
             <ng-container *ngFor="let sizeFormCtrl of dynamicDropDownSize.controls; let i=index">
               <div [formGroup]="getFormGroup(sizeFormCtrl)" class="size-group">
@@ -91,7 +91,7 @@
 
         <button type="submit" mat-raised-button class="btn btn-primary">Save</button>
       </div>
-      <ng-container *ngIf="product">
+      <ng-container>
         <div class="col-6 form-right">
           Upload Photo
           <app-photo-editor formControlName="productPhotos" [product]="product"></app-photo-editor>
