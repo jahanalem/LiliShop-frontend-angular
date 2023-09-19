@@ -70,7 +70,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
 
     // Execute the action and handle the response
     productAction.subscribe((p) => {
-      console.log(p);
+      this.product = p;
       this.productForm.markAsPristine();
     });
   }
@@ -231,7 +231,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     });
   }
 
-  goBack() {
+  navigateBack() {
     if (this.productForm.dirty) {
       const dialogData: DialogData = {
         title: 'Discard change',
@@ -251,6 +251,14 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     } else {
       this.router.navigateByUrl('/admin/products');
     }
+  }
+
+  get isProductIdValid() {
+    return this.product ? this.product.id > 0 : false;
+  }
+
+  get isSaveDisabled(): boolean {
+    return !this.productForm.dirty || !this.productForm.valid;
   }
 
 

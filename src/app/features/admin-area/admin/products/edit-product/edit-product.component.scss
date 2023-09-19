@@ -55,3 +55,11 @@ button.mat-raised-button {
   vertical-align: middle;  /* Vertikale Ausrichtung */
   color: green;  /* Ändern der Icon-Farbe */
 }
+
+.alert-message {
+  color: red;
+  font-weight: bold;
+  border: 1px solid red;
+  padding: 10px;
+  border-radius: 5px;
+}
