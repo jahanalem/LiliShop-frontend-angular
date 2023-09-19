@@ -71,6 +71,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     // Execute the action and handle the response
     productAction.subscribe((p) => {
       console.log(p);
+      this.productForm.markAsPristine();
     });
   }
 
@@ -80,6 +81,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
       isActive: [false],
       name: [null, Validators.required],
       description: [null, Validators.required],
+      price: [null, [Validators.required, Validators.min(1), Validators.max(10000)]],
       productBrandId: [null, Validators.required],
       productTypeId: [null, Validators.required],
       productCharacteristics: this.formBuilder.array([]),
@@ -115,6 +117,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
       isActive: this.product?.isActive,
       name: this.product?.name,
       description: this.product?.description,
+      price: this.product?.price,
       productBrandId: this.product?.productBrandId,
       productTypeId: this.product?.productTypeId
     });

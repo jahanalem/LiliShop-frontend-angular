@@ -25,6 +25,14 @@
               <mat-hint align="end">{{inputDsc.value.length}}/300</mat-hint>
             </mat-form-field>
           </div>
+          <div class="form-group">
+            <mat-form-field hintLabel="Max 10000" appearance="outline" class="input-width">
+              <mat-label>Price</mat-label>
+              <input formControlName="price" matInput #inputPrice maxlength="7" type="number" min="1" max="10000" step="0.01" placeholder="product price">
+              <span matPrefix>€&nbsp;</span>
+              <mat-hint align="end"></mat-hint>
+            </mat-form-field>
+          </div>
         </ng-container>
 
         <ng-container *ngIf="brands">
