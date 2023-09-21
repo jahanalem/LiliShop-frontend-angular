@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
 import { BrandParams } from 'src/app/shared/models/BrandParams';
+import { IBrand } from 'src/app/shared/models/brand';
 import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
 import { BrandPagination } from 'src/app/shared/models/pagination';
 import { environment } from 'src/environments/environment';
@@ -34,6 +35,18 @@ export class BrandService {
       tap(response => this.pagination = response.body ?? ({} as BrandPagination)),
       map(response => response.body as BrandPagination)
     );
+  }
+
+  getBrand(id: number): Observable<IBrand> {
+    return this.http.get<IBrand>(`${this.baseUrl}productbrand/brand/${id}`);
+  }
+
+  createBrand(brandPayload: IBrand) {
+    return this.http.post<IBrand>(`${this.baseUrl}productbrand/create/`, brandPayload);
+  }
+
+  updateBrand(brandPayload: IBrand) {
+    return this.http.put<IBrand>(`${this.baseUrl}productbrand/update/${brandPayload.id}`, brandPayload);;
   }
 
   deleteBrand(id: number): Observable<DeleteResponse> {

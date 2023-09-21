@@ -1,4 +1,10 @@
 <div class="mat-elevation-z8">
+
+  <button mat-raised-button color="primary" (click)="createBrand()">
+    <mat-icon>add_circle_outline</mat-icon>
+    New Brand
+  </button>
+
   <table mat-table [dataSource]="brands" matSort>
 
     <!-- ID Column -->

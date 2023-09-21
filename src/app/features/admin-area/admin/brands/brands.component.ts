@@ -79,4 +79,8 @@ export class BrandsComponent implements OnInit, AfterViewInit {
   editBrand(id: number) {
     this.router.navigateByUrl(`/admin/brands/edit/${id}`);
   }
+
+  createBrand() {
+    this.router.navigateByUrl(`/admin/brands/edit/${-1}`);
+  }
 }
