@@ -1,4 +1,5 @@
-export interface IType {
-  id  : number;
+export interface IProductType {
+  id: number;
   name: string;
+  isActive?: boolean;
 }

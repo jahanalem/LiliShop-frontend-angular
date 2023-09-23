@@ -4,13 +4,13 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterContentChecked, ChangeDetectionStrategy } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
-import { IType } from 'src/app/shared/models/productType';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ThemePalette } from '@angular/material/core';
 import { ProductService } from 'src/app/core/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogData } from 'src/app/shared/models/dialog-data.interface';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
+import { IProductType } from 'src/app/shared/models/productType';
 
 @Component({
   selector: 'app-edit-product',
@@ -22,7 +22,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   productForm!: FormGroup;
   product: IProduct | undefined;
   brands: IBrand[] = [];
-  types: IType[] = [];
+  types: IProductType[] = [];
   sizes: ISizeClassification[] = [];
   productIdFromUrl: number = 0; // 0 means new product
   protected validSizeList: ISizeClassification[] = [];

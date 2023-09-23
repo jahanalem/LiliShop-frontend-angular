@@ -5,8 +5,8 @@ import { IBrand } from 'src/app/shared/models/brand';
 import { IProductPagination, ProductPagination } from 'src/app/shared/models/pagination';
 import { IProduct } from 'src/app/shared/models/product';
 import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
-import { IType } from 'src/app/shared/models/productType';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
+import { IProductType } from 'src/app/shared/models/productType';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -15,7 +15,7 @@ import { environment } from 'src/environments/environment';
 export class ProductService {
   baseUrl: string = environment.apiUrl;
   brands: IBrand[] = [];
-  types: IType[] = [];
+  types: IProductType[] = [];
   sizes: ISizeClassification[] = [];
   productCache: Map<any, any> = new Map();
   shopParams: ProductQueryParams = new ProductQueryParams();
@@ -105,7 +105,7 @@ export class ProductService {
     return this.fetchData(this.brands, 'products/brands', isActive);
   }
 
-  getTypes(isActive: boolean | null = null): Observable<IType[]> {
+  getTypes(isActive: boolean | null = null): Observable<IProductType[]> {
     return this.fetchData(this.types, 'products/types', isActive);
   }
 

@@ -6,7 +6,6 @@ import { NgModule } from '@angular/core';
 import { PERMISSIONS, PERMISSION_LABELS } from 'src/app/shared/constants/auth';
 
 
-
 const routes: Routes = [
   {
     path: '',
@@ -16,6 +15,7 @@ const routes: Routes = [
     children: [
       { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) },
       { path: 'brands', loadChildren: () => import('./brands/brands.module').then(m => m.BrandsModule) },
+      { path: 'product-types', loadChildren: () => import('./product-types/product-types.module').then(m => m.ProductTypesModule) }
     ]
   }
 ]

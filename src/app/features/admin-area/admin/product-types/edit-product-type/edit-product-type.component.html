@@ -1,0 +1,30 @@
+<button mat-raised-button color="primary" (click)="navigateBack()">
+  <mat-icon class="arrow-back">arrow_back</mat-icon>
+  Back
+</button>
+<form *ngIf="typeForm" [formGroup]="typeForm" (ngSubmit)="onSubmit()" class="brand-form">
+  <div class="container">
+    <div class="row">
+      <div class="col-6 form-left">
+        <ng-container>
+          <mat-checkbox formControlName="isActive" (change)="onIsActiveChange($event.checked)"
+            [color]="colorCheckbox">Is Active?</mat-checkbox>
+          <div class="form-group">
+            <mat-form-field hintLabel="Max 20 characters" appearance="outline" class="input-width">
+              <mat-label>Enter type name</mat-label>
+              <input formControlName="name" matInput #input maxlength="20" placeholder="type name">
+              <mat-hint align="end">{{input.value.length}}/20</mat-hint>
+            </mat-form-field>
+          </div>
+        </ng-container>
+
+        <button type="submit" [disabled]="isSaveDisabled" [attr.aria-disabled]="isSaveDisabled.toString()"
+          mat-raised-button class="btn btn-primary">Save</button>
+      </div>
+      <ng-container>
+        <div class="col-6 form-right">
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</form>

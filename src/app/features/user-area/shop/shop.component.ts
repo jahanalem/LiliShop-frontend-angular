@@ -5,8 +5,8 @@ import { ProductService } from 'src/app/core/services/product.service';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProduct } from 'src/app/shared/models/product';
 import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
-import { IType } from 'src/app/shared/models/productType';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
+import { IProductType } from 'src/app/shared/models/productType';
 
 
 @Component({
@@ -20,7 +20,7 @@ export class ShopComponent implements OnInit {
   @ViewChild('search', { static: false }) searchTerm!: ElementRef;
   products: IProduct[] = [];
   brands: IBrand[] = [];
-  types: IType[] = [];
+  types: IProductType[] = [];
   sizes: ISizeClassification[] = [];
   shopParams: ProductQueryParams;
   totalCount: number = 0;
