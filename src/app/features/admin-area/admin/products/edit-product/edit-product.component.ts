@@ -58,13 +58,17 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
 
   onSubmit() {
     const formValues = this.productForm.value as IProduct;
-    const { productType, productBrand, ...restOfProduct } = this.product || {}; // Destructuring to exclude unwanted fields
+    const { productType, productBrand, ...existingProduct } = this.product || {};
 
-    // Merge form values into existing product while avoiding the unwanted fields
-    const productPayload = { ...restOfProduct, ...formValues };
+    const productPayload = {
+      ...existingProduct,
+      ...formValues,
+      productPhotos: this.product?.productPhotos || formValues.productPhotos
+    };
 
+    const isUpdate = productPayload.id && productPayload.id > 0;
     // Determine the action: update or create
-    const productAction = productPayload.id && productPayload.id > 0
+    const productAction = isUpdate
       ? this.productService.updateProduct(productPayload)
       : this.productService.createProduct(productPayload);
 
