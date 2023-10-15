@@ -55,4 +55,5 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## License
 
-This project is licensed under the [GNU General Public License](https://github.com/jahanalem/LiliShop-frontend-angular/blob/main/LICENSE.txt)
+This project is licensed under the LiliShop Custom License v1.0 - see the [LICENSE.md](https://github.com/jahanalem/LiliShop-frontend-angular/blob/main/LICENSE.md) file for details.
+
