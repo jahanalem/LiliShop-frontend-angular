@@ -69,17 +69,20 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   getProducts(useCache = false, isActive?: boolean): void {
-    this.productService.getProducts(useCache, isActive).subscribe(response => {
-      if (response) {
-        this.products = response.data;
-        this.totalCount = response.count;
-        this.dataSource = (this.products);
-        this.paginator = this.paginator;
-        this.sort = this.sort;
+    this.productService.getProducts(useCache, isActive)
+      .subscribe({
+        next: (response) => {
+          if (response) {
+            this.products = response.data;
+            this.totalCount = response.count;
+            this.dataSource = (this.products);
+          }
+        },
+        error: (error) => {
+          console.log(error);
+        }
       }
-    }, error => {
-      console.log(error);
-    });
+      );
   }
 
   applyFilter(filterValueEvent: Event) {

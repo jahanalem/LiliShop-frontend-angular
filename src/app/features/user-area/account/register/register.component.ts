@@ -14,7 +14,7 @@ import { AccountService } from 'src/app/core/services/account.service';
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
   errors: string[] = [];
-
+  private emailCache: { [email: string]: boolean } = {}; // A cache for already verified email addresses
   constructor(private fb: FormBuilder, private accountService: AccountService, private router: Router) { }
 
   ngOnInit(): void {
@@ -66,10 +66,23 @@ export class RegisterComponent implements OnInit {
         return of(null);
       }
 
+      // Check if the value is in the cache
+      if (this, this.emailCache.hasOwnProperty(control.value)) {
+        return of(this.emailCache[control.value] ? { [errorType.EMAIL_EXISTS]: true } : null);
+      }
+
       return timer(500).pipe(
         filter(() => !!control.value),
         switchMap(() => this.accountService.checkEmailExists(control.value)),
-        map(res => res ? { [errorType.EMAIL_EXISTS]: true } : null)
+        map(res => {
+          this.emailCache[control.value] = res;
+
+          return res ? { [errorType.EMAIL_EXISTS]: true } : null;
+        }),
+        catchError(error => {
+          console.error('Validation failed:', error);
+          return of({ [errorType.UNKNOWN_ERROR]: true });
+        })
       );
     }
   }
