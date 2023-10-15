@@ -3,12 +3,13 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { IProduct } from 'src/app/shared/models/product';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
-import { merge } from 'rxjs';
+import { Subject, catchError, debounceTime, merge, of, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProductService } from 'src/app/core/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { DialogData } from 'src/app/shared/models/dialog-data.interface';
+import { ProductPagination } from 'src/app/shared/models/pagination';
 
 export declare interface IPageEvent {
   /** The current page index. */
@@ -38,12 +39,13 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   shopParams: ProductQueryParams;
   totalCount: number = 0;
   isLoadingResults = true;
-
+  private searchTerms = new Subject<string>();
   constructor(private productService: ProductService, private router: Router, public dialog: MatDialog) {
     this.shopParams = this.productService.getShopParams();
   }
 
   ngOnInit(): void {
+    this.handleSearch();
   }
 
   ngAfterViewInit() {
@@ -68,14 +70,18 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       });
   }
 
+  private updateProducts(response: ProductPagination): void {
+    this.products = response.data;
+    this.totalCount = response.count;
+    this.dataSource = this.products;
+  }
+
   getProducts(useCache = false, isActive?: boolean): void {
     this.productService.getProducts(useCache, isActive)
       .subscribe({
         next: (response) => {
           if (response) {
-            this.products = response.data;
-            this.totalCount = response.count;
-            this.dataSource = (this.products);
+            this.updateProducts(response);
           }
         },
         error: (error) => {
@@ -85,6 +91,31 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       );
   }
 
+  handleSearch() {
+    this.searchTerms.pipe(
+      debounceTime(500),
+
+      switchMap((term: string) => {
+        this.shopParams.search = term;
+        return this.productService.getProducts(false);
+      }),
+
+      catchError(error => {
+        console.log(error);
+        return of([]);
+      })
+    ).subscribe({
+      next: (response) => {
+        if (response && 'data' in response && 'count' in response) {
+          this.updateProducts(response);
+        }
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    });
+  }
+
   applyFilter(filterValueEvent: Event) {
     const filterValue = (filterValueEvent.target as HTMLInputElement).value;
     this.shopParams.search = filterValue.trim().toLowerCase();
@@ -92,7 +123,9 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     if (this.shopParams.search) {
       this.paginator.firstPage();
     }
-    this.getProducts(false);
+
+    // Emit the new search term
+    this.searchTerms.next(this.shopParams.search);
   }
 
   editProduct(id: number) {
