@@ -41,7 +41,8 @@ export class ProductService {
     return this.http.get<IProduct>(this.baseUrl + 'products/' + id);
   }
 
-  getProducts(useCache: boolean, isActive?: boolean): Observable<ProductPagination> {
+  getProducts(isActive?: boolean): Observable<ProductPagination> {
+    const useCache = environment.useCache;
     if (!useCache) {
       this.productCache.clear();
     }

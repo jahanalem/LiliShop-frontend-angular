@@ -39,8 +39,8 @@ export class ShopComponent implements OnInit {
     this.getFilters();
   }
 
-  getProducts(useCache = false, isActive?: boolean): void {
-    this.productService.getProducts(useCache, isActive).subscribe({
+  getProducts(isActive?: boolean): void {
+    this.productService.getProducts(isActive).subscribe({
       next: (response) => {
         if (response) {
           this.products = response.data;

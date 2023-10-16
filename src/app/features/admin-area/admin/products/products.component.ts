@@ -76,8 +76,8 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     this.dataSource = this.products;
   }
 
-  getProducts(useCache = false, isActive?: boolean): void {
-    this.productService.getProducts(useCache, isActive)
+  getProducts(isActive?: boolean): void {
+    this.productService.getProducts(isActive)
       .subscribe({
         next: (response) => {
           if (response) {
@@ -87,8 +87,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
         error: (error) => {
           console.log(error);
         }
-      }
-      );
+      });
   }
 
   handleSearch() {
