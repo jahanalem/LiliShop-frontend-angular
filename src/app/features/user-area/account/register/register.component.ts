@@ -74,34 +74,58 @@ export class RegisterComponent implements OnInit {
   }
 
 
+  /**
+   * Asynchronous validator function for checking if an email address is already taken.
+   * This validator uses a cache to avoid redundant API calls.
+   *
+   * @returns {AsyncValidatorFn} - An asynchronous validator function that returns an Observable.
+   *
+   * @example
+   * // Usage in Angular Form
+   * this.form = this.fb.group({
+   *   email: ['', [], [this.validateEmailNotTaken()]]
+   * });
+   *
+   * @see {@link https://angular.io/api/forms/AsyncValidatorFn} for more info on AsyncValidatorFn
+   * @see {@link https://angular.io/api/forms/ValidationErrors} for more info on ValidationErrors
+   */
   validateEmailNotTaken(): AsyncValidatorFn {
+    // Ensure the email cache is initialized if it doesn't exist.
+    this.emailCache = this.emailCache || {};
+
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      // If the control has no value, it's not an error in the context of this validator.
       if (!control.value) {
         return of(null);
       }
 
-      // Check if the value is in the cache
-      if (this, this.emailCache.hasOwnProperty(control.value)) {
-        return of(this.emailCache[control.value] ? { [errorType.EMAIL_EXISTS]: true } : null);
+      // Check if the email is in the cache to avoid redundant API calls.
+      if (this.emailCache.hasOwnProperty(control.value)) {
+        const cacheResult = this.emailCache[control.value];
+        return of(cacheResult ? { [errorType.EMAIL_EXISTS]: true } : null);
       }
 
+      // Perform the asynchronous validation after a 500ms delay.
       return timer(500).pipe(
+        // Proceed only if the control still has a value (it wasn't cleared during the delay).
         filter(() => !!control.value),
+        // Call the service to check if the email exists.
         switchMap(() => this.accountService.checkEmailExists(control.value)),
+        // Cache the result and return either a validation error object or null.
         map(res => {
           this.emailCache[control.value] = res;
-
           return res ? { [errorType.EMAIL_EXISTS]: true } : null;
         }),
+        // Handle any errors that occur during validation.
         catchError(error => {
           console.error('Validation failed:', error);
           return of({ [errorType.UNKNOWN_ERROR]: true });
         })
       );
-    }
+    };
   }
 
-  
+
   /**
  * Custom validator function for matching two form controls.
  *
