@@ -25,20 +25,34 @@ export class RegisterComponent implements OnInit {
   createRegisterForm() {
     this.registerForm = this.fb.group(
       {
-        displayName: [null, Validators.required],
+        displayName:
+          [
+            null,
+            Validators.required
+          ],
         email:
           [
             null,
             [Validators.required, Validators.pattern(pattern.EMAIL)],
             [this.validateEmailNotTaken()]
           ],
-        password: [null,
+        password:
           [
-            Validators.required,
-            this.matchPasswordValidator('confirmPassword', true),
-            Validators.pattern(pattern.PASSWORD)
-          ]],
-        confirmPassword: [null, [Validators.required, this.matchPasswordValidator('password')]]
+            null,
+            [
+              Validators.required,
+              this.matchPasswordValidator('confirmPassword', true),
+              Validators.pattern(pattern.PASSWORD)
+            ]
+          ],
+        confirmPassword:
+          [
+            null,
+            [
+              Validators.required,
+              this.matchPasswordValidator('password')
+            ]
+          ]
       }
     );
   }
@@ -87,18 +101,54 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-
+  
+  /**
+ * Custom validator function for matching two form controls.
+ *
+ * @param {string} matchTo - The name of the control to match against.
+ * @param {boolean} [reverse] - Optional flag to indicate reverse validation.
+ *                               When set to true, the validator will also trigger re-validation
+ *                               of the control specified in `matchTo` whenever the current control changes.
+ * @returns {ValidatorFn} - A validator function that takes an AbstractControl and returns
+ *                          either null if the controls match, or an error object if they don't.
+ *
+ * @example
+ * // Usage in Angular Form
+ * this.form = this.fb.group({
+ *   password: ['', [this.matchPasswordValidator('confirmPassword', true)]],
+ *   confirmPassword: ['', [this.matchPasswordValidator('password')]]
+ * });
+ *
+ * @see {@link https://angular.io/api/forms/ValidatorFn} for more info on ValidatorFn
+ * @see {@link https://angular.io/api/forms/ValidationErrors} for more info on ValidationErrors
+ */
   matchPasswordValidator(matchTo: string, reverse?: boolean): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
+      // Retrieve parent controls from the current control's parent form or form group
+      const parentControls = control.parent?.controls as { [key: string]: AbstractControl } | null;
+
+      // If reverse flag is true, trigger re-validation of the control specified in `matchTo`
       if (control.parent && reverse) {
-        const confirmControl = (control.parent?.controls as any)[matchTo] as AbstractControl;
+        const confirmControl = parentControls ? parentControls[matchTo] : null;
         if (confirmControl) {
           confirmControl.updateValueAndValidity();
         }
         return null;
       }
-      return !!control.parent && !!control.parent.value &&
-        control.value === (control.parent?.controls as any)[matchTo].value ? null : { [errorType.MATCHING]: true };
+
+      // Return error if parent form or values are not available
+      if (!control.parent || !control.parent.value || !parentControls) {
+        return { [errorType.MATCHING]: true };
+      }
+
+      // Retrieve the control to match against
+      const matchControl = parentControls[matchTo];
+
+      // Check if both controls' values match
+      const isMatching = matchControl ? control.value === matchControl.value : false;
+
+      // Return null if they match, or an error object if they don't
+      return isMatching ? null : { [errorType.MATCHING]: true };
     };
   }
 }
