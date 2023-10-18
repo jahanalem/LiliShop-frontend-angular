@@ -6,6 +6,7 @@ import { IBasket, IBasketTotals } from 'src/app/shared/models/basket';
 import { IDeliveryMethod } from 'src/app/shared/models/deliveryMethod';
 import { IProduct } from 'src/app/shared/models/product';
 import { environment } from 'src/environments/environment';
+import { StorageService } from './storage.service';
 
 
 @Injectable({
@@ -23,7 +24,7 @@ export class BasketService {
   basketTotal$ = this.basketTotalSource.asObservable();
   shipping = 0;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private storageService:StorageService) {
     this.basketSource.asObservable()
   }
 
@@ -101,7 +102,7 @@ export class BasketService {
 
   private createBasket(): IBasket {
     const basket = new Basket();
-    localStorage.setItem('basket_id', basket.id);
+    this.storageService.set('basket_id', basket.id);
     return basket;
   }
 
@@ -145,7 +146,7 @@ export class BasketService {
       tap(() => {
         this.basketSource.next(null);
         this.basketTotalSource.next(null);
-        localStorage.removeItem('basket_id');
+        this.storageService.delete('basket_id');
       }),
       catchError((error) => {
         console.log(error);
@@ -157,7 +158,7 @@ export class BasketService {
   deleteLocalBasket(_id: string) {
     this.basketSource.next(null);
     this.basketTotalSource.next(null);
-    localStorage.removeItem('basket_id');
+    this.storageService.delete('basket_id');
   }
 
   private updateItemQuantity(item: IBasketItem, newQuantity: number) {

@@ -51,7 +51,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     // If the user changes the sort order, reset back to the first page.
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-    this.getProducts(false);
+    this.getProducts();
 
     merge(this.sort.sortChange, this.paginator.page)
       .subscribe((x: Sort | PageEvent) => {
@@ -66,7 +66,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
           this.shopParams.sort = this.sort.active;
           this.shopParams.sortDirection = this.sort.direction;
         }
-        this.getProducts(false);
+        this.getProducts();
       });
   }
 
@@ -96,7 +96,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
 
       switchMap((term: string) => {
         this.shopParams.search = term;
-        return this.productService.getProducts(false);
+        return this.productService.getProducts();
       }),
 
       catchError(error => {

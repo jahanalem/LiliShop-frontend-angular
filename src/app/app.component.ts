@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { AccountService } from './core/services/account.service';
 import { BasketService } from './core/services/basket.service';
+import { StorageService } from './core/services/storage.service';
 
 
 @Component({
@@ -11,7 +12,9 @@ import { BasketService } from './core/services/basket.service';
 export class AppComponent implements OnInit, AfterViewInit {
   title = 'LiliShop';
   isTesting = false;
-  constructor(private basketService: BasketService, private accountService: AccountService) {
+  constructor(private basketService: BasketService,
+    private accountService: AccountService,
+    private storageService: StorageService) {
   }
   ngAfterViewInit(): void {
     if (!this.isTesting) {
@@ -25,7 +28,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   loadBasket() {
-    const basketId = localStorage.getItem('basket_id');
+    const basketId = this.storageService.get<string>('basket_id');
     if (basketId) {
       this.basketService.getBasket(basketId).subscribe({
         error: error => { console.log(error); }
@@ -34,7 +37,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   public loadCurrentUser() {
-    const token = localStorage.getItem('token');
+    const token = this.storageService.get<string>('token');
     if (!token) {
       return;
     }

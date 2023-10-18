@@ -5,15 +5,16 @@ import {
   HttpEvent,
   HttpInterceptor
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
+import { StorageService } from '../services/storage.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
 
-  constructor() { }
+  constructor(private storageService: StorageService) { }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const token = localStorage.getItem('token');
+    const token = this.storageService.get<string>('token');
     if (token) {
       request = request.clone({
         setHeaders: {
@@ -22,6 +23,9 @@ export class JwtInterceptor implements HttpInterceptor {
       });
     }
 
-    return next.handle(request);
+    return next.handle(request).pipe(
+      catchError((error: any) => {
+        return throwError(() => error);
+      }));
   }
 }

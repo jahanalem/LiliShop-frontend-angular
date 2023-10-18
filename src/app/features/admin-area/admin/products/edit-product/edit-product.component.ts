@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogData } from 'src/app/shared/models/dialog-data.interface';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IProductType } from 'src/app/shared/models/productType';
+import { StorageService } from 'src/app/core/services/storage.service';
 
 @Component({
   selector: 'app-edit-product',
@@ -35,7 +36,8 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private cdr: ChangeDetectorRef) {
+    private cdr: ChangeDetectorRef,
+    private storageService: StorageService) {
 
   }
   ngAfterContentChecked(): void {
@@ -43,7 +45,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   }
 
   ngOnDestroy(): void {
-    localStorage.removeItem(this.getProductKeyFromLocalStorage());
+    this.storageService.delete(this.getProductKey());
   }
 
   ngOnInit(): void {
@@ -115,7 +117,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     // if we refresh the page, we don't have access to the product object and then we cannot get id from it.
     // Therefore we need to get id from activatedRoute.
 
-    this.product ??= JSON.parse(localStorage.getItem(this.getProductKeyFromLocalStorage()) || 'null') as IProduct;
+    this.product ??= JSON.parse(this.storageService.get(this.getProductKey()) || 'null') as IProduct;
 
     this.productForm?.patchValue({
       isActive: this.product?.isActive,
@@ -186,9 +188,9 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
 
   setProductInLocalStorage(): void {
     const key = `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
-    localStorage.setItem(key, JSON.stringify(this.product));
+    this.storageService.set(key, JSON.stringify(this.product));
   }
-  getProductKeyFromLocalStorage(): string {
+  getProductKey(): string {
     return `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
   }
 

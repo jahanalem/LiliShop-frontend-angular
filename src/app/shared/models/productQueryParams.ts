@@ -9,7 +9,7 @@ export class ProductQueryParams implements ISortParams, IPaginationParams, ISear
   sortDirection: string = 'asc';
 
   pageNumber   : number = 1;
-  pageSize     : number = 5;
+  pageSize     : number = 6;
 
   search       : string = '';
 }

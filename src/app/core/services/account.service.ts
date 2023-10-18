@@ -5,6 +5,7 @@ import { of, Observable, ReplaySubject, tap } from 'rxjs';
 import { IAddress } from 'src/app/shared/models/address';
 import { IUser } from 'src/app/shared/models/user';
 import { environment } from 'src/environments/environment';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class AccountService {
   private currentUserSource = new ReplaySubject<IUser | null>(1);
   public currentUser$ = this.currentUserSource.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private storageService: StorageService) { }
 
   loadCurrentUser(token: string | null): Observable<IUser | null> {
     if (token === null) {
@@ -27,7 +28,7 @@ export class AccountService {
     return this.http.get<IUser>(`${this.baseUrl}account/currentuser`, { headers }).pipe(
       tap((user: IUser) => {
         if (user) {
-          localStorage.setItem('token', user.token);
+          this.storageService.set('token', user.token);
           this.currentUserSource.next(user);
         }
       })
@@ -38,7 +39,7 @@ export class AccountService {
     return this.http.post<IUser>(`${this.baseUrl}account/login`, values).pipe(
       tap((user: IUser) => {
         if (user) {
-          localStorage.setItem('token', user.token);
+          this.storageService.set('token', user.token);
           this.currentUserSource.next(user);
         }
       })
@@ -49,7 +50,7 @@ export class AccountService {
     return this.http.post<IUser>(`${this.baseUrl}account/register`, values).pipe(
       tap((user: IUser) => {
         if (user) {
-          localStorage.setItem('token', user.token);
+          this.storageService.set('token', user.token);
           this.currentUserSource.next(user);
         }
       })
@@ -57,7 +58,7 @@ export class AccountService {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    this.storageService.delete('token');
     this.currentUserSource.next(null);
     this.router.navigateByUrl('/');
   }
