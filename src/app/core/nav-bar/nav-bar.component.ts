@@ -4,7 +4,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IUser } from 'src/app/shared/models/user';
 import { BasketService } from '../services/basket.service';
 import { AccountService } from '../services/account.service';
-import { PERMISSION_LABELS, PERMISSIONS } from 'src/app/shared/constants/auth';
+import { PERMISSION_LABELS, PERMISSIONS, ROLES } from 'src/app/shared/constants/auth';
 
 
 @Component({
@@ -18,7 +18,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
   private currentUserSource = new BehaviorSubject<IUser | null>(null);
   public currentUser$ = this.currentUserSource.asObservable();
   hasAccessToAdminPanel$: Observable<boolean> = this.currentUserSource.pipe(
-    map(user => !!user && PERMISSIONS[PERMISSION_LABELS.PRIVATE_ACCESS].includes(user.role))
+    map(user => !!user && PERMISSIONS[PERMISSION_LABELS.PRIVATE_ACCESS].includes(user.role as ROLES))
   );
   private destroy$ = new Subject<void>();
 

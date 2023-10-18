@@ -6,6 +6,7 @@ import { IAddress } from 'src/app/shared/models/address';
 import { IUser } from 'src/app/shared/models/user';
 import { environment } from 'src/environments/environment';
 import { StorageService } from './storage.service';
+import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class AccountService {
     return this.http.get<IUser>(`${this.baseUrl}account/currentuser`, { headers }).pipe(
       tap((user: IUser) => {
         if (user) {
-          this.storageService.set('token', user.token);
+          this.storageService.set(LOCAL_STORAGE_KEYS.AUTH_TOKEN, user.token);
           this.currentUserSource.next(user);
         }
       })
@@ -39,7 +40,7 @@ export class AccountService {
     return this.http.post<IUser>(`${this.baseUrl}account/login`, values).pipe(
       tap((user: IUser) => {
         if (user) {
-          this.storageService.set('token', user.token);
+          this.storageService.set(LOCAL_STORAGE_KEYS.AUTH_TOKEN, user.token);
           this.currentUserSource.next(user);
         }
       })
@@ -50,7 +51,7 @@ export class AccountService {
     return this.http.post<IUser>(`${this.baseUrl}account/register`, values).pipe(
       tap((user: IUser) => {
         if (user) {
-          this.storageService.set('token', user.token);
+          this.storageService.set(LOCAL_STORAGE_KEYS.AUTH_TOKEN, user.token);
           this.currentUserSource.next(user);
         }
       })
@@ -58,7 +59,7 @@ export class AccountService {
   }
 
   logout(): void {
-    this.storageService.delete('token');
+    this.storageService.delete(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
     this.currentUserSource.next(null);
     this.router.navigateByUrl('/');
   }

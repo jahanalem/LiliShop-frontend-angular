@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { pattern } from 'src/app/shared/constants/patterns';
 import { AccountService } from 'src/app/core/services/account.service';
-import { PERMISSIONS, PERMISSION_LABELS } from 'src/app/shared/constants/auth';
+import { PERMISSIONS, PERMISSION_LABELS, ROLES } from 'src/app/shared/constants/auth';
 
 
 /* sample form: https://mdbootstrap.com/docs/standard/extended/login/ */
@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: (user: IUser | null) => {
           if (user) {
-            if (PERMISSIONS[PERMISSION_LABELS.PRIVATE_ACCESS].includes(user.role)) {
+            if (PERMISSIONS[PERMISSION_LABELS.PRIVATE_ACCESS].includes(user.role as ROLES)) {
               this.router.navigateByUrl('admin');
             } else {
               this.router.navigateByUrl(this.returnUrl);

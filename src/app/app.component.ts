@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { AccountService } from './core/services/account.service';
 import { BasketService } from './core/services/basket.service';
 import { StorageService } from './core/services/storage.service';
+import { LOCAL_STORAGE_KEYS } from './shared/constants/auth';
 
 
 @Component({
@@ -37,7 +38,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   public loadCurrentUser() {
-    const token = this.storageService.get<string>('token');
+    const token = this.storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
     if (!token) {
       return;
     }
