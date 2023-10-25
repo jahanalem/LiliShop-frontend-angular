@@ -7,6 +7,8 @@ import { IUser } from 'src/app/shared/models/user';
 import { environment } from 'src/environments/environment';
 import { StorageService } from './storage.service';
 import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
+import { UserQueryParams } from 'src/app/shared/models/userQueryParams';
+import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +17,7 @@ export class AccountService {
   private readonly baseUrl = environment.apiUrl;
   private currentUserSource = new ReplaySubject<IUser | null>(1);
   public currentUser$ = this.currentUserSource.asObservable();
+  userQueryParams: UserQueryParams = new UserQueryParams();
 
   constructor(private http: HttpClient, private router: Router, private storageService: StorageService) { }
 
@@ -47,6 +50,17 @@ export class AccountService {
           this.currentUserSource.next(user);
         }
       })
+    );
+  }
+
+  getUsers(token: string | null): Observable<IAdminAreaUser[] | null> {
+    if (!token) {
+      return of(null);
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<IAdminAreaUser[]>(`${this.baseUrl}account/users`, { headers }).pipe(
+      tap(response => { console.log(response) })
     );
   }
 
@@ -155,5 +169,13 @@ export class AccountService {
    */
   private resetCurrentUserState(): void {
     this.currentUserSource.next(null);
+  }
+
+  setUserParams(params: UserQueryParams): void {
+    this.userQueryParams = params;
+  }
+
+  getUserParams(): UserQueryParams {
+    return this.userQueryParams;
   }
 }
