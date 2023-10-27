@@ -1,7 +1,7 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { of, Observable, ReplaySubject, tap } from 'rxjs';
+import { of, Observable, ReplaySubject, tap, map } from 'rxjs';
 import { IAddress } from 'src/app/shared/models/address';
 import { IUser } from 'src/app/shared/models/user';
 import { environment } from 'src/environments/environment';
@@ -9,6 +9,7 @@ import { StorageService } from './storage.service';
 import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
 import { UserQueryParams } from 'src/app/shared/models/userQueryParams';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
+import { PaginationWithData, UserPagination } from 'src/app/shared/models/pagination';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +19,17 @@ export class AccountService {
   private currentUserSource = new ReplaySubject<IUser | null>(1);
   public currentUser$ = this.currentUserSource.asObservable();
   userQueryParams: UserQueryParams = new UserQueryParams();
+  pagination = new PaginationWithData<IAdminAreaUser>();
 
   constructor(private http: HttpClient, private router: Router, private storageService: StorageService) { }
+
+  setUserQueryParams(params: UserQueryParams): void {
+    this.userQueryParams = params;
+  }
+
+  getUserQueryParams(): UserQueryParams {
+    return this.userQueryParams;
+  }
 
   /**
   * Loads the current user based on the provided token and updates the user state.
@@ -53,15 +63,35 @@ export class AccountService {
     );
   }
 
-  getUsers(token: string | null): Observable<IAdminAreaUser[] | null> {
+  getUsers(token: string | null): Observable<UserPagination | null> {
     if (!token) {
       return of(null);
     }
+
+    let params = new HttpParams();
+
+    const paramMappings: [keyof UserQueryParams, string][] = [
+      ['pageNumber', 'pageIndex'],
+      ['pageSize', 'pageSize'],
+      ['search', 'search']
+    ];
+    paramMappings.forEach(([key, paramName]) => {
+      const value = this.userQueryParams[key];
+      if (value !== undefined && value !== 0 && value !== '') {
+        params = params.append(paramName, value.toString());
+      }
+    });
+
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<IAdminAreaUser[]>(`${this.baseUrl}account/users`, { headers }).pipe(
-      tap(response => { console.log(response) })
-    );
+    return this.http.get<UserPagination>(`${this.baseUrl}account/users`, { headers, observe: 'response', params })
+      .pipe(
+        map(response => {
+          this.pagination = response.body ?? ({} as UserPagination);
+          return this.pagination;
+        }),
+        tap(response => { console.log(response) })
+      );
   }
 
   /**
@@ -169,13 +199,5 @@ export class AccountService {
    */
   private resetCurrentUserState(): void {
     this.currentUserSource.next(null);
-  }
-
-  setUserParams(params: UserQueryParams): void {
-    this.userQueryParams = params;
-  }
-
-  getUserParams(): UserQueryParams {
-    return this.userQueryParams;
   }
 }

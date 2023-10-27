@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -15,19 +15,21 @@ import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss']
 })
-export class UsersComponent {
+export class UsersComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   columnsToDisplay: string[] = ['id', 'email', 'displayName', 'roleName', 'emailConfirmed', 'phoneNumberConfirmed', 'Action'];
   users: IAdminAreaUser[] = [];
   totalCount: number = 0;
-  userQueryParams: UserQueryParams = this.accountService.getUserParams();
+  userQueryParams: UserQueryParams = this.accountService.getUserQueryParams();
+
   private unsubscribe$ = new Subject<void>();
 
-  constructor(private accountService: AccountService,
+  constructor(
+    private accountService: AccountService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
-    private storageService: StorageService
-  ) {
+    private storageService: StorageService) {
   }
 
   ngOnDestroy() {
@@ -44,6 +46,8 @@ export class UsersComponent {
       .subscribe((pageEvent: PageEvent) => {
         this.userQueryParams.pageNumber = pageEvent.pageIndex + 1;
         this.userQueryParams.pageSize = pageEvent.pageSize;
+        this.accountService.setUserQueryParams(this.userQueryParams);
+        
         this.loadData();
       });
   }
@@ -54,7 +58,8 @@ export class UsersComponent {
       return;
     }
     this.accountService.getUsers(token).subscribe((response) => {
-      this.users = response ? response : [];
+      this.users = response?.data ?? [];
+      this.totalCount = response?.count ?? 0;
       this.changeDetectorRef.detectChanges();
     });
   }

@@ -1,6 +1,7 @@
-import { IPaginationParams } from "./queryParams";
+import { IPaginationParams, ISearchParams } from "./queryParams";
 
-export class UserQueryParams implements IPaginationParams {
+export class UserQueryParams implements IPaginationParams, ISearchParams {
+  search    : string = '';
   pageNumber: number = 1;
   pageSize  : number = 5;
 }

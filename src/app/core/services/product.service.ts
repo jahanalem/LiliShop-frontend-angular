@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
 import { IBrand } from 'src/app/shared/models/brand';
-import { IProductPagination, ProductPagination } from 'src/app/shared/models/pagination';
+import { PaginationWithData, ProductPagination } from 'src/app/shared/models/pagination';
 import { IProduct } from 'src/app/shared/models/product';
 import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
@@ -19,7 +19,7 @@ export class ProductService {
   sizes: ISizeClassification[] = [];
   productCache: Map<any, any> = new Map();
   shopParams: ProductQueryParams = new ProductQueryParams();
-  pagination: ProductPagination = new ProductPagination();
+  pagination = new PaginationWithData<IProduct>();
 
   constructor(private http: HttpClient) { }
 
@@ -80,7 +80,7 @@ export class ProductService {
       .pipe(
         map(response => {
           this.productCache.set(key, response.body?.data);
-          this.pagination = response.body ?? ({} as IProductPagination);
+          this.pagination = response.body ?? ({} as ProductPagination);
           return this.pagination;
         })
       );

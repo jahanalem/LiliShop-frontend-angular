@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     if (this.loginForm.invalid) {
-      return
+      return;
     }
 
     this.accountService.login(this.loginForm.value)
@@ -51,8 +51,8 @@ export class LoginComponent implements OnInit {
             }
           }
         },
-        error: () => {
-          console.log("Submit failed!");
+        error: (err) => {
+          console.log("Submit failed!",err);
         }
       });
   }

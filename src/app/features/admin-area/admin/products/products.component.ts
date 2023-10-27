@@ -9,7 +9,7 @@ import { ProductService } from 'src/app/core/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { DialogData } from 'src/app/shared/models/dialog-data.interface';
-import { ProductPagination } from 'src/app/shared/models/pagination';
+import { PaginationWithData } from 'src/app/shared/models/pagination';
 
 export declare interface IPageEvent {
   /** The current page index. */
@@ -70,7 +70,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       });
   }
 
-  private updateProducts(response: ProductPagination): void {
+  private updateProducts(response: PaginationWithData<IProduct>): void {
     this.products = response.data;
     this.totalCount = response.count;
     this.dataSource = this.products;

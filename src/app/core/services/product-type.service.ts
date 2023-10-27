@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
 import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
-import { ProductTypePagination } from 'src/app/shared/models/pagination';
+import { PaginationWithData, ProductTypePagination } from 'src/app/shared/models/pagination';
 import { IProductType } from 'src/app/shared/models/productType';
 import { ProductTypeParams } from 'src/app/shared/models/productTypeParams';
 import { environment } from 'src/environments/environment';
@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ProductTypeService {
   readonly baseUrl: string = environment.apiUrl;
-  pagination: ProductTypePagination = new ProductTypePagination();
+  pagination: ProductTypePagination = new PaginationWithData<IProductType>();
   typeParams: ProductTypeParams = new ProductTypeParams();
 
   constructor(private http: HttpClient) { }

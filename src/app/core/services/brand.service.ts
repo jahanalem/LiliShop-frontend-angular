@@ -4,7 +4,7 @@ import { Observable, map, tap } from 'rxjs';
 import { BrandParams } from 'src/app/shared/models/BrandParams';
 import { IBrand } from 'src/app/shared/models/brand';
 import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
-import { BrandPagination } from 'src/app/shared/models/pagination';
+import { BrandPagination, PaginationWithData } from 'src/app/shared/models/pagination';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 })
 export class BrandService {
   readonly baseUrl: string = environment.apiUrl;
-  pagination: BrandPagination = new BrandPagination();
+  pagination: BrandPagination = new PaginationWithData<IBrand>();
   brandParams: BrandParams = new BrandParams();
 
   constructor(private http: HttpClient) { }
