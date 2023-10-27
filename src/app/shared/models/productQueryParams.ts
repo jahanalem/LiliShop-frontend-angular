@@ -5,8 +5,8 @@ export class ProductQueryParams implements ISortParams, IPaginationParams, ISear
   typeId       : number = 0;
   sizeId       : number = 0;
 
-  sort         : string = 'name';
-  sortDirection: string = 'asc';
+  sort         : string = 'id';
+  sortDirection: string = 'desc'; // asc
 
   pageNumber   : number = 1;
   pageSize     : number = 6;

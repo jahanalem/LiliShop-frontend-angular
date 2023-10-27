@@ -73,6 +73,8 @@ export class AccountService {
     const paramMappings: [keyof UserQueryParams, string][] = [
       ['pageNumber', 'pageIndex'],
       ['pageSize', 'pageSize'],
+      ['sort', 'sort'],
+      ['sortDirection', 'sortDirection'],
       ['search', 'search']
     ];
     paramMappings.forEach(([key, paramName]) => {

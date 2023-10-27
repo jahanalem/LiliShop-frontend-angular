@@ -8,7 +8,16 @@ import { AccountService } from 'src/app/core/services/account.service';
 import { StorageService } from 'src/app/core/services/storage.service';
 import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
+import { MatSort, Sort } from '@angular/material/sort';
 
+enum ColumnNames {
+  Id                   = 'id',
+  Email                = 'email',
+  DisplayName          = 'displayName',
+  RoleName             = 'roleName',
+  EmailConfirmed       = 'emailConfirmed',
+  Action               = 'Action'
+}
 
 @Component({
   selector: 'app-users',
@@ -17,8 +26,26 @@ import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
 })
 export class UsersComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
-  columnsToDisplay: string[] = ['id', 'email', 'displayName', 'roleName', 'emailConfirmed', 'phoneNumberConfirmed', 'Action'];
+  columnsToDisplay: ColumnNames[] = [
+    ColumnNames.Id,
+    ColumnNames.Email,
+    ColumnNames.DisplayName,
+    ColumnNames.RoleName,
+    ColumnNames.EmailConfirmed,
+    ColumnNames.Action
+  ];
+
+  columnFriendlyNames: { [key in ColumnNames]: string } = {
+    [ColumnNames.Id]                  : 'ID',
+    [ColumnNames.Email]               : 'Email',
+    [ColumnNames.DisplayName]         : 'Name',
+    [ColumnNames.RoleName]            : 'Role',
+    [ColumnNames.EmailConfirmed]      : 'Email Confirmed',
+    [ColumnNames.Action]              : 'Aktion'
+  };
+
   users: IAdminAreaUser[] = [];
   totalCount: number = 0;
   userQueryParams: UserQueryParams = this.accountService.getUserQueryParams();
@@ -47,9 +74,18 @@ export class UsersComponent implements AfterViewInit {
         this.userQueryParams.pageNumber = pageEvent.pageIndex + 1;
         this.userQueryParams.pageSize = pageEvent.pageSize;
         this.accountService.setUserQueryParams(this.userQueryParams);
-        
+
         this.loadData();
       });
+
+    this.sort.sortChange.pipe(takeUntil(this.unsubscribe$)).subscribe((sortEvent: Sort) => {
+      this.userQueryParams.sort = sortEvent.active;
+      this.userQueryParams.sortDirection = sortEvent.direction;
+      console.log(`sort  = ${this.userQueryParams.sort},  value = ${this.userQueryParams.sortDirection}`);
+      this.accountService.setUserQueryParams(this.userQueryParams);
+
+      this.loadData();
+    })
   }
 
   loadData() {
@@ -63,6 +99,11 @@ export class UsersComponent implements AfterViewInit {
       this.changeDetectorRef.detectChanges();
     });
   }
+
+  getFriendlyName(column: ColumnNames): string {
+    return this.columnFriendlyNames[column] || column;
+  }
+
 
   //TODO: Implement this method
   editUser(id: number) {
