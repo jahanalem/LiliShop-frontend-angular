@@ -6,10 +6,8 @@ import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { Subject, catchError, debounceTime, merge, of, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProductService } from 'src/app/core/services/product.service';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
-import { DialogData } from 'src/app/shared/models/dialog-data.interface';
 import { PaginationWithData } from 'src/app/shared/models/pagination';
+import { DeleteService } from 'src/app/core/services/utility-services/delete.service';
 
 export declare interface IPageEvent {
   /** The current page index. */
@@ -40,7 +38,9 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   totalCount: number = 0;
   isLoadingResults = true;
   private searchTerms = new Subject<string>();
-  constructor(private productService: ProductService, private router: Router, public dialog: MatDialog) {
+  constructor(private productService: ProductService,
+    private router: Router,
+    private deleteService: DeleteService) {
     this.shopParams = this.productService.getShopParams();
   }
 
@@ -136,31 +136,10 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   deleteProduct(id: number) {
-
-    const dialogData: DialogData = {
-      title: 'Delete Dialog',
-      content: 'Would you like to delete this item?',
-      showConfirmationButtons: true
-    };
-
-    const dialogRef = this.dialog.open<DialogComponent, DialogData>(DialogComponent, { data: dialogData });
-
-    dialogRef.afterClosed().subscribe({
-      next: (result?: boolean | undefined) => {
-        if (!result) {
-          return;
-        }
-        console.log(result);
-        this.productService.deleteProduct(id).subscribe({
-          next: () => {
-            console.log("product deleted!");
-            this.getProducts(false);
-          },
-          error: (error) => { console.error(error) }
-        })
-      },
-      error: (error) => { console.error(error) }
-    })
+    this.deleteService.deleteObject(
+      id,
+      () => this.productService.deleteProduct(id),
+      () => this.getProducts());
   }
 
   createProduct() {

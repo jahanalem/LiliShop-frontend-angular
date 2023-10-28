@@ -1,11 +1,9 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ProductTypeService } from 'src/app/core/services/product-type.service';
-import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog/confirmation-dialog.component';
-import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
+import { DeleteService } from 'src/app/core/services/utility-services/delete.service';
 import { IProductType } from 'src/app/shared/models/productType';
 import { ProductTypeParams } from 'src/app/shared/models/productTypeParams';
 
@@ -25,8 +23,8 @@ export class ProductTypesComponent implements OnInit, AfterViewInit {
 
   constructor(private typeService: ProductTypeService,
     private router: Router,
-    private dialog: MatDialog,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private deleteService: DeleteService
   ) {
   }
 
@@ -57,23 +55,11 @@ export class ProductTypesComponent implements OnInit, AfterViewInit {
   }
 
   deleteProductType(id: number) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.typeService.deleteType(id).subscribe((response: DeleteResponse) => {
-          if (response.success) {
-            // Handle successful deletion
-            this.types = this.types.filter(c => c.id !== id);
-            --this.totalCount;
-            this.changeDetectorRef.detectChanges();
-            console.log(response.message);
-          } else {
-            // Handle failure
-            console.error(response.message);
-          }
-        });
-      }
-    });
+    this.deleteService.deleteObject(
+      id,
+      () => this.typeService.deleteType(id),
+      () => this.loadData()
+    );
   }
 
   editProductType(id: number) {

@@ -9,14 +9,15 @@ import { StorageService } from 'src/app/core/services/storage.service';
 import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
 import { MatSort, Sort } from '@angular/material/sort';
+import { DeleteService } from 'src/app/core/services/utility-services/delete.service';
 
 enum ColumnNames {
-  Id                   = 'id',
-  Email                = 'email',
-  DisplayName          = 'displayName',
-  RoleName             = 'roleName',
-  EmailConfirmed       = 'emailConfirmed',
-  Action               = 'Action'
+  Id             = 'id',
+  Email          = 'email',
+  DisplayName    = 'displayName',
+  RoleName       = 'roleName',
+  EmailConfirmed = 'emailConfirmed',
+  Action         = 'Action'
 }
 
 @Component({
@@ -38,12 +39,12 @@ export class UsersComponent implements AfterViewInit {
   ];
 
   columnFriendlyNames: { [key in ColumnNames]: string } = {
-    [ColumnNames.Id]                  : 'ID',
-    [ColumnNames.Email]               : 'Email',
-    [ColumnNames.DisplayName]         : 'Name',
-    [ColumnNames.RoleName]            : 'Role',
-    [ColumnNames.EmailConfirmed]      : 'Email Confirmed',
-    [ColumnNames.Action]              : 'Aktion'
+    [ColumnNames.Id]            : 'ID',
+    [ColumnNames.Email]         : 'Email',
+    [ColumnNames.DisplayName]   : 'Name',
+    [ColumnNames.RoleName]      : 'Role',
+    [ColumnNames.EmailConfirmed]: 'Email Confirmed',
+    [ColumnNames.Action]        : 'Action'
   };
 
   users: IAdminAreaUser[] = [];
@@ -56,7 +57,8 @@ export class UsersComponent implements AfterViewInit {
     private accountService: AccountService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
-    private storageService: StorageService) {
+    private storageService: StorageService,
+    private deleteService: DeleteService) {
   }
 
   ngOnDestroy() {
@@ -115,8 +117,10 @@ export class UsersComponent implements AfterViewInit {
     this.router.navigateByUrl(`/admin/users/edit/${-1}`);
   }
 
-  //TODO: Implement this method
-  deleteUser(_id: number) {
-    return null
+  deleteUser(userId: number) {
+    this.deleteService.deleteObject(
+      userId,
+      () => this.accountService.delete(userId),
+      () => this.loadData);
   }
 }

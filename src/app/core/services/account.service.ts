@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { of, Observable, ReplaySubject, tap, map } from 'rxjs';
+import { of, Observable, ReplaySubject, tap, map, catchError, throwError } from 'rxjs';
 import { IAddress } from 'src/app/shared/models/address';
 import { IUser } from 'src/app/shared/models/user';
 import { environment } from 'src/environments/environment';
@@ -10,6 +10,7 @@ import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
 import { UserQueryParams } from 'src/app/shared/models/userQueryParams';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
 import { PaginationWithData, UserPagination } from 'src/app/shared/models/pagination';
+import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -201,5 +202,14 @@ export class AccountService {
    */
   private resetCurrentUserState(): void {
     this.currentUserSource.next(null);
+  }
+
+  delete(userId: number): Observable<DeleteResponse> {
+    const url = `${this.baseUrl}account/delete/${userId}`;
+    return this.http.delete<DeleteResponse>(url)
+      .pipe(catchError(error => {
+        console.error(error);
+        return throwError(() => error);
+      }));
   }
 }
