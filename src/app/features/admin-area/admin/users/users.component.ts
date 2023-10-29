@@ -83,7 +83,6 @@ export class UsersComponent implements AfterViewInit {
     this.sort.sortChange.pipe(takeUntil(this.unsubscribe$)).subscribe((sortEvent: Sort) => {
       this.userQueryParams.sort = sortEvent.active;
       this.userQueryParams.sortDirection = sortEvent.direction;
-      console.log(`sort  = ${this.userQueryParams.sort},  value = ${this.userQueryParams.sortDirection}`);
       this.accountService.setUserQueryParams(this.userQueryParams);
 
       this.loadData();

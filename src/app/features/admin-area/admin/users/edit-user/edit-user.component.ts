@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AccountService } from 'src/app/core/services/account.service';
+import { RoleService } from 'src/app/core/services/role.service';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
+import { IRole } from 'src/app/shared/models/role';
 
 @Component({
   selector: 'app-edit-user',
@@ -13,19 +15,17 @@ export class EditUserComponent implements OnInit {
   adminUserForm!: FormGroup;
   adminUser: IAdminAreaUser | null = null;
   userIdFromUrl: number = 0;
-
-  // Read-only fields
-  readonlyId!: number | null;
-  readonlyLockoutEnd!: Date | null;
-  readonlyAccessFailedCount!: number | null;
+  roles: IRole[] = [];
 
   constructor(
     private accountService: AccountService,
+    private roleService: RoleService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
+    this.getRoles();
     this.getUser();
     this.createAdminUserForm();
   }
@@ -34,7 +34,7 @@ export class EditUserComponent implements OnInit {
     this.adminUserForm = this.formBuilder.group({
       email: [{ value: null, disabled: true }, [Validators.required, Validators.email]],
       displayName: [null, Validators.required],
-      roleName: [null, Validators.required],
+      roleId: [null, Validators.required],
       emailConfirmed: [false],
       phoneNumber: [null],
       phoneNumberConfirmed: [false],
@@ -53,21 +53,23 @@ export class EditUserComponent implements OnInit {
         this.accountService.getUser(this.userIdFromUrl).subscribe(response => {
           this.adminUser = response;
           this.updateAdminUserForm(response);
-
-          // Initialize read-only fields
-          this.readonlyId = response.id ?? null;
-          this.readonlyLockoutEnd = response.lockoutEnd ?? null;
-          this.readonlyAccessFailedCount = response.accessFailedCount ?? null;
         })
       }
     })
+  }
+
+  getRoles() {
+    this.roleService.getRoles().subscribe({
+      next: (roles) => { this.roles = roles; },
+      error: (error) => { console.error(error) }
+    });
   }
 
   updateAdminUserForm(user: IAdminAreaUser) {
     this.adminUserForm.patchValue({
       email: user.email,
       displayName: user.displayName,
-      roleName: user.roleName,
+      roleId: user.roleId,
       emailConfirmed: user.emailConfirmed,
       phoneNumber: user.phoneNumber,
       phoneNumberConfirmed: user.phoneNumberConfirmed,
@@ -76,6 +78,7 @@ export class EditUserComponent implements OnInit {
       lockoutEnd: user.lockoutEnd,
       accessFailedCount: user.accessFailedCount
     });
+    //this.adminUserForm.get('roleName')?.setValue(user.roleId);
   }
 
   onSubmit() {

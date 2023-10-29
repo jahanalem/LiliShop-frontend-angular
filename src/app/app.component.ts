@@ -32,7 +32,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     const basketId = this.storageService.get<string>('basket_id');
     if (basketId) {
       this.basketService.getBasket(basketId).subscribe({
-        error: error => { console.log(error); }
+        error: error => { console.error(error); }
       });
     }
   }
@@ -43,7 +43,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       return;
     }
     this.accountService.loadCurrentUser(token).subscribe({
-      error: (error: any) => { console.log(error); }
+      error: (error: any) => { console.error(error); }
     });
   }
 }

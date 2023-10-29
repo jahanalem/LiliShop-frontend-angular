@@ -187,7 +187,7 @@ describe('CheckoutPaymentComponent', () => {
         expect(error.message).toEqual('Client secret is missing');
         expect(component.toastr.error).toHaveBeenCalledWith('Client secret is missing');
       } else {
-        console.log(`Unknown error occurred: ${error}`);
+        console.error(`Unknown error occurred: ${error}`);
       }
     }
   });

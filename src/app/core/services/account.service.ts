@@ -97,8 +97,7 @@ export class AccountService {
         map(response => {
           this.pagination = response.body ?? ({} as UserPagination);
           return this.pagination;
-        }),
-        tap(response => { console.log(response) })
+        })
       );
   }
 

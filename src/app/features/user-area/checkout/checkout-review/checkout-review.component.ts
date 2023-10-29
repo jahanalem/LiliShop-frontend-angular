@@ -29,7 +29,7 @@ export class CheckoutReviewComponent implements OnInit, OnDestroy {
     const paymentIntentSubscription = this.basketService.createPaymentIntent().subscribe(
       {
         next: () => { this.appStepper.next(); },
-        error: error => { console.log(error); }
+        error: error => { console.error(error); }
       });
 
     this.subscription.add(paymentIntentSubscription);

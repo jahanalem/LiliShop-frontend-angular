@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
           }
         },
         error: (err) => {
-          console.log("Submit failed!",err);
+          console.error("Submit failed!",err);
         }
       });
   }

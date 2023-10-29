@@ -3,6 +3,7 @@ export interface IAdminAreaUser {
   email               :  string;
   displayName         :  string;
   roleName            :  string;
+  roleId              :  number;
   emailConfirmed      ?: boolean;
   phoneNumber         ?: string;
   phoneNumberConfirmed:  boolean;
@@ -16,6 +17,7 @@ export class AdminAreaUser implements IAdminAreaUser {
   email!              :  string;
   displayName!        :  string;
   roleName!           :  string;
+  roleId!             :  number;
   emailConfirmed      :  boolean = false;
   phoneNumber         ?: string;
   phoneNumberConfirmed:  boolean = false;

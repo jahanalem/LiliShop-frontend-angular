@@ -47,7 +47,7 @@ export class ShopComponent implements OnInit {
           this.totalCount = response.count;
         }
       },
-      error: (error) => { console.log(error); }
+      error: (error) => { console.error(error); }
     });
   }
 
@@ -123,7 +123,7 @@ export class ShopComponent implements OnInit {
     apiCall.subscribe({
       next: successCallback,
       error: (error) => {
-        console.log(error);
+        console.error(error);
       }
     });
   }

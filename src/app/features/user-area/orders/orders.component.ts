@@ -22,7 +22,7 @@ export class OrdersComponent implements OnInit {
     return this.orderService.getOrdersForUser().subscribe((orders: IOrder[]) => {
       this.orders = orders;
     }, error => {
-      console.log(error);
+      console.error(error);
     });
   }
 }

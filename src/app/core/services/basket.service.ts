@@ -92,7 +92,7 @@ export class BasketService {
     // Update the basket on the server
     this.setBasket(currentBasket).subscribe({
       next: () => console.log('Basket updated successfully'),
-      error: (error) => console.log('An error occurred while updating the basket', error)
+      error: (error) => console.error('An error occurred while updating the basket', error)
     });
   }
 
@@ -152,7 +152,7 @@ export class BasketService {
       }),
       catchError(error => {
         // Log the error and re-throw it for further handling
-        console.log('An error occurred while setting the basket:', error);
+        console.error('An error occurred while setting the basket:', error);
         return throwError(() => error);
       })
     );
@@ -195,7 +195,7 @@ export class BasketService {
     // Update the basket on the server
     this.setBasket(currentBasket).subscribe({
       next: () => console.log('Basket updated successfully'),
-      error: (error) => console.log('An error occurred while updating the basket', error)
+      error: (error) => console.error('An error occurred while updating the basket', error)
     });
   }
 
@@ -386,7 +386,7 @@ export class BasketService {
       }),
       catchError(error => {
         // Log the error and re-throw it
-        console.log('Error deleting basket:', error);
+        console.error('Error deleting basket:', error);
         return throwError(() => error);
       })
     );
@@ -453,7 +453,7 @@ export class BasketService {
     // Update the basket
     this.setBasket(currentBasket).subscribe({
       next: () => console.log('Basket updated successfully'),
-      error: (error) => console.log('An error occurred while updating basket', error)
+      error: (error) => console.error('An error occurred while updating basket', error)
     });
   }
 }

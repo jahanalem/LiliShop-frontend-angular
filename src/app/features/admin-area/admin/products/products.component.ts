@@ -85,7 +85,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
           }
         },
         error: (error) => {
-          console.log(error);
+          console.error(error);
         }
       });
   }
@@ -100,7 +100,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       }),
 
       catchError(error => {
-        console.log(error);
+        console.error(error);
         return of([]);
       })
     ).subscribe({
@@ -110,7 +110,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
         }
       },
       error: (error) => {
-        console.log(error);
+        console.error(error);
       }
     });
   }

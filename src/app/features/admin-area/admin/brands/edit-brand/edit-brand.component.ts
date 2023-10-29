@@ -55,7 +55,7 @@ export class EditBrandComponent implements OnInit {
         this.brand = response;
       }),
       catchError(error => {
-        console.log(error);
+        console.error(error);
         return EMPTY;
       })
     ).subscribe((response) => {

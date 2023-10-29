@@ -59,7 +59,7 @@ export class ProductDetailsComponent implements OnInit {
       this.product = product;
       this.bcService.set('@productDetails', product.name);
     }, error => {
-      console.log(error);
+      console.error(error);
     });
 
     // const id = this.activatedRoute.snapshot.paramMap.get('id');
