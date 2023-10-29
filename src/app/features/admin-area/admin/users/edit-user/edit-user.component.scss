@@ -1,0 +1,53 @@
+
+/* General Styles */
+.admin-user-form {
+  font-family: 'Arial', sans-serif;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-section {
+  margin: 20px;
+}
+
+/* Form Fields */
+.custom-mat-field {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.readonly-field .mat-form-field-wrapper {
+  background-color: #f3f3f3;
+}
+
+/* Buttons */
+.back-button {
+  margin-bottom: 20px;
+}
+
+.save-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 40px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.save-button:hover {
+  background-color: #0056b3;
+}

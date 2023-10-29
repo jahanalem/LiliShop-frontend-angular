@@ -64,6 +64,11 @@ export class AccountService {
     );
   }
 
+
+  getUser(id: number): Observable<IAdminAreaUser> {
+    return this.http.get<IAdminAreaUser>(`${this.baseUrl}account/user/${id}`);
+  }
+
   getUsers(token: string | null): Observable<UserPagination | null> {
     if (!token) {
       return of(null);
