@@ -216,4 +216,12 @@ export class AccountService {
         return throwError(() => error);
       }));
   }
+
+  updateUser(userId: number, updatingUser: IAdminAreaUser): Observable<IAdminAreaUser> {
+    const url = `${this.baseUrl}account/update-user/${userId}`;
+    return this.http.put<IAdminAreaUser>(url, updatingUser).pipe(catchError(error => {
+      console.error(error);
+      return throwError(() => error);
+    }));;
+  }
 }

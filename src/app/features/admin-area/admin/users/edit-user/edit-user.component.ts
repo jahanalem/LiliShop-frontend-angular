@@ -78,11 +78,29 @@ export class EditUserComponent implements OnInit {
       lockoutEnd: user.lockoutEnd,
       accessFailedCount: user.accessFailedCount
     });
-    //this.adminUserForm.get('roleName')?.setValue(user.roleId);
   }
 
   onSubmit() {
+    const { value } = this.adminUserForm;
+    const formValue = value as IAdminAreaUser;
+    const updatedRoleName = this.roles.find(r => r.id === formValue.roleId)?.name ?? "Standard";
 
+    const userPayload = {
+      ...this.adminUser,
+      ...formValue,
+      roleName: updatedRoleName
+    };
+
+    if (this.adminUser?.id) {
+      this.accountService.updateUser(this.adminUser.id, userPayload).subscribe({
+        next: () => {
+          console.log('User updated successfully.');
+        },
+        error: (error) => {
+          console.error('Error updating user:', error);
+        }
+      });
+    }
   }
 
   navigateBack() {
