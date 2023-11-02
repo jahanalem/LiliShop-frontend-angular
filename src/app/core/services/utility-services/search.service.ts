@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { BehaviorSubject, Observable, catchError, debounceTime, map, of, switchMap } from 'rxjs';
 import { PaginationWithData } from 'src/app/shared/models/pagination';
+import { ISearchParams } from 'src/app/shared/models/queryParams';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class SearchService<T> {
 
   constructor() { }
 
-  applyFilter(filterValueEvent: Event, paginator: MatPaginator, queryParams: any): void {
+  applyFilter(filterValueEvent: Event, paginator: MatPaginator, queryParams: ISearchParams): void {
     const filterValue = (filterValueEvent.target as HTMLInputElement).value;
     queryParams.search = filterValue.trim().toLowerCase();
 
