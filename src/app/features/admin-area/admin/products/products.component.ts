@@ -3,11 +3,12 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { IProduct } from 'src/app/shared/models/product';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
-import { Subject, catchError, debounceTime, merge, of, switchMap } from 'rxjs';
+import { merge } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProductService } from 'src/app/core/services/product.service';
 import { PaginationWithData } from 'src/app/shared/models/pagination';
 import { DeleteService } from 'src/app/core/services/utility-services/delete.service';
+import { SearchService } from 'src/app/core/services/utility-services/search.service';
 
 export declare interface IPageEvent {
   /** The current page index. */
@@ -31,21 +32,23 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  columnsToDisplay: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'Action'];
   public dataSource!: IProduct[];
-  products: IProduct[] = [];
-  shopParams: ProductQueryParams;
-  totalCount: number = 0;
+  columnsToDisplay: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'Action'];
+  products        : IProduct[] = [];
+  shopParams      : ProductQueryParams;
+  totalCount      : number = 0;
   isLoadingResults = true;
-  private searchTerms = new Subject<string>();
+
   constructor(private productService: ProductService,
     private router: Router,
-    private deleteService: DeleteService) {
+    private deleteService: DeleteService,
+    private searchService: SearchService<IProduct>) {
     this.shopParams = this.productService.getShopParams();
   }
 
   ngOnInit(): void {
-    this.handleSearch();
+    this.searchService.handleSearch(() => this.productService.getProducts())
+      .subscribe(response => this.updateProducts(response));
   }
 
   ngAfterViewInit() {
@@ -90,41 +93,8 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       });
   }
 
-  handleSearch() {
-    this.searchTerms.pipe(
-      debounceTime(500),
-
-      switchMap((term: string) => {
-        this.shopParams.search = term;
-        return this.productService.getProducts();
-      }),
-
-      catchError(error => {
-        console.error(error);
-        return of([]);
-      })
-    ).subscribe({
-      next: (response) => {
-        if (response && 'data' in response && 'count' in response) {
-          this.updateProducts(response);
-        }
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
-  }
-
   applyFilter(filterValueEvent: Event) {
-    const filterValue = (filterValueEvent.target as HTMLInputElement).value;
-    this.shopParams.search = filterValue.trim().toLowerCase();
-
-    if (this.shopParams.search) {
-      this.paginator.firstPage();
-    }
-
-    // Emit the new search term
-    this.searchTerms.next(this.shopParams.search);
+    this.searchService.applyFilter(filterValueEvent, this.paginator, this.shopParams);
   }
 
   editProduct(id: number) {

@@ -1,3 +1,8 @@
+<mat-form-field>
+  <mat-label>Filter</mat-label>
+  <input matInput (input)="applyFilter($event)" placeholder="example" #input>
+</mat-form-field>
+
 <div class="mat-elevation-z8">
 
   <button mat-raised-button color="primary" (click)="createUser()">

@@ -2,14 +2,14 @@ import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { MatSort, Sort } from '@angular/material/sort';
 
 import { UserQueryParams } from './../../../../shared/models/userQueryParams';
 import { AccountService } from 'src/app/core/services/account.service';
-import { StorageService } from 'src/app/core/services/storage.service';
-import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
-import { MatSort, Sort } from '@angular/material/sort';
 import { DeleteService } from 'src/app/core/services/utility-services/delete.service';
+import { UserPagination } from 'src/app/shared/models/pagination';
+import { SearchService } from 'src/app/core/services/utility-services/search.service';
 
 enum ColumnNames {
   Id             = 'id',
@@ -57,8 +57,8 @@ export class UsersComponent implements AfterViewInit {
     private accountService: AccountService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
-    private storageService: StorageService,
-    private deleteService: DeleteService) {
+    private deleteService: DeleteService,
+    private searchService: SearchService<IAdminAreaUser>) {
   }
 
   ngOnDestroy() {
@@ -66,6 +66,8 @@ export class UsersComponent implements AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.searchService.handleSearch(() => this.accountService.getUsers())
+      .subscribe(response => this.updateData(response));
   }
 
   ngAfterViewInit() {
@@ -90,15 +92,17 @@ export class UsersComponent implements AfterViewInit {
   }
 
   loadData() {
-    const token = this.storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
-    if (!token) {
-      return;
-    }
-    this.accountService.getUsers(token).subscribe((response) => {
-      this.users = response?.data ?? [];
-      this.totalCount = response?.count ?? 0;
-      this.changeDetectorRef.detectChanges();
+    this.accountService.getUsers().subscribe((response) => {
+      if (response) {
+        this.updateData(response);
+      }
     });
+  }
+
+  updateData(userPagination: UserPagination) {
+    this.users = userPagination?.data ?? [];
+    this.totalCount = userPagination?.count ?? 0;
+    this.changeDetectorRef.detectChanges();
   }
 
   getFriendlyName(column: ColumnNames): string {
@@ -106,14 +110,12 @@ export class UsersComponent implements AfterViewInit {
   }
 
 
-  //TODO: Implement this method
   editUser(id: number) {
     this.router.navigateByUrl(`/admin/users/edit/${id}`);
   }
 
-  //TODO: Implement this method
   createUser() {
-    this.router.navigateByUrl(`/admin/users/edit/${-1}`);
+    window.open(`/account/register`, "_blank");
   }
 
   deleteUser(userId: number) {
@@ -121,5 +123,9 @@ export class UsersComponent implements AfterViewInit {
       userId,
       () => this.accountService.delete(userId),
       () => this.loadData);
+  }
+
+  applyFilter(filterValueEvent: Event) {
+    this.searchService.applyFilter(filterValueEvent, this.paginator, this.userQueryParams);
   }
 }

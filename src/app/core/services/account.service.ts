@@ -69,7 +69,8 @@ export class AccountService {
     return this.http.get<IAdminAreaUser>(`${this.baseUrl}account/user/${id}`);
   }
 
-  getUsers(token: string | null): Observable<UserPagination | null> {
+  getUsers(): Observable<UserPagination | null> {
+    const token = this.storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
     if (!token) {
       return of(null);
     }
