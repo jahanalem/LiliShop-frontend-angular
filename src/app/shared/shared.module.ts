@@ -20,6 +20,8 @@ import { FileUploadModule } from 'ng2-file-upload';
 import { FormatValuePipe } from './pipes/format-value.pipe';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { MatIconModule } from '@angular/material/icon';
+import { CheckPolicyDirective } from './directives/check-policy.directive';
+
 
 const components = [
   PagingHeaderComponent,
@@ -37,6 +39,7 @@ const components = [
   declarations: [
     ...components,
     FormatValuePipe,
+    CheckPolicyDirective,
   ],
   imports: [
     CommonModule,
@@ -60,7 +63,8 @@ const components = [
     CdkStepperModule,
     FileUploadModule,
     FormatValuePipe,
-    ...components
+    ...components,
+    CheckPolicyDirective
   ]
 })
 export class SharedModule { }

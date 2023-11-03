@@ -168,5 +168,22 @@ label.xng-breadcrumb-trail {
   }
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.button-disabled {
+  color: gray !important;
+  background-color: #f0f0f0 !important;
+  border-color: #d3d3d3 !important;
+}
+
+.icon-disabled {
+  color: gray !important;
+}

@@ -5,7 +5,8 @@
 
 <div class="mat-elevation-z8">
 
-  <button mat-raised-button color="primary" (click)="createProduct()">
+  <button [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" (click)="createProduct()" mat-raised-button
+    color="primary">
     <mat-icon>add_circle_outline</mat-icon>
     New Product
   </button>
@@ -20,10 +21,14 @@
         <ng-container *ngIf="column === 'Action'; else normalCell">
           <button (click)="showProduct(row.id)" mat-icon-button class="mx-1" color="primary"><mat-icon
               class="details-icon">open_in_new</mat-icon></button>
-          <button (click)="editProduct(row.id)" mat-icon-button class="mx-1" color="accent"><mat-icon
-              class="edit-icon">edit</mat-icon></button>
-          <button (click)="deleteProduct(row.id)" mat-stroked-button class="mx-1" color="warn"><mat-icon
-              class="delete-icon">delete</mat-icon></button>
+          <button [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" (click)="editProduct(row.id)"
+            mat-icon-button class="mx-1" color="accent">
+            <mat-icon class="edit-icon">edit</mat-icon>
+          </button>
+          <button [appCheckPolicy]="policyNames.RequireSuperAdminRole" (click)="deleteProduct(row.id)"
+            mat-stroked-button class="mx-1" color="warn">
+            <mat-icon class="delete-icon">delete</mat-icon>
+          </button>
         </ng-container>
 
         <!-- If not Action, show the regular cell content -->
@@ -42,11 +47,7 @@
     </tr>
   </table>
 
-  <mat-paginator
-  [pageSizeOptions]="[5, 10, 25]"
-  [length]="totalCount"
-  showFirstLastButtons
-  [pageSize]="this.shopParams.pageSize!"
-  [pageIndex]="shopParams.pageNumber!-1"
-  aria-label="Select page of users"></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25]" [length]="totalCount" showFirstLastButtons
+    [pageSize]="this.shopParams.pageSize!" [pageIndex]="shopParams.pageNumber!-1"
+    aria-label="Select page of users"></mat-paginator>
 </div>
