@@ -1,45 +1,55 @@
 import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { Observable, map } from 'rxjs';
-import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
-import { IUser } from 'src/app/shared/models/user';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { AuthorizationService } from 'src/app/core/services/authorization.service';
 import { AccountService } from '../services/account.service';
+import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { IUser } from 'src/app/shared/models/user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
+
   constructor(
     private accountService: AccountService,
+    private authorizationService: AuthorizationService,
     private router: Router,
     public dialog: MatDialog
   ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    const requiredRoles = route.data['access'] as string[] | undefined;
+    const policyName = route.data['policy'] as string | undefined;
 
-    return this.accountService.currentUser$.pipe(
-      map((authenticatedUser: IUser | null) => {
-        if (!authenticatedUser) {
-          this.redirectToLoginPage(state.url);
-          return false;
-        }
-        // If requiredRoles is undefined or falsy, it returns true because no specific role is required to access the page.
-        //If requiredRoles is truthy (it contains one or more roles), then it calls the hasPermission method
-        if (!requiredRoles || this.hasPermission(requiredRoles, authenticatedUser)) {
-          return true;
-        }
+    if (!policyName) {
+      // If no policy is specified, allow access
+      return of(true);
+    }
 
-        this.showAccessDeniedDialog();
-        this.redirectToHomePage(state.url);
-        return false;
+    return this.authorizationService.getPolicy(policyName).pipe(
+      switchMap(requiredRoles => {
+        return this.accountService.currentUser$.pipe(
+          map((authenticatedUser: IUser | null) => {
+            if (!authenticatedUser) {
+              this.redirectToLoginPage(state.url);
+              return false;
+            }
+            if (this.hasPermission(requiredRoles, authenticatedUser)) {
+              return true;
+            }
+            this.showAccessDeniedDialog();
+            this.redirectToHomePage(state.url);
+            return false;
+          })
+        );
       })
     );
   }
 
-  private hasPermission(permissionKind: string[], authenticatedUser: IUser): boolean {
-    return permissionKind.includes(authenticatedUser.role);
+  private hasPermission(requiredRoles: string[], authenticatedUser: IUser): boolean {
+    return requiredRoles.includes(authenticatedUser.role);
   }
 
   private redirectToLoginPage(returnUrl: string): void {

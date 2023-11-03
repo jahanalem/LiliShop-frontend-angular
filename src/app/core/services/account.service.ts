@@ -93,13 +93,13 @@ export class AccountService {
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get<UserPagination>(`${this.baseUrl}account/users`, { headers, observe: 'response', params })
-      .pipe(
-        map(response => {
-          this.pagination = response.body ?? ({} as UserPagination);
-          return this.pagination;
-        })
-      );
+    return this.http.get<UserPagination>(`${this.baseUrl}account/users`, { headers, observe: 'response', params }).pipe(
+      map(response => response.body as UserPagination),
+      tap(pagination => this.pagination = pagination),
+      catchError(error => {
+        return throwError(() => error);
+      })
+    );
   }
 
   /**

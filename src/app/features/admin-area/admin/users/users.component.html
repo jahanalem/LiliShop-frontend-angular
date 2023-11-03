@@ -1,3 +1,5 @@
+<ng-container *ngIf="existUser">
+
 <mat-form-field>
   <mat-label>Filter</mat-label>
   <input matInput (input)="applyFilter($event)" placeholder="example" #input>
@@ -10,7 +12,6 @@
     New User
   </button>
 
-  <ng-container *ngIf="users">
 
     <table mat-table [dataSource]="users" matSort>
 
@@ -55,5 +56,5 @@
       [pageSize]="this.userQueryParams.pageSize!" [pageIndex]="userQueryParams.pageNumber!-1"
       aria-label="Select page of users">
     </mat-paginator>
-  </ng-container>
 </div>
+</ng-container>

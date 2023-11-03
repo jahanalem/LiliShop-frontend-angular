@@ -1,11 +1,13 @@
 
-import { IUser } from 'src/app/shared/models/user';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { pattern } from 'src/app/shared/constants/patterns';
 import { AccountService } from 'src/app/core/services/account.service';
-import { PERMISSIONS, PERMISSION_LABELS, ROLES } from 'src/app/shared/constants/auth';
+import { AuthorizationService } from 'src/app/core/services/authorization.service';
+import { map, of, switchMap } from 'rxjs';
+import { PolicyNames } from 'src/app/shared/models/policy';
+
 
 
 /* sample form: https://mdbootstrap.com/docs/standard/extended/login/ */
@@ -21,7 +23,8 @@ export class LoginComponent implements OnInit {
   constructor(private accountService: AccountService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder,
+    private authorizationService: AuthorizationService) { }
 
   ngOnInit(): void {
     this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/shop';
@@ -41,10 +44,23 @@ export class LoginComponent implements OnInit {
     }
 
     this.accountService.login(this.loginForm.value)
-      .subscribe({
-        next: (user: IUser | null) => {
+      .pipe(
+        switchMap(user => {
           if (user) {
-            if (PERMISSIONS[PERMISSION_LABELS.PRIVATE_ACCESS].includes(user.role as ROLES)) {
+            return this.authorizationService.isRoleAllowedInPolicy(user.role, PolicyNames.RequireAtLeastAdministratorRole)
+              .pipe(
+                map(isAllowed => ({ user, isAllowed }))
+              );
+          } else {
+            // Handle login failure...
+            return of(null);
+          }
+        })
+      )
+      .subscribe({
+        next: (result) => {
+          if (result) {
+            if (result.isAllowed) {
               this.router.navigateByUrl('admin');
             } else {
               this.router.navigateByUrl(this.returnUrl);
@@ -52,7 +68,7 @@ export class LoginComponent implements OnInit {
           }
         },
         error: (err) => {
-          console.error("Submit failed!",err);
+          console.error("Submit failed!", err);
         }
       });
   }

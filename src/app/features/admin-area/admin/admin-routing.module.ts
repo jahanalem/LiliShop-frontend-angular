@@ -2,15 +2,14 @@ import { AuthGuard } from 'src/app/core/guards/auth.guard';
 import AdminComponent from './admin.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { PERMISSIONS, PERMISSION_LABELS } from 'src/app/shared/constants/auth';
-
+import { PolicyNames } from 'src/app/shared/models/policy';
 
 const routes: Routes = [
   {
     path: '',
     component: AdminComponent,
     canActivate: [AuthGuard],
-    data: { access: PERMISSIONS[PERMISSION_LABELS.PRIVATE_ACCESS] },
+    data: { policy: PolicyNames.RequireAtLeastAdministratorRole },
     children: [
       { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) },
       { path: 'brands', loadChildren: () => import('./brands/brands.module').then(m => m.BrandsModule) },

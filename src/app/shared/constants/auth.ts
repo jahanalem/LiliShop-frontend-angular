@@ -1,26 +1,3 @@
-export enum ROLES {
-  SUPER_ADMIN = "SuperAdmin",
-  ADMINISTRATOR = "Administrator",
-  STANDARD_USER = "Standard",
-}
-export type PermissionMatrix = { [key in keyof typeof PERMISSION_LABELS]: ROLES[] };
-
-export const PERMISSIONS: PermissionMatrix = Object.freeze({
-  CAN_DELETE: [ROLES.SUPER_ADMIN],
-  CAN_CREATE: [ROLES.SUPER_ADMIN, ROLES.ADMINISTRATOR],
-  CAN_UPDATE: [ROLES.SUPER_ADMIN, ROLES.ADMINISTRATOR],
-  PUBLIC_ACCESS: [ROLES.SUPER_ADMIN, ROLES.ADMINISTRATOR, ROLES.STANDARD_USER],
-  PRIVATE_ACCESS: [ROLES.SUPER_ADMIN, ROLES.ADMINISTRATOR],
-});
-
-export const PERMISSION_LABELS = Object.freeze({
-  CAN_DELETE: "CAN_DELETE",
-  CAN_CREATE: "CAN_CREATE",
-  CAN_UPDATE: "CAN_UPDATE",
-  PUBLIC_ACCESS: "PUBLIC_ACCESS",
-  PRIVATE_ACCESS: "PRIVATE_ACCESS",
-} as const);
-
 export const LOCAL_STORAGE_KEYS = Object.freeze({
   AUTH_TOKEN: 'token'
 } as const);

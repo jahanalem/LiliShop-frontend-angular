@@ -54,11 +54,11 @@ export class UsersComponent implements AfterViewInit {
   private unsubscribe$ = new Subject<void>();
 
   constructor(
-    private accountService: AccountService,
-    private router: Router,
+    private accountService   : AccountService,
+    private router           : Router,
     private changeDetectorRef: ChangeDetectorRef,
-    private deleteService: DeleteService,
-    private searchService: SearchService<IAdminAreaUser>) {
+    private deleteService    : DeleteService,
+    private searchService    : SearchService<IAdminAreaUser>) {
   }
 
   ngOnDestroy() {
@@ -68,33 +68,36 @@ export class UsersComponent implements AfterViewInit {
   ngOnInit(): void {
     this.searchService.handleSearch(() => this.accountService.getUsers())
       .subscribe(response => this.updateData(response));
+    this.loadData();
   }
 
   ngAfterViewInit() {
-    this.loadData();
+    if (this.paginator && this.sort) {
+      this.paginator.page.pipe(takeUntil(this.unsubscribe$))
+        .subscribe((pageEvent: PageEvent) => {
+          this.userQueryParams.pageNumber = pageEvent.pageIndex + 1;
+          this.userQueryParams.pageSize = pageEvent.pageSize;
+          this.accountService.setUserQueryParams(this.userQueryParams);
 
-    this.paginator.page.pipe(takeUntil(this.unsubscribe$))
-      .subscribe((pageEvent: PageEvent) => {
-        this.userQueryParams.pageNumber = pageEvent.pageIndex + 1;
-        this.userQueryParams.pageSize = pageEvent.pageSize;
+          this.loadData();
+        });
+
+      this.sort.sortChange.pipe(takeUntil(this.unsubscribe$)).subscribe((sortEvent: Sort) => {
+        this.userQueryParams.sort = sortEvent.active;
+        this.userQueryParams.sortDirection = sortEvent.direction;
         this.accountService.setUserQueryParams(this.userQueryParams);
 
         this.loadData();
-      });
-
-    this.sort.sortChange.pipe(takeUntil(this.unsubscribe$)).subscribe((sortEvent: Sort) => {
-      this.userQueryParams.sort = sortEvent.active;
-      this.userQueryParams.sortDirection = sortEvent.direction;
-      this.accountService.setUserQueryParams(this.userQueryParams);
-
-      this.loadData();
-    })
+      })
+    }
   }
 
   loadData() {
-    this.accountService.getUsers().subscribe((response) => {
-      if (response) {
-        this.updateData(response);
+    this.accountService.getUsers().subscribe({
+      next: (response) => {
+        if (response) {
+          this.updateData(response);
+        }
       }
     });
   }
@@ -127,5 +130,12 @@ export class UsersComponent implements AfterViewInit {
 
   applyFilter(filterValueEvent: Event) {
     this.searchService.applyFilter(filterValueEvent, this.paginator, this.userQueryParams);
+  }
+
+  get existUser(): boolean {
+    if (this.users.length > 0) {
+      return true;
+    }
+    return false;
   }
 }

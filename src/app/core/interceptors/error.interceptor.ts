@@ -4,47 +4,30 @@ import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
-  HttpInterceptor
+  HttpInterceptor,
+  HttpErrorResponse
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { NavigationExtras, Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
+import { ErrorService } from '../services/utility-services/error.service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router, private toastr: ToastrService) { }
+  constructor(private toastr: ToastrService, private errorService: ErrorService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
-      catchError(error => {
-        if (error) {
-          switch (error.status) {
-            case 400:
-              if (error.error.errors) {
-                throw error.error; // It's for validation error.
-              } else {
-                this.toastr.error(error.error.message, error.error.statusCode);
-              }
-              break;
-            case 401:
-              this.toastr.error(error.error.message, error.error.statusCode);
-              break;
-            case 404:
-              this.router.navigateByUrl('/not-found');
-              break;
-            case 500:
-              const navigationExtras: NavigationExtras = { state: { error: error.error } };
-              this.router.navigateByUrl('/server-error', navigationExtras);
-              break;
-            case 0:
-              this.toastr.error(error.message, error.statusText);
-              break;
-            default:
-              break;
-          }
+      catchError((response: HttpErrorResponse) => {
+        if (response.error instanceof ErrorEvent) {
+          // A client-side or network error occurred.
+          this.toastr.error("An unexpected error occurred.");
+          return throwError(() => response);
         }
-        return throwError(() => error);
+
+        // Delegate the server-side error handling to the error service
+        this.errorService.handleError(response);
+        return throwError(() => response);
       })
     );
   }
