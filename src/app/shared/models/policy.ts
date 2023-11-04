@@ -3,7 +3,8 @@ export interface IPolicyDictionary {
 }
 
 export enum PolicyNames {
-  RequireSuperAdminRole           = 'RequireSuperAdminRole',
-  RequireAtLeastAdministratorRole = 'RequireAtLeastAdministratorRole',
-  RequireAtLeastStandardRole      = 'RequireAtLeastStandardRole'
+  RequireSuperAdminRole              = 'RequireSuperAdminRole',
+  RequireAtLeastAdministratorRole    = 'RequireAtLeastAdministratorRole',
+  RequireAtLeastStandardRole         = 'RequireAtLeastStandardRole',
+  RequireAtLeastAdminPanelViewerRole = 'RequireAtLeastAdminPanelViewerRole'
 };

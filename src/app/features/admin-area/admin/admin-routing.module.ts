@@ -9,7 +9,7 @@ const routes: Routes = [
     path: '',
     component: AdminComponent,
     canActivate: [AuthGuard],
-    data: { policy: PolicyNames.RequireAtLeastAdministratorRole },
+    data: { policy: PolicyNames.RequireAtLeastAdminPanelViewerRole },
     children: [
       { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) },
       { path: 'brands', loadChildren: () => import('./brands/brands.module').then(m => m.BrandsModule) },

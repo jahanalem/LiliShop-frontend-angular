@@ -18,25 +18,25 @@ export class NavBarComponent implements OnInit, OnDestroy {
   basket$ = this.basketService.basket$;
   private currentUserSource = new BehaviorSubject<IUser | null>(null);
   public currentUser$ = this.currentUserSource.asObservable();
-
-  hasAccessToAdminPanel$: Observable<boolean> = this.currentUserSource.pipe(
-    switchMap(user => {
-      if (user) {
-        return this.authorizationService.isRoleAllowedInPolicy(user.role, PolicyNames.RequireAtLeastAdministratorRole);
-      } else {
-        return of(false);
-      }
-    })
-  );
-
+  hasAccessToAdminPanel$: Observable<boolean> = of(false);
   private destroy$ = new Subject<void>();
 
-  constructor(private basketService: BasketService, private accountService: AccountService, private authorizationService: AuthorizationService) { }
-
-  ngOnInit(): void {
+  constructor(private basketService: BasketService, private accountService: AccountService, private authorizationService: AuthorizationService) {
     this.accountService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe(currentUser => this.currentUserSource.next(currentUser));
+  }
+
+  ngOnInit(): void {
+    this.hasAccessToAdminPanel$ = this.currentUserSource.pipe(
+      switchMap(user => {
+        if (user) {
+          return this.authorizationService.isCurrentUserAuthorized(PolicyNames.RequireAtLeastAdminPanelViewerRole, user.role);
+        } else {
+          return of(false);
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {

@@ -27,7 +27,7 @@ export class AuthGuard implements CanActivate {
       // If no policy is specified, allow access
       return of(true);
     }
-
+    
     return this.authorizationService.getPolicy(policyName).pipe(
       switchMap(requiredRoles => {
         return this.accountService.currentUser$.pipe(

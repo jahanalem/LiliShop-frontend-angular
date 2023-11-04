@@ -2,12 +2,13 @@ import { Directive, ElementRef, Input, OnDestroy, OnInit, Renderer2 } from '@ang
 import { AuthorizationService } from 'src/app/core/services/authorization.service';
 import { Subject, takeUntil, tap } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
+import { PolicyNames } from '../models/policy';
 
 @Directive({
   selector: '[appCheckPolicy]'
 })
 export class CheckPolicyDirective implements OnInit, OnDestroy {
-  @Input() appCheckPolicy!: string;
+  @Input() appCheckPolicy!: PolicyNames;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -15,7 +16,7 @@ export class CheckPolicyDirective implements OnInit, OnDestroy {
     private accountService: AccountService,
     private el: ElementRef,
     private renderer: Renderer2
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.accountService.currentUser$
@@ -31,7 +32,7 @@ export class CheckPolicyDirective implements OnInit, OnDestroy {
   }
 
   private updateVisibility(role: string): void {
-    this.authorizationService.isRoleAllowedInPolicy(role, this.appCheckPolicy)
+    this.authorizationService.isCurrentUserAuthorized(this.appCheckPolicy, role)
       .pipe(takeUntil(this.destroy$))
       .subscribe(isAllowed => {
         const icon = this.el.nativeElement.querySelector('mat-icon');

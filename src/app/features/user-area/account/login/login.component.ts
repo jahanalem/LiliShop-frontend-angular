@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
       .pipe(
         switchMap(user => {
           if (user) {
-            return this.authorizationService.isRoleAllowedInPolicy(user.role, PolicyNames.RequireAtLeastAdministratorRole)
+            return this.authorizationService.isCurrentUserAuthorized(PolicyNames.RequireAtLeastAdminPanelViewerRole, user.role)
               .pipe(
                 map(isAllowed => ({ user, isAllowed }))
               );
