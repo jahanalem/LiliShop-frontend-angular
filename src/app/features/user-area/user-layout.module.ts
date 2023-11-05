@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserLayoutComponent } from './user-layout.component';
 import { UserLayoutRoutingModule } from './user-layout-routing.module';
-import { CoreModule } from 'src/app/core/core.module';
 
 
 
@@ -13,7 +12,6 @@ import { CoreModule } from 'src/app/core/core.module';
   ],
   imports: [
     CommonModule,
-    CoreModule,
     SharedModule,
     UserLayoutRoutingModule
   ],

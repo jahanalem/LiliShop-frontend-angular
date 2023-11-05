@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     BrowserAnimationsModule,
     HttpClientModule,
     CoreModule,
+    SharedModule,
     NgxSpinnerModule
   ],
   providers: [

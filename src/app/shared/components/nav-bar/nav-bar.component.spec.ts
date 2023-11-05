@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NavBarComponent } from './nav-bar.component';
-import { BasketService } from '../services/basket.service';
-import { AccountService } from '../services/account.service';
+import { BasketService } from '../../../core/services/basket.service';
+import { AccountService } from '../../../core/services/account.service';
 import { Subject, of } from 'rxjs';
 import { IUser } from 'src/app/shared/models/user';
 

@@ -21,9 +21,15 @@ import { FormatValuePipe } from './pipes/format-value.pipe';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { MatIconModule } from '@angular/material/icon';
 import { CheckPolicyDirective } from './directives/check-policy.directive';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { SectionHeaderComponent } from './components/section-header/section-header.component';
+import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { BreadcrumbModule } from 'xng-breadcrumb';
 
 
 const components = [
+  NavBarComponent,
+  SectionHeaderComponent,
   PagingHeaderComponent,
   PagerComponent,
   OrderTotalsComponent,
@@ -53,6 +59,8 @@ const components = [
     MatDialogModule,
     FileUploadModule,
     MatIconModule,
+    NgbCollapseModule,
+    BreadcrumbModule,
   ],
   exports: [
     PaginationModule,
