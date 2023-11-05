@@ -73,7 +73,7 @@ export class AuthorizationService {
   private isRoleAllowedInPolicy(policyName: PolicyNames, role: string): Observable<boolean> {
     return this.getPolicy(policyName).pipe(
       map(allowedRoles => allowedRoles.includes(role))
-    ).pipe(tap(response=>console.log("response = ", response)));
+    );
   }
 
   private getPolicyNameForAction(action: Action): string {

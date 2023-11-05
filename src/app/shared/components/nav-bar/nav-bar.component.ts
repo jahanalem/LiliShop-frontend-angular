@@ -1,7 +1,6 @@
 
-import { BehaviorSubject, Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
-import { Component, OnInit, OnDestroy, DoCheck } from '@angular/core';
-import { IUser } from 'src/app/shared/models/user';
+import { Observable, of, switchMap } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { BasketService } from '../../../core/services/basket.service';
 import { AccountService } from '../../../core/services/account.service';
 import { AuthorizationService } from '../../../core/services/authorization.service';
@@ -13,44 +12,30 @@ import { PolicyNames } from 'src/app/shared/models/policy';
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.scss']
 })
-export class NavBarComponent implements OnInit, OnDestroy, DoCheck {
+export class NavBarComponent implements OnInit {
   public isCollapsed = true;
   basket$ = this.basketService.basket$;
-  private currentUserSource = new BehaviorSubject<IUser | null>(null);
-  public currentUser$ = this.currentUserSource.asObservable();
+  public currentUser$ = this.accountService.currentUser$;
 
-  hasAccessToAdminPanel$: Observable<boolean> = this.currentUserSource.pipe(
-    switchMap(user => {
-      if (user) {
-        return this.authorizationService
-          .isCurrentUserAuthorized(PolicyNames.RequireAtLeastAdminPanelViewerRole, user.role)
-          .pipe(tap((isAuth) => console.log("hasAccessToAdminPanel = ", isAuth)));
-      } else {
-        return of(false).pipe(tap((isAuth) => console.log("hasAccessToAdminPanel > false = ", isAuth)));
-      }
-    })
-  );
+  hasAccessToAdminPanel$: Observable<boolean> = of(false);
 
-  private destroy$ = new Subject<void>();
-
-  constructor(private basketService: BasketService, private accountService: AccountService, private authorizationService: AuthorizationService) {
-    console.log("constructor - navbar");
-  }
-  ngDoCheck(): void {
-    console.log("ngDoCheck - navbar");
+  constructor(
+    private basketService: BasketService,
+    private accountService: AccountService,
+    private authorizationService: AuthorizationService) {
   }
 
   ngOnInit(): void {
-    console.log("ngOnInit - navbar");
-
-    this.accountService.currentUser$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(currentUser => this.currentUserSource.next(currentUser));
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.hasAccessToAdminPanel$ = this.currentUser$.pipe(
+      switchMap(user => {
+        if (user) {
+          return this.authorizationService.isCurrentUserAuthorized(
+            PolicyNames.RequireAtLeastAdminPanelViewerRole, user.role
+          );
+        }
+        return of(false);
+      })
+    );
   }
 
   toggleCollapse() {
