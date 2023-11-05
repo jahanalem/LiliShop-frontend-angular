@@ -6,8 +6,6 @@ import { ServerErrorComponent } from './server-error/server-error.component';
 import { ToastrModule } from 'ngx-toastr';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-
-
 @NgModule({
   declarations: [NotFoundComponent, ServerErrorComponent],
   imports: [
@@ -21,7 +19,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
       }
     ),
   ],
-  // exports: [NavBarComponent, SectionHeaderComponent]
 })
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {
