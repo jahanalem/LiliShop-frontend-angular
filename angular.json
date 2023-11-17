@@ -75,10 +75,10 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "LiliShop:build:production"
+              "buildTarget": "LiliShop:build:production"
             },
             "development": {
-              "browserTarget": "LiliShop:build:development"
+              "buildTarget": "LiliShop:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -86,7 +86,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "LiliShop:build"
+            "buildTarget": "LiliShop:build"
           }
         },
         "test": {
