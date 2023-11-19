@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -25,7 +25,7 @@ enum ColumnNames {
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss']
 })
-export class UsersComponent implements AfterViewInit {
+export class UsersComponent implements AfterViewInit, OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -100,6 +100,7 @@ export class UsersComponent implements AfterViewInit {
         }
       }
     });
+    this.changeDetectorRef.detectChanges();
   }
 
   updateData(userPagination: UserPagination) {

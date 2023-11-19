@@ -4,12 +4,13 @@
       <form class="w-100 w-sm-50 w-md-50 w-lg-50" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         <!-- Display Name -->
         <app-text-input formControlName="displayName" [label]="'Display Name'"></app-text-input>
-         <!-- Email -->
+        <!-- Email -->
         <app-text-input formControlName="email" [label]="'Email address'"></app-text-input>
-         <!-- Password -->
-        <app-text-input formControlName="password" [label]="'Password'" [type]="'password'"></app-text-input>
-         <!-- Confirm Password -->
-        <app-text-input formControlName="confirmPassword" [label]="'Confirm Password'" [type]="'password'"></app-text-input>
+        <!-- Password -->
+        <app-text-input formControlName="password" [label]="'Password'" [type]="'password'" [autocomplete]="'new-password'"></app-text-input>
+        <!-- Confirm Password -->
+        <app-text-input formControlName="confirmPassword" [label]="'Confirm Password'"
+          [type]="'password'" [autocomplete]="'new-password'"></app-text-input>
         <!-- Submit button -->
         <button [disabled]="registerForm.invalid" type="submit" class="btn btn-primary btn-block mb-4">
           <i class="fa fa-user me-2"></i>Register
@@ -23,5 +24,10 @@
 
       </form>
     </section>
+    <div class="d-flex justify-content-center" style="margin-top: -50px;">
+      <div>
+        <div id="buttonDiv"></div>
+      </div>
+    </div>
   </div>
 </section>

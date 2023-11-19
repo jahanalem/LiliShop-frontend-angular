@@ -1,10 +1,24 @@
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { switchMap, timer, map, of, catchError, tap, EMPTY, Observable, filter } from 'rxjs';
 import { pattern } from 'src/app/shared/constants/patterns';
 import { errorType } from 'src/app/shared/constants/error-types';
 import { AccountService } from 'src/app/core/services/account.service';
+import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
+import { environment } from 'src/environments/environment';
+import { IUser } from 'src/app/shared/models/user';
+
+declare namespace google {
+  namespace accounts {
+    namespace id {
+      function initialize(config: any): void;
+      function renderButton(element: HTMLElement, config: any): void;
+      function prompt(callback: (notification: PromptMomentNotification) => void): void;
+    }
+  }
+}
+
 
 @Component({
   selector: 'app-register',
@@ -15,10 +29,68 @@ export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
   errors: string[] = [];
   private emailCache: { [email: string]: boolean } = {}; // A cache for already verified email addresses
-  constructor(private fb: FormBuilder, private accountService: AccountService, private router: Router) { }
+  private clientId = environment.google_clientId;
+
+  constructor(
+    private fb: FormBuilder,
+    private accountService: AccountService,
+    private router: Router,
+    private ngZone: NgZone) { }
 
   ngOnInit(): void {
     this.createRegisterForm();
+
+
+    const googleScript = document.createElement('script');
+    googleScript.src = 'https://accounts.google.com/gsi/client';
+    googleScript.async = true;
+    googleScript.defer = true;
+    document.body.appendChild(googleScript);
+
+    googleScript.onload = () => {
+      this.initializeGoogleSignIn();
+    };
+  }
+
+
+  initializeGoogleSignIn(): void {
+
+    (window as any).onGoogleLibraryLoad = () => {
+
+      google.accounts.id.initialize({
+        client_id: this.clientId,
+        callback: this.handleCredentialResponse.bind(this),
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+
+      const buttonDiv = document.getElementById("buttonDiv");
+      if (buttonDiv) {
+        google.accounts.id.renderButton(
+          buttonDiv,
+          { theme: "outline", size: "large" }
+        );
+      }
+
+      google.accounts.id.prompt((_notification: PromptMomentNotification) => { });
+    };
+  }
+
+
+  handleCredentialResponse(response: CredentialResponse) {
+    this.accountService.LoginWithGoogle(response.credential).subscribe(
+      {
+        next: (user: IUser) => {
+          this.accountService.updateCurrentUserState(user);
+          this.ngZone.run(() => {
+            this.router.navigateByUrl('/shop');
+          })
+        },
+        error: (error: any) => {
+          console.log(error);
+        }
+      }
+    );
   }
 
 

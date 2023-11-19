@@ -197,7 +197,7 @@ export class AccountService {
    *
    * @param {IUser} user - The authenticated user object.
    */
-  private updateCurrentUserState(user: IUser): void {
+  public updateCurrentUserState(user: IUser): void {
     this.storageService.set(LOCAL_STORAGE_KEYS.AUTH_TOKEN, user.token);
     this.currentUserSource.next(user);
   }
@@ -224,5 +224,11 @@ export class AccountService {
       console.error(error);
       return throwError(() => error);
     }));;
+  }
+
+  LoginWithGoogle(credentials: string): Observable<IUser> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const body = { token: credentials };
+    return this.http.post<IUser>(this.baseUrl + "account/google-login",  JSON.stringify(body), { headers: headers });
   }
 }
