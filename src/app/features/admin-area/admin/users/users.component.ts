@@ -68,12 +68,12 @@ export class UsersComponent implements AfterViewInit, OnInit {
   ngOnInit(): void {
     this.searchService.handleSearch(() => this.accountService.getUsers())
       .subscribe(response => this.updateData(response));
-    this.loadData();
   }
 
   ngAfterViewInit() {
-    if (this.paginator && this.sort) {
-      this.paginator.page.pipe(takeUntil(this.unsubscribe$))
+    this.loadData();
+    if (this.paginator) {
+      this.paginator.page?.pipe(takeUntil(this.unsubscribe$))
         .subscribe((pageEvent: PageEvent) => {
           this.userQueryParams.pageNumber = pageEvent.pageIndex + 1;
           this.userQueryParams.pageSize = pageEvent.pageSize;
@@ -82,7 +82,7 @@ export class UsersComponent implements AfterViewInit, OnInit {
           this.loadData();
         });
 
-      this.sort.sortChange.pipe(takeUntil(this.unsubscribe$)).subscribe((sortEvent: Sort) => {
+      this.sort?.sortChange?.pipe(takeUntil(this.unsubscribe$)).subscribe((sortEvent: Sort) => {
         this.userQueryParams.sort = sortEvent.active;
         this.userQueryParams.sortDirection = sortEvent.direction;
         this.accountService.setUserQueryParams(this.userQueryParams);

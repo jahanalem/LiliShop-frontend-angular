@@ -1,4 +1,4 @@
-<ng-container *ngIf="existUser">
+
 
 <mat-form-field>
   <mat-label>Filter</mat-label>
@@ -12,7 +12,7 @@
     New User
   </button>
 
-
+  <ng-container *ngIf="existUser">
     <table mat-table [dataSource]="users" matSort>
 
       <!-- ID Column -->
@@ -51,10 +51,10 @@
         <!-- <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td> -->
       </tr>
     </table>
-
+  </ng-container>
     <mat-paginator [pageSizeOptions]="[5, 10, 25]" [length]="totalCount" showFirstLastButtons
       [pageSize]="this.userQueryParams.pageSize!" [pageIndex]="userQueryParams.pageNumber!-1"
       aria-label="Select page of users">
     </mat-paginator>
 </div>
-</ng-container>
+
