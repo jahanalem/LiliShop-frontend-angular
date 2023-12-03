@@ -6,7 +6,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { EMPTY, catchError, switchMap, tap } from 'rxjs';
 import { ProductTypeService } from 'src/app/core/services/product-type.service';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
-import { DialogData } from 'src/app/shared/models/dialog-data.interface';
+import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { IProductType } from 'src/app/shared/models/productType';
 
 @Component({
@@ -94,12 +94,12 @@ export class EditProductTypeComponent {
 
   navigateBack() {
     if (this.typeForm.dirty) {
-      const dialogData: DialogData = {
+      const dialogData: IDialogData = {
         title: 'Discard change',
         content: 'Would you like to discard your changes?',
         showConfirmationButtons: true
       };
-      const dialogRef = this.dialog.open<DialogComponent, DialogData>(DialogComponent, { data: dialogData });
+      const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
 
       dialogRef.afterClosed().subscribe({
         next: (result?: boolean | undefined) => {

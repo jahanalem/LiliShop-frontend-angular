@@ -1,6 +1,7 @@
 export interface IUser {
-  email      : string;
-  displayName: string;
-  role       : string;
-  token      : string;
+  email         : string;
+  displayName   : string;
+  role          : string;
+  token         : string;
+  emailConfirmed: boolean;
 }

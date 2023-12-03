@@ -69,6 +69,14 @@ export class AccountService {
     return this.http.get<IAdminAreaUser>(`${this.baseUrl}account/user/${id}`);
   }
 
+  getCurrentUser() {
+    return this.http.get<IUser>(`${this.baseUrl}account/currentuser`).pipe(
+      tap((user: IUser) => {
+        this.currentUserSource.next(user);
+      })
+    );
+  }
+
   getUsers(): Observable<UserPagination | null> {
     const token = this.storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
     if (!token) {

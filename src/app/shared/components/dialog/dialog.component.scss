@@ -1,83 +1,76 @@
-/* Dialog Titel */
 .dialog-title {
   display: flex;
   align-items: center;
   color: #333;
-  /* Dunkle Farbe für bessere Lesbarkeit */
   font-weight: 500;
-  /* Halbfett für mehr Aufmerksamkeit */
 }
 
-/* Dialog-Icon */
 .dialog-icon {
   margin-right: 8px;
   color: #007bff;
-  /* Ein sanfter Blauton, der Aufmerksamkeit erregt */
 }
 
-/* Dialog-Inhalt */
 .dialog-content {
   padding: 16px;
   line-height: 1.5;
   color: #555;
-  /* Etwas heller als der Titel, aber immer noch gut lesbar */
   font-size: 16px;
-  /* Etwas größer für bessere Lesbarkeit */
 }
 
-/* Dialog-Aktionen */
 .dialog-actions {
+  display: flex;
   justify-content: flex-end;
   padding: 8px 16px;
-  /* Gleichmäßiges Padding für ein ausgewogenes Layout */
 }
 
-/* Dialog-Buttons */
 .dialog-actions button {
-  margin-left: 8px;
-  font-size: 16px;
-  /* Einheitliche Schriftgröße für bessere Lesbarkeit */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
-/* Spezielle Stile für den 'Yes'-Button */
-.dialog-actions button[color="primary"] {
+.dialog-actions button {
+  padding: 8px 16px;
+}
+
+.yes-button {
   background-color: #007bff;
-  /* Einheitlicher Blauton */
   color: white;
-  /* Weiße Schrift für Kontrast */
 }
 
-/* Spezielle Stile für den 'No'-Button */
-.dialog-actions button[cdkFocusInitial] {
+
+.no-button {
   background-color: #f5f5f5;
-  /* Ein sanfter Grauton */
   color: #333;
-  /* Dunkle Schrift für bessere Lesbarkeit */
 }
 
-/* ... Ihre vorherigen Stile ... */
+.close-button {
+  color: #333;
+}
 
-/* Mouse-Hover-Effekte für die Buttons */
 .dialog-actions button:hover {
   cursor: pointer;
-  /* Hand-Cursor beim Überfahren */
   opacity: 0.8;
-  /* Leichte Transparenz */
 }
 
-/* 3D-Effekt für den gesamten Dialog */
 .mat-dialog-container {
   perspective: 1000px;
-  /* 3D-Perspektive */
 }
 
-/* 3D-Hover-Effekt für 'Yes' und 'No' Buttons */
+.dialog-actions button mat-icon,
+.dialog-actions button span {
+  display: flex;
+  align-items: center;
+}
+.dialog-actions button span {
+  line-height: 1;
+  font-size: 16px;
+}
+
 .dialog-actions button[cdkFocusInitial]:hover,
 .dialog-actions button[color="primary"]:hover {
   transform: scale(1.1) rotateX(20deg);
-  /* Skalierung und Rotation */
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-  /* Schatten für 3D-Effekt */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  /* Glatter Übergang */
 }

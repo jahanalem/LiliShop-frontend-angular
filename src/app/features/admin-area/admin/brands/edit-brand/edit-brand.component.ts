@@ -5,7 +5,7 @@ import { ThemePalette } from '@angular/material/core';
 import { BrandService } from 'src/app/core/services/brand.service';
 import { EMPTY, catchError, switchMap, tap } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { DialogData } from 'src/app/shared/models/dialog-data.interface';
+import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -94,12 +94,12 @@ export class EditBrandComponent implements OnInit {
 
   navigateBack() {
     if (this.brandForm.dirty) {
-      const dialogData: DialogData = {
+      const dialogData: IDialogData = {
         title: 'Discard change',
         content: 'Would you like to discard your changes?',
         showConfirmationButtons: true
       };
-      const dialogRef = this.dialog.open<DialogComponent, DialogData>(DialogComponent, { data: dialogData });
+      const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
 
       dialogRef.afterClosed().subscribe({
         next: (result?: boolean | undefined) => {
