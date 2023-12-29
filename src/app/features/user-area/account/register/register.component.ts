@@ -56,7 +56,19 @@ export class RegisterComponent implements OnInit {
     };
   }
 
-
+  /**
+   * Initializes Google Sign-In functionality in the application.
+   * This method dynamically loads the Google One Tap script and configures
+   * the sign-in process. It sets up a callback for handling the sign-in response
+   * and renders the Google Sign-In button on the page.
+   *
+   * The method attaches a callback to the window object that is triggered
+   * once the Google One Tap script is loaded. It then calls Google's
+   * initialization and rendering functions to set up the sign-in button
+   * and the sign-in prompt.
+   *
+   * @returns void
+   */
   initializeGoogleSignIn(): void {
 
     (window as any).onGoogleLibraryLoad = () => {
