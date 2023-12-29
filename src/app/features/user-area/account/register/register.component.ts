@@ -1,13 +1,16 @@
-import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { Component, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { switchMap, timer, map, of, catchError, tap, EMPTY, Observable, filter } from 'rxjs';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { switchMap, timer, map, of, catchError, Observable, filter } from 'rxjs';
 import { pattern } from 'src/app/shared/constants/patterns';
 import { errorType } from 'src/app/shared/constants/error-types';
 import { AccountService } from 'src/app/core/services/account.service';
 import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
 import { environment } from 'src/environments/environment';
 import { IUser } from 'src/app/shared/models/user';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
+import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
+import { Component, NgZone, OnInit } from '@angular/core';
 
 declare namespace google {
   namespace accounts {
@@ -35,7 +38,8 @@ export class RegisterComponent implements OnInit {
     private fb: FormBuilder,
     private accountService: AccountService,
     private router: Router,
-    private ngZone: NgZone) { }
+    private ngZone: NgZone,
+    private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.createRegisterForm();
@@ -52,7 +56,19 @@ export class RegisterComponent implements OnInit {
     };
   }
 
-
+  /**
+   * Initializes Google Sign-In functionality in the application.
+   * This method dynamically loads the Google One Tap script and configures
+   * the sign-in process. It sets up a callback for handling the sign-in response
+   * and renders the Google Sign-In button on the page.
+   *
+   * The method attaches a callback to the window object that is triggered
+   * once the Google One Tap script is loaded. It then calls Google's
+   * initialization and rendering functions to set up the sign-in button
+   * and the sign-in prompt.
+   *
+   * @returns void
+   */
   initializeGoogleSignIn(): void {
 
     (window as any).onGoogleLibraryLoad = () => {
@@ -130,19 +146,51 @@ export class RegisterComponent implements OnInit {
   }
 
 
-  onSubmit() {
-    this.accountService.register(this.registerForm.value)
-      .pipe(
-        tap(() => {
-          this.router.navigateByUrl('/shop');
-        }),
-        catchError((error) => {
-          this.errors = error.errors;
-          console.error(error);
-          return EMPTY; // Use EMPTY, which is an observable that does nothing (doesn't emit values) and completes immediately.
-        })
-      )
-      .subscribe();
+  onSubmit(event: Event) {
+    event.preventDefault();
+    this.accountService.register(this.registerForm.value).subscribe({
+      next: (response) => {
+        console.log('Registration successful');
+        const customMessage = response.headers.get('LiliShop-Registration-Status-Message');
+        if (customMessage) {
+          console.log(customMessage);
+          this.openEmailErrorDialog(customMessage);
+        }
+        else {
+          this.openConfirmationDialog();
+        }
+      },
+      error: (error) => {
+        console.error('Registration failed', error);
+        this.errors = error.errors;
+      },
+    });
+  }
+
+  openConfirmationDialog() {
+    const dialogData: IDialogData = {
+      content: "A confirmation link has been sent to your email. Please confirm it.",
+      title: "Email Confirmation Sent",
+      showConfirmationButtons: false
+    };
+
+    const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
+    dialogRef.afterClosed().subscribe(() => {
+      this.router.navigateByUrl('/shop');
+    });
+  }
+
+  openEmailErrorDialog(message: string) {
+    const dialogData: IDialogData = {
+      content: message,
+      title: "Email Confirmation Error",
+      showConfirmationButtons: false
+    };
+
+    const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
+    dialogRef.afterClosed().subscribe(() => {
+      this.router.navigateByUrl('/shop');
+    });
   }
 
 

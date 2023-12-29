@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { of, Observable, ReplaySubject, tap, map, catchError, throwError } from 'rxjs';
@@ -69,6 +69,14 @@ export class AccountService {
     return this.http.get<IAdminAreaUser>(`${this.baseUrl}account/user/${id}`);
   }
 
+  getCurrentUser() {
+    return this.http.get<IUser>(`${this.baseUrl}account/currentuser`).pipe(
+      tap((user: IUser) => {
+        this.currentUserSource.next(user);
+      })
+    );
+  }
+
   getUsers(): Observable<UserPagination | null> {
     const token = this.storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
     if (!token) {
@@ -125,16 +133,23 @@ export class AccountService {
   /**
    * Registers a new user by sending their registration details to the server.
    *
-   * Sends a POST request to the server with the user's registration details.
-   * If registration is successful, updates the current user state and stores
-   * the user's token in local storage.
+   * This method sends a POST request to the server with the provided user registration details.
+   * It returns an Observable containing the full HttpResponse, which includes both the
+   * response body and the response metadata. Upon successful registration, the method
+   * extracts the user data from the response body and updates the current user state.
+   * This is typically used for actions like updating the user context in the application
+   * or storing the user's credentials for future requests.
    *
-   * @param {any} values - The user's registration details.
-   * @returns {Observable<IUser>} An Observable of the newly registered user object.
+   * @param {any} values - The user's registration details, typically including fields like
+   *                       email, password, and any other necessary registration information.
+   * @returns {Observable<HttpResponse<IUser>>} An Observable emitting the full HttpResponse
+   *                                            from the registration request. The response body
+   *                                            contains the registered IUser object.
    */
-  register(values: any): Observable<IUser> {
-    return this.http.post<IUser>(`${this.baseUrl}account/register`, values).pipe(
-      tap((user: IUser) => {
+  register(values: any): Observable<HttpResponse<IUser>> {
+    return this.http.post<IUser>(`${this.baseUrl}account/register`, values, { observe: 'response' }).pipe(
+      tap(response => {
+        const user = response.body;
         if (user) {
           this.updateCurrentUserState(user);
         }
@@ -229,6 +244,6 @@ export class AccountService {
   LoginWithGoogle(credentials: string): Observable<IUser> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const body = { token: credentials };
-    return this.http.post<IUser>(this.baseUrl + "account/google-login",  JSON.stringify(body), { headers: headers });
+    return this.http.post<IUser>(this.baseUrl + "account/google-login", JSON.stringify(body), { headers: headers });
   }
 }

@@ -8,7 +8,7 @@ import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/mode
 import { ThemePalette } from '@angular/material/core';
 import { ProductService } from 'src/app/core/services/product.service';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogData } from 'src/app/shared/models/dialog-data.interface';
+import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IProductType } from 'src/app/shared/models/productType';
 import { StorageService } from 'src/app/core/services/storage.service';
@@ -239,12 +239,12 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
 
   navigateBack() {
     if (this.productForm.dirty) {
-      const dialogData: DialogData = {
+      const dialogData: IDialogData = {
         title: 'Discard change',
         content: 'Would you like to discard your changes?',
         showConfirmationButtons: true
       };
-      const dialogRef = this.dialog.open<DialogComponent, DialogData>(DialogComponent, { data: dialogData });
+      const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
 
       dialogRef.afterClosed().subscribe({
         next: (result?: boolean | undefined) => {
