@@ -61,7 +61,8 @@
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "aot": false
             }
           },
           "defaultConfiguration": "production"
@@ -78,7 +79,8 @@
               "buildTarget": "LiliShop:build:production"
             },
             "development": {
-              "buildTarget": "LiliShop:build:development"
+              "buildTarget": "LiliShop:build:development",
+              "liveReload": true
             }
           },
           "defaultConfiguration": "development"
