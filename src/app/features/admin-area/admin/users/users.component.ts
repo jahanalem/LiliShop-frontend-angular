@@ -126,7 +126,7 @@ export class UsersComponent implements AfterViewInit, OnInit {
     this.deleteService.deleteObject(
       userId,
       () => this.accountService.delete(userId),
-      () => this.loadData);
+      () => this.loadData());
   }
 
   applyFilter(filterValueEvent: Event) {
