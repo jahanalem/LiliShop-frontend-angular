@@ -11,6 +11,7 @@ import { UserQueryParams } from 'src/app/shared/models/userQueryParams';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
 import { PaginationWithData, UserPagination } from 'src/app/shared/models/pagination';
 import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
+import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -239,6 +240,14 @@ export class AccountService {
       console.error(error);
       return throwError(() => error);
     }));;
+  }
+
+  forgotPassword(email: string): Observable<IForgotPasswordResponse> {
+    return this.http.post<IForgotPasswordResponse>(`${this.baseUrl}account/forgot-password/`, { email });
+  }
+
+  resetPassword(token: string, date: string, email: string, newPassword: string) {
+    return this.http.post(`${this.baseUrl}account/reset-password/`, { token, date, email, newPassword });
   }
 
   LoginWithGoogle(credentials: string): Observable<IUser> {

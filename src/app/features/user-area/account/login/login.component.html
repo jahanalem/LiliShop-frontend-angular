@@ -1,6 +1,6 @@
 <section class="pb-4">
   <div class="bg-white border rounded-5">
-    <section class="p-4 d-flex justify-content-center pb-4">
+    <section class="p-4 d-flex justify-content-center">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="w-100 w-md-50">
         <!-- Email input -->
         <app-text-input formControlName="email" [label]="'Email address'"></app-text-input>
@@ -10,6 +10,9 @@
         <button [disabled]="loginForm.invalid" type="submit" class="btn btn-primary btn-block mb-4">
           <i class="fa fa-sign-in me-2"></i>Sign in
         </button>
+        <div class="">
+          <a routerLink="/account/forgot-password">Forgot password?</a>
+        </div>
       </form>
     </section>
   </div>
