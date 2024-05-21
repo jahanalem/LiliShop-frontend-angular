@@ -24,7 +24,7 @@ import { CheckPolicyDirective } from './directives/check-policy.directive';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { SectionHeaderComponent } from './components/section-header/section-header.component';
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
-import { BreadcrumbModule } from 'xng-breadcrumb';
+import { BreadcrumbComponent, BreadcrumbItemDirective, BreadcrumbService } from 'xng-breadcrumb';
 
 
 const components = [
@@ -60,7 +60,8 @@ const components = [
     FileUploadModule,
     MatIconModule,
     NgbCollapseModule,
-    BreadcrumbModule,
+    BreadcrumbComponent,
+    BreadcrumbItemDirective,
   ],
   exports: [
     PaginationModule,
@@ -72,7 +73,12 @@ const components = [
     FileUploadModule,
     FormatValuePipe,
     ...components,
-    CheckPolicyDirective
+    CheckPolicyDirective,
+    BreadcrumbComponent,
+    BreadcrumbItemDirective,
+  ],
+  providers:[
+    BreadcrumbService
   ]
 })
 export class SharedModule { }
