@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ShopComponent } from './shop.component';
 import { ShopService } from 'src/app/core/services/shop.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ElementRef } from '@angular/core';
 import { ShopParams } from 'src/app/shared/models/productQueryParams';
 import { of } from 'rxjs';
 import { IProductPagination } from 'src/app/shared/models/pagination';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('ShopComponent', () => {
   let component: ShopComponent;
@@ -14,10 +15,10 @@ describe('ShopComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [ShopComponent],
-      providers: [ShopService],
-    }).compileComponents();
+    declarations: [ShopComponent],
+    imports: [],
+    providers: [ShopService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+}).compileComponents();
 
     shopService = TestBed.inject(ShopService);
   }));

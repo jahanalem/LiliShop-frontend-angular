@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { BrandsComponent } from './brands.component';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -10,6 +10,7 @@ import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
 import { Router } from '@angular/router';
 import { BrandParams } from 'src/app/shared/models/BrandParams';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 
 describe('BrandsComponent', () => {
@@ -36,32 +37,34 @@ describe('BrandsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [BrandsComponent],
-      imports: [HttpClientTestingModule, MatDialogModule, MatPaginatorModule, NoopAnimationsModule],
-      providers: [
+    declarations: [BrandsComponent],
+    imports: [MatDialogModule, MatPaginatorModule, NoopAnimationsModule],
+    providers: [
         { provide: MatDialogRef, useValue: {} },
         {
-          provide: BrandService,
-          useValue: {
-            getBrands: jasmine.createSpy('getBrands').and.returnValue(of({ data: mockBrands, count: mockBrands.length })),
-            deleteBrand: jasmine.createSpy('deleteBrand').and.returnValue(of(mockDeleteResponse)),
-            getBrandParams: jasmine.createSpy('getBrandParams').and.returnValue(new BrandParams()) // Mock getBrandParams() here
-          }
+            provide: BrandService,
+            useValue: {
+                getBrands: jasmine.createSpy('getBrands').and.returnValue(of({ data: mockBrands, count: mockBrands.length })),
+                deleteBrand: jasmine.createSpy('deleteBrand').and.returnValue(of(mockDeleteResponse)),
+                getBrandParams: jasmine.createSpy('getBrandParams').and.returnValue(new BrandParams()) // Mock getBrandParams() here
+            }
         },
         {
-          provide: Router,
-          useValue: {
-            navigateByUrl: jasmine.createSpy('navigateByUrl')
-          }
+            provide: Router,
+            useValue: {
+                navigateByUrl: jasmine.createSpy('navigateByUrl')
+            }
         },
         {
-          provide: MatDialog,
-          useValue: {
-            open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of(true) })
-          }
-        }
-      ]
-    }).compileComponents();
+            provide: MatDialog,
+            useValue: {
+                open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of(true) })
+            }
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+}).compileComponents();
 
     fixture = TestBed.createComponent(BrandsComponent);
     component = fixture.componentInstance;

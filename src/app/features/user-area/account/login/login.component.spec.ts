@@ -3,12 +3,13 @@ import { LoginComponent } from './login.component';
 import { AccountService } from 'src/app/core/services/account.service';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { IUser } from 'src/app/shared/models/user';
 import { of, throwError } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 
 describe('LoginComponent', () => {
@@ -27,19 +28,15 @@ describe('LoginComponent', () => {
       }
     };
     await TestBed.configureTestingModule({
-      imports: [
-        ReactiveFormsModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-      ],
-      declarations: [LoginComponent, TextInputComponent],
-      providers: [FormBuilder,
+    declarations: [LoginComponent, TextInputComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [ReactiveFormsModule,
+        RouterTestingModule],
+    providers: [FormBuilder,
         { provide: AccountService, useValue: accountServiceMock },
         { provide: Router, useValue: routerMock },
-        { provide: ActivatedRoute, useValue: activatedRouteMock }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+        { provide: ActivatedRoute, useValue: activatedRouteMock }, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+}).compileComponents();
   });
 
   beforeEach(() => {

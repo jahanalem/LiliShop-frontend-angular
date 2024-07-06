@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor
-} from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { StorageService } from '../services/storage.service';
 import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
