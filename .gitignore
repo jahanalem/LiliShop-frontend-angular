@@ -42,3 +42,6 @@ testem.log
 Thumbs.db
 
 .fake
+stripe.exe
+stripe.exeTEMP
+stripe.exe
