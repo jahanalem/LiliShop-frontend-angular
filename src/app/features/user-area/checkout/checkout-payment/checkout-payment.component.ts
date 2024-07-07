@@ -2,7 +2,7 @@
 import { PaymentIntentResult, Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement } from '@stripe/stripe-js';
 import { ToastrService } from 'ngx-toastr';
 import { FormGroup } from '@angular/forms';
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, input, OnDestroy, signal, ViewChild } from '@angular/core';
 import { IBasket } from 'src/app/shared/models/basket';
 import { NavigationExtras, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
@@ -15,10 +15,11 @@ import { getStripeInstance } from 'src/app/core/helpers/stripe-utils';
 @Component({
   selector: 'app-checkout-payment',
   templateUrl: './checkout-payment.component.html',
-  styleUrls: ['./checkout-payment.component.scss']
+  styleUrls: ['./checkout-payment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
-  @Input() checkoutForm!: FormGroup;
+  checkoutForm = input.required<FormGroup>();
   @ViewChild('cardNumber', { static: true }) cardNumberElement!: ElementRef;
   @ViewChild('cardExpiry', { static: true }) cardExpiryElement!: ElementRef;
   @ViewChild('cardCvc', { static: true }) cardCvcElement!: ElementRef;
@@ -34,16 +35,17 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   cardCvc!: StripeCardCvcElement;
   cardErrors: any;
   cardHandler = this.onChange.bind(this);
-  cardNumberValid = false;
-  cardExpiryValid = false;
-  cardCvcValid = false;
-  loading = false;
+  cardNumberValid = signal(false);
+  cardExpiryValid = signal(false);
+  cardCvcValid = signal(false);
+  loading = signal(false);
 
   constructor(
     private basketService: BasketService,
     private checkoutService: CheckoutService,
     public toastr: ToastrService,
-    private router: Router) { }
+    private router: Router,
+    private cdr: ChangeDetectorRef) { }
 
   ngOnDestroy(): void {
     try {
@@ -85,14 +87,14 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
  */
   async submitOrder() {
     // Start the loading spinner.
-    this.loading = true;
+    this.loading.set(true);
 
     // Retrieve the current basket value.
     const basket = this.basketService.getCurrentBasketValue();
 
     // If the basket is null or undefined, stop the loading spinner and return.
     if (!basket) {
-      this.loading = false;
+      this.loading.set(false);
       return;
     }
 
@@ -114,7 +116,8 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
       console.error('An error occurred while submitting the order:', error);
     } finally {
       // Stop the loading spinner.
-      this.loading = false;
+      this.loading.set(false);
+      this.cdr.markForCheck();
     }
   }
 
@@ -149,14 +152,14 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
     if (!basket.clientSecret) {
       const errorMsg = 'Client secret is missing';
       this.toastr.error(errorMsg);  // Show error notification
-      throw new Error(errorMsg);  // Throw an error
+      throw new Error(errorMsg);
     }
 
     // Define payment method details
     const paymentMethodDetails = {
       card: this.cardNumber,
       billing_details: {
-        name: this.checkoutForm.get('paymentForm')?.get('nameOnCard')?.value,
+        name: this.checkoutForm()?.get('paymentForm')?.get('nameOnCard')?.value,
       },
     };
 
@@ -195,8 +198,8 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
    */
   private getOrderToCreate(basket: IBasket): IOrderToCreate {
     // Retrieve the delivery and address forms from the checkout form group
-    const deliveryForm = this.checkoutForm.get('deliveryForm');
-    const addressForm = this.checkoutForm.get('addressForm');
+    const deliveryForm = this.checkoutForm()?.get('deliveryForm');
+    const addressForm = this.checkoutForm()?.get('addressForm');
 
     // Extract the selected delivery method ID and shipping address
     const deliveryMethodId = deliveryForm?.get('deliveryMethod')?.value;
@@ -215,14 +218,24 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
 
     switch (event.elementType) {
       case 'cardNumber':
-        this.cardNumberValid = event.complete;
+        this.cardNumberValid.set(event.complete);
         break;
       case 'cardExpiry':
-        this.cardExpiryValid = event.complete;
+        this.cardExpiryValid.set(event.complete);
         break;
       case 'cardCvc':
-        this.cardCvcValid = event.complete;
+        this.cardCvcValid.set(event.complete);
         break;
     }
+    this.cdr.markForCheck();
   }
+
+  isActivatedSubmitButton() {
+    return this.loading()
+      || this.checkoutForm().get('paymentForm')?.invalid
+      || !this.cardNumberValid()
+      || !this.cardExpiryValid()
+      || !this.cardCvcValid()
+  }
+
 }

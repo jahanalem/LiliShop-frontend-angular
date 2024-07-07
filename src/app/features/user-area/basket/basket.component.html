@@ -1,4 +1,32 @@
-<div *ngIf="(basket$ | async) === null" class="py-5">
+@if(basket(); as currentBasket)
+{
+<div class="container">
+
+  <app-basket-summary (increment)="incrementItemQuantity($event)"
+    (decrement)="decrementItemQuantity($event)" (remove)="removeBasketItem($event)" [items]="currentBasket.items">
+  </app-basket-summary>
+  <div class="py-1">
+    <div class="d-flex justify-content-end flex-column flex-lg-row">
+      <a routerLink="/shop" class="btn btn-outline-secondary px-sm-5 my-1 ms-2">
+        <i class="fa fa-angle-left me-2"></i>Continue Shopping
+      </a>
+    </div>
+  </div>
+  @if(basketTotals(); as basketT)
+  {
+  <app-order-totals [shippingPrice]="basketT.shipping" [subtotal]="basketT.subtotal" [total]="basketT.total">
+  </app-order-totals>
+  }
+
+  <div class="col-lg-12 text-center py-4">
+    <a routerLink="/checkout" class="btn btn-primary btn-lg px-5">Proceed to checkout
+      <i class="fa fa-long-arrow-right ms-2"></i>
+    </a>
+  </div>
+
+</div>
+}@else {
+<div class="py-5">
   <div class="alert alert-warning d-flex align-items-center" role="alert">
     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:">
       <use xlink:href="#exclamation-triangle-fill" />
@@ -8,35 +36,4 @@
     </div>
   </div>
 </div>
-<ng-container *ngIf="(basket$ | async) as basket">
-  <div class="container">
-
-    <app-basket-summary
-      *ngIf="(basket$ | async) as basket"
-      (increment)="incrementItemQuantity($event)"
-      (decrement)="decrementItemQuantity($event)"
-      (remove)="removeBasketItem($event)"
-      [items]="basket.items">
-    </app-basket-summary>
-    <div class="py-1">
-      <div class="d-flex justify-content-end flex-column flex-lg-row">
-        <a routerLink="/shop" class="btn btn-outline-secondary px-sm-5 my-1 ms-2">
-          <i class="fa fa-angle-left me-2"></i>Continue Shopping
-        </a>
-      </div>
-    </div>
-    <app-order-totals
-      *ngIf="(basketTotals$ | async) as basketTotals"
-      [shippingPrice]="basketTotals.shipping"
-      [subtotal]="basketTotals.subtotal"
-      [total]="basketTotals.total">
-    </app-order-totals>
-
-    <div class="col-lg-12 text-center py-4">
-      <a routerLink="/checkout" class="btn btn-primary btn-lg px-5">Proceed to checkout
-        <i class="fa fa-long-arrow-right ms-2"></i>
-      </a>
-    </div>
-
-  </div>
-</ng-container>
+}

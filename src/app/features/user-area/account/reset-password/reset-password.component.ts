@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,13 +10,14 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
   selector: 'app-reset-password',
   standalone: false,
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.scss'
+  styleUrl: './reset-password.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResetPasswordComponent {
-  resetPasswordForm: FormGroup;
-  token: string = '';
-  email: string = '';
-  date: string = '';
+  resetPasswordForm = signal<FormGroup>({} as FormGroup);
+  token = signal<string>('');
+  email = signal<string>('');
+  date = signal<string>('');
 
   constructor(
     private fb: FormBuilder,
@@ -25,22 +26,25 @@ export class ResetPasswordComponent {
     private route: ActivatedRoute,
     private dialog: MatDialog) {
 
-    this.resetPasswordForm = this.fb.group({
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
-      repeatPassword: ['', [Validators.required]]
-    }, { validator: this.passwordMatchValidator })
+    this.resetPasswordForm.set(this.fb.group(
+      {
+        newPassword: ['', [Validators.required, Validators.minLength(6)]],
+        repeatPassword: ['', [Validators.required]]
+      },
+      { validator: this.passwordMatchValidator }
+    ));
 
     this.route.queryParams.subscribe(params => {
-      this.token = params['token'];
-      this.email = params['email'];
-      this.date = params['date'];
+      this.token.set(params['token']);
+      this.email.set(params['email']);
+      this.date.set(params['date']);
     });
   }
 
   onSubmit() {
-    if (this.resetPasswordForm.valid) {
-      const newPassword = this.resetPasswordForm.get('newPassword')?.value;
-      this.accountService.resetPassword(this.token, this.date, this.email, newPassword).subscribe(
+    if (this.resetPasswordForm().valid) {
+      const newPassword = this.resetPasswordForm().get('newPassword')?.value;
+      this.accountService.resetPassword(this.token(), this.date(), this.email(), newPassword).subscribe(
         {
           next: () => {
             console.log('Password successfully reset');

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -12,27 +12,28 @@ import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordRes
   selector: 'app-forgot-password',
   standalone: false,
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss'
+  styleUrl: './forgot-password.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ForgotPasswordComponent {
-  forgotPasswordForm: FormGroup;
-  isSubmitting = false;
+  forgotPasswordForm = signal<FormGroup>({} as FormGroup);
+  isSubmitting = signal<boolean>(false);
 
   constructor(private fb: FormBuilder,
     private accountService: AccountService,
     private dialog: MatDialog,
     private router: Router) {
-    this.forgotPasswordForm = this.fb.group({
+    this.forgotPasswordForm.set(this.fb.group({
       email: ['', [Validators.required, Validators.email]]
-    });
+    }));
   }
 
   onSubmit() {
-    if (this.forgotPasswordForm.valid) {
-      this.isSubmitting = true;
+    if (this.forgotPasswordForm().valid) {
+      this.isSubmitting.update(() => true);
 
-      this.accountService.forgotPassword(this.forgotPasswordForm.value.email).pipe(
-        finalize(() => { this.isSubmitting = false; })
+      this.accountService.forgotPassword(this.forgotPasswordForm().value.email).pipe(
+        finalize(() => { this.isSubmitting.update(() => false); })
       ).subscribe({
         next: (response: IForgotPasswordResponse) => {
           console.log(response);

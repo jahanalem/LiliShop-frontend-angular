@@ -1,21 +1,22 @@
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { ActivatedRoute } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { IOrder } from 'src/app/shared/models/order';
 import { OrdersService } from 'src/app/core/services/orders.service';
 
 @Component({
   selector: 'app-order-detailed',
   templateUrl: './order-detailed.component.html',
-  styleUrls: ['./order-detailed.component.scss']
+  styleUrls: ['./order-detailed.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrderDetailedComponent implements OnInit {
-  order!: IOrder;
+  order = signal<IOrder | undefined>(undefined);
   constructor(private orderService: OrdersService,
     private activatedRoute: ActivatedRoute,
     private breadcrumbService: BreadcrumbService) {
-      this.breadcrumbService.set('@OrderDetailed', '');
-    }
+    this.breadcrumbService.set('@OrderDetailed', '');
+  }
 
   ngOnInit(): void {
     this.getOrderDetailed();
@@ -26,12 +27,13 @@ export class OrderDetailedComponent implements OnInit {
     if (!id) {
       return;
     }
-    this.orderService.getOrderDetailed(+id).subscribe((order: IOrder) => {
-      this.order = order;
-      this.breadcrumbService.set('@OrderDetailed', `Order# ${order.id} - ${order.status}`);
-    }, error => {
-      console.log(error);
+    this.orderService.getOrderDetailed(+id).subscribe({
+      next: (order: IOrder) => {
+        this.order.set(order);
+        this.breadcrumbService.set('@OrderDetailed', `Order# ${order.id} - ${order.status}`);
+      }, error: (error) => {
+        console.log(error);
+      }
     });
   }
-
 }

@@ -1,6 +1,6 @@
 import { of, switchMap } from 'rxjs';
 import { IProduct } from 'src/app/shared/models/product';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { BasketService } from 'src/app/core/services/basket.service';
@@ -10,11 +10,12 @@ import { ProductService } from 'src/app/core/services/product.service';
 @Component({
   selector: 'app-product-details',
   templateUrl: './product-details.component.html',
-  styleUrls: ['./product-details.component.scss']
+  styleUrls: ['./product-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductDetailsComponent implements OnInit {
-  product!: IProduct;
-  quantity: number = 1;
+  product = signal<IProduct>({} as IProduct);
+  quantity = signal<number>(1);
 
   constructor(private activatedRoute: ActivatedRoute,
     private bcService: BreadcrumbService,
@@ -55,11 +56,14 @@ export class ProductDetailsComponent implements OnInit {
         const id = params.get('id'); // === this.activatedRoute.snapshot.paramMap.get('id')
         return id ? this.productService.getProduct(+id) : of();
       })
-    ).subscribe(product => {
-      this.product = product;
-      this.bcService.set('@productDetails', product.name);
-    }, error => {
-      console.error(error);
+    ).subscribe({
+      next: (product) => {
+        this.product.set(product);
+        this.bcService.set('@productDetails', product.name);
+      },
+      error: (error) => {
+        console.error(error);
+      }
     });
 
     // const id = this.activatedRoute.snapshot.paramMap.get('id');
@@ -75,16 +79,16 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   incrementQuantity() {
-    this.quantity++;
+    this.quantity.update((value: number) => value + 1);
   }
 
   decrementQuantity() {
-    if (this.quantity > 1) {
-      this.quantity--;
+    if (this.quantity() > 1) {
+      this.quantity.update(value => value - 1);
     }
   }
 
   addItemToBasket() {
-    this.basketService.addItemToBasket(this.product, this.quantity);
+    this.basketService.addItemToBasket(this.product(), this.quantity());
   }
 }

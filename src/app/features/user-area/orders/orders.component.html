@@ -11,13 +11,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let order of orders">
+        @for(order of orders(); track order.id){
+        <tr>
           <th>{{order.id}}</th>
           <td>{{order.orderDate | date:'medium'}}</td>
           <td>{{order.total | currency }}</td>
           <td><span class="badge bg-info">{{order.status}}</span></td>
           <td><a class="btn btn-primary btn-sm" routerLink="/orders/{{order.id}}">View</a></td>
         </tr>
+        }
       </tbody>
     </table>
   </div>

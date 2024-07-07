@@ -1,5 +1,5 @@
 
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
 import { IBrand } from 'src/app/shared/models/brand';
@@ -12,25 +12,26 @@ import { IProductType } from 'src/app/shared/models/productType';
 @Component({
   selector: 'app-shop',
   templateUrl: './shop.component.html',
-  styleUrls: ['./shop.component.scss']
+  styleUrls: ['./shop.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ShopComponent implements OnInit {
   // { static: true } needs to be set when you want to access the ViewChild in ngOnInit.
   // { static: false } can only be accessed in ngAfterViewInit. This is also what you want to go for when you have a structural directive (i.e. *ngIf) on your element in your template.
   @ViewChild('search', { static: false }) searchTerm!: ElementRef;
-  products: IProduct[] = [];
-  brands: IBrand[] = [];
-  types: IProductType[] = [];
-  sizes: ISizeClassification[] = [];
+  products = signal<IProduct[]>([]);
+  brands   = signal<IBrand[]>([]);
+  types    = signal<IProductType[]>([]);
+  sizes    = signal<ISizeClassification[]>([]);
   shopParams: ProductQueryParams;
-  totalCount: number = 0;
+  totalCount = signal<number>(0);
   readonly sortOptions = [
     { name: 'Alphabetical', value: 'name' },
     { name: 'Price: Low to high', value: 'priceAsc' },
     { name: 'Price: High to low', value: 'priceDesc' },
   ]
 
-  constructor(private productService: ProductService) {
+  constructor(private productService: ProductService, private cdr: ChangeDetectorRef) {
     this.shopParams = this.productService.getShopParams();
   }
 
@@ -43,8 +44,9 @@ export class ShopComponent implements OnInit {
     this.productService.getProducts(isActive).subscribe({
       next: (response) => {
         if (response) {
-          this.products = response.data;
-          this.totalCount = response.count;
+          this.products.set(response.data);
+          this.totalCount.set(response.count);
+          this.cdr.markForCheck();
         }
       },
       error: (error) => { console.error(error); }
@@ -53,15 +55,18 @@ export class ShopComponent implements OnInit {
 
   getFilters(): void {
     this.getData(this.productService.getBrands(true), (response) => {
-      this.brands = [{ id: 0, name: 'All' }, ...response];
+      this.brands.set([{ id: 0, name: 'All' }, ...response]);
+      this.cdr.markForCheck();
     });
 
     this.getData(this.productService.getTypes(true), (response) => {
-      this.types = [{ id: 0, name: 'All' }, ...response];
+      this.types.set([{ id: 0, name: 'All' }, ...response]);
+      this.cdr.markForCheck();
     });
 
     this.getData(this.productService.getSizes(true), (response) => {
-      this.sizes = [{ id: 0, size: 'All', isActive: false }, ...response];
+      this.sizes.set([{ id: 0, size: 'All', isActive: false }, ...response]);
+      this.cdr.markForCheck();
     });
   }
 
@@ -70,6 +75,7 @@ export class ShopComponent implements OnInit {
     if (params.pageNumber !== event) {
       params.pageNumber = event;
       this.getProducts(true);
+      this.cdr.markForCheck();
     }
   }
 
@@ -79,6 +85,7 @@ export class ShopComponent implements OnInit {
     params.pageNumber = 1;
     this.productService.setShopParams(params);
     this.getProducts();
+    this.cdr.markForCheck();
   }
 
   onReset(): void {
@@ -86,6 +93,7 @@ export class ShopComponent implements OnInit {
     this.shopParams = new ProductQueryParams();
     this.productService.setShopParams(this.shopParams);
     this.getProducts();
+    this.cdr.markForCheck();
   }
 
   onFilterSelected(inputElement: EventTarget | null, filterType: string): void {
@@ -117,6 +125,7 @@ export class ShopComponent implements OnInit {
     params.pageNumber = 1;
     this.productService.setShopParams(params);
     this.getProducts();
+    this.cdr.markForCheck();
   }
 
   private getData<T>(apiCall: Observable<T>, successCallback: (response: T) => void): void {
@@ -126,5 +135,6 @@ export class ShopComponent implements OnInit {
         console.error(error);
       }
     });
+    this.cdr.markForCheck();
   }
 }

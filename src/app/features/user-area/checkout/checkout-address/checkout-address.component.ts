@@ -1,6 +1,6 @@
 import { ToastrService } from 'ngx-toastr';
 import { FormGroup } from '@angular/forms';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnDestroy} from '@angular/core';
 import { IAddress } from 'src/app/shared/models/address';
 import { AccountService } from 'src/app/core/services/account.service';
 import { Subscription, catchError, of, tap } from 'rxjs';
@@ -8,13 +8,20 @@ import { Subscription, catchError, of, tap } from 'rxjs';
 @Component({
   selector: 'app-checkout-address',
   templateUrl: './checkout-address.component.html',
-  styleUrls: ['./checkout-address.component.scss']
+  styleUrls: ['./checkout-address.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CheckoutAddressComponent implements OnInit, OnDestroy {
-  @Input() checkoutForm!: FormGroup
+export class CheckoutAddressComponent implements OnDestroy, AfterViewInit {
+  checkoutForm = input.required<FormGroup>();
   private subscription!: Subscription;
 
-  constructor(private accountService: AccountService, private toastr: ToastrService) { }
+  constructor(private accountService: AccountService,
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef) { }
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+    this.cdr.markForCheck();
+  }
 
   ngOnDestroy(): void {
     if (this.subscription) {
@@ -22,17 +29,15 @@ export class CheckoutAddressComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit(): void {
-  }
-
   saveUserAddress() {
-    const addressForm = this.checkoutForm.get('addressForm');
+    const addressForm = this.checkoutForm()?.get('addressForm');
     if (addressForm) {
       this.subscription = this.accountService.updateAddress(addressForm.value)
         .pipe(
           tap((address: IAddress) => {
             this.toastr.success('Address saved.');
-            this.checkoutForm.get('addressForm')?.reset(address);
+            this.checkoutForm()?.get('addressForm')?.reset(address);
+            this.cdr.markForCheck();
           }),
           catchError((error: any) => {
             this.toastr.error(error.message);
@@ -42,5 +47,14 @@ export class CheckoutAddressComponent implements OnInit, OnDestroy {
         )
         .subscribe();
     }
+    else {
+      console.warn('Address form group is missing!');
+    }
+  }
+
+  isActivatedGoToDeliveryButton(){
+    const result = this.checkoutForm().get('addressForm')?.invalid;
+    this.cdr.markForCheck();
+    return result;
   }
 }

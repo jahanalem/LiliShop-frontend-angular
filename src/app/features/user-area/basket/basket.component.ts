@@ -1,22 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { IBasket, IBasketItem, IBasketTotals } from 'src/app/shared/models/basket';
 
 @Component({
   selector: 'app-basket',
   templateUrl: './basket.component.html',
-  styleUrls: ['./basket.component.scss']
+  styleUrls: ['./basket.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BasketComponent implements OnInit {
-  basket$!: Observable<IBasket | null>;
-  basketTotals$!: Observable<IBasketTotals | null>;
+  basket = signal<IBasket | null>(null);
+  basketTotals = signal<IBasketTotals | null>(null);
 
   constructor(private basketService: BasketService) { }
 
   ngOnInit(): void {
-    this.basket$ = this.basketService.basket$;
-    this.basketTotals$ = this.basketService.basketTotal$;
+    this.basketService.basket$.subscribe(basket => this.basket.set(basket));
+    this.basketService.basketTotal$.subscribe(totals => this.basketTotals.set(totals));
   }
 
   removeBasketItem(item: IBasketItem) {

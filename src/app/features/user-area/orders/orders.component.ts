@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { OrdersService } from 'src/app/core/services/orders.service';
 import { IOrder } from 'src/app/shared/models/order';
 
@@ -7,10 +7,11 @@ import { IOrder } from 'src/app/shared/models/order';
 @Component({
   selector: 'app-orders',
   templateUrl: './orders.component.html',
-  styleUrls: ['./orders.component.scss']
+  styleUrls: ['./orders.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrdersComponent implements OnInit {
-  orders: IOrder[] = [];
+  orders = signal<IOrder[]>([]);
 
   constructor(private orderService: OrdersService) { }
 
@@ -19,10 +20,11 @@ export class OrdersComponent implements OnInit {
   }
 
   getOrders() {
-    return this.orderService.getOrdersForUser().subscribe((orders: IOrder[]) => {
-      this.orders = orders;
-    }, error => {
-      console.error(error);
+    return this.orderService.getOrdersForUser().subscribe({
+      next: (orders: IOrder[]) => {
+        this.orders.set(orders);
+      },
+      error: error => { console.error(error); }
     });
   }
 }

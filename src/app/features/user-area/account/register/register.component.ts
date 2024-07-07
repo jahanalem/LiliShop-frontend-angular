@@ -10,7 +10,7 @@ import { IUser } from 'src/app/shared/models/user';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
-import { Component, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, NgZone, OnInit, signal } from '@angular/core';
 
 declare namespace google {
   namespace accounts {
@@ -26,11 +26,12 @@ declare namespace google {
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterComponent implements OnInit {
-  registerForm!: FormGroup;
-  errors: string[] = [];
+  registerForm = signal<FormGroup>({} as FormGroup);
+  errors = signal<string[]>([]);
   private emailCache: { [email: string]: boolean } = {}; // A cache for already verified email addresses
   private clientId = environment.google_clientId;
 
@@ -111,7 +112,7 @@ export class RegisterComponent implements OnInit {
 
 
   createRegisterForm() {
-    this.registerForm = this.fb.group(
+    this.registerForm.set(this.fb.group(
       {
         displayName:
           [
@@ -142,13 +143,13 @@ export class RegisterComponent implements OnInit {
             ]
           ]
       }
-    );
+    ));
   }
 
 
   onSubmit(event: Event) {
     event.preventDefault();
-    this.accountService.register(this.registerForm.value).subscribe({
+    this.accountService.register(this.registerForm().value).subscribe({
       next: (response) => {
         console.log('Registration successful');
         const customMessage = response.headers.get('LiliShop-Registration-Status-Message');

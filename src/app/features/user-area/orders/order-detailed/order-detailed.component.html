@@ -1,26 +1,29 @@
-<ng-container *ngIf="order">
-  <div class="container">
-    <div class="cart-outer">
-      <div class="cart-inner">
-        <!-- Product-->
-        <app-basket-summary [isOrder]="true" [isBasket]="false" [items]="order.orderItems"></app-basket-summary>
-        <app-order-totals [shippingPrice]="order.shippingPrice" [subtotal]="order.subtotal" [total]="order.total">
-        </app-order-totals>
-      </div>
+@if(order(); as orderDetails)
+{
+<div class="container">
+  <div class="cart-outer">
+    <div class="cart-inner">
+      <!-- Product-->
+      <app-basket-summary [isOrder]="true" [isBasket]="false" [items]="orderDetails.orderItems"></app-basket-summary>
+      <app-order-totals [shippingPrice]="orderDetails.shippingPrice" [subtotal]="orderDetails.subtotal"
+        [total]="orderDetails.total">
+      </app-order-totals>
     </div>
-    <div class="row gy-4">
-      <div class="col-sm-6">
-        <div class="bg-light rounded-pill px-4 py-3">
-          <h6 class="mb-0 text-uppercase">Shipping address</h6>
-        </div>
-        <div class="p-4">
-          <ul class="list-unstyled text-muted pb-1 mb-0">
-            <li>{{order.shipToAddress.firstName}} {{order.shipToAddress.lastName}}</li>
-            <li>{{order.shipToAddress.street}}</li>
-            <li>{{order.shipToAddress.zipCode}} {{order.shipToAddress.city}} ({{order.shipToAddress.state}})</li>
-          </ul>
-        </div>
+  </div>
+  <div class="row gy-4">
+    <div class="col-sm-6">
+      <div class="bg-light rounded-pill px-4 py-3">
+        <h6 class="mb-0 text-uppercase">Shipping address</h6>
+      </div>
+      <div class="p-4">
+        <ul class="list-unstyled text-muted pb-1 mb-0">
+          <li>{{orderDetails.shipToAddress.firstName}} {{orderDetails.shipToAddress.lastName}}</li>
+          <li>{{orderDetails.shipToAddress.street}}</li>
+          <li>{{orderDetails.shipToAddress.zipCode}} {{orderDetails.shipToAddress.city}}
+            ({{orderDetails.shipToAddress.state}})</li>
+        </ul>
       </div>
     </div>
   </div>
-</ng-container>
+</div>
+}

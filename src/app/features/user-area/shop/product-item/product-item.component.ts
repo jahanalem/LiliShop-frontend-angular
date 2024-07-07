@@ -1,21 +1,23 @@
 
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnInit } from '@angular/core';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { IProduct } from 'src/app/shared/models/product';
 
 @Component({
   selector: 'app-product-item',
   templateUrl: './product-item.component.html',
-  styleUrls: ['./product-item.component.scss']
+  styleUrls: ['./product-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductItemComponent implements OnInit {
-  @Input() product!: IProduct;
-  constructor(private basketService: BasketService) { }
+  product = input.required<IProduct>();
+  constructor(private basketService: BasketService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
   }
 
   addItemToBasket() {
-    this.basketService.addItemToBasket(this.product);
+    this.basketService.addItemToBasket(this.product());
+    this.cdr.markForCheck();
   }
 }
