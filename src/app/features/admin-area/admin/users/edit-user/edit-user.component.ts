@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -9,13 +9,14 @@ import { IRole } from 'src/app/shared/models/role';
 @Component({
   selector: 'app-edit-user',
   templateUrl: './edit-user.component.html',
-  styleUrls: ['./edit-user.component.scss']
+  styleUrls: ['./edit-user.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditUserComponent implements OnInit {
   adminUserForm!: FormGroup;
-  adminUser: IAdminAreaUser | null = null;
+  adminUser = signal<IAdminAreaUser | null>(null);
   userIdFromUrl: number = 0;
-  roles: IRole[] = [];
+  roles = signal<IRole[]>([]);
 
   constructor(
     private accountService: AccountService,
@@ -51,7 +52,7 @@ export class EditUserComponent implements OnInit {
       this.userIdFromUrl = id === null ? 0 : +id;
       if (this.userIdFromUrl && this.userIdFromUrl > 0) {
         this.accountService.getUser(this.userIdFromUrl).subscribe(response => {
-          this.adminUser = response;
+          this.adminUser.set(response);
           this.updateAdminUserForm(response);
         })
       }
@@ -60,7 +61,7 @@ export class EditUserComponent implements OnInit {
 
   getRoles() {
     this.roleService.getRoles().subscribe({
-      next: (roles) => { this.roles = roles; },
+      next: (roles) => { this.roles.set(roles); },
       error: (error) => { console.error(error) }
     });
   }
@@ -81,27 +82,19 @@ export class EditUserComponent implements OnInit {
   }
 
   onSubmit() {
-    const { value } = this.adminUserForm;
-    const formValue = value as IAdminAreaUser;
-    const updatedRoleName = this.roles.find(r => r.id === formValue.roleId)?.name ?? "Standard";
+    const user = this.adminUser(); // Ensure we're using the latest user info
+    if (user) {
+      const formValue = this.adminUserForm.value as IAdminAreaUser;
+      const updatedRoleName = this.roles().find(r => r.id === formValue.roleId)?.name ?? "Standard";
+      const userPayload = { ...user, ...formValue, roleName: updatedRoleName };
 
-    const userPayload = {
-      ...this.adminUser,
-      ...formValue,
-      roleName: updatedRoleName
-    };
-
-    if (this.adminUser?.id) {
-      this.accountService.updateUser(this.adminUser.id, userPayload).subscribe({
-        next: () => {
-          console.log('User updated successfully.');
-        },
-        error: (error) => {
-          console.error('Error updating user:', error);
-        }
+      this.accountService.updateUser(user.id!, userPayload).subscribe({
+        next: () => console.log('User updated successfully.'),
+        error: (error) => console.error('Error updating user:', error)
       });
     }
   }
+
 
   navigateBack() {
     this.router.navigateByUrl('/admin/users');

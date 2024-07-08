@@ -1,5 +1,5 @@
 import { IBrand } from 'src/app/shared/models/brand';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { BrandService } from 'src/app/core/services/brand.service';
@@ -12,12 +12,13 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-edit-brand',
   templateUrl: './edit-brand.component.html',
-  styleUrls: ['./edit-brand.component.scss']
+  styleUrls: ['./edit-brand.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditBrandComponent implements OnInit {
   brandForm!: FormGroup;
-  brand: IBrand | null = null;
-  brandIdFromUrl: number = 0;
+  brand = signal<IBrand | null>(null);
+  brandIdFromUrl = signal<number>(0);
   protected colorCheckbox: ThemePalette;
 
   constructor(private brandService: BrandService,
@@ -43,23 +44,23 @@ export class EditBrandComponent implements OnInit {
     this.activatedRoute.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const id = params.get('id');
-        this.brandIdFromUrl = (id === null ? 0 : +id);
-        if (this.brandIdFromUrl && this.brandIdFromUrl > 0) {
-          return this.brandService.getBrand(this.brandIdFromUrl);
+        this.brandIdFromUrl.set((id === null ? 0 : +id));
+        if (this.brandIdFromUrl() && this.brandIdFromUrl() > 0) {
+          return this.brandService.getBrand(this.brandIdFromUrl());
         }
         else {
           return EMPTY;
         }
       }),
       tap(response => {
-        this.brand = response;
+        this.brand.set(response);
       }),
       catchError(error => {
         console.error(error);
         return EMPTY;
       })
     ).subscribe((response) => {
-      this.brand = response;
+      this.brand.set(response);
       this.updateBrandForm(response);
     });
   }
@@ -74,7 +75,7 @@ export class EditBrandComponent implements OnInit {
 
   onSubmit() {
     const formValue = this.brandForm.value as IBrand;
-    const brandPayload = { ...this.brand, ...formValue };
+    const brandPayload = { ...this.brand(), ...formValue };
     delete (brandPayload as { [key: string]: any })["createdDate"];
     delete (brandPayload as { [key: string]: any })["modifiedDate"];
     const brandAction = brandPayload && brandPayload.id > 0
@@ -115,14 +116,13 @@ export class EditBrandComponent implements OnInit {
   }
 
   onIsActiveChange(event: boolean): void {
-    if (!this.brand) {
+    if (!this.brand()) {
       return;
     }
-    this.brand.isActive = event;
+    this.brand.update(brand => ({ ...brand!, isActive: event }));
   }
 
   get isSaveDisabled(): boolean {
     return !this.brandForm.dirty || !this.brandForm.valid;
   }
-
 }

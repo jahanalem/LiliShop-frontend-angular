@@ -14,7 +14,7 @@ import { IBasketTotals } from 'src/app/shared/models/basket';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CheckoutComponent implements OnInit {
-  checkoutForm = signal<FormGroup>({} as FormGroup);
+  checkoutForm!: FormGroup;
   basketTotals = signal<IBasketTotals | null>(null);
 
   constructor(private fb: FormBuilder,
@@ -33,7 +33,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   createCheckoutForm() {
-    this.checkoutForm.set(this.fb.group({
+    this.checkoutForm = this.fb.group({
       addressForm: this.fb.group({
         firstName: [null, Validators.required],
         lastName: [null, Validators.required],
@@ -48,12 +48,12 @@ export class CheckoutComponent implements OnInit {
       paymentForm: this.fb.group({
         nameOnCard: [null, Validators.required]
       })
-    }));
+    });
     this.cdr.markForCheck();
   }
 
   getAddressFormValues() {
-    const addressForm = this.checkoutForm().get('addressForm');
+    const addressForm = this.checkoutForm.get('addressForm');
     if (!addressForm) {
       console.warn('Address form group is missing!');
       return;
@@ -63,7 +63,7 @@ export class CheckoutComponent implements OnInit {
       tap((address: IAddress) => {
         if (address) {
           addressForm.patchValue(address);
-          this.checkoutForm()?.get('addressForm')?.markAsDirty
+          this.checkoutForm?.get('addressForm')?.markAsDirty
           addressForm.updateValueAndValidity();
           this.cdr.detectChanges();
         }
@@ -78,7 +78,7 @@ export class CheckoutComponent implements OnInit {
   getDeliveryMethodValue() {
     const basket = this.basketService.getCurrentBasketValue();
     if (basket?.deliveryMethodId !== null) {
-      this.checkoutForm().get('deliveryForm')?.get('deliveryMethod')?.patchValue(basket?.deliveryMethodId?.toString());
+      this.checkoutForm.get('deliveryForm')?.get('deliveryMethod')?.patchValue(basket?.deliveryMethodId?.toString());
       this.cdr.markForCheck();
     }
   }

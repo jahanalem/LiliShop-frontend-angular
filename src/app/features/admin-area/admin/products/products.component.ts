@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy, signal, ChangeDetectorRef, viewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { IProduct } from 'src/app/shared/models/product';
@@ -29,66 +29,76 @@ export declare interface IPageEvent {
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.scss']
+  styleUrls: ['./products.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  policyNames = PolicyNames;
-  public dataSource!: IProduct[];
+  paginator        = viewChild.required<MatPaginator>(MatPaginator);
+  sort             = viewChild.required<MatSort>(MatSort);
+  policyNames      = PolicyNames;
+  products         = signal<IProduct[]>([]);
+  shopParams       = signal<ProductQueryParams>(this.productService.getShopParams());
+  totalCount       = signal<number>(0);
+  isLoadingResults = signal<boolean>(true);
+  userRole         = signal<string>('');
+  dataSource       = signal<IProduct[]>([]);
   columnsToDisplay: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'Action'];
-  products: IProduct[] = [];
-  shopParams: ProductQueryParams;
-  totalCount: number = 0;
-  isLoadingResults = true;
-  userRole: string = '';
 
   constructor(private productService: ProductService,
     private router: Router,
     private deleteService: DeleteService,
     private searchService: SearchService<IProduct>,
     private accountService: AccountService,
-    private authorizationService: AuthorizationService) {
-    this.shopParams = this.productService.getShopParams();
-  }
+    private authorizationService: AuthorizationService,
+    private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.searchService.handleSearch(() => this.productService.getProducts())
       .subscribe(response => this.updateProducts(response));
     this.accountService.currentUser$.subscribe(user => {
-      this.userRole = user?.role ?? '';
+      this.userRole.set(user?.role ?? '');
     })
   }
 
   ngAfterViewInit() {
     // If the user changes the sort order, reset back to the first page.
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    this.sort().sortChange.subscribe(() => (this.paginator().pageIndex = 0));
     this.getProducts();
 
-    merge(this.sort.sortChange, this.paginator.page)
+    merge(this.sort().sortChange, this.paginator().page)
       .subscribe((x: Sort | PageEvent) => {
 
         const sortEvent = x as Sort;
         if ((x as PageEvent).pageSize) {
           const pageEvent = x as PageEvent;
-          this.shopParams.pageNumber = pageEvent.pageIndex + 1;
-          this.shopParams.pageSize = pageEvent.pageSize;
+          this.shopParams.update(params => ({
+            ...params,
+            pageNumber: pageEvent.pageIndex + 1,
+            pageSize: pageEvent.pageSize
+          }));
         }
         if (sortEvent) {
-          this.shopParams.sort = this.sort.active;
-          this.shopParams.sortDirection = this.sort.direction;
+          this.shopParams.update(params => ({
+            ...params,
+            sort: this.sort().active,
+            sortDirection: this.sort().direction
+          }));
         }
+
+        console.log("shop params =", this.shopParams());
         this.getProducts();
       });
   }
 
   private updateProducts(response: PaginationWithData<IProduct>): void {
-    this.products = response.data;
-    this.totalCount = response.count;
-    this.dataSource = this.products;
+    this.products.update(() => (response.data));
+    this.totalCount.update(() => (response.count));
+    this.dataSource.update(() => this.products());
+    this.cdr.markForCheck();
   }
 
   getProducts(isActive?: boolean): void {
+    this.productService.shopParams = this.shopParams();
     this.productService.getProducts(isActive)
       .subscribe({
         next: (response) => {
@@ -103,7 +113,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   applyFilter(filterValueEvent: Event) {
-    this.searchService.applyFilter(filterValueEvent, this.paginator, this.shopParams);
+    this.searchService.applyFilter(filterValueEvent, this.paginator(), this.shopParams());
   }
 
   editProduct(id: number) {
@@ -126,12 +136,12 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   canCreate(): Observable<boolean> {
-    return this.authorizationService.isActionAllowed(Action.Create, this.userRole);
+    return this.authorizationService.isActionAllowed(Action.Create, this.userRole());
   }
   canUpdate(): Observable<boolean> {
-    return this.authorizationService.isActionAllowed(Action.Update, this.userRole);
+    return this.authorizationService.isActionAllowed(Action.Update, this.userRole());
   }
   canDelete(): Observable<boolean> {
-    return this.authorizationService.isActionAllowed(Action.Delete, this.userRole);
+    return this.authorizationService.isActionAllowed(Action.Delete, this.userRole());
   }
 }

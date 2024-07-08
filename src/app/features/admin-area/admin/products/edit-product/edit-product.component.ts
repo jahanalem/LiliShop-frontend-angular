@@ -1,8 +1,8 @@
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EMPTY, Observable, catchError, switchMap, tap } from 'rxjs';
+import { EMPTY, Observable, catchError, switchMap } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterContentChecked, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, signal } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ThemePalette } from '@angular/material/core';
@@ -19,29 +19,29 @@ import { StorageService } from 'src/app/core/services/storage.service';
   styleUrls: ['./edit-product.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EditProductComponent implements OnInit, OnDestroy, AfterContentChecked {
+export class EditProductComponent implements OnInit, OnDestroy {
   productForm!: FormGroup;
-  product: IProduct | undefined;
-  brands: IBrand[] = [];
-  types: IProductType[] = [];
-  sizes: ISizeClassification[] = [];
-  productIdFromUrl: number = 0; // 0 means new product
-  protected validSizeList: ISizeClassification[] = [];
-  protected disabledAddSizeButton: boolean = false;
+
+  product               = signal<IProduct | undefined>(undefined);
+  brands                = signal<IBrand[]>([]);
+  types                 = signal<IProductType[]>([]);
+  sizes                 = signal<ISizeClassification[]>([]);
+  disabledAddSizeButton = signal<boolean>(false);
+
+  productIdFromUrl       : number                  = 0;   // 0 means new product
   productCharacteristics: IProductCharacteristic[] = [];
+
+  protected validSizeList: ISizeClassification[] = [];
   protected colorCheckbox: ThemePalette;
 
   constructor(private productService: ProductService,
-    private dialog: MatDialog,
+    private dialog        : MatDialog,
     private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private cdr: ChangeDetectorRef,
+    private router        : Router,
+    private formBuilder   : FormBuilder,
+    private cdr           : ChangeDetectorRef,
     private storageService: StorageService) {
 
-  }
-  ngAfterContentChecked(): void {
-    this.cdr.detectChanges();
   }
 
   ngOnDestroy(): void {
@@ -49,23 +49,23 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   }
 
   ngOnInit(): void {
+    this.createProductForm();
     this.getBrands();
     this.getTypes();
     this.getSizes();
     this.getProduct();
-    this.createProductForm();
     this.getProductFormValues();
     this.loadArrayOfDropDownSize();
   }
 
   onSubmit() {
     const formValues = this.productForm.value as IProduct;
-    const { productType, productBrand, ...existingProduct } = this.product || {};
+    const existingProduct = this.product(); // Use the signal getter here
 
     const productPayload = {
       ...existingProduct,
       ...formValues,
-      productPhotos: this.product?.productPhotos || formValues.productPhotos
+      productPhotos: existingProduct?.productPhotos || formValues.productPhotos
     };
 
     const isUpdate = productPayload.id && productPayload.id > 0;
@@ -75,8 +75,8 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
       : this.productService.createProduct(productPayload);
 
     // Execute the action and handle the response
-    productAction.subscribe((p) => {
-      this.product = p;
+    productAction.subscribe((updatedProduct) => {
+      this.product.set(updatedProduct); // Update the signal
       this.productForm.markAsPristine();
     });
   }
@@ -84,14 +84,14 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
 
   createProductForm(): void {
     this.productForm = this.formBuilder.group({
-      isActive: [false],
-      name: [null, Validators.required],
-      description: [null, Validators.required],
-      price: [null, [Validators.required, Validators.min(1), Validators.max(10000)]],
-      productBrandId: [null, Validators.required],
-      productTypeId: [null, Validators.required],
+      isActive              : [false],
+      name                  : [null, Validators.required],
+      description           : [null, Validators.required],
+      price                 : [null, [Validators.required, Validators.min(1), Validators.max(10000)]],
+      productBrandId        : [null, Validators.required],
+      productTypeId         : [null, Validators.required],
       productCharacteristics: this.formBuilder.array([]),
-      productPhotos: [null]
+      productPhotos         : [null]
     });
   }
 
@@ -100,33 +100,44 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   }
   addDynamicDropDownSize(sizeId: number | string = '', qty: number = 0, id: number, productId: number) {
     const sizeForm = this.formBuilder.group({
-      id: [id],
+      id       : [id],
       productId: [productId],
-      sizeId: [sizeId],
-      quantity: [qty],
+      sizeId   : [sizeId],
+      quantity : [qty],
     });
     this.dynamicDropDownSize.push(sizeForm);
   }
   loadArrayOfDropDownSize() {
-    this.product?.productCharacteristics.forEach((_pc, _index) => {
+    this.product()?.productCharacteristics.forEach((_pc, _index) => {
       this.addDynamicDropDownSize(_pc.sizeId, _pc.quantity, _pc.id, _pc.productId);
     });
   }
 
   getProductFormValues(): void {
-    // if we refresh the page, we don't have access to the product object and then we cannot get id from it.
-    // Therefore we need to get id from activatedRoute.
+    if (!this.productForm) {
+      console.error("productForm is not initialized");
+      return;
+    }
+    const currentProduct = this.product();
 
-    this.product ??= JSON.parse(this.storageService.get(this.getProductKey()) || 'null') as IProduct;
+    if (!currentProduct) {
+      const storedProduct = JSON.parse(this.storageService.get(this.getProductKey()) || 'null') as IProduct;
+      if (storedProduct) {
+        this.product.set(storedProduct);
+      }
+    }
 
-    this.productForm?.patchValue({
-      isActive: this.product?.isActive,
-      name: this.product?.name,
-      description: this.product?.description,
-      price: this.product?.price,
-      productBrandId: this.product?.productBrandId,
-      productTypeId: this.product?.productTypeId
-    });
+    const productToUse = this.product();
+    if (productToUse) {
+      this.productForm.patchValue({
+        isActive      : productToUse.isActive,
+        name          : productToUse.name,
+        description   : productToUse.description,
+        price         : productToUse.price,
+        productBrandId: productToUse.productBrandId,
+        productTypeId : productToUse.productTypeId
+      });
+    }
   }
 
   getProduct(): void {
@@ -140,15 +151,20 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
           return EMPTY;
         }
       }),
-      tap((prod) => {
-        this.product = prod;
-        this.setProductInLocalStorage();
-      }),
+
       catchError((error: any) => {
         this.handleApiError(error);
         return EMPTY;
       })
-    ).subscribe(() => this.getProductFormValues());
+    ).subscribe((prod) => {
+      if (prod) {
+
+        this.product.set(prod);
+        this.setProductInLocalStorage();
+
+        this.getProductFormValues();
+      }
+    });
   }
 
   handleApiError(error: any): void {
@@ -156,14 +172,14 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   }
 
   getBrands(): void {
-    this.fetchData(() => this.productService.getBrands(true), (response) => { this.brands = [...response]; });
+    this.fetchData(() => this.productService.getBrands(true), (response) => { this.brands.set([...response]); });
   }
 
   getTypes(): void {
-    this.fetchData(() => this.productService.getTypes(true), (response) => { this.types = [...response]; });
+    this.fetchData(() => this.productService.getTypes(true), (response) => { this.types.set([...response]); });
   }
   getSizes(): void {
-    this.fetchData(() => this.productService.getSizes(true), (response) => { this.sizes = [...response]; });
+    this.fetchData(() => this.productService.getSizes(true), (response) => { this.sizes.set([...response]); });
   }
 
 
@@ -180,10 +196,17 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     console.log(typeId);
   }
   onIsActiveChange(event: boolean): void {
-    if (!this.product) {
+    const currentProduct = this.product();
+    if (!currentProduct) {
       return;
     }
-    this.product.isActive = event;
+
+    const updatedProduct = {
+      ...currentProduct,
+      isActive: event
+    };
+
+    this.product.set(updatedProduct);
   }
 
   setProductInLocalStorage(): void {
@@ -200,11 +223,12 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
 
   removeSize(index: number) {
     this.dynamicDropDownSize.removeAt(index);
-    this.disabledAddSizeButton = false;
+    this.disabledAddSizeButton.set(false);
   }
 
   addSize() {
-    const effectiveProductId = this.product ? this.product.id : (this.productIdFromUrl > 0 ? this.productIdFromUrl : 0);
+    const currentProduct = this.product();
+    const effectiveProductId = currentProduct ? currentProduct.id : (this.productIdFromUrl > 0 ? this.productIdFromUrl : 0);
 
     if (effectiveProductId < 0) {
       return;
@@ -217,7 +241,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
       this.addDynamicDropDownSize(defaultSizeId, 1, 0, effectiveProductId);
     }
 
-    this.disabledAddSizeButton = this.validSizeList.length <= 1;
+    this.disabledAddSizeButton.set(this.validSizeList.length <= 1);
   }
 
 
@@ -232,7 +256,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
   getValidSizeList(ignoreSizeId: number = -1): ISizeClassification[] {
     const specs: IProductCharacteristic[] = this.dynamicDropDownSize.value as IProductCharacteristic[];
 
-    return this.sizes.filter(size => {
+    return this.sizes().filter(size => {
       return !specs.some(spec => size.id === spec.sizeId && size.id !== ignoreSizeId);
     });
   }
@@ -259,18 +283,21 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterContentChec
     }
   }
 
-  get isProductIdValid() {
-    return this.product ? this.product.id > 0 : false;
+  get isProductIdValid(): boolean {
+    const currentProduct = this.product();
+    return currentProduct ? currentProduct.id > 0 : false;
   }
 
   get isSaveDisabled(): boolean {
     return !this.productForm.dirty || !this.productForm.valid;
   }
 
-
   private fetchData<T>(fetchDataFn: () => Observable<T>, updateFn: (data: T) => void): void {
     fetchDataFn().subscribe({
-      next: (response) => updateFn(response),
+      next: (response) => {
+        updateFn(response);
+        this.cdr.detectChanges();
+      },
       error: (error: any) => console.log(error),
     });
   }

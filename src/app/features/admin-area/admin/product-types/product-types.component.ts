@@ -1,5 +1,6 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal, viewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ProductTypeService } from 'src/app/core/services/product-type.service';
@@ -10,22 +11,25 @@ import { ProductTypeParams } from 'src/app/shared/models/productTypeParams';
 @Component({
   selector: 'app-product-types',
   templateUrl: './product-types.component.html',
-  styleUrls: ['./product-types.component.scss']
+  styleUrls: ['./product-types.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductTypesComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  paginator = viewChild.required<MatPaginator>(MatPaginator);
+  sort = viewChild.required<MatSort>(MatSort);
+
+  types = signal<IProductType[]>([]);
+  totalCount = signal<number>(0);
+  typeParams = signal<ProductTypeParams>(this.typeService.getTypeParams());
+
   columnsToDisplay: string[] = ['id', 'name', 'isActive', 'Action'];
-  types: IProductType[] = [];
-  totalCount: number = 0;
-  typeParams: ProductTypeParams = this.typeService.getTypeParams();
 
   private unsubscribe$ = new Subject<void>();
 
   constructor(private typeService: ProductTypeService,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
-    private deleteService: DeleteService
-  ) {
+    private deleteService: DeleteService) {
   }
 
   ngOnDestroy() {
@@ -38,19 +42,34 @@ export class ProductTypesComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.loadData();
 
-    this.paginator.page.pipe(takeUntil(this.unsubscribe$))
+    this.paginator().page.pipe(takeUntil(this.unsubscribe$))
       .subscribe((pageEvent: PageEvent) => {
-        this.typeParams.pageNumber = pageEvent.pageIndex + 1;
-        this.typeParams.pageSize = pageEvent.pageSize;
+        this.typeParams.update(params => (
+          {
+            ...params,
+            pageNumber: pageEvent.pageIndex + 1,
+            pageSize: pageEvent.pageSize
+          }));
+
+        this.loadData();
+      });
+
+    this.sort().sortChange.pipe(takeUntil(this.unsubscribe$))
+      .subscribe((sort: Sort) => {
+        this.typeParams.update(params => ({
+          ...params,
+          sort: sort.active,
+          sortDirection: sort.direction
+        }));
         this.loadData();
       });
   }
 
   loadData() {
-    this.typeService.gettypes(this.typeParams).subscribe((response) => {
-      this.types = response.data;
-      this.totalCount = response.count;
-      this.changeDetectorRef.detectChanges();
+    this.typeService.gettypes(this.typeParams()).subscribe((response) => {
+      this.types.set(response.data);
+      this.totalCount.set(response.count);
+      this.changeDetectorRef.markForCheck();
     });
   }
 

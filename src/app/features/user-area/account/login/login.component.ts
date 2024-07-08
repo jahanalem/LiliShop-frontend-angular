@@ -16,7 +16,7 @@ import { PolicyNames } from 'src/app/shared/models/policy';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent implements OnInit {
-  loginForm = signal<FormGroup>({} as FormGroup);
+  loginForm!: FormGroup;
   returnUrl = signal<string>('/');
 
   constructor(private accountService: AccountService,
@@ -31,18 +31,18 @@ export class LoginComponent implements OnInit {
   }
 
   createLoginForm() {
-    this.loginForm.set(this.fb.group({
+    this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.pattern(pattern.EMAIL)]],
       password: ['', Validators.required],
-    }));
+    });
   }
 
   onSubmit() {
-    if (this.loginForm().invalid) {
+    if (this.loginForm.invalid) {
       return;
     }
 
-    this.accountService.login(this.loginForm().value)
+    this.accountService.login(this.loginForm.value)
       .pipe(
         switchMap(user => {
           if (user) {

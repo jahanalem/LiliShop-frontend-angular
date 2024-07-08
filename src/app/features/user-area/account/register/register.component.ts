@@ -30,7 +30,7 @@ declare namespace google {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterComponent implements OnInit {
-  registerForm = signal<FormGroup>({} as FormGroup);
+  registerForm!: FormGroup;
   errors = signal<string[]>([]);
   private emailCache: { [email: string]: boolean } = {}; // A cache for already verified email addresses
   private clientId = environment.google_clientId;
@@ -112,7 +112,7 @@ export class RegisterComponent implements OnInit {
 
 
   createRegisterForm() {
-    this.registerForm.set(this.fb.group(
+    this.registerForm = this.fb.group(
       {
         displayName:
           [
@@ -143,13 +143,13 @@ export class RegisterComponent implements OnInit {
             ]
           ]
       }
-    ));
+    );
   }
 
 
   onSubmit(event: Event) {
     event.preventDefault();
-    this.accountService.register(this.registerForm().value).subscribe({
+    this.accountService.register(this.registerForm.value).subscribe({
       next: (response) => {
         console.log('Registration successful');
         const customMessage = response.headers.get('LiliShop-Registration-Status-Message');

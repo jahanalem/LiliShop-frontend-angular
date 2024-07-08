@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal, viewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -23,11 +23,16 @@ enum ColumnNames {
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.scss']
+  styleUrls: ['./users.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UsersComponent implements AfterViewInit, OnInit {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  paginator = viewChild.required<MatPaginator>(MatPaginator);
+  sort      = viewChild.required<MatSort>(MatSort);
+
+  users           = signal<IAdminAreaUser[]>([]);
+  totalCount      = signal<number>(0);
+  userQueryParams = signal<UserQueryParams>(this.accountService.getUserQueryParams());
 
   columnsToDisplay: ColumnNames[] = [
     ColumnNames.Id,
@@ -47,18 +52,14 @@ export class UsersComponent implements AfterViewInit, OnInit {
     [ColumnNames.Action]        : 'Action'
   };
 
-  users: IAdminAreaUser[] = [];
-  totalCount: number = 0;
-  userQueryParams: UserQueryParams = this.accountService.getUserQueryParams();
-
   private unsubscribe$ = new Subject<void>();
 
   constructor(
-    private accountService   : AccountService,
-    private router           : Router,
-    private changeDetectorRef: ChangeDetectorRef,
-    private deleteService    : DeleteService,
-    private searchService    : SearchService<IAdminAreaUser>) {
+    private accountService: AccountService,
+    private router        : Router,
+    private cdr           : ChangeDetectorRef,
+    private deleteService : DeleteService,
+    private searchService : SearchService<IAdminAreaUser>) {
   }
 
   ngOnDestroy() {
@@ -73,19 +74,23 @@ export class UsersComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     this.loadData();
     if (this.paginator) {
-      this.paginator.page?.pipe(takeUntil(this.unsubscribe$))
+      this.paginator().page?.pipe(takeUntil(this.unsubscribe$))
         .subscribe((pageEvent: PageEvent) => {
-          this.userQueryParams.pageNumber = pageEvent.pageIndex + 1;
-          this.userQueryParams.pageSize = pageEvent.pageSize;
-          this.accountService.setUserQueryParams(this.userQueryParams);
+          let params = this.userQueryParams();
+          params.pageNumber = pageEvent.pageIndex + 1;
+          params.pageSize = pageEvent.pageSize;
+          this.userQueryParams.set(params);
+          this.accountService.setUserQueryParams(this.userQueryParams());
 
           this.loadData();
         });
 
-      this.sort?.sortChange?.pipe(takeUntil(this.unsubscribe$)).subscribe((sortEvent: Sort) => {
-        this.userQueryParams.sort = sortEvent.active;
-        this.userQueryParams.sortDirection = sortEvent.direction;
-        this.accountService.setUserQueryParams(this.userQueryParams);
+      this.sort()?.sortChange?.pipe(takeUntil(this.unsubscribe$)).subscribe((sortEvent: Sort) => {
+        let params = this.userQueryParams();
+        params.sort = sortEvent.active;
+        params.sortDirection = sortEvent.direction;
+        this.userQueryParams.set(params);
+        this.accountService.setUserQueryParams(this.userQueryParams());
 
         this.loadData();
       })
@@ -100,13 +105,15 @@ export class UsersComponent implements AfterViewInit, OnInit {
         }
       }
     });
-    this.changeDetectorRef.detectChanges();
+    this.cdr.markForCheck();
   }
 
   updateData(userPagination: UserPagination) {
-    this.users = userPagination?.data ?? [];
-    this.totalCount = userPagination?.count ?? 0;
-    this.changeDetectorRef.detectChanges();
+    const users = userPagination?.data ?? [];
+    this.users.set(users);
+    const totalCount = userPagination?.count ?? 0;
+    this.totalCount.set(totalCount);
+    this.cdr.markForCheck();
   }
 
   getFriendlyName(column: ColumnNames): string {
@@ -130,11 +137,11 @@ export class UsersComponent implements AfterViewInit, OnInit {
   }
 
   applyFilter(filterValueEvent: Event) {
-    this.searchService.applyFilter(filterValueEvent, this.paginator, this.userQueryParams);
+    this.searchService.applyFilter(filterValueEvent, this.paginator(), this.userQueryParams());
   }
 
   get existUser(): boolean {
-    if (this.users.length > 0) {
+    if (this.users().length > 0) {
       return true;
     }
     return false;

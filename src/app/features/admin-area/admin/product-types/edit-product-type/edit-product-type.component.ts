@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { EMPTY, catchError, switchMap, tap } from 'rxjs';
+import { EMPTY, catchError, switchMap } from 'rxjs';
 import { ProductTypeService } from 'src/app/core/services/product-type.service';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
@@ -12,21 +12,22 @@ import { IProductType } from 'src/app/shared/models/productType';
 @Component({
   selector: 'app-edit-product-type',
   templateUrl: './edit-product-type.component.html',
-  styleUrls: ['./edit-product-type.component.scss']
+  styleUrls: ['./edit-product-type.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditProductTypeComponent {
   typeForm!: FormGroup;
-  type: IProductType | null = null;
-  typeIdFromUrl: number = 0;
+  type = signal<IProductType | null>(null);
+  typeIdFromUrl = signal<number>(0);
   protected colorCheckbox: ThemePalette;
 
   constructor(private typeService: ProductTypeService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private dialog: MatDialog,
-    private formBuilder: FormBuilder) {
+    private formBuilder: FormBuilder,
+    private cdr: ChangeDetectorRef) { }
 
-  }
   ngOnInit() {
     this.getType();
     this.createtypeForm();
@@ -43,38 +44,35 @@ export class EditProductTypeComponent {
     this.activatedRoute.paramMap.pipe(
       switchMap((params: ParamMap) => {
         const id = params.get('id');
-        this.typeIdFromUrl = (id === null ? 0 : +id);
-        if (this.typeIdFromUrl && this.typeIdFromUrl > 0) {
-          return this.typeService.getType(this.typeIdFromUrl);
+        this.typeIdFromUrl.set(id === null ? 0 : +id);
+        if (this.typeIdFromUrl() && this.typeIdFromUrl() > 0) {
+          return this.typeService.getType(this.typeIdFromUrl());
         }
         else {
           return EMPTY;
         }
-      }),
-      tap(response => {
-        this.type = response;
       }),
       catchError(error => {
         console.error(error);
         return EMPTY;
       })
     ).subscribe((response) => {
-      this.type = response;
-      this.updatetypeForm(response);
+      this.type.set(response);
+      this.updateTypeForm(response);
+      this.cdr.markForCheck();
     });
   }
 
-  updatetypeForm(type: IProductType) {
-    this.typeForm?.patchValue({
+  updateTypeForm(type: IProductType) {
+    this.typeForm.patchValue({
       isActive: type.isActive,
       name: type.name
     });
   }
 
-
   onSubmit() {
     const formValue = this.typeForm.value as IProductType;
-    const typePayload = { ...this.type, ...formValue };
+    const typePayload = { ...this.type(), ...formValue };
     delete (typePayload as { [key: string]: any })["createdDate"];
     delete (typePayload as { [key: string]: any })["modifiedDate"];
     const typeAction = typePayload && typePayload.id > 0
@@ -84,13 +82,13 @@ export class EditProductTypeComponent {
     typeAction.subscribe({
       next: () => {
         this.typeForm.markAsPristine();
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error(error);
       }
     })
   }
-
 
   navigateBack() {
     if (this.typeForm.dirty) {
@@ -118,7 +116,7 @@ export class EditProductTypeComponent {
     if (!this.type) {
       return;
     }
-    this.type.isActive = event;
+    this.type.update(type => ({ ...type!, isActive: event }));
   }
 
   get isSaveDisabled(): boolean {

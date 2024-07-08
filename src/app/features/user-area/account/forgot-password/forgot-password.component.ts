@@ -16,23 +16,23 @@ import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordRes
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ForgotPasswordComponent {
-  forgotPasswordForm = signal<FormGroup>({} as FormGroup);
+  forgotPasswordForm!: FormGroup;
   isSubmitting = signal<boolean>(false);
 
   constructor(private fb: FormBuilder,
     private accountService: AccountService,
     private dialog: MatDialog,
     private router: Router) {
-    this.forgotPasswordForm.set(this.fb.group({
+    this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
-    }));
+    });
   }
 
   onSubmit() {
-    if (this.forgotPasswordForm().valid) {
+    if (this.forgotPasswordForm.valid) {
       this.isSubmitting.update(() => true);
 
-      this.accountService.forgotPassword(this.forgotPasswordForm().value.email).pipe(
+      this.accountService.forgotPassword(this.forgotPasswordForm.value.email).pipe(
         finalize(() => { this.isSubmitting.update(() => false); })
       ).subscribe({
         next: (response: IForgotPasswordResponse) => {

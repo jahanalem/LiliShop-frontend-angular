@@ -14,7 +14,7 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResetPasswordComponent {
-  resetPasswordForm = signal<FormGroup>({} as FormGroup);
+  resetPasswordForm!: FormGroup;
   token = signal<string>('');
   email = signal<string>('');
   date = signal<string>('');
@@ -26,13 +26,13 @@ export class ResetPasswordComponent {
     private route: ActivatedRoute,
     private dialog: MatDialog) {
 
-    this.resetPasswordForm.set(this.fb.group(
+    this.resetPasswordForm = this.fb.group(
       {
         newPassword: ['', [Validators.required, Validators.minLength(6)]],
         repeatPassword: ['', [Validators.required]]
       },
       { validator: this.passwordMatchValidator }
-    ));
+    );
 
     this.route.queryParams.subscribe(params => {
       this.token.set(params['token']);
@@ -42,8 +42,8 @@ export class ResetPasswordComponent {
   }
 
   onSubmit() {
-    if (this.resetPasswordForm().valid) {
-      const newPassword = this.resetPasswordForm().get('newPassword')?.value;
+    if (this.resetPasswordForm.valid) {
+      const newPassword = this.resetPasswordForm.get('newPassword')?.value;
       this.accountService.resetPassword(this.token(), this.date(), this.email(), newPassword).subscribe(
         {
           next: () => {

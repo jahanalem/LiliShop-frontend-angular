@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy, signal, viewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -10,14 +10,16 @@ import { IBrand } from 'src/app/shared/models/brand';
 @Component({
   selector: 'app-brands',
   templateUrl: './brands.component.html',
-  styleUrls: ['./brands.component.scss']
+  styleUrls: ['./brands.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BrandsComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  paginator   = viewChild.required<MatPaginator>(MatPaginator);
+  brands      = signal<IBrand[]>([]);
+  totalCount  = signal<number>(0);
+  brandParams = signal<BrandParams>(this.brandService.getBrandParams());
+  
   columnsToDisplay: string[] = ['id', 'name', 'isActive', 'Action'];
-  brands: IBrand[] = [];
-  totalCount: number = 0;
-  brandParams: BrandParams = this.brandService.getBrandParams();
 
   private unsubscribe$ = new Subject<void>();
 
@@ -38,19 +40,23 @@ export class BrandsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.loadData();
 
-    this.paginator.page.pipe(takeUntil(this.unsubscribe$))
+    this.paginator().page.pipe(takeUntil(this.unsubscribe$))
       .subscribe((pageEvent: PageEvent) => {
-        this.brandParams.pageNumber = pageEvent.pageIndex + 1;
-        this.brandParams.pageSize = pageEvent.pageSize;
+        this.brandParams.update(params => (
+          {
+            ...params,
+            pageNumber: pageEvent.pageIndex + 1,
+            pageSize: pageEvent.pageSize
+          }));
         this.loadData();
       });
   }
 
   loadData() {
-    this.brandService.getBrands(this.brandParams).subscribe((response) => {
-      this.brands = response.data;
-      this.totalCount = response.count;
-      this.changeDetectorRef.detectChanges();
+    this.brandService.getBrands(this.brandParams()).subscribe((response) => {
+      this.brands.set(response.data);
+      this.totalCount.set(response.count);
+      this.changeDetectorRef.markForCheck();
     });
   }
 

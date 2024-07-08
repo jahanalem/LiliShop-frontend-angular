@@ -1,7 +1,7 @@
 <section class="pb-4">
   <div class="bg-white border rounded-5">
     <section class="w-100 p-4 d-flex justify-content-center pb-4">
-      <form class="w-100 w-sm-50 w-md-50 w-lg-50" [formGroup]="registerForm()" (ngSubmit)="onSubmit($event)">
+      <form class="w-100 w-sm-50 w-md-50 w-lg-50" [formGroup]="registerForm" (ngSubmit)="onSubmit($event)">
         <!-- Display Name -->
         <app-text-input formControlName="displayName" [label]="'Display Name'"></app-text-input>
         <!-- Email -->
@@ -13,7 +13,7 @@
         <app-text-input formControlName="confirmPassword" [label]="'Confirm Password'" [type]="'password'"
           [autocomplete]="'new-password'"></app-text-input>
         <!-- Submit button -->
-        <button [disabled]="registerForm().invalid" type="submit" class="btn btn-primary btn-block mb-4">
+        <button [disabled]="registerForm.invalid" type="submit" class="btn btn-primary btn-block mb-4">
           <i class="fa fa-user me-2"></i>Register
         </button>
 
