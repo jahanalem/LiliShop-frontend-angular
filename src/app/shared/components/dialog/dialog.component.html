@@ -1,19 +1,18 @@
-
 <h1 mat-dialog-title class="dialog-title">
   <mat-icon class="dialog-icon">info_outline</mat-icon>
-  {{ data.title }}
+  {{ data().title }}
 </h1>
 <div mat-dialog-content class="dialog-content">
-  {{ data.content }}
+  {{ data().content }}
 </div>
 <div mat-dialog-actions class="dialog-actions">
-  <ng-container *ngIf="!data.showConfirmationButtons">
+  <ng-container *ngIf="!data().showConfirmationButtons">
     <button mat-button mat-dialog-close class="close-button">
       <mat-icon>close</mat-icon> Close
     </button>
   </ng-container>
 
-  <ng-container *ngIf="data.showConfirmationButtons">
+  <ng-container *ngIf="data().showConfirmationButtons">
     <button mat-raised-button [mat-dialog-close]="false" cdkFocusInitial class="no-button">
       <mat-icon>cancel</mat-icon> No
     </button>

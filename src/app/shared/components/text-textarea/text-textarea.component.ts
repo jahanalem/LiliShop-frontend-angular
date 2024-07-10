@@ -1,15 +1,17 @@
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-import { Component, OnInit, ViewChild, ElementRef, Input, Self } from '@angular/core';
+import { Component, OnInit, ElementRef, Self, viewChild, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-text-textarea',
   templateUrl: './text-textarea.component.html',
-  styleUrls: ['./text-textarea.component.scss']
+  styleUrls: ['./text-textarea.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TextTextareaComponent implements OnInit, ControlValueAccessor {
-  @ViewChild('textarea', { static: true }) textarea: ElementRef = {} as ElementRef;
-  @Input() label: string = {} as string;
-  @Input() rows: number = 4;
+  textarea = viewChild.required<ElementRef>('textarea');
+
+  label = input<string>('');
+  rows  = input<number>(4);
 
   protected onChanged!: Function;
   protected onTouched!: Function;
@@ -29,7 +31,7 @@ export class TextTextareaComponent implements OnInit, ControlValueAccessor {
   }
 
   writeValue(obj: any): void {
-    this.textarea.nativeElement.value = obj || '';
+    this.textarea().nativeElement.value = obj || '';
   }
   registerOnChange(fn: any): void {
     this.onChanged = fn;
@@ -37,7 +39,7 @@ export class TextTextareaComponent implements OnInit, ControlValueAccessor {
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
   }
-  
+
   isThereAnyRequiredErrorType(): boolean | null {
     return this.controlDir.control?.errors ? this.controlDir.control?.errors['required'] ? true : false : null;
   }

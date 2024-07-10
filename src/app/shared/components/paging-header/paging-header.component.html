@@ -1,18 +1,10 @@
 <header>
-  <span class="visible-items" *ngIf="totalCount && totalCount > 0">
+  <span class="visible-items" *ngIf="hasResults()">
     Showing
-    <strong>
-      {{(pageNumber-1)*pageSize+1}} -
-      {{pageNumber*pageSize
-      > totalCount
-      ? totalCount
-      : pageNumber*pageSize}}
-    </strong>of
-    <strong>
-      {{totalCount}}
-    </strong>results
+    <strong>{{getStartItem()}} - {{getEndItem()}}</strong> of
+    <strong>{{totalCount()}}</strong> results
   </span>
-  <span *ngIf="totalCount===0">
+  <span *ngIf="noResults()">
     There are <strong>0</strong> results for this filter.
   </span>
 </header>

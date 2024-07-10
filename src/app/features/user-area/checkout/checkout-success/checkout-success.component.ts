@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Navigation, Router } from '@angular/router';
 import { IOrder } from 'src/app/shared/models/order';
 import { Observable, of } from 'rxjs';
@@ -8,13 +8,17 @@ import { AccountService } from 'src/app/core/services/account.service';
 @Component({
   selector: 'app-checkout-success',
   templateUrl: './checkout-success.component.html',
-  styleUrls: ['./checkout-success.component.scss']
+  styleUrls: ['./checkout-success.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CheckoutSuccessComponent implements OnInit {
   protected currentUser$: Observable<IUser | null> = of(null);
   public order!: IOrder;
 
-  constructor(private router: Router, private accountService: AccountService) {
+  constructor(
+    private router: Router,
+    private accountService: AccountService,
+    private cdr: ChangeDetectorRef) {
     const navigation = this.router.getCurrentNavigation();
     this.currentUser$ = this.accountService.currentUser$;
     this.initializeOrderFromNavigationState(navigation);
@@ -27,6 +31,7 @@ export class CheckoutSuccessComponent implements OnInit {
     const state = navigation?.extras?.state;
     if (state && state['order']) {
       this.order = state['order'] as IOrder;
+      this.cdr.markForCheck();
     }
   }
 }

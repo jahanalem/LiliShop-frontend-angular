@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { AccountService } from './core/services/account.service';
 import { BasketService } from './core/services/basket.service';
 import { StorageService } from './core/services/storage.service';
@@ -8,10 +8,10 @@ import { LOCAL_STORAGE_KEYS } from './shared/constants/auth';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit, AfterViewInit {
-  title = 'LiliShop';
   isTesting = false;
   constructor(private basketService: BasketService,
     private accountService: AccountService,

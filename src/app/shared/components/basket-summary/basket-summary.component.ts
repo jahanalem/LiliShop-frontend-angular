@@ -1,19 +1,20 @@
 import { IOrderItem } from 'src/app/shared/models/order';
 import { IBasketItem } from './../../models/basket';
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, output, input } from '@angular/core';
 
 @Component({
   selector: 'app-basket-summary',
   templateUrl: './basket-summary.component.html',
-  styleUrls: ['./basket-summary.component.scss']
+  styleUrls: ['./basket-summary.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BasketSummaryComponent implements OnInit {
-  @Input() isBasket = true;
-  @Input() isOrder = false;
-  @Input() items: IBasketItem[] | IOrderItem[] | any[] = [];
-  @Output() decrement: EventEmitter<IBasketItem> = new EventEmitter<IBasketItem>();
-  @Output() increment: EventEmitter<IBasketItem> = new EventEmitter<IBasketItem>();
-  @Output() remove: EventEmitter<IBasketItem> = new EventEmitter<IBasketItem>();
+  isBasket  = input<boolean>(true);
+  isOrder   = input<boolean>(false);
+  items     = input<IBasketItem[] | IOrderItem[] | any[]>([]);
+  decrement = output<IBasketItem>();
+  increment = output<IBasketItem>();
+  remove    = output<IBasketItem>();
 
   constructor() { }
 

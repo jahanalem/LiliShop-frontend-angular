@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -7,18 +7,24 @@ import { ActivatedRoute, Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './confirm-email.component.html',
-  styleUrl: './confirm-email.component.scss'
+  styleUrl: './confirm-email.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfirmEmailComponent implements OnInit {
-  success: boolean | null = null;
-  email: string | null = null;
+  success = signal<boolean | null>(null);
+  email   = signal<string | null>(null);
 
-  constructor(private route: ActivatedRoute, private router: Router) { }
+  private route  = inject(ActivatedRoute);
+  private router = inject(Router);
+  private cdr    = inject(ChangeDetectorRef);
+
+  constructor() { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.success = params['success'] === 'true';
-      this.email = params['email'];
+      this.success.set(params['success'] === 'true');
+      this.email.set(params['email']);
+      this.cdr.markForCheck();
     });
   }
 
