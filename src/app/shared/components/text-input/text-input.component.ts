@@ -1,8 +1,9 @@
 
-import { Component, OnInit, ChangeDetectionStrategy, viewChild, Self, input } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, viewChild, Self, input, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
 import { errorType } from '../../constants/error-types';
 import { ElementRef } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-text-input',
@@ -10,15 +11,18 @@ import { ElementRef } from '@angular/core';
   styleUrls: ['./text-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TextInputComponent implements OnInit, ControlValueAccessor {
-  input        = viewChild.required<ElementRef>('input');
+export class TextInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
+  input = viewChild.required<ElementRef>('input');
 
-  type         = input<string>('text');
-  label        = input<string>('')
+  type = input<string>('text');
+  label = input<string>('')
   autocomplete = input<string>('');
 
-  protected onChange!: Function;
-  protected onTouched!: Function;
+  protected onChange = (_value: any) => {};
+  protected onTouched = () => {};
+  private destroy$ = new Subject<void>();
+
+  cdr = inject(ChangeDetectorRef);
 
   constructor(@Self() public controlDir: NgControl) {
     this.controlDir.valueAccessor = this;
@@ -26,16 +30,38 @@ export class TextInputComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit(): void {
     const control = this.controlDir.control;
-    const validators = control?.validator ? [control.validator] : [];
-    const asyncValidators = control?.asyncValidator ? [control.asyncValidator] : [];
+    if (control) {
+      control.statusChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+        this.cdr.markForCheck();
+      });
+      control.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+        this.cdr.markForCheck();
+      });
+      control.setValidators(control.validator ? [control.validator] : []);
+      control.setAsyncValidators(control.asyncValidator ? [control.asyncValidator] : []);
+      control.updateValueAndValidity();
+    }
+  }
 
-    control?.setValidators(validators);
-    control?.setAsyncValidators(asyncValidators);
-    control?.updateValueAndValidity();
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   writeValue(obj: any): void {
-    this.input().nativeElement.value = obj || '';
+    if (this.input().nativeElement.value !== obj) {
+      this.input().nativeElement.value = obj || '';
+    }
+  }
+
+  onInputChange(value: any): void {
+    this.onChange(value);
+    this.cdr.detectChanges();
+  }
+
+  onInputBlur(): void {
+    this.onTouched();
+    this.cdr.detectChanges();
   }
 
   registerOnChange(fn: any): void {
@@ -47,6 +73,7 @@ export class TextInputComponent implements OnInit, ControlValueAccessor {
   }
 
   isThereAnyRequiredErrorType(): boolean | null {
+    this.cdr.markForCheck();
     return this.controlDir.control?.errors ? this.controlDir.control.errors['required'] ? true : false : null;
   }
 

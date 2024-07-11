@@ -13,7 +13,7 @@
         <app-text-input formControlName="confirmPassword" [label]="'Confirm Password'" [type]="'password'"
           [autocomplete]="'new-password'"></app-text-input>
         <!-- Submit button -->
-        <button [disabled]="registerForm.invalid" type="submit" class="btn btn-primary btn-block mb-4">
+        <button [disabled]="!isFormValid()" type="submit" class="btn btn-primary btn-block mb-4">
           <i class="fa fa-user me-2"></i>Register
         </button>
 

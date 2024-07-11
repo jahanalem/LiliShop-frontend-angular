@@ -1,6 +1,6 @@
 
 import { Observable, of, switchMap } from 'rxjs';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { BasketService } from '../../../core/services/basket.service';
 import { AccountService } from '../../../core/services/account.service';
 import { AuthorizationService } from '../../../core/services/authorization.service';
@@ -14,8 +14,8 @@ import { PolicyNames } from 'src/app/shared/models/policy';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NavBarComponent implements OnInit {
-  isCollapsed  = signal<boolean>(true);
-  basket$      = this.basketService.basket$;
+  isCollapsed = signal<boolean>(true);
+  basket$ = this.basketService.basket$;
   currentUser$ = this.accountService.currentUser$;
 
   hasAccessToAdminPanel$: Observable<boolean> = of(false);
@@ -23,13 +23,16 @@ export class NavBarComponent implements OnInit {
   constructor(
     private basketService: BasketService,
     private accountService: AccountService,
-    private authorizationService: AuthorizationService) {
+    private authorizationService: AuthorizationService,
+    private cdr: ChangeDetectorRef) {
+
   }
 
   ngOnInit(): void {
     this.hasAccessToAdminPanel$ = this.currentUser$.pipe(
       switchMap(user => {
         if (user) {
+          this.cdr.markForCheck();
           return this.authorizationService.isCurrentUserAuthorized(
             PolicyNames.RequireAtLeastAdminPanelViewerRole, user.role
           );
@@ -37,6 +40,7 @@ export class NavBarComponent implements OnInit {
         return of(false);
       })
     );
+    this.cdr.markForCheck();
   }
 
   toggleCollapse() {

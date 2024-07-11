@@ -7,7 +7,7 @@
         <!-- Password input -->
         <app-text-input formControlName="password" [label]="'Password'" [type]="'password'"></app-text-input>
         <!-- Submit button -->
-        <button [disabled]="loginForm.invalid" type="submit" class="btn btn-primary btn-block mb-4">
+        <button [disabled]="!isFormValid()" type="submit" class="btn btn-primary btn-block mb-4">
           <i class="fa fa-sign-in me-2"></i>Sign in
         </button>
         <div class="">

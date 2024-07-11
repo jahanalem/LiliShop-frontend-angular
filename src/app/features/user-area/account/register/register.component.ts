@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { switchMap, timer, map, of, catchError, Observable, filter } from 'rxjs';
+import { switchMap, timer, map, of, catchError, Observable, filter, Subscription } from 'rxjs';
 import { pattern } from 'src/app/shared/constants/patterns';
 import { errorType } from 'src/app/shared/constants/error-types';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -10,7 +10,7 @@ import { IUser } from 'src/app/shared/models/user';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
-import { ChangeDetectionStrategy, Component, NgZone, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, signal } from '@angular/core';
 
 declare namespace google {
   namespace accounts {
@@ -29,22 +29,36 @@ declare namespace google {
   styleUrls: ['./register.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
   registerForm!: FormGroup;
   errors = signal<string[]>([]);
+  isFormValid = signal<boolean>(false);
   private emailCache: { [email: string]: boolean } = {}; // A cache for already verified email addresses
   private clientId = environment.google_clientId;
+
+  valueChangesSubscription!: Subscription;
 
   constructor(
     private fb: FormBuilder,
     private accountService: AccountService,
     private router: Router,
     private ngZone: NgZone,
-    private dialog: MatDialog) { }
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef) { }
+
+  ngOnDestroy(): void {
+    if (this.valueChangesSubscription) {
+      this.valueChangesSubscription.unsubscribe();
+    }
+  }
 
   ngOnInit(): void {
     this.createRegisterForm();
 
+    this.valueChangesSubscription = this.registerForm.valueChanges.subscribe(() => {
+      this.isFormValid.update(() => this.registerForm.valid);
+      this.cdr.detectChanges();
+    });
 
     const googleScript = document.createElement('script');
     googleScript.src = 'https://accounts.google.com/gsi/client';
