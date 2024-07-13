@@ -1,5 +1,5 @@
 import { AccountService } from 'src/app/core/services/account.service';
-import { Component, OnDestroy, ChangeDetectionStrategy, viewChild } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, ApplicationRef, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
 import { delay, filter, Subject, takeUntil } from 'rxjs';
@@ -11,13 +11,24 @@ import { BreakpointObserver } from '@angular/cdk/layout';
   styleUrls: ['./admin.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export default class AdminComponent implements OnDestroy {
+export default class AdminComponent implements OnDestroy, AfterViewInit {
   sidenav = viewChild.required<MatSidenav>(MatSidenav);
 
-  private destroy$ = new Subject<void>();
-  constructor(private observer: BreakpointObserver,
-    private router: Router,
-    private accountService: AccountService) { }
+  private destroy$       = new Subject<void>();
+
+  private observer       = inject(BreakpointObserver);
+  private router         = inject(Router);
+  private accountService = inject(AccountService);
+  private cdr            = inject(ChangeDetectorRef);
+  private appRef         = inject(ApplicationRef);
+  
+  constructor() {
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd), takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.appRef.tick();
+    });
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -30,6 +41,7 @@ export default class AdminComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$), delay(1))
       .subscribe((res: { matches: boolean }) => {
         this.setSidenav(res.matches);
+        this.cdr.detectChanges();
       });
 
     this.router.events

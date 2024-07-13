@@ -1,9 +1,9 @@
-import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy, signal, ChangeDetectorRef, viewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy, signal, ChangeDetectorRef, viewChild, OnDestroy } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { IProduct } from 'src/app/shared/models/product';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
-import { Observable, merge } from 'rxjs';
+import { Observable, Subject, merge, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProductService } from 'src/app/core/services/product.service';
 import { PaginationWithData } from 'src/app/shared/models/pagination';
@@ -32,17 +32,24 @@ export declare interface IPageEvent {
   styleUrls: ['./products.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductsComponent implements OnInit, AfterViewInit {
-  paginator        = viewChild.required<MatPaginator>(MatPaginator);
-  sort             = viewChild.required<MatSort>(MatSort);
-  policyNames      = PolicyNames;
-  products         = signal<IProduct[]>([]);
-  shopParams       = signal<ProductQueryParams>(this.productService.getShopParams());
-  totalCount       = signal<number>(0);
+export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
+  paginator = viewChild.required<MatPaginator>(MatPaginator);
+  sort = viewChild.required<MatSort>(MatSort);
+
+  policyNames = PolicyNames;
+
+  products = signal<IProduct[]>([]);
+  shopParams = signal<ProductQueryParams>(this.productService.getShopParams());
+  totalCount = signal<number>(0);
   isLoadingResults = signal<boolean>(true);
-  userRole         = signal<string>('');
-  dataSource       = signal<IProduct[]>([]);
+  userRole = signal<string>('');
+  dataSource = signal<IProduct[]>([]);
+  pageSizeOptions = signal<number[]>([5, 10, 25]);
+
+
   columnsToDisplay: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'Action'];
+
+  destroy$ = new Subject<void>();
 
   constructor(private productService: ProductService,
     private router: Router,
@@ -52,20 +59,30 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     private authorizationService: AuthorizationService,
     private cdr: ChangeDetectorRef) { }
 
+
+
+
+    ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   ngOnInit(): void {
     this.searchService.handleSearch(() => this.productService.getProducts())
+      .pipe(takeUntil(this.destroy$))
       .subscribe(response => this.updateProducts(response));
-    this.accountService.currentUser$.subscribe(user => {
+    this.accountService.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(user => {
       this.userRole.set(user?.role ?? '');
     })
   }
 
   ngAfterViewInit() {
     // If the user changes the sort order, reset back to the first page.
-    this.sort().sortChange.subscribe(() => (this.paginator().pageIndex = 0));
+    this.sort().sortChange.pipe(takeUntil(this.destroy$)).subscribe(() => (this.paginator().pageIndex = 0));
     this.getProducts();
 
     merge(this.sort().sortChange, this.paginator().page)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((x: Sort | PageEvent) => {
 
         const sortEvent = x as Sort;
@@ -84,7 +101,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
             sortDirection: this.sort().direction
           }));
         }
-
+        this.cdr.markForCheck();
         console.log("shop params =", this.shopParams());
         this.getProducts();
       });
@@ -94,12 +111,13 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     this.products.update(() => (response.data));
     this.totalCount.update(() => (response.count));
     this.dataSource.update(() => this.products());
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   getProducts(isActive?: boolean): void {
     this.productService.shopParams = this.shopParams();
     this.productService.getProducts(isActive)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           if (response) {

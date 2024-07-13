@@ -23,7 +23,7 @@
         <h6 class="text-uppercase mb-4">Sort</h6>
         <select name="sort" class="form-select mb-4" (change)="onFilterSelected($event.target, 'sort')">
           @for(sort of sortOptions; track sort.value){
-          <option [selected]="shopParams.sort === sort.value" [value]="sort.value">
+          <option [selected]="shopParams().sort === sort.value" [value]="sort.value">
             {{sort.name}}
           </option>
           }
@@ -38,7 +38,7 @@
         <div>
           <select name="brand" class="form-select mb-4" (change)="onFilterSelected($event.target, 'brand')">
             @for(brand of brands(); track brand.id){
-            <option [selected]="brand.id ===  shopParams.brandId" [value]="brand.id">
+            <option [selected]="brand.id ===  shopParams().brandId" [value]="brand.id">
               {{brand.name}}
             </option>
             }
@@ -53,7 +53,7 @@
         <div>
           <select name="type" class="form-select mb-4" (change)="onFilterSelected($event.target, 'type')">
             @for(type of types(); track type.id){
-            <option [selected]="type.id ===  shopParams.typeId" [value]="type.id">
+            <option [selected]="type.id ===  shopParams().typeId" [value]="type.id">
               {{type.name}}
             </option>
             }
@@ -67,7 +67,7 @@
         <div>
           <select name="size" class="form-select mb-4" (change)="onFilterSelected($event.target, 'size')">
             @for(size of sizes(); track size.id){
-            <option [selected]="size.id ===  shopParams.sizeId" [value]="size.id">
+            <option [selected]="size.id ===  shopParams().sizeId" [value]="size.id">
               {{size.size}}
             </option>
             }
@@ -82,7 +82,7 @@
       <div class="col-xl-9 col-lg-8">
         <!-- Filters -->
         <div class="d-flex justify-content-between align-items-start mb-5">
-          <app-paging-header [pageNumber]="this.shopParams.pageNumber!" [pageSize]="this.shopParams.pageSize!"
+          <app-paging-header [pageNumber]="this.shopParams().pageNumber!" [pageSize]="this.shopParams().pageSize!"
             [totalCount]="this.totalCount()">
           </app-paging-header>
         </div>
@@ -96,8 +96,8 @@
         </div>
         <!-- Pagination-->
         <nav class="pagination justify-content-center" aria-label="Page navigation example">
-          <app-pager [pageSize]="this.shopParams.pageSize!" [totalCount]="this.totalCount()"
-            [pageNumber]="shopParams.pageNumber!" (pageChanged)="onPageChanged($event)">
+          <app-pager [pageSize]="this.shopParams().pageSize!" [totalCount]="this.totalCount()"
+            [pageNumber]="shopParams().pageNumber!" (pageChanged)="onPageChanged($event)">
           </app-pager>
         </nav>
       </div>

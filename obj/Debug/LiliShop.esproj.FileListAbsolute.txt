@@ -1,2 +1,1 @@
-C:\Workspace\MainProjects\E-Shop\LiliShop-frontend-angular\LiliShop\obj\Debug\LiliShop.esproj.SuggestedBindingRedirects.cache
 C:\Workspace\MainProjects\E-Shop\LiliShop-frontend-angular\LiliShop\obj\Debug\LiliShop.esproj.CoreCompileInputs.cache

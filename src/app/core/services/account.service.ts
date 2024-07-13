@@ -65,7 +65,6 @@ export class AccountService {
     );
   }
 
-
   getUser(id: number): Observable<IAdminAreaUser> {
     return this.http.get<IAdminAreaUser>(`${this.baseUrl}account/user/${id}`);
   }

@@ -1,0 +1,83 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Workspace\\MainProjects\\E-Shop\\LiliShop-frontend-angular\\LiliShop\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{399FC5BC-B538-45D7-BEE7-3EF7B7DC8D4F}|LiliShop.esproj|c:\\workspace\\mainprojects\\e-shop\\lilishop-frontend-angular\\lilishop\\src\\app\\features\\admin-area\\admin\\admin.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{399FC5BC-B538-45D7-BEE7-3EF7B7DC8D4F}|LiliShop.esproj|solutionrelative:src\\app\\features\\admin-area\\admin\\admin.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{399FC5BC-B538-45D7-BEE7-3EF7B7DC8D4F}|LiliShop.esproj|c:\\workspace\\mainprojects\\e-shop\\lilishop-frontend-angular\\lilishop\\src\\app\\features\\user-area\\user-layout.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{399FC5BC-B538-45D7-BEE7-3EF7B7DC8D4F}|LiliShop.esproj|solutionrelative:src\\app\\features\\user-area\\user-layout.component.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{399FC5BC-B538-45D7-BEE7-3EF7B7DC8D4F}|LiliShop.esproj|c:\\workspace\\mainprojects\\e-shop\\lilishop-frontend-angular\\lilishop\\src\\app\\features\\admin-area\\admin\\admin.component.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{399FC5BC-B538-45D7-BEE7-3EF7B7DC8D4F}|LiliShop.esproj|solutionrelative:src\\app\\features\\admin-area\\admin\\admin.component.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "user-layout.component.ts",
+              "DocumentMoniker": "C:\\Workspace\\MainProjects\\E-Shop\\LiliShop-frontend-angular\\LiliShop\\src\\app\\features\\user-area\\user-layout.component.ts",
+              "RelativeDocumentMoniker": "src\\app\\features\\user-area\\user-layout.component.ts",
+              "ToolTip": "C:\\Workspace\\MainProjects\\E-Shop\\LiliShop-frontend-angular\\LiliShop\\src\\app\\features\\user-area\\user-layout.component.ts",
+              "RelativeToolTip": "src\\app\\features\\user-area\\user-layout.component.ts",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAADAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2024-07-11T11:45:05.562Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "admin.component.html",
+              "DocumentMoniker": "C:\\Workspace\\MainProjects\\E-Shop\\LiliShop-frontend-angular\\LiliShop\\src\\app\\features\\admin-area\\admin\\admin.component.html",
+              "RelativeDocumentMoniker": "src\\app\\features\\admin-area\\admin\\admin.component.html",
+              "ToolTip": "C:\\Workspace\\MainProjects\\E-Shop\\LiliShop-frontend-angular\\LiliShop\\src\\app\\features\\admin-area\\admin\\admin.component.html",
+              "RelativeToolTip": "src\\app\\features\\admin-area\\admin\\admin.component.html",
+              "ViewState": "AQIAAB4AAAAAAAAAAAAgwDIAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2024-07-11T11:20:35.347Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "admin.component.ts",
+              "DocumentMoniker": "C:\\Workspace\\MainProjects\\E-Shop\\LiliShop-frontend-angular\\LiliShop\\src\\app\\features\\admin-area\\admin\\admin.component.ts",
+              "RelativeDocumentMoniker": "src\\app\\features\\admin-area\\admin\\admin.component.ts",
+              "ToolTip": "C:\\Workspace\\MainProjects\\E-Shop\\LiliShop-frontend-angular\\LiliShop\\src\\app\\features\\admin-area\\admin\\admin.component.ts",
+              "RelativeToolTip": "src\\app\\features\\admin-area\\admin\\admin.component.ts",
+              "ViewState": "AQIAAA4AAAAAAAAAAAAUwB4AAAAHAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2024-07-11T11:20:29.559Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -37,7 +37,7 @@ export class DeleteService {
             console.log("object deleted!");
             fetchMethod();
           },
-          error: (error) => { console.error(error) }
+          error: (error: any) => { console.error(error) }
         })
       },
       error: (error) => { console.error(error) }

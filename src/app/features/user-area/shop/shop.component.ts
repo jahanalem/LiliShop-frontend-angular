@@ -1,5 +1,5 @@
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, signal, viewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
 import { IBrand } from 'src/app/shared/models/brand';
@@ -16,15 +16,15 @@ import { IProductType } from 'src/app/shared/models/productType';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ShopComponent implements OnInit {
-  // { static: true } needs to be set when you want to access the ViewChild in ngOnInit.
-  // { static: false } can only be accessed in ngAfterViewInit. This is also what you want to go for when you have a structural directive (i.e. *ngIf) on your element in your template.
-  @ViewChild('search', { static: false }) searchTerm!: ElementRef;
-  products = signal<IProduct[]>([]);
-  brands   = signal<IBrand[]>([]);
-  types    = signal<IProductType[]>([]);
-  sizes    = signal<ISizeClassification[]>([]);
-  shopParams: ProductQueryParams;
+  searchTerm = viewChild.required<ElementRef<HTMLInputElement>>('search');
+
+  products   = signal<IProduct[]>([]);
+  brands     = signal<IBrand[]>([]);
+  types      = signal<IProductType[]>([]);
+  sizes      = signal<ISizeClassification[]>([]);
+  shopParams = signal<ProductQueryParams>({} as ProductQueryParams);
   totalCount = signal<number>(0);
+
   readonly sortOptions = [
     { name: 'Alphabetical', value: 'name' },
     { name: 'Price: Low to high', value: 'priceAsc' },
@@ -32,7 +32,7 @@ export class ShopComponent implements OnInit {
   ]
 
   constructor(private productService: ProductService, private cdr: ChangeDetectorRef) {
-    this.shopParams = this.productService.getShopParams();
+    this.shopParams.set(this.productService.getShopParams());
   }
 
   ngOnInit(): void {
@@ -46,7 +46,7 @@ export class ShopComponent implements OnInit {
         if (response) {
           this.products.set(response.data);
           this.totalCount.set(response.count);
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         }
       },
       error: (error) => { console.error(error); }
@@ -56,17 +56,14 @@ export class ShopComponent implements OnInit {
   getFilters(): void {
     this.getData(this.productService.getBrands(true), (response) => {
       this.brands.set([{ id: 0, name: 'All' }, ...response]);
-      this.cdr.markForCheck();
     });
 
     this.getData(this.productService.getTypes(true), (response) => {
       this.types.set([{ id: 0, name: 'All' }, ...response]);
-      this.cdr.markForCheck();
     });
 
     this.getData(this.productService.getSizes(true), (response) => {
       this.sizes.set([{ id: 0, size: 'All', isActive: false }, ...response]);
-      this.cdr.markForCheck();
     });
   }
 
@@ -81,7 +78,7 @@ export class ShopComponent implements OnInit {
 
   onSearch(): void {
     const params = this.productService.getShopParams();
-    params.search = this.searchTerm.nativeElement.value;
+    params.search = this.searchTerm().nativeElement.value;
     params.pageNumber = 1;
     this.productService.setShopParams(params);
     this.getProducts();
@@ -89,9 +86,9 @@ export class ShopComponent implements OnInit {
   }
 
   onReset(): void {
-    this.searchTerm.nativeElement.value = '';
-    this.shopParams = new ProductQueryParams();
-    this.productService.setShopParams(this.shopParams);
+    this.searchTerm().nativeElement.value = '';
+    this.shopParams.set(new ProductQueryParams());
+    this.productService.setShopParams(this.shopParams());
     this.getProducts();
     this.cdr.markForCheck();
   }
@@ -135,6 +132,6 @@ export class ShopComponent implements OnInit {
         console.error(error);
       }
     });
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 }
