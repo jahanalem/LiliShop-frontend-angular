@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy, signal, ChangeDetectorRef, viewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy, signal, ChangeDetectorRef, viewChild, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { IProduct } from 'src/app/shared/models/product';
@@ -33,8 +33,10 @@ export declare interface IPageEvent {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
-  paginator = viewChild.required<MatPaginator>(MatPaginator);
-  sort = viewChild.required<MatSort>(MatSort);
+  //paginator = viewChild.required<MatPaginator>(MatPaginator);
+  @ViewChild(MatPaginator) paginator!: MatPaginator
+  @ViewChild(MatSort) sort!: MatSort
+  //sort = viewChild.required<MatSort>(MatSort);
 
   policyNames = PolicyNames;
 
@@ -44,7 +46,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoadingResults = signal<boolean>(true);
   userRole = signal<string>('');
   dataSource = signal<IProduct[]>([]);
-  pageSizeOptions = signal<number[]>([5, 10, 25]);
+  //pageSizeOptions = signal<number[]>([5, 10, 25]);
+  pageSizeOptions:number[] =[];
 
 
   columnsToDisplay: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'Action'];
@@ -62,7 +65,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-    ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -78,10 +81,10 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     // If the user changes the sort order, reset back to the first page.
-    this.sort().sortChange.pipe(takeUntil(this.destroy$)).subscribe(() => (this.paginator().pageIndex = 0));
+    this.sort.sortChange.pipe(takeUntil(this.destroy$)).subscribe(() => (this.paginator.pageIndex = 0));
     this.getProducts();
 
-    merge(this.sort().sortChange, this.paginator().page)
+    merge(this.sort.sortChange, this.paginator.page)
       .pipe(takeUntil(this.destroy$))
       .subscribe((x: Sort | PageEvent) => {
 
@@ -97,8 +100,8 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (sortEvent) {
           this.shopParams.update(params => ({
             ...params,
-            sort: this.sort().active,
-            sortDirection: this.sort().direction
+            sort: this.sort.active,
+            sortDirection: this.sort.direction
           }));
         }
         this.cdr.markForCheck();
@@ -131,7 +134,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyFilter(filterValueEvent: Event) {
-    this.searchService.applyFilter(filterValueEvent, this.paginator(), this.shopParams());
+    this.searchService.applyFilter(filterValueEvent, this.paginator, this.shopParams());
   }
 
   editProduct(id: number) {
