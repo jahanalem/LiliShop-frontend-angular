@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, AfterViewInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { AccountService } from './core/services/account.service';
 import { BasketService } from './core/services/basket.service';
 import { StorageService } from './core/services/storage.service';
@@ -11,13 +11,17 @@ import { LOCAL_STORAGE_KEYS } from './shared/constants/auth';
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements AfterViewInit {
   isTesting = false;
-  constructor(private basketService: BasketService,
-    private accountService: AccountService,
-    private storageService: StorageService,
-    private cdr: ChangeDetectorRef) {
+
+  private basketService  = inject(BasketService);
+  private accountService = inject(AccountService);
+  private storageService = inject(StorageService);
+
+  constructor() {
+
   }
+  
   ngAfterViewInit(): void {
     if (!this.isTesting) {
       this.loadBasket();
@@ -25,14 +29,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngOnInit() {
-  }
-
   loadBasket() {
     const basketId = this.storageService.get<string>('basket_id');
     if (basketId) {
       this.basketService.getBasket(basketId).subscribe({
-        next: () => this.cdr.markForCheck(),
         error: error => { console.error(error); }
       });
     }

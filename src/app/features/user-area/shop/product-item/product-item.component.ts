@@ -1,5 +1,5 @@
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { IProduct } from 'src/app/shared/models/product';
 
@@ -9,15 +9,16 @@ import { IProduct } from 'src/app/shared/models/product';
   styleUrls: ['./product-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductItemComponent implements OnInit {
+export class ProductItemComponent {
   product = input.required<IProduct>();
-  constructor(private basketService: BasketService, private cdr: ChangeDetectorRef) { }
 
-  ngOnInit(): void {
+  private basketService = inject(BasketService);
+
+  constructor() {
+
   }
 
   addItemToBasket() {
     this.basketService.addItemToBasket(this.product());
-    this.cdr.markForCheck();
   }
 }

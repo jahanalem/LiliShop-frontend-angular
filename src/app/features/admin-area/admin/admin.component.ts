@@ -1,5 +1,5 @@
 import { AccountService } from 'src/app/core/services/account.service';
-import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, AfterViewInit } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
 import { delay, filter, Subject, takeUntil } from 'rxjs';
@@ -19,7 +19,6 @@ export default class AdminComponent implements OnDestroy, AfterViewInit {
   private observer       = inject(BreakpointObserver);
   private router         = inject(Router);
   private accountService = inject(AccountService);
-  private cdr            = inject(ChangeDetectorRef);
 
   constructor() {
 
@@ -36,7 +35,6 @@ export default class AdminComponent implements OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.destroy$), delay(1))
       .subscribe((res: { matches: boolean }) => {
         this.setSidenav(res.matches);
-        this.cdr.detectChanges();
       });
 
     this.router.events

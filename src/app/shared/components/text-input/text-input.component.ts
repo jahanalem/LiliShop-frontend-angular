@@ -14,12 +14,13 @@ import { Subject, takeUntil } from 'rxjs';
 export class TextInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
   input = viewChild.required<ElementRef>('input');
 
-  type = input<string>('text');
-  label = input<string>('')
+  type         = input<string>('text');
+  label        = input<string>('')
   autocomplete = input<string>('');
 
-  protected onChange = (_value: any) => {};
+  protected onChange  = (_value: any) => {};
   protected onTouched = () => {};
+
   private destroy$ = new Subject<void>();
 
   cdr = inject(ChangeDetectorRef);

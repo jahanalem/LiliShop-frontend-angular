@@ -2,7 +2,7 @@ import { AccountService } from './../../../core/services/account.service';
 import { environment } from './../../../../environments/environment';
 import { FileUploader } from 'ng2-file-upload';
 import { IProduct } from './../../models/product';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, effect, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, effect, inject, input, OnInit, signal } from '@angular/core';
 import { IUser } from '../../models/user';
 import { take } from 'rxjs';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -20,7 +20,7 @@ import { ProductService } from 'src/app/core/services/product.service';
   }],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PhotoEditorComponent implements OnInit, ControlValueAccessor, AfterViewInit {
+export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
   product             = input.required<IProduct | undefined>();
 
   uploader            = signal<FileUploader | undefined>(undefined);
@@ -50,10 +50,6 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor, After
         this.cdr.markForCheck();
       }
     });
-  }
-  ngAfterViewInit(): void {
-    console.log("ngAfterViewInit");
-    this.cdr.detectChanges();
   }
 
   ngOnInit(): void {

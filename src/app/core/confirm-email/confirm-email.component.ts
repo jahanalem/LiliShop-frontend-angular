@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-email',
@@ -10,21 +11,28 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrl: './confirm-email.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ConfirmEmailComponent implements OnInit {
+export class ConfirmEmailComponent implements OnInit, OnDestroy {
   success = signal<boolean | null>(null);
   email   = signal<string | null>(null);
 
+  private destroy$ = new Subject<void>();
+
   private route  = inject(ActivatedRoute);
   private router = inject(Router);
-  private cdr    = inject(ChangeDetectorRef);
 
-  constructor() { }
+  constructor() {
+
+  }
+  
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
       this.success.set(params['success'] === 'true');
       this.email.set(params['email']);
-      this.cdr.markForCheck();
     });
   }
 

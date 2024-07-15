@@ -1,6 +1,6 @@
 
 import { Observable, of, startWith, Subject, switchMap, takeUntil } from 'rxjs';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, NgZone, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { BasketService } from '../../../core/services/basket.service';
 import { AccountService } from '../../../core/services/account.service';
 import { AuthorizationService } from '../../../core/services/authorization.service';
@@ -15,20 +15,21 @@ import { IBasket } from '../../models/basket';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NavBarComponent implements OnInit, OnDestroy {
-  public  cdr                  = inject(ChangeDetectorRef);
-  private basketService        = inject(BasketService);
-  private accountService       = inject(AccountService);
-  private authorizationService = inject(AuthorizationService);
-  private ngZone               = inject(NgZone);
-
-  basket$      : Observable<IBasket | null> = this.basketService.basket$;
-  currentUser$: Observable<IUser | null>    = this.accountService.currentUser$;
-  destroy$    : Subject<void>               = new Subject<void>();
+  basket$     : Observable<IBasket | null>;
+  currentUser$: Observable<IUser | null>;
 
   hasAccessToAdminPanel = signal<boolean>(false);
   isCollapsed           = signal<boolean>(true);
 
+  destroy$: Subject<void> = new Subject<void>();
+
+  private basketService        = inject(BasketService);
+  private accountService       = inject(AccountService);
+  private authorizationService = inject(AuthorizationService);
+
   constructor() {
+    this.basket$      = this.basketService.basket$;
+    this.currentUser$ = this.accountService.currentUser$;
   }
 
   ngOnInit(): void {
@@ -51,12 +52,8 @@ export class NavBarComponent implements OnInit, OnDestroy {
       }),
       startWith(false)
     ).subscribe(isAdmin => {
-      this.ngZone.run(() => {
         this.hasAccessToAdminPanel.set(isAdmin);
-        this.cdr.detectChanges();
-      });
     });
-
   }
 
   toggleCollapse() {

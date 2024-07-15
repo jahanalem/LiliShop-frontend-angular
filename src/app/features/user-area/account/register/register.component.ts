@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { switchMap, timer, map, of, catchError, Observable, filter, Subscription } from 'rxjs';
+import { switchMap, timer, map, of, catchError, Observable, filter, Subject, takeUntil } from 'rxjs';
 import { pattern } from 'src/app/shared/constants/patterns';
 import { errorType } from 'src/app/shared/constants/error-types';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -10,7 +10,7 @@ import { IUser } from 'src/app/shared/models/user';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, NgZone, OnDestroy, OnInit, signal } from '@angular/core';
 
 declare namespace google {
   namespace accounts {
@@ -31,33 +31,35 @@ declare namespace google {
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   registerForm!: FormGroup;
-  errors = signal<string[]>([]);
+
+  errors      = signal<string[]>([]);
   isFormValid = signal<boolean>(false);
-  private emailCache: { [email: string]: boolean } = {}; // A cache for already verified email addresses
-  private clientId = environment.google_clientId;
 
-  valueChangesSubscription!: Subscription;
+  private emailCache: { [email: string]: boolean } = {};                           // A cache for already verified email addresses
+  private clientId                                 = environment.google_clientId;
 
-  constructor(
-    private fb: FormBuilder,
-    private accountService: AccountService,
-    private router: Router,
-    private ngZone: NgZone,
-    private dialog: MatDialog,
-    private cdr: ChangeDetectorRef) { }
+  destroy$ = new Subject<void>();
+
+  private fb             = inject(FormBuilder);
+  private accountService = inject(AccountService);
+  private router         = inject(Router);
+  private ngZone         = inject(NgZone);
+  private dialog         = inject(MatDialog);
+
+  constructor() {
+
+  }
 
   ngOnDestroy(): void {
-    if (this.valueChangesSubscription) {
-      this.valueChangesSubscription.unsubscribe();
-    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnInit(): void {
     this.createRegisterForm();
 
-    this.valueChangesSubscription = this.registerForm.valueChanges.subscribe(() => {
+    this.registerForm.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.isFormValid.update(() => this.registerForm.valid);
-      this.cdr.detectChanges();
     });
 
     const googleScript = document.createElement('script');
@@ -107,7 +109,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     };
   }
 
-
   handleCredentialResponse(response: CredentialResponse) {
     this.accountService.LoginWithGoogle(response.credential).subscribe(
       {
@@ -123,7 +124,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
       }
     );
   }
-
 
   createRegisterForm() {
     this.registerForm = this.fb.group(
@@ -160,7 +160,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
     );
   }
 
-
   onSubmit(event: Event) {
     event.preventDefault();
     this.accountService.register(this.registerForm.value).subscribe({
@@ -190,7 +189,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     };
 
     const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
-    dialogRef.afterClosed().subscribe(() => {
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.router.navigateByUrl('/shop');
     });
   }
@@ -203,11 +202,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
     };
 
     const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
-    dialogRef.afterClosed().subscribe(() => {
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.router.navigateByUrl('/shop');
     });
   }
-
 
   /**
    * Asynchronous validator function for checking if an email address is already taken.
@@ -242,6 +240,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
       // Perform the asynchronous validation after a 500ms delay.
       return timer(500).pipe(
+        takeUntil(this.destroy$),
         // Proceed only if the control still has a value (it wasn't cleared during the delay).
         filter(() => !!control.value),
         // Call the service to check if the email exists.
@@ -259,7 +258,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
       );
     };
   }
-
 
   /**
  * Custom validator function for matching two form controls.

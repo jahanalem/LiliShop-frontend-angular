@@ -1,5 +1,5 @@
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { catchError, of, tap } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -15,12 +15,16 @@ import { IBasketTotals } from 'src/app/shared/models/basket';
 })
 export class CheckoutComponent implements OnInit {
   checkoutForm!: FormGroup;
+
   basketTotals = signal<IBasketTotals | null>(null);
 
-  constructor(private fb: FormBuilder,
-    private accountService: AccountService,
-    private basketService: BasketService,
-    private cdr: ChangeDetectorRef) { }
+  private fb             = inject(FormBuilder);
+  private accountService = inject(AccountService);
+  private basketService  = inject(BasketService);
+
+  constructor() {
+
+   }
 
   ngOnInit(): void {
     this.createCheckoutForm();
@@ -28,7 +32,6 @@ export class CheckoutComponent implements OnInit {
     this.getDeliveryMethodValue();
     this.basketService.basketTotal$.subscribe(totals => {
       this.basketTotals.set(totals);
-      this.cdr.markForCheck();
     });
   }
 
@@ -36,11 +39,11 @@ export class CheckoutComponent implements OnInit {
     this.checkoutForm = this.fb.group({
       addressForm: this.fb.group({
         firstName: [null, Validators.required],
-        lastName: [null, Validators.required],
-        street: [null, Validators.required],
-        city: [null, Validators.required],
-        state: [null, Validators.required],
-        zipCode: [null, Validators.required],
+        lastName : [null, Validators.required],
+        street   : [null, Validators.required],
+        city     : [null, Validators.required],
+        state    : [null, Validators.required],
+        zipCode  : [null, Validators.required],
       }),
       deliveryForm: this.fb.group({
         deliveryMethod: [null, Validators.required]
@@ -49,7 +52,6 @@ export class CheckoutComponent implements OnInit {
         nameOnCard: [null, Validators.required]
       })
     });
-    this.cdr.markForCheck();
   }
 
   getAddressFormValues() {
@@ -65,7 +67,6 @@ export class CheckoutComponent implements OnInit {
           addressForm.patchValue(address);
           this.checkoutForm?.get('addressForm')?.markAsDirty
           addressForm.updateValueAndValidity();
-          this.cdr.detectChanges();
         }
       }),
       catchError((error: any) => {
@@ -79,7 +80,6 @@ export class CheckoutComponent implements OnInit {
     const basket = this.basketService.getCurrentBasketValue();
     if (basket?.deliveryMethodId !== null) {
       this.checkoutForm.get('deliveryForm')?.get('deliveryMethod')?.patchValue(basket?.deliveryMethodId?.toString());
-      this.cdr.markForCheck();
     }
   }
 

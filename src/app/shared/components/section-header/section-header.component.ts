@@ -1,7 +1,7 @@
 
 import { Observable } from 'rxjs';
 import { BreadcrumbService } from 'xng-breadcrumb';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 @Component({
   selector: 'app-section-header',
@@ -9,14 +9,12 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
   styleUrls: ['./section-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SectionHeaderComponent implements OnInit {
-  breadcrumb$: Observable<any[]> = this.bcService.breadcrumbs$;
+export class SectionHeaderComponent {
+  breadcrumb$: Observable<any[]>;
 
-  constructor(private bcService: BreadcrumbService, private cdr: ChangeDetectorRef) { }
+  private bcService = inject(BreadcrumbService);
 
-  ngOnInit(): void {
-    this.breadcrumb$.subscribe(() => {
-      this.cdr.markForCheck();
-    });
+  constructor() {
+    this.breadcrumb$ = this.bcService.breadcrumbs$;
   }
 }
