@@ -1,6 +1,6 @@
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { ActivatedRoute } from '@angular/router';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { IOrder } from 'src/app/shared/models/order';
 import { OrdersService } from 'src/app/core/services/orders.service';
 
@@ -12,9 +12,12 @@ import { OrdersService } from 'src/app/core/services/orders.service';
 })
 export class OrderDetailedComponent implements OnInit {
   order = signal<IOrder | undefined>(undefined);
-  constructor(private orderService: OrdersService,
-    private activatedRoute: ActivatedRoute,
-    private breadcrumbService: BreadcrumbService) {
+
+  private orderService      = inject(OrdersService);
+  private activatedRoute    = inject(ActivatedRoute);
+  private breadcrumbService = inject(BreadcrumbService);
+
+  constructor() {
     this.breadcrumbService.set('@OrderDetailed', '');
   }
 

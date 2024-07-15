@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ChangeDetectorRef, ChangeDetectionStrategy, signal, viewChild } from '@angular/core';
+import { Component, AfterViewInit, ChangeDetectionStrategy, signal, viewChild, inject } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -13,28 +13,28 @@ import { IBrand } from 'src/app/shared/models/brand';
   styleUrls: ['./brands.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BrandsComponent implements OnInit, AfterViewInit {
-  paginator   = viewChild.required<MatPaginator>(MatPaginator);
+export class BrandsComponent implements AfterViewInit {
+  paginator = viewChild.required<MatPaginator>(MatPaginator);
+
   brands      = signal<IBrand[]>([]);
   totalCount  = signal<number>(0);
-  brandParams = signal<BrandParams>(this.brandService.getBrandParams());
-  
+  brandParams = signal<BrandParams>({} as BrandParams);
+
   columnsToDisplay: string[] = ['id', 'name', 'isActive', 'Action'];
 
   private unsubscribe$ = new Subject<void>();
 
-  constructor(private brandService: BrandService,
-    private router: Router,
-    private changeDetectorRef: ChangeDetectorRef,
-    private deleteService: DeleteService
-  ) {
+  private brandService  = inject(BrandService);
+  private router        = inject(Router);
+  private deleteService = inject(DeleteService);
+
+  constructor() {
+    this.brandParams.set(this.brandService.getBrandParams());
   }
 
   ngOnDestroy() {
+    this.unsubscribe$.next()
     this.unsubscribe$.complete();
-  }
-
-  ngOnInit(): void {
   }
 
   ngAfterViewInit() {
@@ -56,7 +56,6 @@ export class BrandsComponent implements OnInit, AfterViewInit {
     this.brandService.getBrands(this.brandParams()).subscribe((response) => {
       this.brands.set(response.data);
       this.totalCount.set(response.count);
-      this.changeDetectorRef.markForCheck();
     });
   }
 

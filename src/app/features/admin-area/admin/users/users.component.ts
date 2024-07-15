@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -32,7 +32,7 @@ export class UsersComponent implements AfterViewInit, OnInit {
 
   users           = signal<IAdminAreaUser[]>([]);
   totalCount      = signal<number>(0);
-  userQueryParams = signal<UserQueryParams>(this.accountService.getUserQueryParams());
+  userQueryParams = signal<UserQueryParams>({} as UserQueryParams);
 
   columnsToDisplay: ColumnNames[] = [
     ColumnNames.Id,
@@ -54,20 +54,22 @@ export class UsersComponent implements AfterViewInit, OnInit {
 
   private unsubscribe$ = new Subject<void>();
 
-  constructor(
-    private accountService: AccountService,
-    private router        : Router,
-    private cdr           : ChangeDetectorRef,
-    private deleteService : DeleteService,
-    private searchService : SearchService<IAdminAreaUser>) {
+  private accountService = inject(AccountService);
+  private router         = inject( Router);
+  private deleteService  = inject( DeleteService);
+  private searchService  = inject( SearchService<IAdminAreaUser>);
+
+  constructor( ) {
+    this.userQueryParams.set(this.accountService.getUserQueryParams());
   }
 
   ngOnDestroy() {
+    this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
 
   ngOnInit(): void {
-    this.searchService.handleSearch(() => this.accountService.getUsers())
+    this.searchService.handleSearch(() => this.accountService.getUsers()).pipe(takeUntil(this.unsubscribe$))
       .subscribe(response => this.updateData(response));
   }
 
@@ -98,14 +100,13 @@ export class UsersComponent implements AfterViewInit, OnInit {
   }
 
   loadData() {
-    this.accountService.getUsers().subscribe({
+    this.accountService.getUsers().pipe(takeUntil(this.unsubscribe$)).subscribe({
       next: (response) => {
         if (response) {
           this.updateData(response);
         }
       }
     });
-    this.cdr.markForCheck();
   }
 
   updateData(userPagination: UserPagination) {
@@ -113,7 +114,6 @@ export class UsersComponent implements AfterViewInit, OnInit {
     this.users.set(users);
     const totalCount = userPagination?.count ?? 0;
     this.totalCount.set(totalCount);
-    this.cdr.markForCheck();
   }
 
   getFriendlyName(column: ColumnNames): string {

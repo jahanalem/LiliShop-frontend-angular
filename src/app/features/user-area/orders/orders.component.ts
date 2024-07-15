@@ -1,5 +1,5 @@
 
-import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { OrdersService } from 'src/app/core/services/orders.service';
 import { IOrder } from 'src/app/shared/models/order';
 
@@ -13,7 +13,9 @@ import { IOrder } from 'src/app/shared/models/order';
 export class OrdersComponent implements OnInit {
   orders = signal<IOrder[]>([]);
 
-  constructor(private orderService: OrdersService) { }
+  private orderService = inject(OrdersService);
+  
+  constructor() { }
 
   ngOnInit(): void {
     this.getOrders();

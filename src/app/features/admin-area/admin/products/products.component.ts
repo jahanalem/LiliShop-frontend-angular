@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy, signal, ChangeDetectorRef, viewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy, signal, viewChild, OnDestroy, inject } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { IProduct } from 'src/app/shared/models/product';
@@ -39,7 +39,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   policyNames = PolicyNames;
 
   products         = signal<IProduct[]>([]);
-  shopParams       = signal<ProductQueryParams>(this.productService.getShopParams());
+  shopParams       = signal<ProductQueryParams>({} as ProductQueryParams);
   totalCount       = signal<number>(0);
   isLoadingResults = signal<boolean>(true);
   userRole         = signal<string>('');
@@ -50,13 +50,16 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   destroy$ = new Subject<void>();
 
-  constructor(private productService: ProductService,
-    private router: Router,
-    private deleteService: DeleteService,
-    private searchService: SearchService<IProduct>,
-    private accountService: AccountService,
-    private authorizationService: AuthorizationService,
-    private cdr: ChangeDetectorRef) { }
+  private productService       = inject(ProductService);
+  private router               = inject(Router);
+  private deleteService        = inject(DeleteService);
+  private searchService        = inject(SearchService<IProduct>);
+  private accountService       = inject(AccountService);
+  private authorizationService = inject(AuthorizationService);
+
+  constructor() {
+    this.shopParams.set(this.productService.getShopParams());
+   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -97,8 +100,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
             sortDirection: this.sort().direction
           }));
         }
-        this.cdr.markForCheck();
-        console.log("shop params =", this.shopParams());
         this.getProducts();
       });
   }
@@ -107,7 +108,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.products.update(() => (response.data));
     this.totalCount.update(() => (response.count));
     this.dataSource.update(() => this.products());
-    this.cdr.detectChanges();
   }
 
   getProducts(isActive?: boolean): void {

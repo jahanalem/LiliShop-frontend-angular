@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Navigation, Router } from '@angular/router';
 import { IOrder } from 'src/app/shared/models/order';
 import { Observable, of } from 'rxjs';
@@ -11,27 +11,24 @@ import { AccountService } from 'src/app/core/services/account.service';
   styleUrls: ['./checkout-success.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CheckoutSuccessComponent implements OnInit {
+export class CheckoutSuccessComponent {
   protected currentUser$: Observable<IUser | null> = of(null);
-  public order!: IOrder;
 
-  constructor(
-    private router: Router,
-    private accountService: AccountService,
-    private cdr: ChangeDetectorRef) {
+  order = signal<IOrder>({} as IOrder);
+
+  private router         = inject(Router);
+  private accountService = inject(AccountService);
+
+  constructor() {
     const navigation = this.router.getCurrentNavigation();
     this.currentUser$ = this.accountService.currentUser$;
     this.initializeOrderFromNavigationState(navigation);
   }
 
-  ngOnInit(): void {
-  }
-
   initializeOrderFromNavigationState(navigation: Navigation | null) {
     const state = navigation?.extras?.state;
     if (state && state['order']) {
-      this.order = state['order'] as IOrder;
-      this.cdr.markForCheck();
+      this.order.set(state['order'] as IOrder);
     }
   }
 }

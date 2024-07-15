@@ -1,10 +1,10 @@
 
 import { FormGroup } from '@angular/forms';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { CheckoutService } from 'src/app/core/services/checkout.service';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { IDeliveryMethod } from 'src/app/shared/models/deliveryMethod';
-import { Subscription, catchError, of, tap } from 'rxjs';
+import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
 
 
 @Component({
@@ -15,23 +15,28 @@ import { Subscription, catchError, of, tap } from 'rxjs';
 })
 export class CheckoutDeliveryComponent implements OnInit, OnDestroy {
   checkoutForm = input.required<FormGroup>();
-  deliveryMethods = signal<IDeliveryMethod[]>([]);
-  private subscription!: Subscription;
 
-  constructor(
-    private checkoutService: CheckoutService,
-    private basketService: BasketService,
-    private cdr: ChangeDetectorRef) { }
+  deliveryMethods = signal<IDeliveryMethod[]>([]);
+
+  private destroy$ = new Subject<void>();
+
+  private checkoutService = inject(CheckoutService);
+  private basketService   = inject(BasketService);
+
+  constructor() {
+
+  }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnInit(): void {
-    this.subscription = this.checkoutService.getDeliveryMethods().pipe(
+    this.checkoutService.getDeliveryMethods().pipe(
+      takeUntil(this.destroy$),
       tap((dm: IDeliveryMethod[]) => {
         this.deliveryMethods.set(dm);
-        this.cdr.markForCheck();
       }),
       catchError((error: any) => {
         console.error(error);
@@ -42,6 +47,5 @@ export class CheckoutDeliveryComponent implements OnInit, OnDestroy {
 
   setShippingPrice(deliveryMethod: IDeliveryMethod) {
     this.basketService.setShippingPrice(deliveryMethod);
-    this.cdr.markForCheck();
   }
 }

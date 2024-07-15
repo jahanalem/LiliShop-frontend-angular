@@ -2,7 +2,7 @@
 import { PaymentIntentResult, Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement } from '@stripe/stripe-js';
 import { ToastrService } from 'ngx-toastr';
 import { FormGroup } from '@angular/forms';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, input, OnDestroy, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, OnDestroy, signal, ViewChild } from '@angular/core';
 import { IBasket } from 'src/app/shared/models/basket';
 import { NavigationExtras, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
@@ -29,23 +29,27 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
      It's a JavaScript library and we are in the murky world of pure JavaScript and goodbye type safety, in other words.
   */
 
-  stripe!: Stripe;
+  stripe!    : Stripe;
   cardNumber!: StripeCardNumberElement;
   cardExpiry!: StripeCardExpiryElement;
-  cardCvc!: StripeCardCvcElement;
-  cardErrors: any;
+  cardCvc!   : StripeCardCvcElement;
+  cardErrors : any;
+
   cardHandler = this.onChange.bind(this);
+
   cardNumberValid = signal(false);
   cardExpiryValid = signal(false);
-  cardCvcValid = signal(false);
-  loading = signal(false);
+  cardCvcValid    = signal(false);
+  loading         = signal(false);
 
-  constructor(
-    private basketService: BasketService,
-    private checkoutService: CheckoutService,
-    public toastr: ToastrService,
-    private router: Router,
-    private cdr: ChangeDetectorRef) { }
+  private basketService   = inject(BasketService);
+  private checkoutService = inject(CheckoutService);
+  public  toastr          = inject(ToastrService);
+  private router          = inject(Router);
+
+  constructor() {
+
+  }
 
   ngOnDestroy(): void {
     try {
@@ -62,7 +66,6 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
       console.error('Error during component cleanup:', error);
     }
   }
-
 
   ngAfterViewInit(): void {
     this.stripe = getStripeInstance('pk_test_51Lz52AF9mJP0HDJllK6M7K8UyPc6xtoICZB9soUuoKmComGEA5yzUL1mLBBOglE8wPAMs5A8wFwNXuDWhFOxaqdF00L70K47Pm');
@@ -117,7 +120,6 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
     } finally {
       // Stop the loading spinner.
       this.loading.set(false);
-      this.cdr.markForCheck();
     }
   }
 
@@ -227,7 +229,6 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
         this.cardCvcValid.set(event.complete);
         break;
     }
-    this.cdr.markForCheck();
   }
 
   isActivatedSubmitButton() {
@@ -237,5 +238,4 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
       || !this.cardExpiryValid()
       || !this.cardCvcValid()
   }
-
 }

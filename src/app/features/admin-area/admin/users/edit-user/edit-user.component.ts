@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
 import { RoleService } from 'src/app/core/services/role.service';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
@@ -12,18 +13,25 @@ import { IRole } from 'src/app/shared/models/role';
   styleUrls: ['./edit-user.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EditUserComponent implements OnInit {
+export class EditUserComponent implements OnInit, OnDestroy {
   adminUserForm!: FormGroup;
-  adminUser = signal<IAdminAreaUser | null>(null);
-  userIdFromUrl: number = 0;
-  roles = signal<IRole[]>([]);
 
-  constructor(
-    private accountService: AccountService,
-    private roleService: RoleService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private formBuilder: FormBuilder) { }
+  adminUser = signal<IAdminAreaUser | null>(null);
+  roles     = signal<IRole[]>([]);
+
+  userIdFromUrl: number = 0;
+
+  private destroy$ = new Subject<void>();
+
+  private accountService = inject(AccountService);
+  private roleService    = inject(RoleService);
+  private activatedRoute = inject(ActivatedRoute);
+  private router         = inject(Router);
+  private formBuilder    = inject(FormBuilder);
+
+  constructor() {
+    
+  }
 
   ngOnInit(): void {
     this.getRoles();
@@ -31,23 +39,28 @@ export class EditUserComponent implements OnInit {
     this.createAdminUserForm();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   createAdminUserForm() {
     this.adminUserForm = this.formBuilder.group({
-      email: [{ value: null, disabled: true }, [Validators.required, Validators.email]],
-      displayName: [null, Validators.required],
-      roleId: [null, Validators.required],
-      emailConfirmed: [false],
-      phoneNumber: [null],
+      email               : [{ value: null, disabled: true }, [Validators.required, Validators.email]],
+      displayName         : [null, Validators.required],
+      roleId              : [null, Validators.required],
+      emailConfirmed      : [false],
+      phoneNumber         : [null],
       phoneNumberConfirmed: [false],
-      lockoutEnabled: [false],
-      id: [{ value: null, disabled: true }],
-      lockoutEnd: [{ value: null, disabled: true }],
-      accessFailedCount: [{ value: null, disabled: true }]
+      lockoutEnabled      : [false],
+      id                  : [{ value: null, disabled: true }],
+      lockoutEnd          : [{ value: null, disabled: true }],
+      accessFailedCount   : [{ value: null, disabled: true }]
     })
   }
 
   getUser() {
-    this.activatedRoute.paramMap.subscribe((params: ParamMap) => {
+    this.activatedRoute.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params: ParamMap) => {
       const id = params.get('id');
       this.userIdFromUrl = id === null ? 0 : +id;
       if (this.userIdFromUrl && this.userIdFromUrl > 0) {
@@ -68,16 +81,16 @@ export class EditUserComponent implements OnInit {
 
   updateAdminUserForm(user: IAdminAreaUser) {
     this.adminUserForm.patchValue({
-      email: user.email,
-      displayName: user.displayName,
-      roleId: user.roleId,
-      emailConfirmed: user.emailConfirmed,
-      phoneNumber: user.phoneNumber,
+      email               : user.email,
+      displayName         : user.displayName,
+      roleId              : user.roleId,
+      emailConfirmed      : user.emailConfirmed,
+      phoneNumber         : user.phoneNumber,
       phoneNumberConfirmed: user.phoneNumberConfirmed,
-      lockoutEnabled: user.lockoutEnabled,
-      id: user.id,
-      lockoutEnd: user.lockoutEnd,
-      accessFailedCount: user.accessFailedCount
+      lockoutEnabled      : user.lockoutEnabled,
+      id                  : user.id,
+      lockoutEnd          : user.lockoutEnd,
+      accessFailedCount   : user.accessFailedCount
     });
   }
 
@@ -94,7 +107,6 @@ export class EditUserComponent implements OnInit {
       });
     }
   }
-
 
   navigateBack() {
     this.router.navigateByUrl('/admin/users');

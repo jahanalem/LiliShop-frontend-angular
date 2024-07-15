@@ -1,9 +1,9 @@
 import { IBrand } from 'src/app/shared/models/brand';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { BrandService } from 'src/app/core/services/brand.service';
-import { EMPTY, catchError, switchMap, tap } from 'rxjs';
+import { EMPTY, Subject, catchError, switchMap, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
@@ -17,20 +17,32 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class EditBrandComponent implements OnInit {
   brandForm!: FormGroup;
-  brand = signal<IBrand | null>(null);
+
+  brand          = signal<IBrand | null>(null);
   brandIdFromUrl = signal<number>(0);
+
   protected colorCheckbox: ThemePalette;
 
-  constructor(private brandService: BrandService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private dialog: MatDialog,
-    private formBuilder: FormBuilder) {
+  private destroy$ = new Subject<void>();
+
+  private brandService   = inject(BrandService);
+  private activatedRoute = inject(ActivatedRoute);
+  private router         = inject(Router);
+  private dialog         = inject(MatDialog);
+  private formBuilder    = inject(FormBuilder);
+
+  constructor() {
 
   }
+
   ngOnInit() {
     this.getBrand();
     this.createBrandForm();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   createBrandForm() {
@@ -41,7 +53,7 @@ export class EditBrandComponent implements OnInit {
   }
 
   getBrand() {
-    this.activatedRoute.paramMap.pipe(
+    this.activatedRoute.paramMap.pipe(takeUntil(this.destroy$),
       switchMap((params: ParamMap) => {
         const id = params.get('id');
         this.brandIdFromUrl.set((id === null ? 0 : +id));
@@ -72,7 +84,6 @@ export class EditBrandComponent implements OnInit {
     });
   }
 
-
   onSubmit() {
     const formValue = this.brandForm.value as IBrand;
     const brandPayload = { ...this.brand(), ...formValue };
@@ -92,7 +103,6 @@ export class EditBrandComponent implements OnInit {
     })
   }
 
-
   navigateBack() {
     if (this.brandForm.dirty) {
       const dialogData: IDialogData = {
@@ -102,7 +112,7 @@ export class EditBrandComponent implements OnInit {
       };
       const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
 
-      dialogRef.afterClosed().subscribe({
+      dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
         next: (result?: boolean | undefined) => {
           if (result) {
             this.router.navigateByUrl('/admin/brands');

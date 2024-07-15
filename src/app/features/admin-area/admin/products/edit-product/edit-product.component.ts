@@ -1,8 +1,8 @@
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EMPTY, Observable, catchError, switchMap } from 'rxjs';
+import { EMPTY, Observable, Subject, catchError, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, signal, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ThemePalette } from '@angular/material/core';
@@ -19,7 +19,7 @@ import { StorageService } from 'src/app/core/services/storage.service';
   styleUrls: ['./edit-product.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EditProductComponent implements OnInit, OnDestroy, AfterViewInit {
+export class EditProductComponent implements OnInit, OnDestroy {
   productForm!: FormGroup;
 
   product               = signal<IProduct | undefined>(undefined);
@@ -28,27 +28,28 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterViewInit {
   sizes                 = signal<ISizeClassification[]>([]);
   disabledAddSizeButton = signal<boolean>(false);
 
-  productIdFromUrl       : number                  = 0;   // 0 means new product
+  productIdFromUrl      : number                  = 0;    // 0 means new product
   productCharacteristics: IProductCharacteristic[] = [];
+  validSizeList         : ISizeClassification[] = [];
+  colorCheckbox         : ThemePalette;
 
-  protected validSizeList: ISizeClassification[] = [];
-  protected colorCheckbox: ThemePalette;
+  destroy$ = new Subject<void>();
 
-  constructor(private productService: ProductService,
-    private dialog        : MatDialog,
-    private activatedRoute: ActivatedRoute,
-    private router        : Router,
-    private formBuilder   : FormBuilder,
-    private cdr           : ChangeDetectorRef,
-    private storageService: StorageService) {
+  private productService = inject(ProductService);
+  private dialog         = inject( MatDialog);
+  private activatedRoute = inject( ActivatedRoute);
+  private router         = inject( Router);
+  private formBuilder    = inject( FormBuilder);
+  private storageService = inject( StorageService);
 
-  }
-  ngAfterViewInit(): void {
+  constructor() {
 
   }
 
   ngOnDestroy(): void {
     this.storageService.delete(this.getProductKey());
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnInit(): void {
@@ -59,7 +60,6 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterViewInit {
     this.getProduct();
     this.getProductFormValues();
     this.loadArrayOfDropDownSize();
-
   }
 
   onSubmit() {
@@ -79,7 +79,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterViewInit {
       : this.productService.createProduct(productPayload);
 
     // Execute the action and handle the response
-    productAction.subscribe((updatedProduct) => {
+    productAction.pipe(takeUntil(this.destroy$)).subscribe((updatedProduct) => {
       this.product.set(updatedProduct);
       this.productForm.markAsPristine();
     });
@@ -160,7 +160,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterViewInit {
         this.handleApiError(error);
         return EMPTY;
       })
-    ).subscribe((prod) => {
+    ).pipe(takeUntil(this.destroy$)).subscribe((prod) => {
       if (prod) {
 
         this.product.set(prod);
@@ -274,7 +274,7 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterViewInit {
       };
       const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
 
-      dialogRef.afterClosed().subscribe({
+      dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
         next: (result?: boolean | undefined) => {
           if (result) {
             this.router.navigateByUrl('/admin/products');
@@ -297,10 +297,9 @@ export class EditProductComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private fetchData<T>(fetchDataFn: () => Observable<T>, updateFn: (data: T) => void): void {
-    fetchDataFn().subscribe({
+    fetchDataFn().pipe(takeUntil(this.destroy$)).subscribe({
       next: (response) => {
         updateFn(response);
-        this.cdr.detectChanges();
       },
       error: (error: any) => console.log(error),
     });

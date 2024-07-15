@@ -1,5 +1,5 @@
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
 import { IBrand } from 'src/app/shared/models/brand';
@@ -31,7 +31,9 @@ export class ShopComponent implements OnInit {
     { name: 'Price: High to low', value: 'priceDesc' },
   ]
 
-  constructor(private productService: ProductService, private cdr: ChangeDetectorRef) {
+  private productService = inject(ProductService);
+
+  constructor() {
     this.shopParams.set(this.productService.getShopParams());
   }
 
@@ -46,7 +48,6 @@ export class ShopComponent implements OnInit {
         if (response) {
           this.products.set(response.data);
           this.totalCount.set(response.count);
-          this.cdr.detectChanges();
         }
       },
       error: (error) => { console.error(error); }
@@ -72,7 +73,6 @@ export class ShopComponent implements OnInit {
     if (params.pageNumber !== event) {
       params.pageNumber = event;
       this.getProducts(true);
-      this.cdr.markForCheck();
     }
   }
 
@@ -82,7 +82,6 @@ export class ShopComponent implements OnInit {
     params.pageNumber = 1;
     this.productService.setShopParams(params);
     this.getProducts();
-    this.cdr.markForCheck();
   }
 
   onReset(): void {
@@ -90,7 +89,6 @@ export class ShopComponent implements OnInit {
     this.shopParams.set(new ProductQueryParams());
     this.productService.setShopParams(this.shopParams());
     this.getProducts();
-    this.cdr.markForCheck();
   }
 
   onFilterSelected(inputElement: EventTarget | null, filterType: string): void {
@@ -122,7 +120,6 @@ export class ShopComponent implements OnInit {
     params.pageNumber = 1;
     this.productService.setShopParams(params);
     this.getProducts();
-    this.cdr.markForCheck();
   }
 
   private getData<T>(apiCall: Observable<T>, successCallback: (response: T) => void): void {
@@ -132,6 +129,5 @@ export class ShopComponent implements OnInit {
         console.error(error);
       }
     });
-    this.cdr.detectChanges();
   }
 }

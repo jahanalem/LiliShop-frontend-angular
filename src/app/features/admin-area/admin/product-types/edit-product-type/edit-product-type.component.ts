@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { EMPTY, catchError, switchMap } from 'rxjs';
+import { EMPTY, Subject, catchError, switchMap, takeUntil } from 'rxjs';
 import { ProductTypeService } from 'src/app/core/services/product-type.service';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
@@ -15,22 +15,34 @@ import { IProductType } from 'src/app/shared/models/productType';
   styleUrls: ['./edit-product-type.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EditProductTypeComponent {
+export class EditProductTypeComponent implements OnDestroy {
   typeForm!: FormGroup;
-  type = signal<IProductType | null>(null);
+
+  type          = signal<IProductType | null>(null);
   typeIdFromUrl = signal<number>(0);
+
   protected colorCheckbox: ThemePalette;
 
-  constructor(private typeService: ProductTypeService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private dialog: MatDialog,
-    private formBuilder: FormBuilder,
-    private cdr: ChangeDetectorRef) { }
+  private destroy$ = new Subject<void>();
+
+  private typeService    = inject(ProductTypeService);
+  private activatedRoute = inject(ActivatedRoute);
+  private router         = inject(Router);
+  private dialog         = inject(MatDialog);
+  private formBuilder    = inject(FormBuilder);
+
+  constructor() {
+
+   }
 
   ngOnInit() {
     this.getType();
     this.createtypeForm();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   createtypeForm() {
@@ -41,7 +53,7 @@ export class EditProductTypeComponent {
   }
 
   getType() {
-    this.activatedRoute.paramMap.pipe(
+    this.activatedRoute.paramMap.pipe(takeUntil(this.destroy$),
       switchMap((params: ParamMap) => {
         const id = params.get('id');
         this.typeIdFromUrl.set(id === null ? 0 : +id);
@@ -59,7 +71,6 @@ export class EditProductTypeComponent {
     ).subscribe((response) => {
       this.type.set(response);
       this.updateTypeForm(response);
-      this.cdr.markForCheck();
     });
   }
 
@@ -82,7 +93,6 @@ export class EditProductTypeComponent {
     typeAction.subscribe({
       next: () => {
         this.typeForm.markAsPristine();
-        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error(error);
@@ -99,13 +109,13 @@ export class EditProductTypeComponent {
       };
       const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
 
-      dialogRef.afterClosed().subscribe({
+      dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
         next: (result?: boolean | undefined) => {
           if (result) {
             this.router.navigateByUrl('/admin/product-types');
           }
         },
-        error: (error) => { console.error(error); }
+        error: (error: any) => { console.error(error); }
       });
     } else {
       this.router.navigateByUrl('/admin/product-types');

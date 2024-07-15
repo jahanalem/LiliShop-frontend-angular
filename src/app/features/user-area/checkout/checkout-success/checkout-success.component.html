@@ -3,7 +3,7 @@
     <div class="icon-rounded icon-rounded-xl mb-4"><i class="fa fa-check"></i></div>
     <h2>Thank you, {{(currentUser$ | async)?.displayName}}. Your order is confirmed.</h2>
     <p class="mb-5 fw-normal">Your order hasn't shipped yet but this is to be expected as we are not a real store.</p>
-    <button *ngIf="order" routerLink="/orders/{{order.id}}" class="btn btn-outline-success px-5">View your order</button>
-    <button *ngIf="!order" routerLink="/orders" class="btn btn-outline-success px-5">View your orders</button>
+    <button *ngIf="order()" routerLink="/orders/{{order().id}}" class="btn btn-outline-success px-5">View your order</button>
+    <button *ngIf="!order()" routerLink="/orders" class="btn btn-outline-success px-5">View your orders</button>
   </div>
 </section>
