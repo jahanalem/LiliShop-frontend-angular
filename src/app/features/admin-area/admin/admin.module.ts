@@ -10,6 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { MatSelectModule } from '@angular/material/select';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -25,6 +28,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
     MatIconModule,
     MatDividerModule,
     FormsModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    OverlayModule,
     SharedModule,
   ]
 })

@@ -36,7 +36,7 @@
           </div>
         </ng-container>
 
-        <ng-container *ngIf="brands">
+        <ng-container *ngIf="brands()">
           <div class="form-group">
             <mat-form-field appearance="outline">
               <mat-label>Brand</mat-label>
@@ -50,7 +50,7 @@
           </div>
         </ng-container>
 
-        <ng-container *ngIf="types">
+        <ng-container *ngIf="types()">
           <div class="form-group">
             <mat-form-field appearance="outline">
               <mat-label>Type</mat-label>

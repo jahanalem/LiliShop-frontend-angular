@@ -1,5 +1,5 @@
 import { AccountService } from 'src/app/core/services/account.service';
-import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, ApplicationRef, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
 import { delay, filter, Subject, takeUntil } from 'rxjs';
@@ -20,14 +20,9 @@ export default class AdminComponent implements OnDestroy, AfterViewInit {
   private router         = inject(Router);
   private accountService = inject(AccountService);
   private cdr            = inject(ChangeDetectorRef);
-  private appRef         = inject(ApplicationRef);
-  
+
   constructor() {
-    this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd), takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.appRef.tick();
-    });
+
   }
 
   ngOnDestroy(): void {

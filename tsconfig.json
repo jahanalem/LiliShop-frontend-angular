@@ -4,8 +4,8 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
-    "strictBindCallApply": false,
-    "noUnusedLocals": false,
+    "strictBindCallApply": true,
+    "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,

@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-user-layout',
@@ -7,17 +6,8 @@ import { NavigationEnd, Router } from '@angular/router';
   styleUrls: ['./user-layout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserLayoutComponent implements OnInit {
+export class UserLayoutComponent {
+  constructor() {
 
-  constructor(private router: Router, private cdr: ChangeDetectorRef) {
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        this.cdr.detectChanges();
-      }
-    });
   }
-
-  ngOnInit(): void {
-  }
-
 }

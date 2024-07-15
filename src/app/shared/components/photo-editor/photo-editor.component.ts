@@ -2,7 +2,7 @@ import { AccountService } from './../../../core/services/account.service';
 import { environment } from './../../../../environments/environment';
 import { FileUploader } from 'ng2-file-upload';
 import { IProduct } from './../../models/product';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, effect, inject, input, OnInit, signal } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, effect, inject, input, OnInit, signal } from '@angular/core';
 import { IUser } from '../../models/user';
 import { take } from 'rxjs';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -20,7 +20,7 @@ import { ProductService } from 'src/app/core/services/product.service';
   }],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
+export class PhotoEditorComponent implements OnInit, ControlValueAccessor, AfterViewInit {
   product             = input.required<IProduct | undefined>();
 
   uploader            = signal<FileUploader | undefined>(undefined);
@@ -51,11 +51,23 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
       }
     });
   }
+  ngAfterViewInit(): void {
+    console.log("ngAfterViewInit");
+    this.cdr.detectChanges();
+  }
 
   ngOnInit(): void {
+    console.log("NGONINIT");
     this.initializeUploader();
   }
-  
+
+  get lengthOfFileItem(){
+    console.log("lengthOfFileItem = ", this.uploader()?.queue?.length);
+    console.log("FileItem = ", this.uploader()?.queue);
+    this.cdr.markForCheck();
+    return this.uploader()?.queue?.length;
+  }
+
   writeValue(value: any): void {
     if (value !== null) {
       this.uploadedPhotos.update((photos) => ([...photos, value]));

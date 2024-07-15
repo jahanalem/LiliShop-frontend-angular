@@ -2,7 +2,7 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '
 import { EMPTY, Observable, catchError, switchMap } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, signal, AfterViewInit } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ThemePalette } from '@angular/material/core';
@@ -19,7 +19,7 @@ import { StorageService } from 'src/app/core/services/storage.service';
   styleUrls: ['./edit-product.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EditProductComponent implements OnInit, OnDestroy {
+export class EditProductComponent implements OnInit, OnDestroy, AfterViewInit {
   productForm!: FormGroup;
 
   product               = signal<IProduct | undefined>(undefined);
@@ -43,6 +43,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
     private storageService: StorageService) {
 
   }
+  ngAfterViewInit(): void {
+
+  }
 
   ngOnDestroy(): void {
     this.storageService.delete(this.getProductKey());
@@ -56,11 +59,12 @@ export class EditProductComponent implements OnInit, OnDestroy {
     this.getProduct();
     this.getProductFormValues();
     this.loadArrayOfDropDownSize();
+
   }
 
   onSubmit() {
     const formValues = this.productForm.value as IProduct;
-    const existingProduct = this.product(); // Use the signal getter here
+    const existingProduct = this.product();
 
     const productPayload = {
       ...existingProduct,
@@ -76,7 +80,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
     // Execute the action and handle the response
     productAction.subscribe((updatedProduct) => {
-      this.product.set(updatedProduct); // Update the signal
+      this.product.set(updatedProduct);
       this.productForm.markAsPristine();
     });
   }

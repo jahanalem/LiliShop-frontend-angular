@@ -59,8 +59,8 @@
               <strong> Welcome {{(currentUser$ | async)?.displayName}}</strong>
             </a>
             <div class="dropdown-menu dropdown-menu-right" style="cursor: pointer;" *dropdownMenu>
-              <ng-container>
-                <a [hidden]="!hasAccessToAdminPanel()" routerLink="/admin" class="dropdown-item d-flex align-items-center py-2">
+              <ng-container *ngIf="hasAccessToAdminPanel()">
+                <a routerLink="/admin" class="dropdown-item d-flex align-items-center py-2">
                   <i class="fa fa-user me-3"></i> Admin Panel
                 </a>
               </ng-container>
