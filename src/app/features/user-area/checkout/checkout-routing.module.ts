@@ -2,11 +2,11 @@ import { CheckoutSuccessComponent } from './checkout-success/checkout-success.co
 import { CheckoutComponent } from './checkout.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { SuccessGuard } from 'src/app/core/guards/success.guard';
+import { successMatchGuard } from 'src/app/core/guards/success.guard';
 
 const routes: Routes = [
   { path: '', component: CheckoutComponent },
-  { path: 'success', canActivate: [SuccessGuard], component: CheckoutSuccessComponent },
+  { path: 'success', canMatch: [successMatchGuard], component: CheckoutSuccessComponent },
 ];
 
 @NgModule({

@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router, CanMatchFn, Route, UrlSegment } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthorizationService } from 'src/app/core/services/authorization.service';
@@ -8,61 +8,56 @@ import { DialogComponent } from 'src/app/shared/components/dialog/dialog.compone
 import { MatDialog } from '@angular/material/dialog';
 import { IUser } from 'src/app/shared/models/user';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthGuard  {
 
-  constructor(
-    private accountService: AccountService,
-    private authorizationService: AuthorizationService,
-    private router: Router,
-    public dialog: MatDialog
-  ) { }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    const policyName = route.data['policy'] as string | undefined;
+export const authGuard: CanMatchFn = (route: Route, segments: UrlSegment[]): Observable<boolean> => {
+  const authorizationService = inject(AuthorizationService);
+  const accountService = inject(AccountService);
+  const router = inject(Router);
+  const dialog = inject(MatDialog);
 
-    if (!policyName) {
-      // If no policy is specified, allow access
-      return of(true);
-    }
+  const policyName = route.data?.['policy'] as string | undefined;
 
-    return this.authorizationService.getPolicy(policyName).pipe(
-      switchMap(requiredRoles => {
-        return this.accountService.currentUser$.pipe(
-          map((authenticatedUser: IUser | null) => {
-            if (!authenticatedUser) {
-              this.redirectToLoginPage(state.url);
-              return false;
-            }
-            if (this.hasPermission(requiredRoles, authenticatedUser)) {
-              return true;
-            }
-            this.showAccessDeniedDialog();
-            this.redirectToHomePage(state.url);
+  if (!policyName) {
+    // If no policy is specified, allow access
+    return of(true);
+  }
+
+  return authorizationService.getPolicy(policyName).pipe(
+    switchMap(requiredRoles => {
+      return accountService.currentUser$.pipe(
+        map((authenticatedUser: IUser | null) => {
+          if (!authenticatedUser) {
+            redirectToLoginPage(router, segments);
             return false;
-          })
-        );
-      })
-    );
-  }
-
-  private hasPermission(requiredRoles: string[], authenticatedUser: IUser): boolean {
-    return requiredRoles.includes(authenticatedUser.role);
-  }
-
-  private redirectToLoginPage(returnUrl: string): void {
-    this.router.navigate(['account/login'], { queryParams: { returnUrl } });
-  }
-
-  private showAccessDeniedDialog(): void {
-    this.dialog.open(DialogComponent, {
-      data: { title: 'Access Denied!', content: "You don't have permission to view this page" },
-    });
-  }
-
-  private redirectToHomePage(returnUrl: string): void {
-    this.router.navigate(['/'], { queryParams: { returnUrl } });
-  }
+          }
+          if (hasPermission(requiredRoles, authenticatedUser)) {
+            return true;
+          }
+          showAccessDeniedDialog(dialog);
+          redirectToHomePage(router, segments);
+          return false;
+        })
+      );
+    })
+  );
 }
+
+const hasPermission = (requiredRoles: string[], authenticatedUser: IUser): boolean => {
+  return requiredRoles.includes(authenticatedUser.role);
+};
+
+const redirectToLoginPage = (router: Router, segments: UrlSegment[]): void => {
+  const returnUrl = segments.map(segment => segment.path).join('/');
+  router.navigate(['account/login'], { queryParams: { returnUrl } });
+};
+
+const showAccessDeniedDialog = (dialog: MatDialog): void => {
+  dialog.open(DialogComponent, {
+    data: { title: 'Access Denied!', content: "You don't have permission to view this page" },
+  });
+};
+
+const redirectToHomePage = (router: Router, segments: UrlSegment[]): void => {
+  router.navigate(['/'], { queryParams: { returnUrl: segments.map(segment => segment.path).join('/') } });
+};

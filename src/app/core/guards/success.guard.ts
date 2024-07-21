@@ -1,20 +1,16 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanMatchFn, Router, UrlSegment, Route } from '@angular/router';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class SuccessGuard  {
-  constructor(private router: Router) {
+export const successMatchGuard: CanMatchFn = (_route: Route, _segments: UrlSegment[]) => {
+  const router = inject(Router);
 
+  const navigation = router.getCurrentNavigation();
+  const extraState = navigation?.extras?.state;
+
+  if (extraState && extraState['order']) {
+    return true;
   }
-  canActivate(_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): boolean {
-    const navigation = this.router.getCurrentNavigation();
-    const extraState = navigation?.extras?.state;
-    if (extraState && extraState['order']) {
-      return true;
-    }
-    this.router.navigate(['/']);
-    return false;
-  }
-}
+
+  router.navigate(['/']);
+  return false;
+};

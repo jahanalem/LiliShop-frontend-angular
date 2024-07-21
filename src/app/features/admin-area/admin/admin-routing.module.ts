@@ -1,4 +1,4 @@
-import { AuthGuard } from 'src/app/core/guards/auth.guard';
+import { authGuard } from 'src/app/core/guards/auth.guard';
 import AdminComponent from './admin.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
@@ -8,7 +8,7 @@ const routes: Routes = [
   {
     path: '',
     component: AdminComponent,
-    canActivate: [AuthGuard],
+    canMatch: [authGuard],
     data: { policy: PolicyNames.RequireAtLeastAdminPanelViewerRole },
     children: [
       { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) },
