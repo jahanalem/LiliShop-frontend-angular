@@ -1,10 +1,13 @@
+import { NotificationService } from './../../../../core/services/notification.service';
 import { of, switchMap } from 'rxjs';
 import { IProduct } from 'src/app/shared/models/product';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { ProductService } from 'src/app/core/services/product.service';
+import { INotificationSubscription } from 'src/app/shared/models/notificationSubscription';
+import { AccountService } from 'src/app/core/services/account.service';
 
 
 @Component({
@@ -14,15 +17,28 @@ import { ProductService } from 'src/app/core/services/product.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductDetailsComponent implements OnInit {
-  product = signal<IProduct>({} as IProduct);
-  quantity = signal<number>(1);
+  product       = signal<IProduct>({} as IProduct);
+  quantity      = signal<number>(1);
+  isSubscribed  = signal<boolean>(false);
+  currentUserId = signal<number>(0);
 
-  constructor(private activatedRoute: ActivatedRoute,
-    private bcService: BreadcrumbService,
-    private basketService: BasketService,
-    private productService: ProductService) {
+  private activatedRoute      = inject(ActivatedRoute);
+  private bcService           = inject(BreadcrumbService);
+  private basketService       = inject(BasketService);
+  private productService      = inject(ProductService);
+  private notificationService = inject(NotificationService);
+  private accountService      = inject(AccountService);
 
+
+  constructor() {
     this.bcService.set('@productDetails', ' ');
+    this.accountService.currentUser$.subscribe({
+      next: (user) => {
+        if (user && user.id) {
+          this.currentUserId.set(user.id)
+        }
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -60,6 +76,7 @@ export class ProductDetailsComponent implements OnInit {
       next: (product) => {
         this.product.set(product);
         this.bcService.set('@productDetails', product.name);
+        this.checkSubscriptionStatus();
       },
       error: (error) => {
         console.error(error);
@@ -90,5 +107,68 @@ export class ProductDetailsComponent implements OnInit {
 
   addItemToBasket() {
     this.basketService.addItemToBasket(this.product(), this.quantity());
+  }
+
+  checkSubscriptionStatus() {
+    if (this.currentUserId() > 0) {
+      this.notificationService.checkSubscription(this.product().id, this.currentUserId()).subscribe({
+        next: (response: any) => {
+          this.isSubscribed.set(response.isSubscribed);
+        },
+        error: (error: any) => {
+          console.error(error);
+        }
+      });
+    }
+    else {
+      this.isSubscribed.set(false);
+    }
+  }
+
+  toggleSubscription() {
+    const subscription: INotificationSubscription = {
+      productId: this.product().id,
+      userId: this.currentUserId(),
+      alertType: 'PriceDrop',
+      isActive: true
+    };
+
+    if (this.isSubscribed()) {
+      this.notificationService.removeSubscription(subscription).subscribe({
+        next: () => {
+          this.isSubscribed.set(false);
+        },
+        error: (error: any) => {
+          console.error(error);
+          alert('There was an error unsubscribing from notifications.');
+        }
+      });
+    } else {
+      this.notificationService.addSubscription(subscription).subscribe({
+        next: () => {
+          this.isSubscribed.set(true);
+        },
+        error: (error: any) => {
+          console.error(error);
+          alert('There was an error subscribing to notifications.');
+        }
+      });
+    }
+  }
+
+  subscribeToPriceDrop() {
+    const subscription: INotificationSubscription = {
+      productId: this.product().id,
+      userId: 16,
+      alertType: 'PriceDrop',
+      isActive: true
+    }
+    this.notificationService.addSubscription(subscription).subscribe({
+      next: () => { alert('You have successfully subscribed to price drop notifications!'); },
+      error: (error: any) => {
+        console.error(error);
+        alert('There was an error subscribing to notifications.');
+      }
+    });
   }
 }

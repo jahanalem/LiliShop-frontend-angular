@@ -1,52 +1,51 @@
-@if(product())
-{
-<section class="py-5">
+<section class="product-details py-5">
   <div class="container py-5">
     <div class="row">
+      <!-- Product Image -->
       <div class="col-lg-6 mb-5 mb-lg-0">
-        <div class="product position-relative mb-3">
+        <div class="product-image position-relative mb-3">
           <div class="swiper-container" id="detailSlider">
-            <img class="img-fluid d-block mx-auto" src="{{product().pictureUrl}}" alt="{{product().name}}">
+            <img title="img" class="img-fluid d-block mx-auto" [src]="product().pictureUrl" [alt]="product().name">
           </div>
         </div>
       </div>
-      <!-- Item info-->
-      <div class="col-lg-6">
-        <div class="row mb-4 gy-3">
-          <div class="col-sm-6">
-            <ul class="list-inline mb-0">
-              <li class="list-inline-item">
-                <p class="h5 text-primary mb-0">{{product().price | currency}}</p>
-              </li>
-              <li class="list-inline-item">
-                <p class="h5 fw-normal text-gray-5 text-decoration-line-through mb-0">$90.00</p>
-              </li>
-            </ul>
-          </div>
-          <div class="col-sm-6">
 
+      <!-- Product Info -->
+      <div class="col-lg-6">
+        <div class="product-info p-4 bg-light rounded shadow-sm">
+          <h1 class="product-title">{{ product().name }}</h1>
+          <div class="price-section d-flex align-items-center mb-3">
+            <p class="price text-success display-4 mb-0 me-3">{{ product().price | currency }}</p>
+            <p class="original-price text-muted h5 text-decoration-line-through mb-0">$90.00</p>
+          </div>
+          <p class="product-description text-secondary mb-4">{{ product().description }}</p>
+
+          <!-- Quantity Selector -->
+          <div class="quantity-selector d-flex align-items-center mb-4">
+            <button title="decrement" (click)="decrementQuantity()" class="btn btn-outline-primary me-2 rounded-circle" style="width: 40px; height: 40px;">
+              <i class="fa fa-minus-circle"></i>
+            </button>
+            <span class="quantity-value font-weight-bold display-5">{{ quantity() }}</span>
+            <button title="increment" (click)="incrementQuantity()" class="btn btn-outline-primary ms-2 rounded-circle" style="width: 40px; height: 40px;">
+              <i class="fa fa-plus-circle"></i>
+            </button>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons d-flex">
+            <button (click)="addItemToBasket()" class="btn btn-primary me-3 px-5 py-2 d-flex align-items-center">
+              <i class="fa fa-shopping-cart fa-lg me-2"></i> Add to cart
+            </button>
+            <button (click)="toggleSubscription()"
+              [ngClass]="{'btn-outline-primary': !isSubscribed(), 'btn-primary': isSubscribed()}"
+              class="btn px-5 py-2 d-flex align-items-center">
+              <i [ngClass]="{'fa-bell': !isSubscribed(), 'fa-bell-slash': isSubscribed()}"
+              class="fa fa-lg me-2"></i>
+              {{ isSubscribed() ? 'Unsubscribe from price drops' : 'Notify me of price drops' }}
+            </button>
           </div>
         </div>
-        <p class="text-small text-muted mb-4">{{product().description}}</p>
-        <div class="d-flex align-items-center justify-content-start mb-4">
-          <div class="quantity d-flex align-items-center me-4">
-            <i (click)="decrementQuantity()" class="fa fa-minus-circle text-primary mr-2 me-2"
-              style="cursor: pointer; font-size: 2em;"></i>
-            <span class="font-weight-bold" style="font-size: 1.5em;">{{quantity()}}</span>
-            <i (click)="incrementQuantity()" class="fa fa-plus-circle text-primary mx-2"
-              style="cursor: pointer; font-size: 2em;"></i>
-          </div>
-        </div>
-        <ul class="list-inline">
-          <li class="list-inline-item">
-            <a (click)="addItemToBasket()" class="btn btn-primary px-5">
-              <i class="fa fa-shopping-cart fa-lg me-2"></i>
-              Add to cart
-            </a>
-          </li>
-        </ul>
       </div>
     </div>
   </div>
 </section>
-}
