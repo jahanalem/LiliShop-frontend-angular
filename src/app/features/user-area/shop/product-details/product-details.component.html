@@ -16,17 +16,19 @@
           <h1 class="product-title">{{ product().name }}</h1>
           <div class="price-section d-flex align-items-center mb-3">
             <p class="price text-success display-4 mb-0 me-3">{{ product().price | currency }}</p>
-            <p class="original-price text-muted h5 text-decoration-line-through mb-0">$90.00</p>
+            <p class="original-price text-muted h5 text-decoration-line-through mb-0"></p>
           </div>
           <p class="product-description text-secondary mb-4">{{ product().description }}</p>
 
           <!-- Quantity Selector -->
           <div class="quantity-selector d-flex align-items-center mb-4">
-            <button title="decrement" (click)="decrementQuantity()" class="btn btn-outline-primary me-2 rounded-circle" style="width: 40px; height: 40px;">
+            <button title="decrement" (click)="decrementQuantity()" class="btn btn-outline-primary me-2 rounded-circle"
+              style="width: 40px; height: 40px;">
               <i class="fa fa-minus-circle"></i>
             </button>
             <span class="quantity-value font-weight-bold display-5">{{ quantity() }}</span>
-            <button title="increment" (click)="incrementQuantity()" class="btn btn-outline-primary ms-2 rounded-circle" style="width: 40px; height: 40px;">
+            <button title="increment" (click)="incrementQuantity()" class="btn btn-outline-primary ms-2 rounded-circle"
+              style="width: 40px; height: 40px;">
               <i class="fa fa-plus-circle"></i>
             </button>
           </div>
@@ -36,13 +38,14 @@
             <button (click)="addItemToBasket()" class="btn btn-primary me-3 px-5 py-2 d-flex align-items-center">
               <i class="fa fa-shopping-cart fa-lg me-2"></i> Add to cart
             </button>
+            @if(currentUserId() > 0 && currentUserEmailConfirmed()){
             <button (click)="toggleSubscription()"
               [ngClass]="{'btn-outline-primary': !isSubscribed(), 'btn-primary': isSubscribed()}"
               class="btn px-5 py-2 d-flex align-items-center">
-              <i [ngClass]="{'fa-bell': !isSubscribed(), 'fa-bell-slash': isSubscribed()}"
-              class="fa fa-lg me-2"></i>
+              <i [ngClass]="{'fa-bell': !isSubscribed(), 'fa-bell-slash': isSubscribed()}" class="fa fa-lg me-2"></i>
               {{ isSubscribed() ? 'Unsubscribe from price drops' : 'Notify me of price drops' }}
             </button>
+            }
           </div>
         </div>
       </div>

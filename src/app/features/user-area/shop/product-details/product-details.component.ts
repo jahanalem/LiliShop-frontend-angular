@@ -17,10 +17,11 @@ import { AccountService } from 'src/app/core/services/account.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductDetailsComponent implements OnInit {
-  product       = signal<IProduct>({} as IProduct);
-  quantity      = signal<number>(1);
-  isSubscribed  = signal<boolean>(false);
-  currentUserId = signal<number>(0);
+  product                   = signal<IProduct>({} as IProduct);
+  quantity                  = signal<number>(1);
+  isSubscribed              = signal<boolean>(false);
+  currentUserId             = signal<number>(0);
+  currentUserEmailConfirmed = signal<boolean>(false);
 
   private activatedRoute      = inject(ActivatedRoute);
   private bcService           = inject(BreadcrumbService);
@@ -29,20 +30,20 @@ export class ProductDetailsComponent implements OnInit {
   private notificationService = inject(NotificationService);
   private accountService      = inject(AccountService);
 
-
   constructor() {
     this.bcService.set('@productDetails', ' ');
-    this.accountService.currentUser$.subscribe({
-      next: (user) => {
-        if (user && user.id) {
-          this.currentUserId.set(user.id)
-        }
-      }
-    });
   }
 
   ngOnInit(): void {
     this.loadProduct();
+    this.accountService.currentUser$.subscribe({
+      next: (user) => {
+        if (user && user.id) {
+          this.currentUserId.set(user.id);
+          this.currentUserEmailConfirmed.set(user.emailConfirmed);
+        }
+      }
+    });
   }
 
   /*
