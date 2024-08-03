@@ -1,0 +1,14 @@
+<div class="unsubscribe-confirmation-container">
+  <h1>Unsubscribe Confirmation</h1>
+
+  @if(success()){
+  <div class="success-message">
+    <p>You have successfully unsubscribed from our mailing list!</p>
+  </div>
+  }@else{
+  <div class="error-message">
+    <p>Sorry, there was an issue with your unsubscription request.</p>
+  </div>
+  }
+  <button (click)="redirectToHome()" class="home-button">Return to Home Page</button>
+</div>
