@@ -113,11 +113,15 @@ export class ProductDetailsComponent implements OnInit {
   checkSubscriptionStatus() {
     if (this.currentUserId() > 0) {
       this.notificationService.checkSubscription(this.product().id, this.currentUserId()).subscribe({
-        next: (response: any) => {
-          this.isSubscribed.set(response.isSubscribed);
+        next: () => {
+          this.isSubscribed.set(true);
         },
         error: (error: any) => {
-          console.error(error);
+          if (error.status === 404) {
+            this.isSubscribed.set(false); // No subscription found
+          } else {
+            console.error(error); // Handle other errors
+          }
         }
       });
     }
@@ -141,7 +145,6 @@ export class ProductDetailsComponent implements OnInit {
         },
         error: (error: any) => {
           console.error(error);
-          alert('There was an error unsubscribing from notifications.');
         }
       });
     } else {
@@ -151,7 +154,6 @@ export class ProductDetailsComponent implements OnInit {
         },
         error: (error: any) => {
           console.error(error);
-          alert('There was an error subscribing to notifications.');
         }
       });
     }
