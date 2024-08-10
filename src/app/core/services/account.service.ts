@@ -10,7 +10,6 @@ import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
 import { UserQueryParams } from 'src/app/shared/models/userQueryParams';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
 import { PaginationWithData, UserPagination } from 'src/app/shared/models/pagination';
-import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
 import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordResponse';
 
 @Injectable({
@@ -224,9 +223,9 @@ export class AccountService {
     this.currentUserSource.next(null);
   }
 
-  delete(userId: number): Observable<DeleteResponse> {
+  delete(userId: number): Observable<void> {
     const url = `${this.baseUrl}account/delete/${userId}`;
-    return this.http.delete<DeleteResponse>(url)
+    return this.http.delete<void>(url)
       .pipe(catchError(error => {
         console.error(error);
         return throwError(() => error);

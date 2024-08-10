@@ -6,7 +6,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { BrandService } from 'src/app/core/services/brand.service';
 import { of } from 'rxjs';
 import { IBrand } from 'src/app/shared/models/brand';
-import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
 import { Router } from '@angular/router';
 import { BrandParams } from 'src/app/shared/models/BrandParams';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,7 +15,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 describe('BrandsComponent', () => {
   let component: BrandsComponent;
   let fixture: ComponentFixture<BrandsComponent>;
-
+ 
   const mockPaginator = {
     page: of({}) // create an Observable for page
   };
@@ -30,11 +29,6 @@ describe('BrandsComponent', () => {
     { id: 6, name: 'name F', isActive: false },
   ];
 
-  const mockDeleteResponse: DeleteResponse = {
-    success: true,
-    message: "The item removed successfully."
-  };
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
     declarations: [BrandsComponent],
@@ -45,7 +39,7 @@ describe('BrandsComponent', () => {
             provide: BrandService,
             useValue: {
                 getBrands: jasmine.createSpy('getBrands').and.returnValue(of({ data: mockBrands, count: mockBrands.length })),
-                deleteBrand: jasmine.createSpy('deleteBrand').and.returnValue(of(mockDeleteResponse)),
+                deleteBrand: jasmine.createSpy('deleteBrand').and.returnValue(of()),
                 getBrandParams: jasmine.createSpy('getBrandParams').and.returnValue(new BrandParams()) // Mock getBrandParams() here
             }
         },

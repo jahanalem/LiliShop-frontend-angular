@@ -1,7 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
-import { DeleteResponse } from 'src/app/shared/models/delete-response.model';
 import { PaginationWithData, ProductTypePagination } from 'src/app/shared/models/pagination';
 import { IProductType } from 'src/app/shared/models/productType';
 import { ProductTypeParams } from 'src/app/shared/models/productTypeParams';
@@ -49,8 +48,8 @@ export class ProductTypeService {
     return this.http.put<IProductType>(`${this.baseUrl}producttype/update/${typePayload.id}`, typePayload);;
   }
 
-  deleteType(id: number): Observable<DeleteResponse> {
-    return this.http.delete<DeleteResponse>(`${this.baseUrl}producttype/delete/${id}`);
+  deleteType(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}producttype/delete/${id}`);
   }
 
   setTypeParams(params: ProductTypeParams): void {
