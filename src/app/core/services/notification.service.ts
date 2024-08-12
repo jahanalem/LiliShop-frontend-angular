@@ -21,7 +21,7 @@ export class NotificationService {
     return this.http.delete<void>(`${this.baseUrl}notificationSubscription/delete`, { body: subscription });
   }
 
-  checkSubscription(productId: number, userId: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}NotificationSubscription/check?productId=${productId}&userId=${userId}`);
+  checkSubscription(productId: number, userId: number): Observable<boolean> {
+    return this.http.get<boolean>(`${this.baseUrl}NotificationSubscription/check?productId=${productId}&userId=${userId}`);
   }
 }

@@ -35,7 +35,6 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadProduct();
     this.accountService.currentUser$.subscribe({
       next: (user) => {
         if (user && user.id) {
@@ -44,6 +43,7 @@ export class ProductDetailsComponent implements OnInit {
         }
       }
     });
+    this.loadProduct();
   }
 
   /*
@@ -83,17 +83,6 @@ export class ProductDetailsComponent implements OnInit {
         console.error(error);
       }
     });
-
-    // const id = this.activatedRoute.snapshot.paramMap.get('id');
-    // if (!id) {
-    //   return;
-    // }
-    // this.shopService.getProduct(+id).subscribe(product => {
-    //   this.product = product;
-    //   this.bcService.set('@productDetails', product.name);
-    // }, error => {
-    //   console.log(error);
-    // });
   }
 
   incrementQuantity() {
@@ -113,17 +102,15 @@ export class ProductDetailsComponent implements OnInit {
   checkSubscriptionStatus() {
     if (this.currentUserId() > 0) {
       this.notificationService.checkSubscription(this.product().id, this.currentUserId()).subscribe({
-        next: () => {
-          this.isSubscribed.set(true);
+        next: (data: boolean) => {
+          this.isSubscribed.set(data);
         },
         error: (error: any) => {
-          if (error.status === 404) {
-            this.isSubscribed.set(false); // No subscription found
-          } else {
-            console.error(error); // Handle other errors
+            this.isSubscribed.set(false);
+            console.error(error);
           }
         }
-      });
+      );
     }
     else {
       this.isSubscribed.set(false);

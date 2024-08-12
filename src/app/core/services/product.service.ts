@@ -31,14 +31,14 @@ export class ProductService {
     return this.shopParams;
   }
 
-  getProduct(id: number): Observable<IProduct> {
-    const product = this.findProductInCache(id);
+  getProduct(productId: number): Observable<IProduct> {
+    const product = this.findProductInCache(productId);
 
     if (product) {
       return of(product);
     }
 
-    return this.http.get<IProduct>(this.baseUrl + 'products/' + id);
+    return this.http.get<IProduct>(this.baseUrl + 'products/' + productId);
   }
 
   getProducts(isActive?: boolean): Observable<ProductPagination> {
