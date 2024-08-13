@@ -14,6 +14,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     NgbModule,
     ToastrModule.forRoot(
       {
+        timeOut: 3000,
         positionClass: 'toast-bottom-right',
         preventDuplicates: true
       }

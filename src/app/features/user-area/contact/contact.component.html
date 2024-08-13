@@ -5,7 +5,7 @@
     </header>
     <div class="row">
       <div class="col-md-7">
-        <form [formGroup]="contactForm" class="custom-form form" id="contact-form">
+        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="custom-form form" id="contact-form">
           <div class="row gy-3">
             <div class="col-sm-6">
               <app-text-input [label]="'First name'" formControlName="firstName"></app-text-input>
@@ -20,7 +20,7 @@
               <app-text-textarea [label]="'message'" [rows]="4" formControlName="message"></app-text-textarea>
             </div>
             <div class="col-sm-12">
-              <button class="btn btn-primary" type="submit">Send message</button>
+              <button class="btn btn-primary" type="submit" [disabled]="contactForm.invalid || isSubmitting()">Send message</button>
             </div>
           </div>
         </form>

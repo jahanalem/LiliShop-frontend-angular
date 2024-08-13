@@ -12,6 +12,7 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IProductType } from 'src/app/shared/models/productType';
 import { StorageService } from 'src/app/core/services/storage.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-edit-product',
@@ -41,6 +42,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
   private router         = inject( Router);
   private formBuilder    = inject( FormBuilder);
   private storageService = inject( StorageService);
+  private toastr         = inject(ToastrService);
 
   constructor() {
 
@@ -63,6 +65,10 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    if (this.productForm.invalid) {
+      this.toastr.error('Please fill out the form correctly.', 'Form Validation Error');
+      return;
+    }
     const formValues = this.productForm.value as IProduct;
     const existingProduct = this.product();
 
@@ -72,16 +78,24 @@ export class EditProductComponent implements OnInit, OnDestroy {
       productPhotos: existingProduct?.productPhotos || formValues.productPhotos
     };
 
-    const isUpdate = productPayload.id && productPayload.id > 0;
+    const isUpdate = !!productPayload.id && productPayload.id > 0;
     // Determine the action: update or create
     const productAction = isUpdate
       ? this.productService.updateProduct(productPayload)
       : this.productService.createProduct(productPayload);
 
     // Execute the action and handle the response
-    productAction.pipe(takeUntil(this.destroy$)).subscribe((updatedProduct) => {
-      this.product.set(updatedProduct);
-      this.productForm.markAsPristine();
+    productAction.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (updatedProduct) => {
+        this.product.set(updatedProduct);
+        this.productForm.markAsPristine();
+        const action = isUpdate ? 'updated' : 'created';
+        this.toastr.success(`Product ${action} successfully`, 'Success');
+      },
+      error: (err) => {
+        this.toastr.error('An error occurred while saving the product.', 'Error');
+        console.error('Error saving product:', err);
+      }
     });
   }
 
