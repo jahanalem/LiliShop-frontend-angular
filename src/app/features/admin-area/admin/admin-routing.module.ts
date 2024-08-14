@@ -14,6 +14,7 @@ const routes: Routes = [
       { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) },
       { path: 'brands', loadChildren: () => import('./brands/brands.module').then(m => m.BrandsModule) },
       { path: 'product-types', loadChildren: () => import('./product-types/product-types.module').then(m => m.ProductTypesModule) },
+      { path: 'contact-us-messages', loadChildren: () => import('./contact-us-messages/contact-us-messages.module').then(m => m.ContactUsMessagesModule) },
       { path: 'users', loadChildren: () => import('./users/users.module').then(m => m.UsersModule) }
     ]
   }

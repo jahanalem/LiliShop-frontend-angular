@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { PagingHeaderComponent } from './components/paging-header/paging-header.component';
 import { PagerComponent } from './components/pager/pager.component';
@@ -46,6 +46,7 @@ const components = [
     ...components,
     FormatValuePipe,
     CheckPolicyDirective,
+
   ],
   imports: [
     CommonModule,
@@ -78,7 +79,8 @@ const components = [
     BreadcrumbItemDirective,
   ],
   providers:[
-    BreadcrumbService
+    BreadcrumbService,
+    DatePipe
   ]
 })
 export class SharedModule { }

@@ -58,8 +58,6 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
   }
 
   get lengthOfFileItem(){
-    console.log("lengthOfFileItem = ", this.uploader()?.queue?.length);
-    console.log("FileItem = ", this.uploader()?.queue);
     this.cdr.markForCheck();
     return this.uploader()?.queue?.length;
   }

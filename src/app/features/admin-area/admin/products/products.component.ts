@@ -3,28 +3,13 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { IProduct } from 'src/app/shared/models/product';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
-import { Observable, Subject, merge, takeUntil } from 'rxjs';
+import { Subject, merge, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
 import { ProductService } from 'src/app/core/services/product.service';
 import { PaginationWithData } from 'src/app/shared/models/pagination';
 import { DeleteService } from 'src/app/core/services/utility-services/delete.service';
 import { SearchService } from 'src/app/core/services/utility-services/search.service';
-import { AccountService } from 'src/app/core/services/account.service';
-import { Action, AuthorizationService } from 'src/app/core/services/authorization.service';
 import { PolicyNames } from 'src/app/shared/models/policy';
-
-export declare interface IPageEvent {
-  /** The current page index. */
-  pageIndex: number;
-  /**
-   * Index of the page that was selected previously.
-   */
-  previousPageIndex?: number;
-  /** The current page size. */
-  pageSize: number;
-  /** The current total number of items being paged. */
-  length: number;
-}
 
 @Component({
   selector: 'app-products',
@@ -42,7 +27,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   shopParams       = signal<ProductQueryParams>({} as ProductQueryParams);
   totalCount       = signal<number>(0);
   isLoadingResults = signal<boolean>(true);
-  userRole         = signal<string>('');
   dataSource       = signal<IProduct[]>([]);
   pageSizeOptions  = signal<number[]>([5, 10, 25]);
 
@@ -50,12 +34,10 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   destroy$ = new Subject<void>();
 
-  private productService       = inject(ProductService);
-  private router               = inject(Router);
-  private deleteService        = inject(DeleteService);
-  private searchService        = inject(SearchService<IProduct>);
-  private accountService       = inject(AccountService);
-  private authorizationService = inject(AuthorizationService);
+  private productService = inject(ProductService);
+  private router         = inject(Router);
+  private deleteService  = inject(DeleteService);
+  private searchService  = inject(SearchService<IProduct>);
 
   constructor() {
     this.shopParams.set(this.productService.getShopParams());
@@ -70,9 +52,6 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.searchService.handleSearch(() => this.productService.getProducts())
       .pipe(takeUntil(this.destroy$))
       .subscribe(response => this.updateProducts(response));
-    this.accountService.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(user => {
-      this.userRole.set(user?.role ?? '');
-    })
   }
 
   ngAfterViewInit() {
@@ -147,15 +126,5 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   createProduct() {
     this.router.navigateByUrl(`/admin/products/edit/${-1}`);
-  }
-
-  canCreate(): Observable<boolean> {
-    return this.authorizationService.isActionAllowed(Action.Create, this.userRole());
-  }
-  canUpdate(): Observable<boolean> {
-    return this.authorizationService.isActionAllowed(Action.Update, this.userRole());
-  }
-  canDelete(): Observable<boolean> {
-    return this.authorizationService.isActionAllowed(Action.Delete, this.userRole());
   }
 }
