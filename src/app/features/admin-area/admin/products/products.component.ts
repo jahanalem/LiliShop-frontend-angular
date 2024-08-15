@@ -40,7 +40,7 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   private searchService  = inject(SearchService<IProduct>);
 
   constructor() {
-    this.shopParams.set(this.productService.getShopParams());
+    this.shopParams.set(new ProductQueryParams());
    }
 
   ngOnDestroy(): void {

@@ -59,8 +59,8 @@ export class UsersComponent implements AfterViewInit, OnInit {
   private deleteService  = inject( DeleteService);
   private searchService  = inject( SearchService<IAdminAreaUser>);
 
-  constructor( ) {
-    this.userQueryParams.set(this.accountService.getUserQueryParams());
+  constructor() {
+    this.userQueryParams.set(this.accountService.resetUserQueryParams());
   }
 
   ngOnDestroy() {

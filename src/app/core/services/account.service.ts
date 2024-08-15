@@ -32,6 +32,10 @@ export class AccountService {
     return this.userQueryParams;
   }
 
+  resetUserQueryParams() {
+    this.userQueryParams = {} as UserQueryParams;
+    return this.userQueryParams;
+  }
   /**
   * Loads the current user based on the provided token and updates the user state.
   *

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, viewChild } from '@angular/core';
+import { Component, inject, signal, OnInit, viewChild, OnDestroy } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
@@ -17,20 +17,20 @@ import { PolicyNames } from 'src/app/shared/models/policy';
   templateUrl: './contact-us-messages.component.html',
   styleUrl: './contact-us-messages.component.scss'
 })
-export class ContactUsMessagesComponent implements OnInit {
+export class ContactUsMessagesComponent implements OnInit, OnDestroy {
   paginator = viewChild.required<MatPaginator>(MatPaginator);
-  sort = viewChild.required<MatSort>(MatSort);
+  sort      = viewChild.required<MatSort>(MatSort);
 
-  policyNames = PolicyNames;
+  policyNames   = PolicyNames;
   messageParams = signal<ContactUsMessageQueryParams>({} as ContactUsMessageQueryParams);
-  messages = signal<IContactUsMessage[]>([]);
-  totalCount = signal<number>(0);
+  messages      = signal<IContactUsMessage[]>([]);
+  totalCount    = signal<number>(0);
 
   columnsToDisplay: string[] = ['id', 'email', 'firstName', 'lastName', 'message', 'createdDate', 'Action'];
 
   private contactService = inject(ContactService);
-  private deleteService = inject(DeleteService);
-  private searchService = inject(SearchService);
+  private deleteService  = inject(DeleteService);
+  private searchService  = inject(SearchService);
 
   private router = inject(Router);
 
@@ -45,9 +45,9 @@ export class ContactUsMessagesComponent implements OnInit {
   };
 
   constructor() {
-    this.messageParams.set(this.contactService.getMessageParams());
+    this.messageParams.set(new ContactUsMessageQueryParams());
   }
-  
+
   ngOnInit() {
     this.searchService.handleSearch(() => this.contactService.getPaginatedMessages())
       .pipe(takeUntil(this.destroy$))
@@ -81,6 +81,11 @@ export class ContactUsMessagesComponent implements OnInit {
         }
         this.getPaginatedMessages();
       });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private updateMessages(response: PaginationWithData<IContactUsMessage>): void {
