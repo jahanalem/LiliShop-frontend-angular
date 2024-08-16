@@ -1,19 +1,20 @@
-@if(product()){
-<div class="card h-100 shadow-sm">
-  <div class="image position-relative" style="cursor: pointer;">
-    <img src="{{product().pictureUrl}}" alt="{{product().name}}" class="img-fluid bg-info">
-    <div class="d-flex align-items-center justify-content-center hover-overlay">
-      <button title="add item" (click)="addItemToBasket()" type="button"
-        class="btn btn-primary fa fa-shopping-cart me-2"></button>
-      <button routerLink="/shop/{{product().id}}" type="button" class="btn btn-primary">View</button>
-    </div>
-  </div>
-
-  <div class="card-body d-flex flex-column">
-    <a routerLink="/shop/{{product().id}}" class="text-decoration-none">
-      <h6 class="text-uppercase">{{product().name}}</h6>
+@if(product()) {
+  <mat-card class="mat-elevation-z4 product-card">
+    <a routerLink="/shop/{{product().id}}" class="image-container">
+      <img mat-card-image src="{{product().pictureUrl}}" alt="{{product().name}}" class="product-image">
     </a>
-    <span class="mb-2">{{product().price | currency}}</span>
-  </div>
-</div>
-}
+
+    <mat-card-content class="text-center">
+      <a routerLink="/shop/{{product().id}}" class="product-link">
+        <h3 class="mat-h3">{{product().name}}</h3>
+      </a>
+      <p class="mat-body-2">{{product().price | currency}}</p>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="addItemToBasket()" class="w-100">
+        <mat-icon>shopping_cart</mat-icon> Add to Cart
+      </button>
+    </mat-card-actions>
+  </mat-card>
+  }

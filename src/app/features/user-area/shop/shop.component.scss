@@ -1,74 +1,48 @@
-/* General */
-body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #f5f5f5;
+.full-width {
+  width: 100%;
 }
 
-h6.text-uppercase {
-  font-weight: 600;
-  color: #333;
+.mat-form-field {
+  margin-bottom: 1.5rem;
 }
 
-.border-bottom {
-  border-bottom: 1px solid #dee2e6 !important;
+.mat-icon {
+  cursor: pointer;
 }
 
-/* Search and Filter */
-.input-group {
-  border: 1px solid #ced4da;
-  border-radius: 5px;
-  background-color: #fff;
+.filter-container {
+  transition: transform 0.3s ease-in-out;
 }
 
-.input-group .btn-outline-secondary {
-  background-color: #f8f9fa;
-  border-color: #ced4da;
-  color: #495057;
-  transition: background-color 0.3s, color 0.3s;
+.mobile-hidden {
+  display: none !important;
 }
 
-.input-group .btn-outline-secondary:hover {
-  background-color: #495057;
-  color: #fff;
+.toggle-filter-btn {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  z-index: 1; /* Ensure the button is on top within the normal content flow */
+  position: relative; /* Keep the button within the content flow */
 }
 
-.form-select {
-  background-color: #fff;
-  border-color: #ced4da;
-}
+@media (max-width: 768px) {
+  .filter-container {
+    display: none;
+    position: relative;
+    background-color: white;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 100%;
+    overflow-y: auto;
+  }
 
-/* Grid and Product Items */
-.item {
-  background-color: #fff;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  transition: box-shadow 0.3s, transform 0.3s;
-}
+  .filter-container:not(.mobile-hidden) {
+    display: block !important;
+    margin-top: 20px; /* Space between button and filter content */
+  }
 
-.item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transform: translateY(-4px);
-}
-
-/* Pagination */
-.pagination {
-  margin-top: 1rem;
-}
-
-.app-pager a {
-  background-color: #fff;
-  color: #495057;
-  border-color: #ced4da;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.app-pager a:hover {
-  background-color: #495057;
-  color: #fff;
-}
-
-.app-pager .active a {
-  background-color: #495057;
-  color: #fff;
+  .products-container {
+    margin-top: 20px; /* Ensure products are visible when filters are shown */
+  }
 }

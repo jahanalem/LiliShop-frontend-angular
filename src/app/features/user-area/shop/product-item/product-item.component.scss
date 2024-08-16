@@ -1,38 +1,45 @@
-.btn-group {
+.product-card {
+  max-width: 300px;
+  margin: auto;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.image-container {
+  display: block;
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+}
+
+.product-image {
   width: 100%;
+  height: auto;
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
-.btn {
-  width: 30%;
-  height: 40px;
+.product-card:hover .product-image {
+  transform: scale(1.05);
+  filter: brightness(90%);
 }
 
-.image :hover {
-  opacity: 1;
-  & button {
-      transform: none;
-      opacity: 1;
-  }
+.text-center {
+  text-align: center;
 }
 
-.hover-overlay {
-  position: absolute;
+.product-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-link h3 {
+  margin: 10px 0;
+  font-size: 1.2rem;
+}
+
+.mat-card-actions {
+  padding: 16px;
+}
+
+.w-100 {
   width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background: rgba(255,255,255,0.5);
-  opacity: 0;
-  transition: all 0.5s;
-
-  & button {
-      z-index: 1000;
-      transition: all 0.5s;
-  }
-  & button:first-of-type {
-      transform: translateX(-20px);
-  }
-  & button:last-of-type {
-      transform: translateX(20px);
-  }
 }

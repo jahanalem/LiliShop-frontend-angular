@@ -1,5 +1,5 @@
 
-import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
 import { IBrand } from 'src/app/shared/models/brand';
@@ -25,11 +25,14 @@ export class ShopComponent implements OnInit {
   shopParams = signal<ProductQueryParams>({} as ProductQueryParams);
   totalCount = signal<number>(0);
 
+  filtersHidden = signal<boolean>(false);
+
   readonly sortOptions = [
     { name: 'Alphabetical', value: 'name' },
     { name: 'Price: Low to high', value: 'priceAsc' },
     { name: 'Price: High to low', value: 'priceDesc' },
   ]
+
 
   private productService = inject(ProductService);
 
@@ -41,6 +44,22 @@ export class ShopComponent implements OnInit {
     this.getProducts(true);
     this.getFilters();
   }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.updateFilterVisibility(event.target.innerWidth);
+  }
+  toggleFilters() {
+    this.filtersHidden.set(!this.filtersHidden());
+  }
+  private updateFilterVisibility(width: number) {
+    if (width < 768) {
+      this.filtersHidden.set(true);
+    } else {
+      this.filtersHidden.set(false);
+    }
+  }
+
 
   getProducts(isActive?: boolean): void {
     this.productService.getProducts(isActive).subscribe({
@@ -91,13 +110,7 @@ export class ShopComponent implements OnInit {
     this.getProducts();
   }
 
-  onFilterSelected(inputElement: EventTarget | null, filterType: string): void {
-    if (!inputElement) {
-      return;
-    }
-
-    const selectElement = inputElement as HTMLSelectElement;
-    const filterValue = +selectElement.value;
+  onFilterSelected(filterValue: any | null, filterType: string): void {
     const params = this.productService.getShopParams();
 
     switch (filterType) {
@@ -111,7 +124,7 @@ export class ShopComponent implements OnInit {
         params.typeId = filterValue;
         break;
       case 'sort':
-        params.sort = selectElement.value;
+        params.sort = filterValue;
         break;
       default:
         break;

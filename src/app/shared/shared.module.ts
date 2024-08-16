@@ -26,7 +26,6 @@ import { SectionHeaderComponent } from './components/section-header/section-head
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { BreadcrumbComponent, BreadcrumbItemDirective, BreadcrumbService } from 'xng-breadcrumb';
 
-
 const components = [
   NavBarComponent,
   SectionHeaderComponent,
@@ -58,6 +57,7 @@ const components = [
     CdkStepperModule,
     RouterModule,
     MatDialogModule,
+
     FileUploadModule,
     MatIconModule,
     NgbCollapseModule,
