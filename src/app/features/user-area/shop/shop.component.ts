@@ -1,6 +1,6 @@
 
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
-import { Observable } from 'rxjs';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
+import { fromEvent, Observable, Subscription } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProduct } from 'src/app/shared/models/product';
@@ -15,7 +15,7 @@ import { IProductType } from 'src/app/shared/models/productType';
   styleUrls: ['./shop.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ShopComponent implements OnInit {
+export class ShopComponent implements OnInit, OnDestroy {
   searchTerm = viewChild.required<ElementRef<HTMLInputElement>>('search');
 
   products   = signal<IProduct[]>([]);
@@ -25,17 +25,18 @@ export class ShopComponent implements OnInit {
   shopParams = signal<ProductQueryParams>({} as ProductQueryParams);
   totalCount = signal<number>(0);
 
-  rowHeight = signal<string>("1:1.4");  // Default for desktop
-  cols      = signal<number>(3);
+  rowHeight      = signal<string>("1:1.4");  // Default for desktop
+  cols           = signal<number>(3);
+  isMobileScreen = signal<boolean>(false);
+  filtersHidden  = signal<boolean>(false);
 
-  filtersHidden = signal<boolean>(false);
+  resizeSubscription: Subscription | null = null;
 
   readonly sortOptions = [
     { name: 'Alphabetical', value: 'name' },
     { name: 'Price: Low to high', value: 'priceAsc' },
     { name: 'Price: High to low', value: 'priceDesc' },
   ]
-
 
   private productService = inject(ProductService);
 
@@ -44,8 +45,24 @@ export class ShopComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.checkScreenSize();
+
+    // Listen to window resize events
+    this.resizeSubscription = fromEvent(window, 'resize').subscribe(() => {
+      this.checkScreenSize();
+    });
+
     this.getProducts(true);
     this.getFilters();
+  }
+  checkScreenSize() {
+    const width = window.innerWidth;
+    this.isMobileScreen.set(width <= 768);
+  }
+  ngOnDestroy() {
+    if (this.resizeSubscription) {
+      this.resizeSubscription.unsubscribe();
+    }
   }
 
   @HostListener('window:resize', ['$event'])

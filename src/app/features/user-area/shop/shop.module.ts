@@ -14,8 +14,6 @@ import { MatSelect } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatGridListModule } from '@angular/material/grid-list';
 
-
-
 @NgModule({
   declarations: [
     ShopComponent,
@@ -35,7 +33,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatSelect,
     MatFormFieldModule,
     MatInputModule,
-    MatGridListModule
+    MatGridListModule,
   ],
 })
 export class ShopModule { }
