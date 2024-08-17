@@ -25,6 +25,13 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { SectionHeaderComponent } from './components/section-header/section-header.component';
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { BreadcrumbComponent, BreadcrumbItemDirective, BreadcrumbService } from 'xng-breadcrumb';
+import { MatToolbar, MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenav, MatSidenavContainer, MatSidenavModule } from '@angular/material/sidenav';
+import { MatBadgeModule } from'@angular/material/badge';
 
 const components = [
   NavBarComponent,
@@ -57,7 +64,17 @@ const components = [
     CdkStepperModule,
     RouterModule,
     MatDialogModule,
-
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatListModule,
+    MatDividerModule,
+    MatSidenavContainer,
+    MatSidenav,
+    MatToolbarModule,
+    MatToolbar,
+    MatBadgeModule,
+    MatSidenavModule,
     FileUploadModule,
     MatIconModule,
     NgbCollapseModule,
@@ -77,6 +94,11 @@ const components = [
     CheckPolicyDirective,
     BreadcrumbComponent,
     BreadcrumbItemDirective,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatBadgeModule,
   ],
   providers:[
     BreadcrumbService,

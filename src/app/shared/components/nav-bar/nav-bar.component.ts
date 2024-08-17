@@ -1,12 +1,13 @@
 
 import { Observable, of, startWith, Subject, switchMap, takeUntil } from 'rxjs';
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { BasketService } from '../../../core/services/basket.service';
 import { AccountService } from '../../../core/services/account.service';
 import { AuthorizationService } from '../../../core/services/authorization.service';
 import { PolicyNames } from 'src/app/shared/models/policy';
 import { IUser } from '../../models/user';
 import { IBasket } from '../../models/basket';
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-nav-bar',
@@ -17,7 +18,7 @@ import { IBasket } from '../../models/basket';
 export class NavBarComponent implements OnInit, OnDestroy {
   basket$     : Observable<IBasket | null>;
   currentUser$: Observable<IUser | null>;
-
+  @ViewChild('sidenav') sidenav!: MatSidenav;
   hasAccessToAdminPanel = signal<boolean>(false);
   isCollapsed           = signal<boolean>(true);
 
@@ -58,6 +59,15 @@ export class NavBarComponent implements OnInit, OnDestroy {
 
   toggleCollapse() {
     this.isCollapsed.set(!this.isCollapsed());
+  }
+
+
+  toggleSidenav() {
+    this.sidenav.toggle();
+  }
+
+  closeSidenav() {
+    this.sidenav.close();
   }
 
   logout() {

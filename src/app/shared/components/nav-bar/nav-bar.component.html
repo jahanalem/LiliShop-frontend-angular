@@ -1,75 +1,43 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-4 px-lg-4">
-
-  <div class="container-fluid"><a class="navbar-brand">
-      <img src="../assets/img/logo.png" routerLink="/" class="logo" alt="logo" width="180"></a>
-
-    <button (click)="toggleCollapse()" class="navbar-toggler rounded-0" type="button" data-bs-toggle="collapse"
-      data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-      aria-label="Toggle navigation">
-
-      <span class="navbar-toggler-icon"></span>
-
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed()">
-      <ul class="navbar-nav mx-auto">
-        <li class="nav-item">
-          <a routerLink="/shop" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link fw-normal text-uppercase">Shop
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a routerLink="/contact" routerLinkActive="active" class="nav-link fw-normal text-uppercase">Contact</a>
-        </li>
-
-        <li class="nav-item">
-          <a routerLink="/about" routerLinkActive="active" class="nav-link fw-normal text-uppercase">About</a>
-        </li>
-
-      </ul>
-      <ul class="navbar-nav flex-row mb-2 mb-lg-0 ms-lg-5 actions-nav-menu">
-
-        <li class="nav-item dropdown mx-2 mx-lg-0 px-3 px-lg-0  d-lg-block" style="margin-top: -7px;">
-          <a routerLink="/basket" class="nav-link position-relative no-caret me-2" id="cartDropdown">
-            <i class="fa fa-shopping-cart fa-lg me-3"></i>
-            <span *ngIf="(basket$ | async) as basket" class="cart-no">{{basket?.items?.length}}</span>
-          </a>
-        </li>
-
-        <ng-container *ngIf="(currentUser$ | async) === null">
-          <li class="nav-item mx-2 mx-lg-0 px-lg-0">
-            <a routerLink="/account/login" class="btn btn-outline-primary me-2">Login</a>
-          </li>
-          <li class="nav-item mx-2 mx-lg-0 px-lg-0">
-            <a routerLink="/account/register" class="btn btn-outline-primary me-2">Sign up</a>
-          </li>
-        </ng-container>
-        <ng-container *ngIf="currentUser$ | async">
-          <div class="dropdown ml-3 mr-5" dropdown>
-
-            <a class="dropdown-toggle" style="cursor: pointer;" dropdownToggle>
-              <strong> Welcome {{(currentUser$ | async)?.displayName}}</strong>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" style="cursor: pointer;" *dropdownMenu>
-              <ng-container *ngIf="hasAccessToAdminPanel()">
-                <a routerLink="/admin" class="dropdown-item d-flex align-items-center py-2">
-                  <i class="fa fa-user me-3"></i> Admin Panel
-                </a>
-              </ng-container>
-              <a routerLink="/basket" class="dropdown-item d-flex align-items-center py-2">
-                <i class="fa fa-shopping-cart me-3"></i> View Basket
-              </a>
-              <a routerLink="/orders" class="dropdown-item d-flex align-items-center py-2">
-                <i class="fa fa-history me-3"></i> View Orders
-              </a>
-              <div class="dropdown-divider"></div>
-              <a (click)="logout()" class="dropdown-item d-flex align-items-center py-2">
-                <i class="fa fa-sign-out me-3"></i> Logout
-              </a>
-            </div>
-          </div>
-        </ng-container>
-      </ul>
+<mat-toolbar color="primary" class="navbar-toolbar"><button mat-icon-button (click)="toggleSidenav()"
+    class="d-lg-none"><mat-icon>menu</mat-icon></button><a class="navbar-brand" routerLink="/"><img
+      src="../assets/img/logo.png" class="logo" alt="logo" width="180"></a><span class="spacer"></span>
+  <div class="d-none d-lg-flex"><button mat-button routerLink="/shop" routerLinkActive="active">
+      Shop
+    </button><button mat-button routerLink="/contact" routerLinkActive="active">
+      Contact
+    </button><button mat-button routerLink="/about" routerLinkActive="active">
+      About
+    </button></div><span class="spacer"></span><button mat-icon-button routerLink="/basket"
+    class="nav-icon"><mat-icon>shopping_cart</mat-icon><span *ngIf="(basket$ | async)?.items?.length"
+      class="cart-badge">
+      {{ (basket$ | async)?.items?.length }}
+    </span></button><ng-container *ngIf="!(currentUser$ | async); else loggedInTemplate"><button mat-button
+      routerLink="/account/login" class="btn-login">
+      Login
+    </button><button mat-button routerLink="/account/register" class="btn-signup">
+      Sign up
+    </button></ng-container><ng-template #loggedInTemplate><button mat-button [matMenuTriggerFor]="userMenu">
+      Welcome {{ (currentUser$ | async)?.displayName }}
+    </button><mat-menu #userMenu="matMenu"><button mat-menu-item routerLink="/admin"
+        *ngIf="hasAccessToAdminPanel()"><mat-icon>admin_panel_settings</mat-icon><span>Admin
+          Panel</span></button><button mat-menu-item routerLink="/basket"><mat-icon>shopping_cart</mat-icon><span>View
+          Basket</span></button><button mat-menu-item routerLink="/orders"><mat-icon>history</mat-icon><span>View
+          Orders</span></button><mat-divider></mat-divider><button mat-menu-item
+        (click)="logout()"><mat-icon>logout</mat-icon><span>Logout</span></button></mat-menu></ng-template>
+</mat-toolbar>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="over" class="sidenav" (closedStart)="closeSidenav()">
+    <div class="sidenav-buttons">
+      <button mat-button routerLink="/shop" (click)="closeSidenav()">
+        Shop
+      </button><button mat-button routerLink="/contact" (click)="closeSidenav()">
+        Contact
+      </button><button mat-button routerLink="/about" (click)="closeSidenav()">
+        About
+      </button>
     </div>
-  </div>
-</nav>
+  </mat-sidenav>
+  <mat-sidenav-content class="content"><!-- Your main content goes here -->
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
