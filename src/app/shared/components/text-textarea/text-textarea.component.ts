@@ -1,4 +1,4 @@
-import { ControlValueAccessor, NgControl } from '@angular/forms';
+import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { Component, OnInit, ElementRef, Self, viewChild, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
@@ -29,7 +29,10 @@ export class TextTextareaComponent implements OnInit, ControlValueAccessor {
     control?.setAsyncValidators(asyncValidators);
     control?.updateValueAndValidity();
   }
-
+  get formControl(): FormControl {
+    return this.controlDir.control as FormControl;
+  }
+  
   writeValue(obj: any): void {
     this.textarea().nativeElement.value = obj || '';
   }

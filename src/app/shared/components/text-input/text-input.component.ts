@@ -1,6 +1,6 @@
 
 import { Component, OnInit, ChangeDetectionStrategy, viewChild, Self, input, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { ControlValueAccessor, NgControl } from '@angular/forms';
+import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { errorType } from '../../constants/error-types';
 import { ElementRef } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
@@ -18,8 +18,8 @@ export class TextInputComponent implements OnInit, OnDestroy, ControlValueAccess
   label        = input<string>('')
   autocomplete = input<string>('');
 
-  protected onChange  = (_value: any) => {};
-  protected onTouched = () => {};
+  protected onChange  = (_value: any) => { };
+  protected onTouched = () => { };
 
   private destroy$ = new Subject<void>();
 
@@ -48,7 +48,9 @@ export class TextInputComponent implements OnInit, OnDestroy, ControlValueAccess
     this.destroy$.next();
     this.destroy$.complete();
   }
-
+  get formControl(): FormControl {
+    return this.controlDir.control as FormControl;
+  }
   writeValue(obj: any): void {
     if (this.input().nativeElement.value !== obj) {
       this.input().nativeElement.value = obj || '';
@@ -61,7 +63,13 @@ export class TextInputComponent implements OnInit, OnDestroy, ControlValueAccess
   }
 
   onInputBlur(): void {
+    this.controlDir.control?.markAsTouched();
     this.onTouched();
+    this.cdr.detectChanges();
+  }
+  handleFocusOut(): void {
+    // Trigger validation when user leaves the input field (using Tab, click, etc.)
+    this.controlDir.control?.updateValueAndValidity();
     this.cdr.detectChanges();
   }
 

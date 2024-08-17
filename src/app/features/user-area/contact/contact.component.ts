@@ -13,7 +13,7 @@ import { IContactUsMessage } from 'src/app/shared/models/contactUsMessage';
 })
 export class ContactComponent implements OnInit {
   contactForm!: FormGroup;
-  
+
   private contactService = inject(ContactService);
   private toastr         = inject(ToastrService);
 
@@ -45,7 +45,7 @@ export class ContactComponent implements OnInit {
     this.contactService.createMessage(message).subscribe({
       next: () => {
         this.toastr.success('Message sent successfully', 'Success');
-        this.contactForm.reset();
+        this.resetForm();
       },
       error: err => {
         this.isSubmitting.set(false);
@@ -55,6 +55,19 @@ export class ContactComponent implements OnInit {
       complete: () => {
         this.isSubmitting.set(false);
       }
+    });
+  }
+
+  private resetForm() {
+    this.contactForm.reset();
+
+    Object.keys(this.contactForm.controls).forEach((key) => {
+      const control = this.contactForm.get(key);
+      control?.setValue('');
+      control?.setErrors(null);
+      control?.markAsUntouched();
+      control?.markAsPristine();
+      control?.updateValueAndValidity();
     });
   }
 }

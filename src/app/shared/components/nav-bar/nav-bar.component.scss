@@ -1,3 +1,12 @@
+.active-link {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.active-link .mat-button-wrapper {
+  font-weight: bold;
+}
+
+
 .navbar-toolbar {
   display: flex;
   justify-content: space-between;

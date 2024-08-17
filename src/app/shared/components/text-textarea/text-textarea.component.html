@@ -1,17 +1,19 @@
-<div class="form-label-group form-floating">
+<mat-form-field appearance="fill" class="full-width">
+  <mat-label>{{ label() }}</mat-label>
   <textarea
+    matInput
     #textarea
-    [ngClass]="(controlDir.control?.touched) ? !controlDir.control?.valid ? 'is-invalid' : 'is-valid' : null"
+    [formControl]="formControl"
+    rows="{{ rows() }}"
+    id="{{ label() }}"
     (input)="onChanged($any($event.target).value)"
     (blur)="onTouched()"
-    rows="{{rows()}}"
-    id="{{label()}}"
-    placeholder="{{label()}}"
-    title="{{label()}}"
-    class="form-control">
+    placeholder="{{ label() }}"
+    title="{{ label() }}">
   </textarea>
-  <label for="{{label()}}">{{label()}}</label>
-  <div class="invalid-feedback" *ngIf="(!controlDir?.control?.valid && controlDir?.control?.touched)">
-      <span *ngIf="isThereAnyRequiredErrorType()">{{label()}} is required</span>
-  </div>
-</div>
+  <mat-icon matSuffix *ngIf="controlDir.control?.valid" color="primary">check_circle</mat-icon>
+  <!-- Error messages -->
+  <mat-error *ngIf="controlDir?.control?.invalid && controlDir?.control?.touched">
+    <span *ngIf="isThereAnyRequiredErrorType()">{{ label() }} is required</span>
+  </mat-error>
+</mat-form-field>

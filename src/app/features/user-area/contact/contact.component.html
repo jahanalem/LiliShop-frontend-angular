@@ -14,65 +14,56 @@
               <app-text-input [label]="'Last name'" formControlName="lastName"></app-text-input>
             </div>
             <div class="col-sm-12">
-              <app-text-input formControlName="email" [label]="'Email address'"></app-text-input>
+              <app-text-input [label]="'Email address'" formControlName="email"></app-text-input>
             </div>
             <div class="col-sm-12">
-              <app-text-textarea [label]="'message'" [rows]="4" formControlName="message"></app-text-textarea>
+              <app-text-textarea [label]="'Message'" [rows]="4" formControlName="message"></app-text-textarea>
             </div>
             <div class="col-sm-12">
-              <button class="btn btn-primary" type="submit" [disabled]="contactForm.invalid || isSubmitting()">Send message</button>
+              <button mat-raised-button color="primary" type="submit" [disabled]="contactForm.invalid || isSubmitting()">Send message</button>
             </div>
           </div>
         </form>
       </div>
       <div class="col-md-5">
-        <p>If you have a question, please send us a message and we will respond as soon as possible. We would love to
-          hear from you.</p>
-          <ul class="list-inline">
-            <li class="list-inline-item mr-2 px-2">
-              <a rel="noopener" href="mailto:s.r.alem@gmail.com" class="reset-anchor text-primary" target="_blank"
-                title="gmail">
-                <i class="fa fa-envelope fa-2x"></i>
-              </a>
-            </li>
-            <li class="list-inline-item mr-2 px-2">
-              <a rel="noopener" href="https://www.linkedin.com/in/said-roohullah-allem" class="reset-anchor text-primary"
-                target="_blank" title="linkedin">
-                <i class="fa fa-linkedin fa-2x"></i>
-              </a>
-            </li>
-            <li class="list-inline-item mr-2 px-2"><a rel="noopener"
-                href="https://www.xing.com/profile/SaidRoohullah_Allem/cv" class="reset-anchor text-primary"
-                target="_blank" title="xing">
-                <i class="fa fa-xing fa-2x"></i>
-              </a>
-            </li>
-            <li class="list-inline-item mr-2 px-2">
-              <a rel="noopener" href="https://github.com/jahanalem" class="reset-anchor text-primary" target="_blank"
-                title="github">
-                <i class="fa fa-github fa-2x"></i>
-              </a>
-            </li>
-            <li class="list-inline-item mr-2 px-2">
-              <a rel="noopener" href="https://www.facebook.com/saidroohullah.allem" class="reset-anchor text-primary"
-                target="_blank" title="facebook">
-                <i class="fa fa-facebook-f fa-2x"></i>
-              </a>
-            </li>
-            <li class="list-inline-item mr-2 px-2"><a rel="noopener" href="https://www.instagram.com/roohicode"
-                class="reset-anchor text-primary" target="_blank" title="instagram">
-                <i class="fa fa-instagram fa-2x">
-                </i>
-              </a>
-            </li>
-
-            <li class="list-inline-item mr-2 px-2">
-              <a rel="noopener" href="https://t.me/Roohi_coding" class="reset-anchor text-primary" target="_blank"
-                title="telegram">
-                <i class="fa fa-telegram fa-2x"></i>
-              </a>
-            </li>
-          </ul>
+        <p>If you have a question, please send us a message and we will respond as soon as possible. We would love to hear from you.</p>
+        <ul class="list-inline">
+          <li class="list-inline-item">
+            <a href="mailto:s.r.alem@gmail.com" target="_blank" title="gmail">
+              <mat-icon>email</mat-icon>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.linkedin.com/in/said-roohullah-allem" target="_blank" title="linkedin" rel="noopener">
+              <mat-icon>link</mat-icon>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.xing.com/profile/SaidRoohullah_Allem/cv" target="_blank" title="xing" rel="noopener">
+              <mat-icon>share</mat-icon>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/jahanalem" target="_blank" title="github" rel="noopener">
+              <mat-icon>code</mat-icon>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.facebook.com/saidroohullah.allem" target="_blank" title="facebook" rel="noopener">
+              <mat-icon>facebook</mat-icon>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.instagram.com/roohicode" target="_blank" title="instagram" rel="noopener">
+              <mat-icon>camera_alt</mat-icon>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://t.me/Roohi_coding" target="_blank" title="telegram" rel="noopener">
+              <mat-icon>send</mat-icon>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </div>

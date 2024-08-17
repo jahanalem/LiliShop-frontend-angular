@@ -1,4 +1,8 @@
-.form-floating>.form-control,
-.form-floating>.form-select {
-  height: auto;
+.full-width {
+  width: 100%;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
 }

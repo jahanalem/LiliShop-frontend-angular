@@ -1,13 +1,19 @@
-.form-label-group {
-  margin-bottom: 1rem;
+.full-width {
+  width: 100%;
 }
 
 .loader {
   position: absolute;
-  width: auto;
-  top: 15px;
-  
+  top: 50%;
   right: 10px;
-  margin-top: 0;
+  transform: translateY(-50%);
   color: var(--template-color);
+}
+
+.is-invalid {
+  border-color: red;
+}
+
+.is-valid {
+  border-color: green;
 }

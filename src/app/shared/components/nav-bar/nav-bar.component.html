@@ -1,29 +1,62 @@
-<mat-toolbar color="primary" class="navbar-toolbar"><button mat-icon-button (click)="toggleSidenav()"
-    class="d-lg-none"><mat-icon>menu</mat-icon></button><a class="navbar-brand" routerLink="/"><img
-      src="../assets/img/logo.png" class="logo" alt="logo" width="180"></a><span class="spacer"></span>
-  <div class="d-none d-lg-flex"><button mat-button routerLink="/shop" routerLinkActive="active">
+<mat-toolbar color="primary" class="navbar-toolbar">
+  <button mat-icon-button (click)="toggleSidenav()" class="d-lg-none">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <a class="navbar-brand" routerLink="/">
+    <img src="../assets/img/logo.png" class="logo" alt="logo" width="180">
+  </a>
+  <span class="spacer"></span>
+  <div class="d-none d-lg-flex">
+    <button mat-button routerLink="/shop" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="active-link">
       Shop
-    </button><button mat-button routerLink="/contact" routerLinkActive="active">
+    </button>
+    <button mat-button routerLink="/contact" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active-link">
       Contact
-    </button><button mat-button routerLink="/about" routerLinkActive="active">
+    </button>
+    <button mat-button routerLink="/about" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active-link">
       About
-    </button></div><span class="spacer"></span><button mat-icon-button routerLink="/basket"
-    class="nav-icon"><mat-icon>shopping_cart</mat-icon><span *ngIf="(basket$ | async)?.items?.length"
-      class="cart-badge">
+    </button>
+  </div>
+  <span class="spacer"></span>
+  <button mat-icon-button routerLink="/basket" class="nav-icon">
+    <mat-icon>shopping_cart</mat-icon>
+    <span *ngIf="(basket$ | async)?.items?.length" class="cart-badge">
       {{ (basket$ | async)?.items?.length }}
-    </span></button><ng-container *ngIf="!(currentUser$ | async); else loggedInTemplate"><button mat-button
-      routerLink="/account/login" class="btn-login">
+    </span>
+  </button>
+  <ng-container *ngIf="!(currentUser$ | async); else loggedInTemplate">
+    <button mat-button routerLink="/account/login" class="btn-login">
       Login
-    </button><button mat-button routerLink="/account/register" class="btn-signup">
+    </button>
+    <button mat-button routerLink="/account/register" class="btn-signup">
       Sign up
-    </button></ng-container><ng-template #loggedInTemplate><button mat-button [matMenuTriggerFor]="userMenu">
+    </button>
+  </ng-container>
+  <ng-template #loggedInTemplate>
+    <button mat-button [matMenuTriggerFor]="userMenu">
       Welcome {{ (currentUser$ | async)?.displayName }}
-    </button><mat-menu #userMenu="matMenu"><button mat-menu-item routerLink="/admin"
-        *ngIf="hasAccessToAdminPanel()"><mat-icon>admin_panel_settings</mat-icon><span>Admin
-          Panel</span></button><button mat-menu-item routerLink="/basket"><mat-icon>shopping_cart</mat-icon><span>View
-          Basket</span></button><button mat-menu-item routerLink="/orders"><mat-icon>history</mat-icon><span>View
-          Orders</span></button><mat-divider></mat-divider><button mat-menu-item
-        (click)="logout()"><mat-icon>logout</mat-icon><span>Logout</span></button></mat-menu></ng-template>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/admin" *ngIf="hasAccessToAdminPanel()">
+        <mat-icon>admin_panel_settings</mat-icon>
+        <span>Admin Panel</span>
+      </button>
+      <button mat-menu-item routerLink="/basket">
+        <mat-icon>shopping_cart</mat-icon>
+        <span>View Basket</span>
+      </button>
+      <button mat-menu-item routerLink="/orders">
+        <mat-icon>history</mat-icon>
+        <span>View Orders</span>
+      </button>
+      <mat-divider>
+      </mat-divider>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+  </ng-template>
 </mat-toolbar>
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="over" class="sidenav" (closedStart)="closeSidenav()">

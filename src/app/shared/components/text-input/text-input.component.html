@@ -1,41 +1,38 @@
-<div class="form-label-group form-floating">
+<mat-form-field class="full-width" appearance="fill">
+  <mat-label>{{ label() }}</mat-label>
   <input
-  [ngClass]="(controlDir.control?.touched) ? !controlDir.control?.valid ? 'is-invalid' : 'is-valid' : null"
-  [type]="type()"
-  (input)="onInputChange($any($event.target).value)"
-  (blur)="onInputBlur()"
-  id="{{label()}}"
-  #input
-  class="form-control"
-  placeholder="{{label()}}"
-  [attr.autocomplete]="autocomplete()"
->
+    matInput
+    [type]="type()"
+    (input)="onInputChange($any($event.target).value)"
+    (blur)="onInputBlur()"
+    (focusout)="handleFocusOut()"
+    id="{{ label() }}"
+    #input
+    placeholder="{{ label() }}"
+    [attr.autocomplete]="autocomplete()"
+    [formControl]="formControl"
+  >
+  <mat-icon matSuffix *ngIf="controlDir.control?.valid" color="primary">check_circle</mat-icon>
 
-  <div *ngIf="controlDir?.control?.status === 'PENDING'" class="fa fa-spinner fa-spin XXX_loader"></div>
-  <label for="{{label()}}">{{label()}}</label>
-  <div class="invalid-feedback" *ngIf="(!controlDir?.control?.valid && controlDir?.control?.touched)">
-    <ng-container *ngIf="isThereAnyRequiredErrorType()">
-      <span>{{label()}} is required</span>
-      <br>
-    </ng-container>
-    <ng-container *ngIf="isEmailAddressInvalid()">
-      <span>Invalid email address</span>
-      <br>
-    </ng-container>
-    <ng-container *ngIf="isPasswordInvalid()">
-      <div>Password must have 1 Uppercase,
-                               1 Lowercase,
-                               1 number,
-                               1 non alphanumeric
-                               and at least 6 characters</div>
-      <br>
-    </ng-container>
-    <ng-container *ngIf="isThereMatchEmailErrorType()">
-      <span>Confirm Password does not match</span>
-    </ng-container>
-  </div>
-
-  <div class="invalid-feedback d-block" *ngIf="(!controlDir?.control?.valid && controlDir?.control?.dirty)" >
-      <span *ngIf="isEmailAlreadyTaken()">Email address is in use</span>
-  </div>
-</div>
+  <mat-progress-spinner
+    *ngIf="controlDir?.control?.status === 'PENDING'"
+    mode="indeterminate"
+    diameter="20"
+    class="loader"
+  ></mat-progress-spinner>
+  <mat-error *ngIf="controlDir?.control?.hasError('required') && controlDir?.control?.touched">
+    {{ label() }} is required
+  </mat-error>
+  <mat-error *ngIf="controlDir?.control?.hasError('email') && controlDir?.control?.touched">
+    Invalid email address
+  </mat-error>
+  <mat-error *ngIf="isPasswordInvalid()">
+    Password must have 1 Uppercase, 1 Lowercase, 1 number, 1 non alphanumeric, and at least 6 characters
+  </mat-error>
+  <mat-error *ngIf="isThereMatchEmailErrorType()">
+    Confirm Password does not match
+  </mat-error>
+  <mat-hint *ngIf="!controlDir?.control?.valid && controlDir?.control?.dirty">
+    <span *ngIf="isEmailAlreadyTaken()">Email address is in use</span>
+  </mat-hint>
+</mat-form-field>
