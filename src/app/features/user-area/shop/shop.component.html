@@ -90,13 +90,11 @@
         </div>
 
         <!-- Product Grid -->
-        <div class="row gy-5 mb-5">
-          @for(item of products(); track item.id) {
-          <div class="item col-xl-4 col-md-6">
+        <mat-grid-list [cols]="cols()" [rowHeight]="rowHeight()" gutterSize="8px" class="mb-5">
+          <mat-grid-tile *ngFor="let item of products();">
             <app-product-item [product]="item"></app-product-item>
-          </div>
-          }
-        </div>
+          </mat-grid-tile>
+        </mat-grid-list>
 
         <!-- Pagination -->
         <nav class="pagination justify-content-center" aria-label="Page navigation example">

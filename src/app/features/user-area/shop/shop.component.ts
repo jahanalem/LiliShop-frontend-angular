@@ -25,6 +25,9 @@ export class ShopComponent implements OnInit {
   shopParams = signal<ProductQueryParams>({} as ProductQueryParams);
   totalCount = signal<number>(0);
 
+  rowHeight = signal<string>("1:1.4");  // Default for desktop
+  cols      = signal<number>(3);
+
   filtersHidden = signal<boolean>(false);
 
   readonly sortOptions = [
@@ -48,6 +51,7 @@ export class ShopComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.updateFilterVisibility(event.target.innerWidth);
+    this.updateGridHeight(event.target.innerWidth);
   }
   toggleFilters() {
     this.filtersHidden.set(!this.filtersHidden());
@@ -142,5 +146,27 @@ export class ShopComponent implements OnInit {
         console.error(error);
       }
     });
+  }
+
+  updateGridHeight(width: number) {
+    if (width >= 320 && width<=330) {
+      this.rowHeight.set('1:1.4');
+      this.cols.set(1);
+    }
+    else if (width <= 576) {
+      this.rowHeight.set('1:1');
+      this.cols.set(1);
+    } else if (width <= 768) {
+      this.rowHeight.set('1:1.4');
+      this.cols.set(2);
+    }
+    else if(width<=1199){
+       this.rowHeight.set('1:1.4');
+       this.cols.set(2);
+    }
+    else {
+      this.rowHeight.set('1:1.4');
+      this.cols.set(3);
+    }
   }
 }

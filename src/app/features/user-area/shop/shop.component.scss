@@ -22,8 +22,8 @@
   display: block;
   width: 100%;
   margin-bottom: 1rem;
-  z-index: 1; /* Ensure the button is on top within the normal content flow */
-  position: relative; /* Keep the button within the content flow */
+  z-index: 1;
+  position: relative;
 }
 
 @media (max-width: 768px) {
@@ -39,10 +39,18 @@
 
   .filter-container:not(.mobile-hidden) {
     display: block !important;
-    margin-top: 20px; /* Space between button and filter content */
+    margin-top: 20px;
   }
 
   .products-container {
-    margin-top: 20px; /* Ensure products are visible when filters are shown */
+    margin-top: 20px;
   }
+}
+
+.mat-grid-tile {
+  margin-bottom: 0;
+}
+
+.product-card {
+  margin-bottom: 0;
 }

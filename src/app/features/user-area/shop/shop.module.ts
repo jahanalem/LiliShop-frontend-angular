@@ -12,6 +12,7 @@ import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/fo
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 
 
@@ -33,7 +34,8 @@ import { MatInputModule } from '@angular/material/input';
     MatOptionModule,
     MatSelect,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatGridListModule
   ],
 })
 export class ShopModule { }
