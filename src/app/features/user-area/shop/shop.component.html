@@ -10,16 +10,16 @@
     <div class="main-content">
       <div class="filter-container" [ngClass]="{'mobile-hidden': filtersHidden()}">
         <!-- Search -->
-        <mat-form-field class="full-width">
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Search</mat-label>
-          <input type="text" matInput placeholder="Search" #search (keyup.enter)="onSearch()">
-          <button mat-icon-button matSuffix (click)="onSearch()">
-            <mat-icon>search</mat-icon>
-          </button>
-          <button mat-icon-button matSuffix (click)="onReset()">
-            <mat-icon>refresh</mat-icon>
-          </button>
+          <input matInput placeholder="Search" #search (keyup.enter)="onSearch()" />
+          <mat-icon matSuffix (click)="onSearch()">search</mat-icon>
+          <mat-icon matSuffix (click)="onReset()">refresh</mat-icon>
         </mat-form-field>
+
+
+
+
 
         <!-- Sort -->
         <h6 class="text-uppercase mb-4">Sort</h6>
