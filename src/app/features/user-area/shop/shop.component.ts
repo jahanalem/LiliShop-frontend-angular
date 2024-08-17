@@ -87,12 +87,12 @@ export class ShopComponent implements OnInit {
     });
   }
 
-  onPageChanged(event: number): void {
-    const params = this.productService.getShopParams();
-    if (params.pageNumber !== event) {
-      params.pageNumber = event;
-      this.getProducts(true);
-    }
+  onPageChanged(event: { pageNumber: number, pageSize: number }) {
+    const params = this.shopParams();
+    params.pageNumber = event.pageNumber;
+    params.pageSize = event.pageSize;
+    this.shopParams.set(params);
+    this.getProducts();
   }
 
   onSearch(): void {

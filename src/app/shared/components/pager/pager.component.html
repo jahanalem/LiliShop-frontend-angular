@@ -1,13 +1,10 @@
-<ng-container *ngIf="totalCount()>0">
-  <pagination
-    (pageChanged)="onPagerChange($event)"
-    [ngModel]="pageNumber()"
-    [itemsPerPage]="pageSize()"
-    [boundaryLinks]="true"
-    [totalItems]="totalCount()"
-    previousText="&lsaquo;"
-    nextText="&rsaquo;"
-    firstText="&laquo;"
-    lastText="&raquo;">
-  </pagination>
+<ng-container *ngIf="totalCount() > 0">
+  <mat-paginator
+    [length]="totalCount()"
+    [pageSize]="pageSize()"
+    [pageIndex]="pageNumber() - 1"
+    [pageSizeOptions]="pageSizeOptions"
+    [showFirstLastButtons]="true"
+    (page)="onPagerChange($event)">
+  </mat-paginator>
 </ng-container>
