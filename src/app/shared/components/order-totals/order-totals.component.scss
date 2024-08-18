@@ -1,0 +1,50 @@
+.order-summary-container {
+  margin: 0 auto;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.order-summary-header {
+  padding: 16px;
+  background-color: #3f51b5;
+  color: white;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.order-summary-content {
+  padding: 16px;
+}
+
+.order-summary-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.order-summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.order-summary-item span {
+  font-size: 16px;
+  color: #757575;
+}
+
+.order-summary-item strong {
+  font-size: 16px;
+  color: #000;
+}
+
+.order-total {
+  font-weight: bold;
+}
+
+.total-price {
+  color: #3f51b5;
+  font-size: 18px;
+}
