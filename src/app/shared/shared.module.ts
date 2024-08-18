@@ -38,6 +38,7 @@ import { SectionHeaderComponent } from './components/section-header/section-head
 import { FormatValuePipe } from './pipes/format-value.pipe';
 import { CheckPolicyDirective } from './directives/check-policy.directive';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatCardModule } from '@angular/material/card';
 
 const components = [
   NavBarComponent,
@@ -68,6 +69,7 @@ const matModules = [
   MatInputModule,
   MatProgressSpinnerModule,
   MatPaginatorModule,
+  MatCardModule,
 ];
 
 @NgModule({

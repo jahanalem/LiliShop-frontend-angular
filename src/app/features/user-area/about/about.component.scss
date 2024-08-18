@@ -1,6 +1,117 @@
-.myPhoto {
-  display: block;
-  margin: auto;
-  margin-right: 1rem;
-  margin-bottom: .5rem;
+.about-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.profile-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.bio-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.bio-text {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  font-size: 1.5rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.social-links a {
+  text-decoration: none;
+  color: #3b5998; /* Facebook blue */
+  transition: color 0.3s;
+}
+
+.social-links a:hover {
+  color: #444;
+}
+
+.tech-stack-section {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.tech-card {
+  flex: 1;
+  padding: 1rem;
+  min-width: 250px;
+}
+
+.mat-card-header {
+  background-color: #f7f7f7;
+  border-bottom: 2px solid #ddd;
+}
+
+.mat-card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mat-card-content ul {
+  list-style: none;
+  padding-left: 0;
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+.mat-card-content ul li {
+  padding: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .about-container {
+    padding: 1rem;
+  }
+
+  .profile-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .bio-section {
+    text-align: center;
+  }
+
+  .tech-stack-section {
+    flex-direction: column;
+  }
+
+  .tech-card {
+    margin-bottom: 1rem;
+  }
 }
