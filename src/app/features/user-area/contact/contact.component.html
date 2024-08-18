@@ -1,69 +1,55 @@
-<section class="py-1">
-  <div class="container py-5">
-    <header class="mb-5">
-      <h2>Contact form</h2>
+<section class="contact-section">
+  <div class="contact-container">
+    <header class="contact-header">
+      <h2>Contact Me</h2>
     </header>
-    <div class="row">
-      <div class="col-md-7">
-        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="custom-form form" id="contact-form">
-          <div class="row gy-3">
-            <div class="col-sm-6">
-              <app-text-input [label]="'First name'" formControlName="firstName"></app-text-input>
+    <div class="contact-content">
+      <div class="contact-form-container">
+        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" id="contact-form">
+          <div class="form-row">
+            <div class="form-col">
+              <app-text-input [label]="'First Name'" formControlName="firstName"></app-text-input>
             </div>
-            <div class="col-sm-6">
-              <app-text-input [label]="'Last name'" formControlName="lastName"></app-text-input>
+            <div class="form-col">
+              <app-text-input [label]="'Last Name'" formControlName="lastName"></app-text-input>
             </div>
-            <div class="col-sm-12">
-              <app-text-input [label]="'Email address'" formControlName="email"></app-text-input>
-            </div>
-            <div class="col-sm-12">
-              <app-text-textarea [label]="'Message'" [rows]="4" formControlName="message"></app-text-textarea>
-            </div>
-            <div class="col-sm-12">
-              <button mat-raised-button color="primary" type="submit" [disabled]="contactForm.invalid || isSubmitting()">Send message</button>
-            </div>
+          </div>
+          <div class="form-col">
+            <app-text-input [label]="'Email Address'" formControlName="email"></app-text-input>
+          </div>
+          <div class="form-col">
+            <app-text-textarea [label]="'Message'" [rows]="4" formControlName="message"></app-text-textarea>
+          </div>
+          <div class="form-col">
+            <button mat-raised-button color="primary" type="submit" [disabled]="contactForm.invalid || isSubmitting()">Send Message</button>
           </div>
         </form>
       </div>
-      <div class="col-md-5">
-        <p>If you have a question, please send us a message and we will respond as soon as possible. We would love to hear from you.</p>
-        <ul class="list-inline">
-          <li class="list-inline-item">
-            <a href="mailto:s.r.alem@gmail.com" target="_blank" title="gmail">
-              <mat-icon>email</mat-icon>
-            </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.linkedin.com/in/said-roohullah-allem" target="_blank" title="linkedin" rel="noopener">
-              <mat-icon>link</mat-icon>
-            </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.xing.com/profile/SaidRoohullah_Allem/cv" target="_blank" title="xing" rel="noopener">
-              <mat-icon>share</mat-icon>
-            </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://github.com/jahanalem" target="_blank" title="github" rel="noopener">
-              <mat-icon>code</mat-icon>
-            </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.facebook.com/saidroohullah.allem" target="_blank" title="facebook" rel="noopener">
-              <mat-icon>facebook</mat-icon>
-            </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://www.instagram.com/roohicode" target="_blank" title="instagram" rel="noopener">
-              <mat-icon>camera_alt</mat-icon>
-            </a>
-          </li>
-          <li class="list-inline-item">
-            <a href="https://t.me/Roohi_coding" target="_blank" title="telegram" rel="noopener">
-              <mat-icon>send</mat-icon>
-            </a>
-          </li>
-        </ul>
+      <div class="contact-info">
+        <p>📩 Wenn Du Fragen hast, kannst Du mir gerne eine Nachricht senden. Ich werde mich so schnell wie möglich bei Dir melden. 😊 Ich freue mich, von Dir zu hören!</p>
+        <div class="social-icons">
+          <a href="mailto:s.r.alem@gmail.com" target="_blank" title="Gmail">
+            <mat-icon>email</mat-icon>
+          </a>
+          <a href="https://www.linkedin.com/in/said-roohullah-allem" target="_blank" title="LinkedIn" rel="noopener">
+            <mat-icon>linkedin</mat-icon>
+          </a>
+          <a href="https://www.xing.com/profile/SaidRoohullah_Allem/cv" target="_blank" title="Xing" rel="noopener">
+            <mat-icon>share</mat-icon>
+          </a>
+          <a href="https://github.com/jahanalem" target="_blank" title="GitHub" rel="noopener">
+            <mat-icon>code</mat-icon>
+          </a>
+          <a href="https://www.facebook.com/roohiX19/" target="_blank" title="Facebook" rel="noopener">
+            <mat-icon>facebook</mat-icon>
+          </a>
+          <a href="https://www.instagram.com/roohicode" target="_blank" title="Instagram" rel="noopener">
+            <mat-icon>camera_alt</mat-icon>
+          </a>
+          <a href="https://t.me/Roohi_C" target="_blank" title="Telegram" rel="noopener">
+            <mat-icon>send</mat-icon>
+          </a>
+        </div>
       </div>
     </div>
   </div>
