@@ -1,60 +1,27 @@
-<ng-container *ngIf="items().length > 0 ">
-  <section class="py-3">
-    <div>
-      <div class="cart-outer">
-        <div class="cart-inner">
-          <div [class.bg-light]="isBasket() || isOrder()" class="rounded-pill px-4 py-3">
-            <div class="row fw-normal text-uppercase">
-              <div class="col-5"><strong>Product</strong></div>
-              <div class="col-2"><strong>Price</strong></div>
-              <div class="col-2"><strong>Quantity</strong></div>
-              <div class="col-2"><strong>Total</strong></div>
-              <div *ngIf="isBasket()" class="col-1 text-center"><strong>Remove</strong></div>
-            </div>
-          </div>
-          <!-- Product-->
-          <div *ngFor="let item of items()" class="p-4 border-bottom">
-            <div class="row d-flex align-items-center bord">
-              <div class="col-5">
-                <div class="d-flex align-items-center"><img class="img-fluid" src="{{item.pictureUrl}}"
-                    alt="{{item.productName}}" width="75">
-                  <div class="ms-3">
-                    <a routerLink="/shop/{{item.id || item.productId}}">
-                      <h5 class="mb-0 text-dark fw-normal">{{item.productName}}</h5>
-                      <span *ngIf="item.type">type: {{item.type}}</span>
-                      <span class="text-muted">Size: Large</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-2"><span>{{item.price | currency}}</span></div>
-              <div class="col-2">
-                <div [class.justify-content-center]="!isBasket && !isOrder" class="d-flex align-items-center">
-                  <div class="quantity d-flex align-items-center me-4">
-                    <i *ngIf="isBasket()" (click)="decrementItemQuantity(item)"
-                      class="fa fa-minus-circle text-primary mr-2 me-2" style="cursor: pointer; font-size: 2em;"></i>
-                    <span class="font-weight-bold" style="font-size: 1.5em;">{{item.quantity}}</span>
-                    <i *ngIf="isBasket()" (click)="incrementItemQuantity(item)"
-                      class="fa fa-plus-circle text-primary mx-2" style="cursor: pointer; font-size: 2em;"></i>
-                  </div>
-                </div>
-              </div>
-              <div class="col-2">
-                <span class="font-weight-bold" style="font-size: 1.5em;">
-                  {{item.price * item.quantity | currency}}
-                </span>
-              </div>
-              <div class="col-1 text-center">
-                <a class="text-danger">
-                  <i *ngIf="isBasket()" (click)="removeBasketItem(item)" class="fa fa-trash"
-                    style="font-size: 2em; cursor: pointer;"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-          <!-- Product-->
-        </div>
+<section class="cart-container">
+  <div class="cart-item" *ngFor="let item of items()">
+    <div class="product-info">
+      <img [src]="item.pictureUrl" [alt]="item.productName" class="product-image" title="product image">
+      <div class="product-details">
+        <h4>{{item.productName}}</h4>
+        <p><strong>Type:</strong> {{item.type}} <strong>Size:</strong> Large</p>
+        <span class="price">{{item.price | currency}}</span>
       </div>
     </div>
-  </section>
-</ng-container>
+    <div class="quantity-controls">
+      <button mat-icon-button color="primary" (click)="decrementItemQuantity(item)">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <span class="quantity">{{item.quantity}}</span>
+      <button mat-icon-button color="primary" (click)="incrementItemQuantity(item)">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+    <div class="total-price">
+      <span>{{item.price * item.quantity | currency}}</span>
+    </div>
+    <button mat-icon-button color="warn" (click)="removeBasketItem(item)">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</section>
