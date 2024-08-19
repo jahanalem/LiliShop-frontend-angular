@@ -4,11 +4,11 @@
     [items]="basket.items">
 </app-basket-summary>
 }
-<div class="float-none d-flex justify-content-between flex-column flex-lg-row mb-5">
-  <button class="btn btn-outline-primary my-1" cdkStepperPrevious>
-    <i class="fa fa-angle-left"></i> Back to Delivery
+<div class="action-buttons">
+  <button mat-stroked-button color="primary" cdkStepperPrevious>
+    <mat-icon>arrow_back</mat-icon> Back to Delivery
   </button>
-  <button class="btn btn-primary my-1" (click)="createPaymentIntent()">
-    Go to Payment <i class="fa fa-angle-right"></i>
+  <button mat-raised-button color="primary" (click)="createPaymentIntent()">
+    Go to Payment <mat-icon>arrow_forward</mat-icon>
   </button>
 </div>

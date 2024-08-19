@@ -1,42 +1,41 @@
 <div [formGroup]="checkoutForm()">
-  <div class="mt-4" [formGroup]="checkoutForm()">
-    <div class="d-flex justify-content-between align-items-center">
+  <div class="checkout-section" [formGroup]="checkoutForm()">
+    <div class="header-container">
       <h4>Shipping address</h4>
-      <button (click)="saveUserAddress()"
-        [disabled]="!checkoutForm().get('addressForm')?.valid || !checkoutForm().get('addressForm')?.dirty"
-        class="btn btn-outline-success mb-3">
+      <button mat-button (click)="saveUserAddress()"
+              [disabled]="!checkoutForm().get('addressForm')?.valid || !checkoutForm().get('addressForm')?.dirty"
+              color="primary">
         Save as default address
       </button>
     </div>
-    <div class="row" formGroupName="addressForm">
-      <div class="form-group col-md-6">
+    <div formGroupName="addressForm">
+      <div class="form-field">
         <app-text-input [label]="'First name'" formControlName="firstName"></app-text-input>
       </div>
-      <div class="form-group col-md-6">
+      <div class="form-field">
         <app-text-input [label]="'Last name'" formControlName="lastName"></app-text-input>
       </div>
-      <div class="form-group col-md-12">
+      <div class="form-field">
         <app-text-input [label]="'Street'" formControlName="street"></app-text-input>
       </div>
-      <div class="form-group col-md-4">
+      <div class="form-field">
         <app-text-input [label]="'City'" formControlName="city"></app-text-input>
       </div>
-      <div class="form-group col-md-4">
+      <div class="form-field">
         <app-text-input [label]="'State'" formControlName="state"></app-text-input>
       </div>
-      <div class="form-group col-md-4">
+      <div class="form-field">
         <app-text-input [label]="'Zip code'" formControlName="zipCode"></app-text-input>
       </div>
     </div>
   </div>
 
-  <div class="float-none d-flex justify-content-between flex-column flex-lg-row mb-5">
-    <button class="btn btn-outline-primary my-1" routerLink="/basket">
-      <i class="fa fa-angle-left"></i> Back to basket
+  <div class="action-buttons">
+    <button mat-stroked-button routerLink="/basket" color="primary">
+      <mat-icon>arrow_back</mat-icon> Back to basket
     </button>
-    <button [disabled]="isActivatedGoToDeliveryButton()" class="btn btn-primary my-1" cdkStepperNext>
-      Go to delivery <i class="fa fa-angle-right"></i>
+    <button mat-raised-button color="accent" [disabled]="isActivatedGoToDeliveryButton()" cdkStepperNext>
+      Go to delivery <mat-icon>arrow_forward</mat-icon>
     </button>
   </div>
 </div>
-

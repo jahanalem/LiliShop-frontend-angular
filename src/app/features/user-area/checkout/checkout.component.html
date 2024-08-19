@@ -1,32 +1,36 @@
-<section class="py-1">
-  <div class="container py-5">
-    <div class="row gy-5 gx-5">
-      <div class="col-lg-8">
-        <app-stepper [linearModeSelected]="false" #appStepper>
-          <cdk-step [label]="'Address'" [completed]="(checkoutForm.get('addressForm')?.valid)">
+<section class="checkout-section">
+  <div class="checkout-container">
+    <div class="checkout-content">
+      <div class="checkout-stepper">
+        <mat-stepper [linear]="true" #appStepper>
+          <mat-step [completed]="(checkoutForm.get('addressForm')?.valid)" label="Address">
             <app-checkout-address [checkoutForm]="checkoutForm"></app-checkout-address>
-          </cdk-step>
-          <cdk-step [label]="'Delivery'" [completed]="(checkoutForm.get('deliveryForm')?.valid)">
+          </mat-step>
+
+          <mat-step [completed]="(checkoutForm.get('deliveryForm')?.valid)" label="Delivery">
             <app-checkout-delivery [checkoutForm]="checkoutForm"></app-checkout-delivery>
-          </cdk-step>
-          <cdk-step [label]="'Review'">
+          </mat-step>
+
+          <mat-step label="Review">
             <app-checkout-review [appStepper]="appStepper"></app-checkout-review>
-          </cdk-step>
-          <cdk-step [label]="'Payment'">
+          </mat-step>
+
+          <mat-step label="Payment">
             <app-checkout-payment [checkoutForm]="checkoutForm"></app-checkout-payment>
-          </cdk-step>
-        </app-stepper>
+          </mat-step>
+        </mat-stepper>
       </div>
-      <div class="col-lg-4">
-        <div class="card rounded-0">
-          <div>
-            @if(basketTotals(); as basketTotals){
-            <app-order-totals [shippingPrice]="basketTotals.shipping" [subtotal]="basketTotals.subtotal"
+
+      <div class="checkout-summary">
+        <mat-card>
+          @if(basketTotals(); as basketTotals) {
+            <app-order-totals
+              [shippingPrice]="basketTotals.shipping"
+              [subtotal]="basketTotals.subtotal"
               [total]="basketTotals.total">
             </app-order-totals>
-            }
-          </div>
-        </div>
+          }
+        </mat-card>
       </div>
     </div>
   </div>

@@ -1,0 +1,48 @@
+.checkout-section {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.checkout-container {
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.checkout-content {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.checkout-stepper {
+  flex: 2;
+}
+
+.checkout-summary {
+  flex: 1;
+}
+
+.stepper-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .checkout-content {
+    flex-direction: column;
+  }
+
+  .stepper-actions {
+    flex-direction: column;
+  }
+
+  .stepper-actions button {
+    margin-top: 8px;
+  }
+}

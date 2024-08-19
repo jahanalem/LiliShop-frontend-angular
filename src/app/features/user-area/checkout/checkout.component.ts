@@ -15,7 +15,6 @@ import { IBasketTotals } from 'src/app/shared/models/basket';
 })
 export class CheckoutComponent implements OnInit {
   checkoutForm!: FormGroup;
-
   basketTotals = signal<IBasketTotals | null>(null);
 
   private fb             = inject(FormBuilder);
@@ -24,7 +23,7 @@ export class CheckoutComponent implements OnInit {
 
   constructor() {
 
-   }
+  }
 
   ngOnInit(): void {
     this.createCheckoutForm();

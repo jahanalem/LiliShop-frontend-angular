@@ -8,6 +8,8 @@ import { CheckoutDeliveryComponent } from './checkout-delivery/checkout-delivery
 import { CheckoutReviewComponent } from './checkout-review/checkout-review.component';
 import { CheckoutPaymentComponent } from './checkout-payment/checkout-payment.component';
 import { CheckoutSuccessComponent } from './checkout-success/checkout-success.component';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatStepperModule } from '@angular/material/stepper';
 
 
 @NgModule({
@@ -22,7 +24,9 @@ import { CheckoutSuccessComponent } from './checkout-success/checkout-success.co
   imports: [
     CommonModule,
     CheckoutRoutingModule,
-    SharedModule
+    SharedModule,
+    MatRadioModule,
+    MatStepperModule
   ]
 })
 export class CheckoutModule { }

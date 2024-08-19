@@ -1,0 +1,21 @@
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin: 16px 0;
+  width: 100%;
+}
+
+.action-buttons button {
+  flex: 1;
+  margin: 8px;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons button {
+    margin: 8px 0;
+  }
+}

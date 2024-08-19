@@ -1,25 +1,25 @@
 @if(checkoutForm(); as checkoutForm)
 {
-<div class="mt-4" [formGroup]="checkoutForm">
-  <h4 class="mb-3">Choose your delivery method</h4>
-  <div class="row" formGroupName="deliveryForm">
-    <div class="col-6 form-group" *ngFor="let dMethod of deliveryMethods()">
-      <input (click)="setShippingPrice(dMethod)" type="radio" id="{{dMethod.id}}" value="{{dMethod.id}}"
-        formControlName="deliveryMethod" class="custom-control-input" title="dm">
-      <label for="{{dMethod.id}}" class="custom-control-label">
-        <strong>{{dMethod.shortName}} - {{dMethod.price | currency}}</strong>
-        <br>
-        <span class="label-description">{{dMethod.description}}</span>
-      </label>
+  <div class="delivery-section" [formGroup]="checkoutForm">
+    <h4>Choose your delivery method</h4>
+    <div formGroupName="deliveryForm">
+      <mat-radio-group formControlName="deliveryMethod">
+        <mat-radio-button *ngFor="let dMethod of deliveryMethods()" (click)="setShippingPrice(dMethod)"
+                          [value]="dMethod.id" class="delivery-option">
+          <strong>{{dMethod.shortName}} - {{dMethod.price | currency}}</strong>
+          <br>
+          <span class="label-description">{{dMethod.description}}</span>
+        </mat-radio-button>
+      </mat-radio-group>
     </div>
   </div>
-</div>
-<div class="float-none d-flex justify-content-between flex-column flex-lg-row my-3">
-  <button class="btn btn-outline-primary my-1" cdkStepperPrevious>
-    <i class="fa fa-angle-left"></i> Back to address
-  </button>
-  <button [disabled]="checkoutForm.get('deliveryForm')?.invalid" class="btn btn-primary my-1" cdkStepperNext>
-    Go to review <i class="fa fa-angle-right"></i>
-  </button>
-</div>
+
+  <div class="action-buttons">
+    <button mat-stroked-button color="primary" cdkStepperPrevious>
+      <mat-icon>arrow_back</mat-icon> Back to address
+    </button>
+    <button mat-raised-button color="accent" [disabled]="checkoutForm.get('deliveryForm')?.invalid" cdkStepperNext>
+      Go to review <mat-icon>arrow_forward</mat-icon>
+    </button>
+  </div>
 }

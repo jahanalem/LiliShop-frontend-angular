@@ -1,0 +1,40 @@
+.checkout-section {
+  margin-top: 16px;
+  padding: 16px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.form-field {
+  margin-bottom: 16px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+button[mat-button] {
+  margin: 8px 0;
+}
+
+button[mat-raised-button] {
+  margin: 8px 0;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  button[mat-button], button[mat-raised-button] {
+    width: 100%;
+    margin: 8px 0;
+  }
+}
