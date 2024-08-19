@@ -101,7 +101,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
       if (buttonDiv) {
         google.accounts.id.renderButton(
           buttonDiv,
-          { theme: "outline", size: "large" }
+          {
+            theme: "outline",
+            size: "large",
+            shape: "rectangular",
+            width: "100%"
+          }
         );
       }
 
@@ -176,7 +181,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Registration failed', error);
-        this.errors = error.errors;
+        this.errors.set(error.errors);
       },
     });
   }

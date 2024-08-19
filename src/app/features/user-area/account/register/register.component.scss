@@ -1,3 +1,84 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.register-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.register-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.register-form {
+  width: 100%;
+}
+.register-button{
+  margin-top: 1.5rem;
+}
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.error-list {
+  color: #f44336;
+  list-style: none;
+  padding-left: 0;
+  margin-top: 8px;
+}
+
+.google-signin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.google-signin-container:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
 #buttonDiv {
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .google-signin-container {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+  }
+}
+
+
+#buttonDiv {
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .register-card {
+    padding: 16px;
+  }
+
+  .google-signin-container {
+    margin-top: 32px; /* Adjust margin for better spacing on smaller screens */
+  }
 }
