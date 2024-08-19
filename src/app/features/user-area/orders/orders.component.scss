@@ -1,0 +1,33 @@
+.orders-container {
+  padding: 16px;
+  margin: auto;
+  max-width: 100%;
+  overflow-x: auto;
+
+  mat-table {
+    width: 100%;
+  }
+
+  mat-header-cell, mat-cell {
+    padding: 16px;
+    text-align: left;
+  }
+
+  mat-chip {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .orders-container {
+      padding: 8px;
+    }
+
+    mat-header-cell, mat-cell {
+      padding: 8px;
+    }
+
+    button {
+      font-size: 0.8rem;
+    }
+  }
+}

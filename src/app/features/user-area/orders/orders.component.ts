@@ -12,9 +12,9 @@ import { IOrder } from 'src/app/shared/models/order';
 })
 export class OrdersComponent implements OnInit {
   orders = signal<IOrder[]>([]);
-
+  displayedColumns: string[] = ['orderId', 'date', 'total', 'status', 'action'];
   private orderService = inject(OrdersService);
-  
+
   constructor() { }
 
   ngOnInit(): void {

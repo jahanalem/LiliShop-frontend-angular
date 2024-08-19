@@ -1,26 +1,43 @@
-<div class="container">
-  <div class="table-responsive-md">
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th class="border-light border-top">Order</th>
-          <th class="border-light border-top">Date</th>
-          <th class="border-light border-top">Total</th>
-          <th class="border-light border-top">Status</th>
-          <th class="border-light border-top">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for(order of orders(); track order.id){
-        <tr>
-          <th>{{order.id}}</th>
-          <td>{{order.orderDate | date:'medium'}}</td>
-          <td>{{order.total | currency }}</td>
-          <td><span class="badge bg-info">{{order.status}}</span></td>
-          <td><a class="btn btn-primary btn-sm" routerLink="/orders/{{order.id}}">View</a></td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-</div>
+<mat-card class="orders-container">
+  <mat-table [dataSource]="orders()">
+    <!-- Order ID Column -->
+    <ng-container matColumnDef="orderId">
+      <mat-header-cell *matHeaderCellDef> Order </mat-header-cell>
+      <mat-cell *matCellDef="let order"> {{order.id}} </mat-cell>
+    </ng-container>
+
+    <!-- Date Column -->
+    <ng-container matColumnDef="date">
+      <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+      <mat-cell *matCellDef="let order"> {{order.orderDate | date:'medium'}} </mat-cell>
+    </ng-container>
+
+    <!-- Total Column -->
+    <ng-container matColumnDef="total">
+      <mat-header-cell *matHeaderCellDef> Total </mat-header-cell>
+      <mat-cell *matCellDef="let order"> {{order.total | currency}} </mat-cell>
+    </ng-container>
+
+    <!-- Status Column -->
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+      <mat-cell *matCellDef="let order">
+        <mat-chip color="primary" selected>{{order.status}}</mat-chip>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Action Column -->
+    <ng-container matColumnDef="action">
+      <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+      <mat-cell *matCellDef="let order">
+        <button mat-raised-button color="primary" routerLink="/orders/{{order.id}}">View</button>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Header Row -->
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+
+    <!-- Data Rows -->
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</mat-card>

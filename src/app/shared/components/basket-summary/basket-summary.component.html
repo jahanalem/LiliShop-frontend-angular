@@ -9,18 +9,18 @@
       </div>
     </div>
     <div class="quantity-controls">
-      <button mat-icon-button color="primary" (click)="decrementItemQuantity(item)">
+      <button *ngIf="isBasket()" mat-icon-button color="primary" (click)="decrementItemQuantity(item)">
         <mat-icon>remove</mat-icon>
       </button>
       <span class="quantity">{{item.quantity}}</span>
-      <button mat-icon-button color="primary" (click)="incrementItemQuantity(item)">
-        <mat-icon>add</mat-icon>
+      <button *ngIf="isBasket()" mat-icon-button color="primary" (click)="incrementItemQuantity(item)">
+        <mat-icon >add</mat-icon>
       </button>
     </div>
-    <div class="total-price">
+    <div class="total-price" [style]="addPadding()">
       <span>{{item.price * item.quantity | currency}}</span>
     </div>
-    <button mat-icon-button color="warn" (click)="removeBasketItem(item)">
+    <button *ngIf="isBasket()"  mat-icon-button color="warn" (click)="removeBasketItem(item)">
       <mat-icon>delete</mat-icon>
     </button>
   </div>

@@ -4,6 +4,10 @@ import { CommonModule } from '@angular/common';
 import { OrdersComponent } from './orders.component';
 import { OrderDetailedComponent } from './order-detailed/order-detailed.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
   declarations: [
@@ -13,7 +17,11 @@ import { SharedModule } from 'src/app/shared/shared.module';
   imports: [
     CommonModule,
     OrdersRoutingModule,
-    SharedModule
+    SharedModule,
+    MatTableModule,
+    MatButtonModule,
+    MatCardModule,
+    MatChipsModule,
   ],
   exports: [OrdersComponent, OrderDetailedComponent]
 })

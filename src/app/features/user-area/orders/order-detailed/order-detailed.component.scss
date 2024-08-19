@@ -1,0 +1,21 @@
+.order-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.mat-card {
+  margin-bottom: 16px;
+}
+
+.address-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .order-container {
+    padding: 8px;
+  }
+}

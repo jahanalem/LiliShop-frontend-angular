@@ -9,6 +9,7 @@ import { Component, OnInit, ChangeDetectionStrategy, output, input } from '@angu
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BasketSummaryComponent implements OnInit {
+
   isBasket  = input<boolean>(true);
   isOrder   = input<boolean>(false);
   items     = input<IBasketItem[] | IOrderItem[] | any[]>([]);
@@ -29,5 +30,11 @@ export class BasketSummaryComponent implements OnInit {
   }
   removeBasketItem(item: IBasketItem) {
     this.remove.emit(item);
+  }
+  addPadding(): string | undefined{
+    if(!this.isBasket()){
+      return 'padding-left:6rem';
+    }
+    return;
   }
 }
