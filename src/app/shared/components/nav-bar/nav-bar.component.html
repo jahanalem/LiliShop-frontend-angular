@@ -1,12 +1,12 @@
-<mat-toolbar color="primary" class="navbar-toolbar">
-  <button mat-icon-button (click)="toggleSidenav()" class="d-lg-none">
+<mat-toolbar color="primary" class="toolbar">
+  <button mat-icon-button (click)="toggleSidenav()" class="menu-button">
     <mat-icon>menu</mat-icon>
   </button>
-  <a class="navbar-brand" routerLink="/">
+  <div class="logo-container">
     <img src="../assets/img/logo.png" class="logo" alt="logo" width="180">
-  </a>
+  </div>
   <span class="spacer"></span>
-  <div class="d-none d-lg-flex">
+  <div class="nav-links">
     <button mat-button routerLink="/shop" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="active-link">
       Shop
     </button>
@@ -17,7 +17,6 @@
       About
     </button>
   </div>
-  <span class="spacer"></span>
   <button mat-icon-button routerLink="/basket" class="nav-icon">
     <mat-icon>shopping_cart</mat-icon>
     <span *ngIf="(basket$ | async)?.items?.length" class="cart-badge">
@@ -49,8 +48,7 @@
         <mat-icon>history</mat-icon>
         <span>View Orders</span>
       </button>
-      <mat-divider>
-      </mat-divider>
+      <mat-divider></mat-divider>
       <button mat-menu-item (click)="logout()">
         <mat-icon>logout</mat-icon>
         <span>Logout</span>
@@ -58,19 +56,22 @@
     </mat-menu>
   </ng-template>
 </mat-toolbar>
+
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="over" class="sidenav" (closedStart)="closeSidenav()">
     <div class="sidenav-buttons">
       <button mat-button routerLink="/shop" (click)="closeSidenav()">
         Shop
-      </button><button mat-button routerLink="/contact" (click)="closeSidenav()">
+      </button>
+      <button mat-button routerLink="/contact" (click)="closeSidenav()">
         Contact
-      </button><button mat-button routerLink="/about" (click)="closeSidenav()">
+      </button>
+      <button mat-button routerLink="/about" (click)="closeSidenav()">
         About
       </button>
     </div>
   </mat-sidenav>
-  <mat-sidenav-content class="content"><!-- Your main content goes here -->
+  <mat-sidenav-content class="main-content">
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

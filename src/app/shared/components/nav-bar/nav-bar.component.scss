@@ -1,13 +1,4 @@
-.active-link {
-  background-color: rgba(0, 0, 0, 0.08);
-}
-
-.active-link .mat-button-wrapper {
-  font-weight: bold;
-}
-
-
-.navbar-toolbar {
+.toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -16,6 +7,12 @@
   width: 100%;
   z-index: 1000;
   height: 64px;
+  padding: 0 16px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
 }
 
 .logo {
@@ -44,7 +41,6 @@
 
 .sidenav-container {
   height: calc(100vh - 64px);
-  /* Adjust based on the height of toolbar */
   margin-top: 64px;
 }
 
@@ -52,38 +48,45 @@
   width: 250px;
 }
 
-.content {
+.main-content {
   padding: 16px;
 }
 
+.menu-button {
+  display: none;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+}
+
 @media (max-width: 768px) {
-  .d-lg-none {
-    display: block !important;
+  .menu-button {
+    display: block;
   }
 
-  .d-lg-flex {
-    display: none !important;
+  .nav-links {
+    display: none;
+  }
+
+  .sidenav-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 0;
+  }
+
+  .sidenav-buttons button {
+    flex: 1;
+    margin: 8px 0;
+    text-align: center;
   }
 
   .sidenav-container {
     margin-top: 56px;
     height: calc(100vh - 56px);
   }
-
-  .sidenavbutton {
-    display: block;
-    width: 100%;
-    text-align: left;
-    margin-bottom: 8px;
-  }
-
-  .sidenav-buttonsbutton {
-    margin-bottom: 8px;
-    text-align: left;
-  }
-}
-
-.sidenav-buttons {
-  display: flex;
-  flex-direction: column;
 }
