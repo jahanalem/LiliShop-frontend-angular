@@ -1,6 +1,6 @@
 import { AccountService } from './../../../core/services/account.service';
 import { environment } from './../../../../environments/environment';
-import { FileUploader } from 'ng2-file-upload';
+import { FileItem, FileUploader } from 'ng2-file-upload';
 import { IProduct } from './../../models/product';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, effect, inject, input, OnInit, signal } from '@angular/core';
 import { IUser } from '../../models/user';
@@ -55,6 +55,10 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
   ngOnInit(): void {
     console.log("NGONINIT");
     this.initializeUploader();
+  }
+
+  get fileQueue(): FileItem[] {
+    return this.uploader()?.queue || [];
   }
 
   get lengthOfFileItem(){

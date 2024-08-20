@@ -1,75 +1,79 @@
-<div class="row mb-3" *ngIf="product()">
-  <div class="col-2 mb-3" *ngFor="let photo of product()!.productPhotos">
-    <img src="{{photo.url}}" alt="photo of product" class="img-thumbnail mb-2">
-    <div class="text-center">
-      <button class="btn btn-sm" type="button" [disabled]="photo.isMain" (click)="setMainPhoto(photo)"
-        [ngClass]="photo.isMain ? 'btn-success active':'btn-outline-success'">
+<div class="photo-grid" *ngIf="product()">
+  <div class="photo-item" *ngFor="let photo of product()!.productPhotos">
+    <img src="{{photo.url}}" alt="photo of product" class="product-photo">
+    <div class="button-group">
+      <button mat-raised-button color="primary" type="button" [disabled]="photo.isMain" (click)="setMainPhoto(photo)">
         Main
       </button>
-      <button class="btn btn-sm btn-danger ml-1" [disabled]="photo.isMain" (click)="deletePhoto(photo.id)" type="button"
-        title="trash">
-        <i class="fa fa-trash"></i>
+      <button mat-raised-button color="warn" [disabled]="photo.isMain" (click)="deletePhoto(photo.id)" type="button"
+        title="Delete">
+        <mat-icon>delete</mat-icon>
       </button>
     </div>
   </div>
 </div>
-<div class="row">
 
-  <div class="col-md-3">
+<div class="upload-section">
 
+  <div class="upload-dropzone">
     <h3>Add photos</h3>
 
-    <div ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)"
-      [uploader]="uploader()" class="card bg-faded p-3 text-center mb-3 my-drop-zone">
-      <i class="fa fa-upload fa-3x"></i>
-      <p class="mb-0">Drop photos here</p>
+    <div ng2FileDrop [ngClass]="{'file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)"
+      [uploader]="uploader()" class="drop-zone">
+      <mat-icon class="upload-icon">cloud_upload</mat-icon>
+      <p>Drop photos here</p>
     </div>
 
     <label>Multiple</label>
-    <input type="file" ng2FileSelect [uploader]="uploader()" multiple title="multiple file" /><br />
+    <input
+    type="file"
+      ng2FileSelect
+      [uploader]="uploader()"
+      multiple title="Select multiple files"
+      aria-label="Select multiple files" />
 
     <label>Single</label>
-    <input type="file" ng2FileSelect [uploader]="uploader()" title="single file" />
+    <input
+      type="file"
+      ng2FileSelect
+      [uploader]="uploader()"
+      title="Select a single file"
+      aria-label="Select a single file" />
   </div>
 
-  <div class="col-md-9" style="margin-bottom: 40px" *ngIf="lengthOfFileItem">
+  <div class="upload-queue" *ngIf="lengthOfFileItem">
 
     <h3>Upload queue</h3>
     <p>Queue length: {{ lengthOfFileItem }}</p>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th width="50%">Name</th>
-          <th>Size</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of uploader()?.queue">
-          <td><strong>{{ item?.file?.name }}</strong></td>
-          <td *ngIf="uploader()?.options?.isHTML5" nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
-        </tr>
-      </tbody>
+    <table mat-table [dataSource]="fileQueue || []">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let item"><strong>{{ item?.file?.name }}</strong></td>
+      </ng-container>
+
+      <ng-container matColumnDef="size">
+        <th mat-header-cell *matHeaderCellDef>Size</th>
+        <td mat-cell *matCellDef="let item" nowrap>{{ item?.file?.size / 1024 / 1024 | number:'.2' }} MB</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['name', 'size']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['name', 'size'];"></tr>
     </table>
 
-    <div>
-      <div class="mb-2">
-        Queue progress:
-        <div class="progress">
-          <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader()?.progress + '%' }"></div>
-        </div>
-      </div>
-      <button type="button" class="btn btn-success btn-s" (click)="uploader()?.uploadAll()"
+    <mat-progress-bar mode="determinate" [value]="uploader()?.progress"></mat-progress-bar>
+
+    <div class="button-group">
+      <button mat-raised-button color="primary" (click)="uploader()?.uploadAll()"
         [disabled]="!uploader()?.getNotUploadedItems()?.length">
-        <span class="fa fa-upload"></span> Upload all
+        Upload all
       </button>
-      <button type="button" class="btn btn-warning btn-s ml-1" (click)="uploader()?.cancelAll()"
-        [disabled]="!uploader()?.isUploading">
-        <span class="fa fa-ban"></span> Cancel all
+      <button mat-raised-button color="warn" (click)="uploader()?.cancelAll()" [disabled]="!uploader()?.isUploading">
+        Cancel all
       </button>
-      <button type="button" class="btn btn-danger btn-s ml-1" (click)="uploader()?.clearQueue()"
+      <button mat-raised-button color="accent" (click)="uploader()?.clearQueue()"
         [disabled]="!uploader()?.queue?.length">
-        <span class="fa fa-trash"></span> Remove all
+        Remove all
       </button>
     </div>
 

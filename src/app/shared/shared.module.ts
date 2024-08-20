@@ -38,6 +38,8 @@ import { FormatValuePipe } from './pipes/format-value.pipe';
 import { CheckPolicyDirective } from './directives/check-policy.directive';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTableModule } from '@angular/material/table';
 
 const components = [
   NavBarComponent,
@@ -68,6 +70,8 @@ const matModules = [
   MatProgressSpinnerModule,
   MatPaginatorModule,
   MatCardModule,
+  MatProgressBarModule,
+  MatTableModule
 ];
 
 @NgModule({

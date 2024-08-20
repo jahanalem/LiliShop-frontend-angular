@@ -1,7 +1,72 @@
-.nv-file-over {
-  border: dotted 3px red;
+.photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-input[type=file] {
-  color: transparent;
+.photo-item {
+  flex: 1 1 calc(20% - 16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.product-photo {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.upload-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.upload-dropzone {
+  flex: 1 1 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.upload-queue {
+  flex: 1 1 60%;
+}
+
+.drop-zone {
+  border: 2px dashed #ccc;
+  padding: 24px;
+  text-align: center;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.file-over {
+  border-color: #3f51b5;
+}
+
+.upload-icon {
+  font-size: 48px;
+  color: #3f51b5;
+}
+
+.upload-field {
+  width: 100%;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.mat-progress-bar {
+  margin-top: 16px;
 }
