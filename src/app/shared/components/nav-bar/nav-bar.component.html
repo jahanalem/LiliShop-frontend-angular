@@ -17,6 +17,7 @@
       About
     </button>
   </div>
+  <span class="spacer"></span>
   <button mat-icon-button routerLink="/basket" class="nav-icon">
     <mat-icon>shopping_cart</mat-icon>
     <span *ngIf="(basket$ | async)?.items?.length" class="cart-badge">
@@ -59,6 +60,9 @@
 
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="over" class="sidenav" (closedStart)="closeSidenav()">
+    <div class="sidenav-logo">
+      <img src="../assets/img/logo.png" alt="logo">
+    </div>
     <div class="sidenav-buttons">
       <button mat-button routerLink="/shop" (click)="closeSidenav()">
         Shop
