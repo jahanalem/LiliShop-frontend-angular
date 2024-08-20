@@ -2,6 +2,19 @@
   width: 100%;
 }
 
+.custom-form-field {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.custom-input {
+  padding-right: 40px; /* Space for icons on the right */
+}
+
+.valid-icon {
+  color: green;
+}
+
 .loader {
   position: absolute;
   top: 50%;
@@ -10,10 +23,29 @@
   color: var(--template-color);
 }
 
-.is-invalid {
-  border-color: red;
+.mat-error {
+  font-weight: bold;
+  color: #d32f2f; /* Material's default error color */
 }
 
-.is-valid {
-  border-color: green;
+.mat-form-field-wrapper {
+  padding-bottom: 0; /* Remove extra padding under the input */
+}
+
+.mat-hint {
+  color: #f57c00; /* A softer warning color */
+}
+
+.mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.mat-form-field-appearance-fill.mat-form-field-invalid .mat-form-field-flex {
+  background-color: #ffebee; /* Light red background on error */
+}
+
+.mat-form-field-appearance-fill.mat-form-field-valid .mat-form-field-flex {
+  background-color: #e8f5e9; /* Light green background when valid */
 }

@@ -2,7 +2,44 @@
   width: 100%;
 }
 
-textarea {
+.custom-textarea-field {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.custom-textarea {
   resize: vertical;
   min-height: 100px;
+  padding-right: 40px; /* Space for the valid icon on the right */
+}
+
+.valid-icon {
+  color: green;
+}
+
+.mat-error {
+  font-weight: bold;
+  color: #d32f2f; /* Material's default error color */
+}
+
+.mat-form-field-wrapper {
+  padding-bottom: 0; /* Remove extra padding under the input */
+}
+
+.mat-hint {
+  color: #f57c00; /* A softer warning color */
+}
+
+.mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.mat-form-field-appearance-fill.mat-form-field-invalid .mat-form-field-flex {
+  background-color: #ffebee; /* Light red background on error */
+}
+
+.mat-form-field-appearance-fill.mat-form-field-valid .mat-form-field-flex {
+  background-color: #e8f5e9; /* Light green background when valid */
 }

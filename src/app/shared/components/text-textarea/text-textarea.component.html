@@ -1,18 +1,24 @@
-<mat-form-field appearance="fill" class="full-width">
+<mat-form-field appearance="fill" class="full-width custom-textarea-field">
   <mat-label>{{ label() }}</mat-label>
   <textarea
     matInput
     #textarea
     [formControl]="formControl"
-    rows="{{ rows() }}"
+    [rows]="rows()"
     id="{{ label() }}"
     (input)="onChanged($any($event.target).value)"
     (blur)="onTouched()"
     placeholder="{{ label() }}"
-    title="{{ label() }}">
+    title="{{ label() }}"
+    class="custom-textarea">
   </textarea>
-  <mat-icon matSuffix *ngIf="controlDir.control?.valid" color="primary">check_circle</mat-icon>
-  <!-- Error messages -->
+
+  <!-- Valid Icon -->
+  <mat-icon matSuffix *ngIf="controlDir.control?.valid" color="primary" class="valid-icon">
+    check_circle
+  </mat-icon>
+
+  <!-- Error Messages -->
   <mat-error *ngIf="controlDir?.control?.invalid && controlDir?.control?.touched">
     <span *ngIf="isThereAnyRequiredErrorType()">{{ label() }} is required</span>
   </mat-error>

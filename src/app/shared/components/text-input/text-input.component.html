@@ -1,4 +1,4 @@
-<mat-form-field class="full-width" appearance="fill">
+<mat-form-field class="full-width custom-form-field" appearance="fill">
   <mat-label>{{ label() }}</mat-label>
   <input
     matInput
@@ -11,15 +11,23 @@
     placeholder="{{ label() }}"
     [attr.autocomplete]="autocomplete()"
     [formControl]="formControl"
+    class="custom-input"
   >
-  <mat-icon matSuffix *ngIf="controlDir.control?.valid" color="primary">check_circle</mat-icon>
 
+  <!-- Valid Icon -->
+  <mat-icon matSuffix *ngIf="controlDir.control?.valid" color="primary" class="valid-icon">
+    check_circle
+  </mat-icon>
+
+  <!-- Loader -->
   <mat-progress-spinner
     *ngIf="controlDir?.control?.status === 'PENDING'"
     mode="indeterminate"
     diameter="20"
     class="loader"
   ></mat-progress-spinner>
+
+  <!-- Error Messages -->
   <mat-error *ngIf="controlDir?.control?.hasError('required') && controlDir?.control?.touched">
     {{ label() }} is required
   </mat-error>
@@ -27,11 +35,13 @@
     Invalid email address
   </mat-error>
   <mat-error *ngIf="isPasswordInvalid()">
-    Password must have 1 Uppercase, 1 Lowercase, 1 number, 1 non alphanumeric, and at least 6 characters
+    Password must have 1 Uppercase, 1 Lowercase, 1 number, 1 non-alphanumeric, and at least 6 characters
   </mat-error>
   <mat-error *ngIf="isThereMatchEmailErrorType()">
     Confirm Password does not match
   </mat-error>
+
+  <!-- Hint -->
   <mat-hint *ngIf="!controlDir?.control?.valid && controlDir?.control?.dirty">
     <span *ngIf="isEmailAlreadyTaken()">Email address is in use</span>
   </mat-hint>
