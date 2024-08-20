@@ -3,7 +3,6 @@ import { of, switchMap } from 'rxjs';
 import { IProduct } from 'src/app/shared/models/product';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { BreadcrumbService } from 'xng-breadcrumb';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { ProductService } from 'src/app/core/services/product.service';
 import { INotificationSubscription } from 'src/app/shared/models/notificationSubscription';
@@ -24,14 +23,12 @@ export class ProductDetailsComponent implements OnInit {
   currentUserEmailConfirmed = signal<boolean>(false);
 
   private activatedRoute      = inject(ActivatedRoute);
-  private bcService           = inject(BreadcrumbService);
   private basketService       = inject(BasketService);
   private productService      = inject(ProductService);
   private notificationService = inject(NotificationService);
   private accountService      = inject(AccountService);
 
   constructor() {
-    this.bcService.set('@productDetails', ' ');
   }
 
   ngOnInit(): void {
@@ -41,7 +38,8 @@ export class ProductDetailsComponent implements OnInit {
           this.currentUserId.set(user.id);
           this.currentUserEmailConfirmed.set(user.emailConfirmed);
         }
-      }
+      },
+      error:(err)=>{console.log("err = ", err);}
     });
     this.loadProduct();
   }
@@ -76,7 +74,6 @@ export class ProductDetailsComponent implements OnInit {
     ).subscribe({
       next: (product) => {
         this.product.set(product);
-        this.bcService.set('@productDetails', product.name);
         this.checkSubscriptionStatus();
       },
       error: (error) => {

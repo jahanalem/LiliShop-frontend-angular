@@ -42,7 +42,6 @@
 }
 
 .sidenav-container {
-  height: calc(100vh - 64px);
   margin-top: 64px;
 }
 
@@ -85,7 +84,6 @@
 
   .sidenav-container {
     margin-top: 56px;
-    height: calc(100vh - 56px);
   }
   .nav-links{
     display: none;
@@ -111,6 +109,5 @@
 
   .sidenav-container {
     margin-top: 56px;
-    height: calc(100vh - 56px);
   }
 }
