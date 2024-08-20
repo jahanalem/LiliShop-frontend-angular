@@ -177,6 +177,15 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
+.page-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  gap: 2rem;
+}
+
 .button-disabled {
   color: gray !important;
   background-color: #f0f0f0 !important;
