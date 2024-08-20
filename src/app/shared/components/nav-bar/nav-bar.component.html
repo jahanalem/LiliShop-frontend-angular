@@ -7,13 +7,13 @@
   </div>
   <span class="spacer"></span>
   <div class="nav-links">
-    <button mat-button routerLink="/shop" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="active-link">
+    <button mat-button routerLink="/shop" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:true}">
       Shop
     </button>
-    <button mat-button routerLink="/contact" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active-link">
+    <button mat-button routerLink="/contact" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: false }">
       Contact
     </button>
-    <button mat-button routerLink="/about" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active-link">
+    <button mat-button routerLink="/about" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
       About
     </button>
   </div>
