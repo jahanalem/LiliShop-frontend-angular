@@ -1,7 +1,10 @@
-
 /* General Styles */
 .admin-user-form {
   font-family: 'Arial', sans-serif;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .form-container {
@@ -16,38 +19,66 @@
 }
 
 .form-section {
-  margin: 20px;
+  margin-bottom: 20px;
 }
 
 /* Form Fields */
 .custom-mat-field {
   width: 100%;
-  margin-top: 10px;
-}
-
-.form-group {
   margin-bottom: 20px;
 }
 
 .readonly-field .mat-form-field-wrapper {
-  background-color: #f3f3f3;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  padding-left: 8px;
 }
 
 /* Buttons */
 .back-button {
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
 }
 
 .save-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 40px;
+  padding: 12px 24px;
   font-size: 16px;
-  border: none;
-  cursor: pointer;
   margin-top: 20px;
+  align-self: flex-end;
 }
 
-.save-button:hover {
-  background-color: #0056b3;
+/* Additional Styling */
+.mat-checkbox {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.mat-checkbox .mat-checkbox-layout {
+  align-items: center;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  border-color: #3f51b5;
+}
+
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  border-color: #3f51b5;
+}
+
+.mat-raised-button.mat-primary {
+  background-color: #3f51b5;
+}
+
+.mat-raised-button.mat-primary:hover {
+  background-color: #303f9f;
+}
+
+.mat-raised-button.mat-accent {
+  background-color: #ff4081;
+}
+
+.mat-raised-button.mat-accent:hover {
+  background-color: #f50057;
 }

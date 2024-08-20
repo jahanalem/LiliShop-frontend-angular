@@ -1,89 +1,70 @@
+<!-- Back Button -->
 <button mat-raised-button color="primary" (click)="navigateBack()" class="back-button">
-  <mat-icon class="arrow-back">arrow_back</mat-icon>
+  <mat-icon>arrow_back</mat-icon>
   Back
 </button>
 
+<!-- Admin User Form -->
 <form *ngIf="adminUserForm" [formGroup]="adminUserForm" (ngSubmit)="onSubmit()" class="admin-user-form">
   <div class="form-container">
     <div class="form-row">
       <div class="form-section">
+
         <!-- ID (Read-Only) -->
-        <div class="form-group readonly-field">
-          <mat-form-field appearance="outline" class="custom-mat-field">
-            <mat-label>ID</mat-label>
-            <input formControlName="id" matInput placeholder="ID" readonly>
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="custom-mat-field readonly-field">
+          <mat-label>ID</mat-label>
+          <input formControlName="id" matInput placeholder="User ID" title="ID" readonly>
+        </mat-form-field>
 
         <!-- Email -->
-        <div class="form-group readonly-field">
-          <mat-form-field appearance="outline" class="custom-mat-field">
-            <mat-label>Email</mat-label>
-            <input formControlName="email" matInput placeholder="Email" readonly>
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="custom-mat-field readonly-field">
+          <mat-label>Email</mat-label>
+          <input formControlName="email" matInput placeholder="User Email" title="Email" readonly>
+        </mat-form-field>
 
         <!-- Display Name -->
-        <div class="form-group">
-          <mat-form-field appearance="outline" class="custom-mat-field">
-            <mat-label>display name</mat-label>
-            <input formControlName="displayName" matInput placeholder="display name">
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="custom-mat-field">
+          <mat-label>Display Name</mat-label>
+          <input formControlName="displayName" matInput placeholder="Enter display name" title="Display Name">
+        </mat-form-field>
 
         <!-- Role Name -->
-        <div class="form-group">
-          <mat-form-field appearance="outline" class="custom-mat-field">
-            <mat-label>Role name</mat-label>
-            <mat-select formControlName="roleId">
-              <mat-option *ngFor="let role of roles()" [value]="role.id">{{ role.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="custom-mat-field">
+          <mat-label>Role Name</mat-label>
+          <mat-select formControlName="roleId" placeholder="Select a role" title="Role Name">
+            <mat-option *ngFor="let role of roles()" [value]="role.id">{{ role.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
         <!-- Phone Number -->
-        <div class="form-group">
-          <mat-form-field appearance="outline" class="custom-mat-field">
-            <mat-label>Telephone number</mat-label>
-            <input formControlName="phoneNumber" matInput placeholder="Telephone number">
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="custom-mat-field">
+          <mat-label>Telephone Number</mat-label>
+          <input formControlName="phoneNumber" matInput placeholder="Enter telephone number" title="Telephone Number">
+        </mat-form-field>
 
         <!-- Email Confirmed -->
-        <div class="form-group">
-          <mat-checkbox formControlName="emailConfirmed">Email confirmed?</mat-checkbox>
-        </div>
+        <mat-checkbox formControlName="emailConfirmed" color="primary" title="Email Confirmed">Email Confirmed?</mat-checkbox>
 
         <!-- Phone Number Confirmed -->
-        <div class="form-group">
-          <mat-checkbox formControlName="phoneNumberConfirmed">Phone number confirmed?</mat-checkbox>
-        </div>
-
+        <mat-checkbox formControlName="phoneNumberConfirmed" color="primary" title="Phone Number Confirmed">Phone Number Confirmed?</mat-checkbox>
 
         <!-- Lockout Enabled -->
-        <div class="form-group">
-          <mat-checkbox formControlName="lockoutEnabled">Lockout activated?</mat-checkbox>
-        </div>
+        <mat-checkbox formControlName="lockoutEnabled" color="warn" title="Lockout Activated">Lockout Activated?</mat-checkbox>
 
         <!-- Lockout End (Read-Only) -->
-        <div class="form-group">
-          <mat-form-field appearance="outline">
-            <mat-label>Lockout end time</mat-label>
-            <input formControlName="lockoutEnd" matInput placeholder="Lockout end time" readonly>
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="custom-mat-field readonly-field">
+          <mat-label>Lockout End Time</mat-label>
+          <input formControlName="lockoutEnd" matInput placeholder="Lockout end time" title="Lockout End Time" readonly>
+        </mat-form-field>
 
         <!-- Access Failed Count (Read-Only) -->
-        <div class="form-group">
-          <mat-form-field appearance="outline">
-            <mat-label>Failed access attempts</mat-label>
-            <input formControlName="accessFailedCount" matInput placeholder="Failed access attempts" readonly>
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline" class="custom-mat-field readonly-field">
+          <mat-label>Failed Access Attempts</mat-label>
+          <input formControlName="accessFailedCount" matInput placeholder="Failed access attempts" title="Failed Access Attempts" readonly>
+        </mat-form-field>
 
         <!-- Save Button -->
-        <button type="submit" mat-raised-button class="btn btn-primary">Save</button>
-
+        <button type="submit" mat-raised-button color="accent" class="save-button" title="Save Changes">Save</button>
       </div>
     </div>
   </div>
