@@ -1,17 +1,31 @@
-/* General styles */
-mat-form-field {
-  width: 100%;
-  max-width: 300px;
+/* New Type Button Container */
+.new-type-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 16px;
 }
 
-/* Table styles */
+/* New Type Button */
+.new-type-button {
+  font-size: 18px;
+  padding: 10px 20px;
+  border-radius: 4px;
+}
+
+/* Table Container */
+.table-container {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+/* General Table Styles */
 table {
   width: 100%;
   border-collapse: collapse;
 }
 
-th,
-td {
+th, td {
   text-align: left;
   padding: 12px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
@@ -29,7 +43,7 @@ tr.mat-row:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Paginator styles */
+/* Paginator Styles */
 mat-paginator {
   padding: 8px 0;
   display: flex;
@@ -41,9 +55,9 @@ mat-form-field {
   margin-bottom: 16px;
 }
 
-/* Button styles */
-button {
-  border-radius: 4px;
+/* Consistent Button Styles */
+button.mat-icon-button {
+  border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
@@ -52,11 +66,7 @@ button:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 4px 6px rgba(0, 0, 0, 0.24);
 }
 
-/* Button icons */
-button .details-icon {
-  color: #3f51b5;
-}
-
+/* Button Icons */
 button .edit-icon {
   color: #FFC107;
 }
@@ -65,17 +75,6 @@ button .delete-icon {
   color: #f44336;
 }
 
-/* Button mit Icon */
-button.mat-raised-button {
-  margin: 20px 0;
-  font-size: 18px;
-  padding: 12px 24px;
-  display: inline-flex;
-  align-items: center;  /* Vertikale Ausrichtung */
-}
-
-.mat-icon {
-  margin-right: 8px;  /* Abstand zwischen Icon und Text */
-  vertical-align: middle;  /* Vertikale Ausrichtung */
-  color: green;  /* Ändern der Icon-Farbe */
+button .details-icon {
+  color: #3f51b5;
 }
