@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { ConfirmEmailComponent } from './core/confirm-email/confirm-email.component';
 import { UnsubscribeConfirmationComponent } from './core/unsubscribe-confirmation/unsubscribe-confirmation.component';
+import { PrivacyPolicyComponent } from './shared/components/privacy-policy/privacy-policy.component';
 
 
 const routes: Routes = [
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'server-error', component: ServerErrorComponent, data: { breadcrumb: 'Server Error' } },
   { path: 'confirm-email', component: ConfirmEmailComponent },
   { path: 'unsubscribe-confirmation', component: UnsubscribeConfirmationComponent },
+  { path: 'privacy-policy', component: PrivacyPolicyComponent },
   { path: 'admin', loadChildren: () => import('./features/admin-area/admin/admin.module').then(mod => mod.AdminModule) },
   { path: '**', redirectTo: 'not-found', pathMatch: 'full' },
 ];

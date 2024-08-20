@@ -40,9 +40,11 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
+import { FooterComponent } from './components/footer/footer.component';
 
 const components = [
   NavBarComponent,
+  FooterComponent,
   SectionHeaderComponent,
   PagingHeaderComponent,
   PagerComponent,
