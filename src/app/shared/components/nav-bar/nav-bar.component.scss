@@ -1,3 +1,6 @@
+.menu-button{
+  display: none;
+}
 .toolbar {
   display: flex;
   justify-content: space-between;
@@ -64,6 +67,9 @@
 }
 
 @media (max-width:480px){
+  .menu-button{
+    display: block;
+  }
   .logo-container {
     display: none;
   }
@@ -87,6 +93,9 @@
 }
 
 @media (max-width: 768px) {
+  .menu-button{
+    display: block;
+  }
   .logo-container {
     display: none;
   }
