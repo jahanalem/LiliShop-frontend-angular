@@ -20,6 +20,15 @@ export default class AdminComponent implements OnDestroy, AfterViewInit {
   private router         = inject(Router);
   private accountService = inject(AccountService);
 
+  navItems = [
+    { name: 'Dashboard', link: '/admin',                     icon: 'dashboard' },
+    { name: 'Products',  link: '/admin/products',            icon: 'library_books' },
+    { name: 'Brands',    link: '/admin/brands',              icon: 'branding_watermark' },
+    { name: 'Types',     link: '/admin/product-types',       icon: 'category' },
+    { name: 'Messages',  link: '/admin/contact-us-messages', icon: 'message' },
+    { name: 'Users',     link: '/admin/users',               icon: 'supervisor_account' },
+  ];
+
   constructor() {
 
   }

@@ -9,57 +9,28 @@
 <mat-sidenav-container>
   <mat-sidenav #sidenav="matSidenav" class="mat-elevation-z8">
     <div class="logo-container">
-      <img routerLink="/" alt="logo" class="avatar mat-elevation-z8" src="../../../../assets/img/logo-s.png" />
+      <img routerLink="/" alt="logo" class="avatar mat-elevation-z8 logo" src="../../../../assets/img/logo-s.png" />
     </div>
     <mat-divider></mat-divider>
 
     <ul class="nav-list">
-      <li class="nav-item">
-        <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
-          <mat-icon class="nav-icon">home</mat-icon>
-          <span>Dashboard</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/admin/products" routerLinkActive="active">
-          <mat-icon class="nav-icon">library_books</mat-icon>
-          <span>Products</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/admin/brands" routerLinkActive="active">
-          <mat-icon class="nav-icon">branding_watermark</mat-icon>
-          <span>Brands</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/admin/product-types" routerLinkActive="active">
-          <mat-icon class="nav-icon">branding_watermark</mat-icon>
-          <span>Types</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/admin/contact-us-messages" routerLinkActive="active">
-          <mat-icon class="nav-icon">branding_watermark</mat-icon>
-          <span>Messages</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/admin/users" routerLinkActive="active">
-          <mat-icon class="nav-icon">supervisor_account</mat-icon>
-          <span>Users</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a (click)="logout()" class="nav-item-logout" routerLinkActive="active">
-          <i class="fa fa-sign-out fa-2x nav-icon-logout"></i>
-          <span>Logout</span>
+      <li class="nav-item" *ngFor="let item of navItems">
+        <a routerLink="{{ item.link }}"
+        [routerLinkActiveOptions]="{ exact:true }"
+        routerLinkActive="active">
+          <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+          <span>{{ item.name }}</span>
         </a>
       </li>
     </ul>
 
     <mat-divider></mat-divider>
+
+    <div class="logout-container">
+      <button mat-button color="warn" (click)="logout()">Logout</button>
+    </div>
   </mat-sidenav>
+
   <mat-sidenav-content>
     <div class="content mat-elevation-z8">
       <router-outlet></router-outlet>
