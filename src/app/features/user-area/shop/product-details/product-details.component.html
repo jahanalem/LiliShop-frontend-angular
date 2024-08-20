@@ -1,48 +1,80 @@
-<section class="product-details py-5">
-  <div class="container py-5">
-    <div class="row">
+<section class="product-details">
+  <div class="product-container">
+    <div class="product-row">
       <!-- Product Image -->
-      <div class="col-lg-6 mb-5 mb-lg-0">
-        <div class="product-image position-relative mb-3">
-          <div class="swiper-container" id="detailSlider">
-            <img title="img" class="img-fluid d-block mx-auto" [src]="product().pictureUrl" [alt]="product().name">
-          </div>
+      <div class="product-image-section">
+        <div class="product-image-container">
+          <img
+            title="Product Image"
+            class="product-image"
+            [src]="product().pictureUrl"
+            [alt]="product().name"
+          />
         </div>
       </div>
 
       <!-- Product Info -->
-      <div class="col-lg-6">
-        <div class="product-info p-4 bg-light rounded shadow-sm">
+      <div class="product-info-section">
+        <div class="product-info">
           <h1 class="product-title">{{ product().name }}</h1>
-          <div class="price-section d-flex align-items-center mb-3">
-            <p class="price text-success display-4 mb-0 me-3">{{ product().price | currency }}</p>
-            <p class="original-price text-muted h5 text-decoration-line-through mb-0"></p>
+
+          <div class="price-section">
+            <p class="price">{{ product().price | currency }}</p>
+            <p class="original-price"></p>
           </div>
-          <p class="product-description text-secondary mb-4">{{ product().description }}</p>
+
+          <p class="product-description">{{ product().description }}</p>
 
           <!-- Quantity Selector -->
-          <div class="quantity-selector d-flex align-items-center mb-4">
-            <button title="decrement" (click)="decrementQuantity()" class="btn btn-outline-primary me-2 rounded-circle"
-              style="width: 40px; height: 40px;">
-              <i class="fa fa-minus-circle"></i>
+          <div class="quantity-selector">
+            <button
+              title="decrement"
+              mat-icon-button
+              (click)="decrementQuantity()"
+              color="primary"
+              aria-label="Decrement Quantity"
+            >
+              <mat-icon>remove_circle_outline</mat-icon>
             </button>
-            <span class="quantity-value font-weight-bold display-5">{{ quantity() }}</span>
-            <button title="increment" (click)="incrementQuantity()" class="btn btn-outline-primary ms-2 rounded-circle"
-              style="width: 40px; height: 40px;">
-              <i class="fa fa-plus-circle"></i>
+
+            <span class="quantity-value">{{ quantity() }}</span>
+
+            <button
+              title="increment"
+              mat-icon-button
+              (click)="incrementQuantity()"
+              color="primary"
+              aria-label="Increment Quantity"
+            >
+              <mat-icon>add_circle_outline</mat-icon>
             </button>
           </div>
 
           <!-- Action Buttons -->
-          <div class="action-buttons d-flex">
-            <button (click)="addItemToBasket()" class="btn btn-primary me-3 px-5 py-2 d-flex align-items-center">
-              <i class="fa fa-shopping-cart fa-lg me-2"></i> Add to cart
+          <div class="action-buttons">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="addItemToBasket()"
+              class="action-button"
+            >
+              <mat-icon>shopping_cart</mat-icon>
+              Add to cart
             </button>
+
             @if(currentUserId() > 0 && currentUserEmailConfirmed()){
-            <button (click)="toggleSubscription()"
-              [ngClass]="{'btn-outline-primary': !isSubscribed(), 'btn-primary': isSubscribed()}"
-              class="btn px-5 py-2 d-flex align-items-center">
-              <i [ngClass]="{'fa-bell': !isSubscribed(), 'fa-bell-slash': isSubscribed()}" class="fa fa-lg me-2"></i>
+            <button
+              mat-raised-button
+              [ngClass]="{
+                'mat-primary': isSubscribed(),
+                'mat-accent': !isSubscribed()
+              }"
+              (click)="toggleSubscription()"
+              class="action-button"
+            >
+              <mat-icon>
+                {{ isSubscribed() ? 'notifications_off' : 'notifications' }}
+              </mat-icon>
               {{ isSubscribed() ? 'Unsubscribe from price drops' : 'Notify me of price drops' }}
             </button>
             }
