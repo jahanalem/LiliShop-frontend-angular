@@ -1,122 +1,111 @@
-<button mat-raised-button color="primary" (click)="navigateBack()">
+<!-- Back Button -->
+<button mat-raised-button color="primary" (click)="navigateBack()" class="back-button">
   <mat-icon class="arrow-back">arrow_back</mat-icon>
   Back
 </button>
+
+<!-- Product Form -->
 <form *ngIf="productForm" [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
-  <div class="container">
-    <div class="row">
-      <div class="col-6 form-left">
-        <ng-container>
-          <mat-checkbox formControlName="isActive" (change)="onIsActiveChange($event.checked)"
-            [color]="colorCheckbox">Is Active?</mat-checkbox>
-          <div class="form-group">
-            <mat-form-field hintLabel="Max 50 characters" appearance="outline" class="input-width">
-              <mat-label>Enter product name</mat-label>
-              <input formControlName="name" matInput #input maxlength="50" placeholder="product name">
-              <mat-hint align="end">{{input.value.length}}/50</mat-hint>
-            </mat-form-field>
-          </div>
-          <div class="form-group">
-            <mat-form-field [style.fontSize]="18" appearance="outline" class="input-width">
-              <mat-label>Description</mat-label>
-              <textarea formControlName="description" title="description" matInput #inputDsc cdkTextareaAutosize
-                #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50"
-                maxlength="300"></textarea>
-              <mat-hint align="end">{{inputDsc.value.length}}/300</mat-hint>
-            </mat-form-field>
-          </div>
-          <div class="form-group">
-            <mat-form-field hintLabel="Max 10000" appearance="outline" class="input-width">
-              <mat-label>Price</mat-label>
-              <input formControlName="price" matInput #inputPrice maxlength="7" type="number" min="1" max="10000"
-                step="0.01" placeholder="product price">
-              <span matPrefix>€&nbsp;</span>
-              <mat-hint align="end"></mat-hint>
-            </mat-form-field>
-          </div>
-        </ng-container>
+  <div class="form-container">
+    <div class="form-left">
+      <ng-container>
+        <mat-checkbox formControlName="isActive" (change)="onIsActiveChange($event.checked)" color="primary">
+          Is Active?
+        </mat-checkbox>
 
+        <mat-form-field hintLabel="Max 50 characters" appearance="outline" class="input-field">
+          <mat-label>Enter product name</mat-label>
+          <input formControlName="name" matInput #input maxlength="50" placeholder="Product name">
+          <mat-hint align="end">{{input.value.length}}/50</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-field">
+          <mat-label>Description</mat-label>
+          <textarea formControlName="description" matInput #inputDsc cdkTextareaAutosize cdkAutosizeMinRows="10"
+            cdkAutosizeMaxRows="50" maxlength="300" placeholder="Enter product description"></textarea>
+          <mat-hint align="end">{{inputDsc.value.length}}/300</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field hintLabel="Max 10000" appearance="outline" class="input-field">
+          <mat-label>Price</mat-label>
+          <input formControlName="price" matInput #inputPrice type="number" min="1" max="10000" step="0.01"
+            placeholder="Product price">
+          <span matPrefix>€&nbsp;</span>
+        </mat-form-field>
+
+        <!-- Brand Selection -->
         <ng-container *ngIf="brands()">
-          <div class="form-group">
-            <mat-form-field appearance="outline">
-              <mat-label>Brand</mat-label>
-              <mat-select formControlName="productBrandId" (selectionChange)="onTypeSelected($event.value!)"
-                placeholder="product brands">
-                <mat-option *ngFor="let brand of brands()" [value]="brand.id">
-                  {{brand.name}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
+          <mat-form-field appearance="outline" class="input-field">
+            <mat-label>Brand</mat-label>
+            <mat-select formControlName="productBrandId" placeholder="Select a brand">
+              <mat-option *ngFor="let brand of brands()" [value]="brand.id">
+                {{brand.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </ng-container>
 
+        <!-- Type Selection -->
         <ng-container *ngIf="types()">
-          <div class="form-group">
-            <mat-form-field appearance="outline">
-              <mat-label>Type</mat-label>
-              <mat-select formControlName="productTypeId" (selectionChange)="onTypeSelected($event.value!)"
-                placeholder="product types">
-                <mat-option *ngFor="let type of types()" [value]="type.id">
-                  {{type.name}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
+          <mat-form-field appearance="outline" class="input-field">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="productTypeId" placeholder="Select a type">
+              <mat-option *ngFor="let type of types()" [value]="type.id">
+                {{type.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </ng-container>
 
-        <ng-container>
-          <ng-container formArrayName="productCharacteristics">
-            <ng-container *ngFor="let sizeFormCtrl of dynamicDropDownSize.controls; let i=index">
-              <div [formGroup]="getFormGroup(sizeFormCtrl)" class="size-group">
-                <input type="hidden" formControlName="id" />
-                <input type="hidden" formControlName="productId" />
-                <div class="w-100 d-flex">
-                  <div class="w-25">
-                    <mat-form-field appearance="outline">
-                      <mat-label>size</mat-label>
-                      <mat-select formControlName="sizeId" (selectionChange)="onSizeSelected($event.value!)"
-                        placeholder="product sizes">
-                        <mat-option *ngFor="let size of getAvailableSizeList(sizeFormCtrl)" [value]="size.id">
-                          {{size.size}}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-                  <div>
-                    <mat-form-field class="example-full-width">
-                      <mat-label>Quantity</mat-label>
-                      <input formControlName="quantity" type="number" matInput placeholder="0">
-                    </mat-form-field>
-                  </div>
-                  <div>
-                    <button type="button" (click)="removeSize(i)" mat-stroked-button class="mx-1" color="warn"><mat-icon
-                        class="delete-icon">delete</mat-icon></button>
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-            <div class="add-size-btn">
-              <button [disabled]="disabledAddSizeButton()" type="button" (click)="addSize()" mat-raised-button>Add
-                Size</button>
+        <!-- Size and Quantity Management -->
+        <ng-container formArrayName="productCharacteristics">
+          <ng-container *ngFor="let sizeFormCtrl of dynamicDropDownSize.controls; let i=index">
+            <div [formGroup]="getFormGroup(sizeFormCtrl)" class="size-group">
+              <mat-form-field appearance="outline" class="input-field">
+                <mat-label>Size</mat-label>
+                <mat-select formControlName="sizeId" placeholder="Select a size">
+                  <mat-option *ngFor="let size of getAvailableSizeList(sizeFormCtrl)" [value]="size.id">
+                    {{size.size}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="input-field">
+                <mat-label>Quantity</mat-label>
+                <input formControlName="quantity" type="number" matInput placeholder="Enter quantity">
+              </mat-form-field>
+
+              <button type="button" (click)="removeSize(i)" mat-icon-button color="warn" class="remove-size-button">
+                <mat-icon>delete</mat-icon>
+              </button>
             </div>
           </ng-container>
+
+          <div class="add-size-btn">
+            <button [disabled]="disabledAddSizeButton()" type="button" (click)="addSize()" mat-raised-button>
+              Add Size
+            </button>
+          </div>
         </ng-container>
 
-        <button type="submit" [disabled]="isSaveDisabled" [attr.aria-disabled]="isSaveDisabled.toString()"
-          mat-raised-button class="btn btn-primary">Save</button>
-      </div>
-      <ng-container>
-        <div class="col-6 form-right">
-          <ng-container *ngIf="isProductIdValid; else noProductTemplate">
-            Upload Photo
-            <app-photo-editor formControlName="productPhotos" [product]="product()"></app-photo-editor>
-          </ng-container>
-          <ng-template #noProductTemplate>
-            <p class="alert-message">Please create a product first. Once the product is created, you'll be able to
-              upload images.</p>
-          </ng-template>
-        </div>
+        <!-- Submit Button -->
+        <button type="submit" [disabled]="isSaveDisabled" mat-raised-button color="primary">
+          Save
+        </button>
       </ng-container>
+    </div>
+
+    <!-- Right Form for Upload -->
+    <div class="form-right">
+      <ng-container *ngIf="isProductIdValid; else noProductTemplate">
+        <h3>Upload Photo</h3>
+        <app-photo-editor formControlName="productPhotos" [product]="product()"></app-photo-editor>
+      </ng-container>
+
+      <ng-template #noProductTemplate>
+        <p class="alert-message">Please create a product first. Once the product is created, you'll be able to
+          upload images.</p>
+      </ng-template>
     </div>
   </div>
 </form>
