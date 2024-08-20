@@ -2,7 +2,6 @@ import { ServerErrorComponent } from './core/server-error/server-error.component
 import { NotFoundComponent } from './core/not-found/not-found.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CarouselModule } from 'ngx-bootstrap/carousel';
 import { ConfirmEmailComponent } from './core/confirm-email/confirm-email.component';
 import { UnsubscribeConfirmationComponent } from './core/unsubscribe-confirmation/unsubscribe-confirmation.component';
 import { PrivacyPolicyComponent } from './shared/components/privacy-policy/privacy-policy.component';
@@ -20,7 +19,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes),CarouselModule.forRoot(),],
-  exports: [RouterModule,CarouselModule]
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
 })
 export class AppRoutingModule { }

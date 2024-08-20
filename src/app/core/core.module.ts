@@ -4,14 +4,12 @@ import { CommonModule } from '@angular/common';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ServerErrorComponent } from './server-error/server-error.component';
 import { ToastrModule } from 'ngx-toastr';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [NotFoundComponent, ServerErrorComponent],
   imports: [
     CommonModule,
     RouterModule,
-    NgbModule,
     ToastrModule.forRoot(
       {
         timeOut: 3000,

@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { PaginationModule } from 'ngx-bootstrap/pagination';
-import { CarouselModule } from 'ngx-bootstrap/carousel';
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { FileUploadModule } from 'ng2-file-upload';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 import { RouterModule } from '@angular/router';
-import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+
 import { BreadcrumbComponent, BreadcrumbItemDirective, BreadcrumbService } from 'xng-breadcrumb';
 
 import { MatDialogModule } from '@angular/material/dialog';
@@ -22,6 +19,10 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTableModule } from '@angular/material/table';
 
 import { PagingHeaderComponent } from './components/paging-header/paging-header.component';
 import { PagerComponent } from './components/pager/pager.component';
@@ -34,13 +35,11 @@ import { PhotoEditorComponent } from './components/photo-editor/photo-editor.com
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { SectionHeaderComponent } from './components/section-header/section-header.component';
-import { FormatValuePipe } from './pipes/format-value.pipe';
-import { CheckPolicyDirective } from './directives/check-policy.directive';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTableModule } from '@angular/material/table';
 import { FooterComponent } from './components/footer/footer.component';
+
+import { CheckPolicyDirective } from './directives/check-policy.directive';
+import { FormatValuePipe } from './pipes/format-value.pipe';
+
 
 const components = [
   NavBarComponent,
@@ -84,25 +83,18 @@ const matModules = [
   ],
   imports: [
     CommonModule,
-    PaginationModule.forRoot(),
-    CarouselModule.forRoot(),
-    BsDropdownModule.forRoot(),
     ReactiveFormsModule,
     FormsModule,
     CdkStepperModule,
     RouterModule,
     FileUploadModule,
-    NgbCollapseModule,
     BreadcrumbComponent,
     BreadcrumbItemDirective,
     ...matModules,
   ],
   exports: [
-    PaginationModule,
-    CarouselModule,
     ReactiveFormsModule,
     FormsModule,
-    BsDropdownModule,
     CdkStepperModule,
     FileUploadModule,
     FormatValuePipe,
