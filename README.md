@@ -12,7 +12,7 @@ https://github.com/jahanalem/LiliShop-backend-dotnet
 
 Our backend is built on robust technologies:
 
-Tech Stack: .NET 8, C#, PostgreSQL, Redis, Entity Framework (ORM)
+Tech Stack: .NET 8, C#, Microsoft SQL Server, Redis, Entity Framework (ORM)
 Redis: We leverage Redis for storing customer shopping carts in server memory, offering quick and persistent data access.
 Design Patterns: Implementation of Repository, Unit Of Work, Generic, and Specification patterns for efficient data handling.
 
@@ -21,7 +21,7 @@ Design Patterns: Implementation of Repository, Unit Of Work, Generic, and Specif
 Repository: https://github.com/jahanalem/LiliShop-frontend-angular
 
 Frontend development is powered by:
-Tech Stack: Angular, TypeScript, Bootstrap
+Tech Stack: Angular 18, TypeScript
 Payment Processing: Integration with Stripe for secure and reliable credit card transactions.
 
 
