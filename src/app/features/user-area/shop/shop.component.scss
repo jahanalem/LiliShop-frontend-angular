@@ -64,7 +64,6 @@
     padding-left: 0;
   }
 }
-
 /* Product Grid */
 .product-grid-container {
   flex-grow: 1;
@@ -72,9 +71,10 @@
 }
 
 .product-grid {
-  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
 }
-
 /* Search Field */
 .mat-form-field {
   margin-bottom: 1rem;

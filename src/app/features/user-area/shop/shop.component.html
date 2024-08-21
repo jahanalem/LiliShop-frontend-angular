@@ -2,31 +2,18 @@
   <div class="page-container">
     <div class="filter-toggle-container">
       <!-- Toggle Button for Filters (Visible on Mobile) -->
-      <button
-        *ngIf="isMobileScreen()"
-        mat-raised-button
-        color="primary"
-        class="toggle-filter-btn"
-        (click)="toggleFilters()"
-      >
+      <button *ngIf="isMobileScreen()" mat-raised-button color="primary" class="toggle-filter-btn"
+        (click)="toggleFilters()">
         Toggle Filters
       </button>
     </div>
 
     <div class="main-content">
-      <div
-        class="filter-container"
-        [ngClass]="{ 'mobile-hidden': filtersHidden() }"
-      >
+      <div class="filter-container" [ngClass]="{ 'mobile-hidden': filtersHidden() }">
         <!-- Search -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Search</mat-label>
-          <input
-            matInput
-            placeholder="Search"
-            #search
-            (keyup.enter)="onSearch()"
-          />
+          <input matInput placeholder="Search" #search (keyup.enter)="onSearch()" />
           <mat-icon matSuffix (click)="onSearch()">search</mat-icon>
           <mat-icon matSuffix (click)="onReset()">refresh</mat-icon>
         </mat-form-field>
@@ -35,14 +22,8 @@
         <h6 class="section-title">Sort</h6>
         <mat-form-field appearance="outline" class="full-width custom-margin">
           <mat-label>Sort</mat-label>
-          <mat-select
-            [(ngModel)]="shopParams().sort"
-            (selectionChange)="onFilterSelected($event.value, 'sort')"
-          >
-            <mat-option
-              *ngFor="let sort of sortOptions"
-              [value]="sort.value"
-            >
+          <mat-select [(ngModel)]="shopParams().sort" (selectionChange)="onFilterSelected($event.value, 'sort')">
+            <mat-option *ngFor="let sort of sortOptions" [value]="sort.value">
               {{ sort.name }}
             </mat-option>
           </mat-select>
@@ -53,14 +34,8 @@
           <h6 class="section-title">Show by Brand</h6>
           <mat-form-field appearance="outline" class="full-width custom-margin">
             <mat-label>Show by Brand</mat-label>
-            <mat-select
-              [(ngModel)]="shopParams().brandId"
-              (selectionChange)="onFilterSelected($event.value, 'brand')"
-            >
-              <mat-option
-                *ngFor="let brand of brands()"
-                [value]="brand.id"
-              >
+            <mat-select [(ngModel)]="shopParams().brandId" (selectionChange)="onFilterSelected($event.value, 'brand')">
+              <mat-option *ngFor="let brand of brands()" [value]="brand.id">
                 {{ brand.name }}
               </mat-option>
             </mat-select>
@@ -69,14 +44,8 @@
           <h6 class="section-title">Show by Type</h6>
           <mat-form-field appearance="outline" class="full-width custom-margin">
             <mat-label>Show by Type</mat-label>
-            <mat-select
-              [(ngModel)]="shopParams().typeId"
-              (selectionChange)="onFilterSelected($event.value, 'type')"
-            >
-              <mat-option
-                *ngFor="let type of types()"
-                [value]="type.id"
-              >
+            <mat-select [(ngModel)]="shopParams().typeId" (selectionChange)="onFilterSelected($event.value, 'type')">
+              <mat-option *ngFor="let type of types()" [value]="type.id">
                 {{ type.name }}
               </mat-option>
             </mat-select>
@@ -85,14 +54,8 @@
           <h6 class="section-title">Show by Size</h6>
           <mat-form-field appearance="outline" class="full-width custom-margin">
             <mat-label>Show by Size</mat-label>
-            <mat-select
-              [(ngModel)]="shopParams().sizeId"
-              (selectionChange)="onFilterSelected($event.value, 'size')"
-            >
-              <mat-option
-                *ngFor="let size of sizes()"
-                [value]="size.id"
-              >
+            <mat-select [(ngModel)]="shopParams().sizeId" (selectionChange)="onFilterSelected($event.value, 'size')">
+              <mat-option *ngFor="let size of sizes()" [value]="size.id">
                 {{ size.size }}
               </mat-option>
             </mat-select>
@@ -104,32 +67,22 @@
         <!-- Header -->
         <div class="header-container">
           <app-paging-header
-            [pageNumber]="shopParams().pageNumber!"
-            [pageSize]="shopParams().pageSize!"
-            [totalCount]="totalCount()"
-          ></app-paging-header>
-        </div>
+          [pageNumber]="shopParams().pageNumber!"
+          [pageSize]="shopParams().pageSize!"
+            [totalCount]="totalCount()">
+          </app-paging-header>
 
-        <!-- Product Grid -->
-        <mat-grid-list
-          [cols]="cols()"
-          [rowHeight]="rowHeight()"
-          gutterSize="8px"
-          class="product-grid"
-        >
-          <mat-grid-tile *ngFor="let item of products()">
+        </div>
+        <div class="product-grid">
+          <div *ngFor="let item of products()">
             <app-product-item [product]="item"></app-product-item>
-          </mat-grid-tile>
-        </mat-grid-list>
+          </div>
+        </div>
 
         <!-- Pagination -->
         <nav aria-label="Page navigation">
-          <app-pager
-            [pageSize]="shopParams().pageSize!"
-            [totalCount]="totalCount()"
-            [pageNumber]="shopParams().pageNumber!"
-            (pageChanged)="onPageChanged($event)"
-          ></app-pager>
+          <app-pager [pageSize]="shopParams().pageSize!" [totalCount]="totalCount()"
+            [pageNumber]="shopParams().pageNumber!" (pageChanged)="onPageChanged($event)"></app-pager>
         </nav>
       </div>
     </div>

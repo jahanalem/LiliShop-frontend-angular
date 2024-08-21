@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, NgOptimizedImage } from '@angular/common';
 import { FileUploadModule } from 'ng2-file-upload';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CdkStepperModule } from '@angular/cdk/stepper';
@@ -40,6 +40,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { CheckPolicyDirective } from './directives/check-policy.directive';
 import { FormatValuePipe } from './pipes/format-value.pipe';
 
+import { CloudinaryModule } from '@cloudinary/ng';
 
 const components = [
   NavBarComponent,
@@ -53,7 +54,7 @@ const components = [
   TextTextareaComponent,
   DialogComponent,
   PhotoEditorComponent,
-  ConfirmationDialogComponent
+  ConfirmationDialogComponent,
 ];
 
 const matModules = [
@@ -75,6 +76,13 @@ const matModules = [
   MatTableModule
 ];
 
+const thirdPartyModules = [
+  CloudinaryModule,
+  FileUploadModule,
+  BreadcrumbComponent,
+  BreadcrumbItemDirective
+]
+
 @NgModule({
   declarations: [
     ...components,
@@ -87,9 +95,8 @@ const matModules = [
     FormsModule,
     CdkStepperModule,
     RouterModule,
-    FileUploadModule,
-    BreadcrumbComponent,
-    BreadcrumbItemDirective,
+    NgOptimizedImage,
+    ...thirdPartyModules,
     ...matModules,
   ],
   exports: [
@@ -98,10 +105,9 @@ const matModules = [
     CdkStepperModule,
     FileUploadModule,
     FormatValuePipe,
-    ...components,
     CheckPolicyDirective,
-    BreadcrumbComponent,
-    BreadcrumbItemDirective,
+    ...components,
+    ...thirdPartyModules,
     ...matModules,
   ],
   providers: [

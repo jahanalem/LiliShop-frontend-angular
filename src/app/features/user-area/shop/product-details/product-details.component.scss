@@ -23,7 +23,6 @@
 }
 
 .product-image-container {
-  width: 100%;
   max-width: 500px;
   padding: 1rem;
   background-color: white;
@@ -33,6 +32,7 @@
 
 .product-image {
   width: 100%;
+  max-width: 300px;
   height: auto;
   border-radius: 10px;
 }

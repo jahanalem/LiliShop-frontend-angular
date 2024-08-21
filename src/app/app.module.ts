@@ -16,12 +16,14 @@ import { SharedModule } from './shared/shared.module';
     AppComponent,
   ],
   bootstrap: [AppComponent],
-  imports: [BrowserModule,
+  imports: [
+    BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     CoreModule,
     SharedModule,
-    NgxSpinnerModule],
+    NgxSpinnerModule,
+  ],
   providers: [
     provideExperimentalZonelessChangeDetection(),
     provideHttpClient(withInterceptors([jwtInterceptor, loadingInterceptor, errorInterceptor])),

@@ -1,20 +1,21 @@
 @if(product()) {
-  <mat-card class="mat-elevation-z4 product-card">
-    <a routerLink="/shop/{{product().id}}" class="image-container">
-      <img mat-card-image src="{{product().pictureUrl}}" alt="{{product().name}}" class="product-image">
+<mat-card class="mat-elevation-z4 product-card">
+  <a routerLink="/shop/{{product().id}}" class="image-container">
+    <img mat-card-image priority ngSrc="{{product().pictureUrl.toString()}}" width="300" height="300" alt="{{product().name}}"
+      class="product-image">
+  </a>
+
+  <mat-card-content class="text-center">
+    <a routerLink="/shop/{{product().id}}" class="product-link">
+      <h3 class="mat-h3">{{product().name}}</h3>
     </a>
+    <p class="mat-body-2">{{product().price | currency}}</p>
+  </mat-card-content>
 
-    <mat-card-content class="text-center">
-      <a routerLink="/shop/{{product().id}}" class="product-link">
-        <h3 class="mat-h3">{{product().name}}</h3>
-      </a>
-      <p class="mat-body-2">{{product().price | currency}}</p>
-    </mat-card-content>
-
-    <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="addItemToBasket()" class="w-100">
-        <mat-icon>shopping_cart</mat-icon> Add to Cart
-      </button>
-    </mat-card-actions>
-  </mat-card>
-  }
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="addItemToBasket()" class="w-100">
+      <mat-icon>shopping_cart</mat-icon> Add to Cart
+    </button>
+  </mat-card-actions>
+</mat-card>
+}
