@@ -1,8 +1,7 @@
 @if(product()) {
 <mat-card class="mat-elevation-z4 product-card">
   <a routerLink="/shop/{{product().id}}" class="image-container">
-    <img mat-card-image priority ngSrc="{{product().pictureUrl.toString()}}" width="300" height="300" alt="{{product().name}}"
-      class="product-image">
+    <advanced-image [cldImg]="img()" [plugins]="plugins" class="product-image"></advanced-image>
   </a>
 
   <mat-card-content class="text-center">

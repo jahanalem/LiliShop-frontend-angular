@@ -1,5 +1,6 @@
 
 import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal } from '@angular/core';
+import { responsive } from '@cloudinary/ng';
 import { Cloudinary, CloudinaryImage } from '@cloudinary/url-gen';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { auto } from '@cloudinary/url-gen/qualifiers/quality';
@@ -15,6 +16,7 @@ import { IProduct } from 'src/app/shared/models/product';
 export class ProductItemComponent implements OnInit {
   product = input.required<IProduct>();
   img = signal<CloudinaryImage>({} as CloudinaryImage);
+  plugins = [responsive()]
   private basketService = inject(BasketService);
 
   constructor() {
@@ -22,15 +24,14 @@ export class ProductItemComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.ApplyCloudinaryImage()
   }
 
   addItemToBasket() {
     this.basketService.addItemToBasket(this.product());
   }
 
-  ApplyCloudinaryImage(){
-    //TODO: use Cloudinary for showing the image insted of img HTML tag
+  ApplyCloudinaryImage() {
     const cloudinary = new Cloudinary({
       cloud: {
         cloudName: 'rouhi'
