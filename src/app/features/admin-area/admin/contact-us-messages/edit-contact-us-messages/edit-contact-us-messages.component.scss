@@ -1,0 +1,22 @@
+.contact-us-card {
+  max-width: 600px;
+
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.date-fields {
+  display: flex;
+  justify-content: space-between;
+
+  mat-form-field {
+    flex: 1;
+    &:first-child {
+      margin-right: 10px;
+    }
+  }
+}

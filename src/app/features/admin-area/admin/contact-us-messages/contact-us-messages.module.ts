@@ -13,7 +13,8 @@ import { MatTableModule } from '@angular/material/table';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ContactUsMessagesRoutingModule } from './contact-us-messages-routing.module';
 import { EditContactUsMessagesComponent } from './edit-contact-us-messages/edit-contact-us-messages.component';
-
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 
 @NgModule({
@@ -30,6 +31,8 @@ import { EditContactUsMessagesComponent } from './edit-contact-us-messages/edit-
         MatSelectModule,
         MatCheckboxModule,
         ReactiveFormsModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
         SharedModule
   ]
 })
