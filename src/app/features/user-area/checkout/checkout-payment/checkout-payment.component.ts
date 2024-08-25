@@ -10,6 +10,7 @@ import { BasketService } from 'src/app/core/services/basket.service';
 import { CheckoutService } from 'src/app/core/services/checkout.service';
 import { IOrder, IOrderToCreate } from 'src/app/shared/models/order';
 import { getStripeInstance } from 'src/app/core/helpers/stripe-utils';
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -68,7 +69,14 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.stripe = getStripeInstance('pk_test_51Lz52AF9mJP0HDJllK6M7K8UyPc6xtoICZB9soUuoKmComGEA5yzUL1mLBBOglE8wPAMs5A8wFwNXuDWhFOxaqdF00L70K47Pm');
+    if (environment.production) {
+      this.stripe = getStripeInstance('pk_test_51PrMdJDZqcE4cmELulf8TivRzyPX0Zh2AAm8E6Cz69vKovu0lOrFn0C9RMZzbG08bFp6f10aRtIH72QYdxtJKhhh00IT5f53Yb');
+      console.log('Running stripe in production mode');
+    }
+    else {
+      this.stripe = getStripeInstance('pk_test_51Lz52AF9mJP0HDJllK6M7K8UyPc6xtoICZB9soUuoKmComGEA5yzUL1mLBBOglE8wPAMs5A8wFwNXuDWhFOxaqdF00L70K47Pm');
+      console.log('Running stripe in development mode');
+    }
     const elements = this.stripe.elements();
 
     this.cardNumber = elements.create('cardNumber');

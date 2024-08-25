@@ -14,12 +14,15 @@ import { environment } from 'src/environments/environment';
 })
 export class ProductService {
   baseUrl: string = environment.apiUrl;
-  brands: IBrand[] = [];
-  types: IProductType[] = [];
-  sizes: ISizeClassification[] = [];
+
+  brands: IBrand[]              = [];
+  types : IProductType[]        = [];
+  sizes : ISizeClassification[] = [];
+
   productCache: Map<any, any> = new Map();
-  shopParams: ProductQueryParams = new ProductQueryParams();
-  pagination = new PaginationWithData<IProduct>();
+
+  shopParams: ProductQueryParams           = new ProductQueryParams();
+  pagination: PaginationWithData<IProduct> = new PaginationWithData<IProduct>();
 
   constructor(private http: HttpClient) { }
 
@@ -32,25 +35,37 @@ export class ProductService {
   }
 
   getProduct(productId: number): Observable<IProduct> {
-    const product = this.findProductInCache(productId);
-
-    if (product) {
-      return of(product);
-    }
-
     return this.http.get<IProduct>(this.baseUrl + 'products/' + productId);
   }
 
   getProducts(isActive?: boolean): Observable<ProductPagination> {
     const useCache = environment.useCache;
+
+    const CACHE_DURATION = 1*60*1000; // 1 minutes in milliseconds
+
     if (!useCache) {
       this.productCache.clear();
     }
 
-    const key = Object.values(this.shopParams).join('-');
+    const key = this.generateCacheKey();;
+
     if (useCache && this.productCache.has(key)) {
-      this.pagination.data = this.productCache.get(key);
-      return of(this.pagination);
+      const cachedData = this.productCache.get(key);
+
+      if(cachedData && (Date.now() - cachedData.timestamp < CACHE_DURATION)) {
+        this.pagination = {
+          data     : cachedData.results.data,
+          count    : cachedData.results.count,
+          pageIndex: cachedData.results.pageIndex,
+          pageSize : cachedData.results.pageSize
+        };
+        console.log("Data retrieved from cache!");
+        return of(this.pagination);
+      }
+      else{
+        this.productCache.delete(key);
+        console.log("Cache expired, fetching new data.");
+      }
     }
 
     let params = new HttpParams();
@@ -79,8 +94,10 @@ export class ProductService {
     return this.http.get<ProductPagination>(`${this.baseUrl}products`, { observe: 'response', params })
       .pipe(
         map(response => {
-          this.productCache.set(key, response.body?.data);
-          this.pagination = response.body ?? ({} as ProductPagination);
+          const results = response.body;
+          this.productCache.set(key, { results, timestamp: Date.now() });
+          console.log("Data stored in cache!");
+          this.pagination = results ?? ({} as ProductPagination);
           return this.pagination;
         })
       );
@@ -122,6 +139,10 @@ export class ProductService {
     return this.http.delete(`${this.baseUrl}products/delete-photo/${photoId}`);
   }
 
+  clearProductCache(): void {
+    this.productCache.clear();
+  }
+
   private fetchData<T>(cache: T[], endpoint: string, isActive: boolean | null = null): Observable<T[]> {
     if (cache.length > 0) {
       return of(cache);
@@ -133,15 +154,18 @@ export class ProductService {
       tap(response => { cache = response; })
     );
   }
-
-  private findProductInCache(id: number): IProduct | undefined {
-    for (const products of this.productCache.values()) {
-      const product = products.find((p: IProduct) => p.id === id);
-      if (product) {
-        return product;
-      }
-    }
-
-    return undefined;
+  private generateCacheKey(): string {
+    return Object.values(this.shopParams).join('-');
   }
+
+  // private findProductInCache(id: number): IProduct | undefined {
+  //   for (const products of this.productCache.values()) {
+  //     const product = products.find((p: IProduct) => p.id === id);
+  //     if (product) {
+  //       return product;
+  //     }
+  //   }
+
+  //   return undefined;
+  // }
 }

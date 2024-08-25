@@ -4,7 +4,7 @@
       <!-- Product Image -->
       <div class="product-image-section">
         <div class="product-image-container">
-          <img
+          <img *ngIf="product().pictureUrl"
             title="Product Image"
             class="product-image"
             [ngSrc]="product().pictureUrl"
