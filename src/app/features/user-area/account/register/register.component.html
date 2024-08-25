@@ -11,7 +11,7 @@
         <!-- Confirm Password -->
         <app-text-input formControlName="confirmPassword" [label]="'Confirm Password'" [type]="'password'" [autocomplete]="'new-password'" class="full-width"></app-text-input>
         <!-- Submit button -->
-        <button [disabled]="isFormValid()" type="submit" mat-raised-button color="primary" class="full-width register-button">
+        <button [disabled]="!isFormValid()" type="submit" mat-raised-button color="primary" class="full-width register-button">
           <mat-icon>person_add</mat-icon> Register
         </button>
 
