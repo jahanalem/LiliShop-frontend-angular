@@ -4,18 +4,11 @@
       <!-- Product Image -->
       <div class="product-image-section">
         <div class="product-image-container">
-          <img *ngIf="product().pictureUrl"
-            title="Product Image"
-            class="product-image"
-            [ngSrc]="product().pictureUrl"
-            width="500"
-            height="500"
-            priority
-            [alt]="product().name"
-          />
+          <img *ngIf="product().pictureUrl" title="Product Image" class="product-image" [ngSrc]="product().pictureUrl"
+            width="500" height="500" priority [alt]="product().name" />
         </div>
       </div>
-
+      @if(product().name){
       <!-- Product Info -->
       <div class="product-info-section">
         <div class="product-info">
@@ -30,51 +23,31 @@
 
           <!-- Quantity Selector -->
           <div class="quantity-selector">
-            <button
-              title="decrement"
-              mat-icon-button
-              (click)="decrementQuantity()"
-              color="primary"
-              aria-label="Decrement Quantity"
-            >
+            <button title="decrement" mat-icon-button (click)="decrementQuantity()" color="primary"
+              aria-label="Decrement Quantity">
               <mat-icon>remove_circle_outline</mat-icon>
             </button>
 
             <span class="quantity-value">{{ quantity() }}</span>
 
-            <button
-              title="increment"
-              mat-icon-button
-              (click)="incrementQuantity()"
-              color="primary"
-              aria-label="Increment Quantity"
-            >
+            <button title="increment" mat-icon-button (click)="incrementQuantity()" color="primary"
+              aria-label="Increment Quantity">
               <mat-icon>add_circle_outline</mat-icon>
             </button>
           </div>
 
           <!-- Action Buttons -->
           <div class="action-buttons">
-            <button
-              mat-raised-button
-              color="primary"
-              (click)="addItemToBasket()"
-              class="action-button"
-            >
+            <button mat-raised-button color="primary" (click)="addItemToBasket()" class="action-button">
               <mat-icon>shopping_cart</mat-icon>
               Add to cart
             </button>
 
             @if(currentUserId() > 0 && currentUserEmailConfirmed()){
-            <button
-              mat-raised-button
-              [ngClass]="{
-                'mat-primary': isSubscribed(),
-                'mat-accent': !isSubscribed()
-              }"
-              (click)="toggleSubscription()"
-              class="action-button"
-            >
+            <button mat-raised-button [ngClass]="{
+                  'mat-primary': isSubscribed(),
+                  'mat-accent': !isSubscribed()
+                }" (click)="toggleSubscription()" class="action-button">
               <mat-icon>
                 {{ isSubscribed() ? 'notifications_off' : 'notifications' }}
               </mat-icon>
@@ -84,6 +57,9 @@
           </div>
         </div>
       </div>
+      }@else {
+      <p>Loading product details...</p>
+      }
     </div>
   </div>
 </section>
