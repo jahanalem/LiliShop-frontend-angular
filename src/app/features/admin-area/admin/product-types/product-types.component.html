@@ -1,5 +1,5 @@
 <div class="new-type-container">
-  <button mat-raised-button color="primary" class="new-type-button" (click)="createProductType()">
+  <button (click)="createProductType()" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" mat-raised-button color="primary" class="new-type-button">
     <mat-icon>add_circle_outline</mat-icon> New Type
   </button>
 </div>
@@ -18,10 +18,10 @@
         </th>
         <td mat-cell *matCellDef="let row">
           @if(column === 'Action') {
-            <button (click)="editProductType(row.id)" mat-icon-button color="accent">
+            <button (click)="editProductType(row.id)" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" mat-icon-button color="accent">
               <mat-icon class="edit-icon">edit</mat-icon>
             </button>
-            <button (click)="deleteProductType(row.id)" mat-icon-button color="warn">
+            <button (click)="deleteProductType(row.id)" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" mat-icon-button color="warn">
               <mat-icon class="delete-icon">delete</mat-icon>
             </button>
 

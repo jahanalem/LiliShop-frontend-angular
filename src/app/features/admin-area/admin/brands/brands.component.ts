@@ -6,6 +6,7 @@ import { BrandService } from 'src/app/core/services/brand.service';
 import { DeleteService } from 'src/app/core/services/utility-services/delete.service';
 import { BrandParams } from 'src/app/shared/models/BrandParams';
 import { IBrand } from 'src/app/shared/models/brand';
+import { PolicyNames } from 'src/app/shared/models/policy';
 
 @Component({
   selector: 'app-brands',
@@ -15,6 +16,8 @@ import { IBrand } from 'src/app/shared/models/brand';
 })
 export class BrandsComponent implements AfterViewInit {
   paginator = viewChild.required<MatPaginator>(MatPaginator);
+
+  policyNames = PolicyNames;
 
   brands      = signal<IBrand[]>([]);
   totalCount  = signal<number>(0);

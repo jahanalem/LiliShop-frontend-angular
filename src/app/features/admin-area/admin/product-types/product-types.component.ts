@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ProductTypeService } from 'src/app/core/services/product-type.service';
 import { DeleteService } from 'src/app/core/services/utility-services/delete.service';
+import { PolicyNames } from 'src/app/shared/models/policy';
 import { IProductType } from 'src/app/shared/models/productType';
 import { ProductTypeParams } from 'src/app/shared/models/productTypeParams';
 
@@ -17,6 +18,8 @@ import { ProductTypeParams } from 'src/app/shared/models/productTypeParams';
 export class ProductTypesComponent implements AfterViewInit {
   paginator = viewChild.required<MatPaginator>(MatPaginator);
   sort      = viewChild.required<MatSort>(MatSort);
+
+  policyNames = PolicyNames;
 
   types      = signal<IProductType[]>([]);
   totalCount = signal<number>(0);

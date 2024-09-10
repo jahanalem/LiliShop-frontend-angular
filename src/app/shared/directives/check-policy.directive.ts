@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, HostBinding, inject, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { AuthorizationService } from 'src/app/core/services/authorization.service';
 import { Subject, takeUntil, tap } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -9,14 +9,16 @@ import { PolicyNames } from '../models/policy';
 })
 export class CheckPolicyDirective implements OnInit, OnDestroy {
   @Input() appCheckPolicy!: PolicyNames;
+  @HostBinding('attr.disabled') isDisabled: boolean | null = null;
+
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private authorizationService: AuthorizationService,
-    private accountService: AccountService,
-    private el: ElementRef,
-    private renderer: Renderer2
-  ) { }
+  private authorizationService = inject(AuthorizationService);
+  private accountService       = inject(AccountService);
+  private el                   = inject(ElementRef);
+  private renderer             = inject(Renderer2);
+
+  constructor() { }
 
   ngOnInit(): void {
     this.accountService.currentUser$
@@ -39,10 +41,10 @@ export class CheckPolicyDirective implements OnInit, OnDestroy {
         if (icon) {
           if (isAllowed) {
             this.renderer.removeClass(icon, 'icon-disabled');
-            this.el.nativeElement.disabled = false;
+            this.isDisabled = null;
           } else {
             this.renderer.addClass(icon, 'icon-disabled');
-            this.el.nativeElement.disabled = true;
+            this.isDisabled = true;
           }
         }
       });

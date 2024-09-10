@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { of, Observable, ReplaySubject, tap, map, catchError, throwError } from 'rxjs';
@@ -107,7 +107,7 @@ export class AccountService {
     return this.http.get<UserPagination>(`${this.baseUrl}account/users`, { headers, observe: 'response', params }).pipe(
       map(response => response.body as UserPagination),
       tap(pagination => this.pagination = pagination),
-      catchError(error => {
+      catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })
     );

@@ -36,7 +36,6 @@ export class ForgotPasswordComponent {
         finalize(() => { this.isSubmitting.update(() => false); })
       ).subscribe({
         next: (response: IForgotPasswordResponse) => {
-          console.log(response);
           const dialogData: IDialogData = {
             content: response.message,
             title: "Reset Password Link Sent",

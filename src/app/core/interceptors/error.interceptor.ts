@@ -5,21 +5,20 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ErrorService } from '../services/utility-services/error.service';
 
-
 export const errorInterceptor: HttpInterceptorFn = (request: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
-  const toastr       = inject(ToastrService);
+  const toastr = inject(ToastrService);
   const errorService = inject(ErrorService);
 
   return next(request).pipe(
-    catchError((response: HttpErrorResponse) => {
-      if (response.error instanceof ErrorEvent) {
-        // A client-side or network error occurred.
-        toastr.error("An unexpected error occurred.");
-        return throwError(() => response);
+    catchError((error: HttpErrorResponse) => {
+      if (error.error instanceof ErrorEvent) {
+        toastr.error('An unexpected client-side error occurred.');
+        return throwError(() => new Error('Client-side error: ' + error.message));
       }
-      // Delegate the server-side error handling to the error service
-      errorService.handleError(response);
-      return throwError(() => response);
+
+      errorService.handleError(error);
+
+      return throwError(() => error);
     })
   );
 };

@@ -12,7 +12,7 @@ export class ErrorService {
 
   handleError(response: HttpErrorResponse) {
     let defaultErrorMessage = "An error occurred";
-    const error = response.error;
+    const error = response.error || {};
 
     switch (response.status) {
       case 400:
@@ -29,11 +29,14 @@ export class ErrorService {
         return;
       case 500:
         defaultErrorMessage = "A server error occurred. Please try again later.";
-        return;
+        break;
       default:
+        defaultErrorMessage = response.message || defaultErrorMessage;
         break;
     }
-    const message = response.error.title || defaultErrorMessage;
+
+    const message = error.title || defaultErrorMessage;
+
 
     this.toastr.error(message, `Error ${response.status}`);
   }

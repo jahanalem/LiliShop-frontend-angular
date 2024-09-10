@@ -53,7 +53,6 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
   }
 
   ngOnInit(): void {
-    console.log("NGONINIT");
     this.initializeUploader();
   }
 

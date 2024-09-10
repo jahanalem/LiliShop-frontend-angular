@@ -1,0 +1,1 @@
+C:\Workspace\MainProjects\E-Shop\LiliShop-frontend-angular\LiliShop\obj\Release\LiliShop.esproj.CoreCompileInputs.cache

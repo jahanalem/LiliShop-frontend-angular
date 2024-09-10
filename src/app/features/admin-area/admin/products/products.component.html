@@ -6,7 +6,7 @@
   </mat-form-field>
   <div class="new-product-container">
     <button mat-raised-button color="primary" class="new-product-button"
-      [appCheckPolicy]="policyNames.RequireAtLeastAdminPanelViewerRole" (click)="createProduct()">
+      [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" (click)="createProduct()">
       <mat-icon>add_circle_outline</mat-icon> New Product
     </button>
   </div>

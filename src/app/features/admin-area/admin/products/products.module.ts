@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from "../../../../shared/shared.module";
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 
@@ -32,6 +33,7 @@ import { SharedModule } from "../../../../shared/shared.module";
         MatIconModule,
         MatSelectModule,
         MatCheckboxModule,
+        MatTooltipModule,
         ReactiveFormsModule,
         SharedModule
     ]

@@ -27,8 +27,8 @@ enum ColumnNames {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UsersComponent implements AfterViewInit, OnInit {
-  paginator = viewChild.required<MatPaginator>(MatPaginator);
-  sort      = viewChild.required<MatSort>(MatSort);
+  paginator = viewChild<MatPaginator>(MatPaginator);
+  sort      = viewChild<MatSort>(MatSort);
 
   users           = signal<IAdminAreaUser[]>([]);
   totalCount      = signal<number>(0);
@@ -55,9 +55,9 @@ export class UsersComponent implements AfterViewInit, OnInit {
   private unsubscribe$ = new Subject<void>();
 
   private accountService = inject(AccountService);
-  private router         = inject( Router);
-  private deleteService  = inject( DeleteService);
-  private searchService  = inject( SearchService<IAdminAreaUser>);
+  private router        = inject(Router);
+  private deleteService = inject(DeleteService);
+  private searchService = inject(SearchService<IAdminAreaUser>);
 
   constructor() {
     this.userQueryParams.set(this.accountService.resetUserQueryParams());
@@ -75,8 +75,8 @@ export class UsersComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit() {
     this.loadData();
-    if (this.paginator) {
-      this.paginator().page?.pipe(takeUntil(this.unsubscribe$))
+    if (this.paginator()) {
+      this.paginator()?.page?.pipe(takeUntil(this.unsubscribe$))
         .subscribe((pageEvent: PageEvent) => {
           let params = this.userQueryParams();
           params.pageNumber = pageEvent.pageIndex + 1;
@@ -87,15 +87,17 @@ export class UsersComponent implements AfterViewInit, OnInit {
           this.loadData();
         });
 
-      this.sort()?.sortChange?.pipe(takeUntil(this.unsubscribe$)).subscribe((sortEvent: Sort) => {
-        let params = this.userQueryParams();
-        params.sort = sortEvent.active;
-        params.sortDirection = sortEvent.direction;
-        this.userQueryParams.set(params);
-        this.accountService.setUserQueryParams(this.userQueryParams());
+      if (this.sort()) {
+        this.sort()?.sortChange?.pipe(takeUntil(this.unsubscribe$)).subscribe((sortEvent: Sort) => {
+          let params = this.userQueryParams();
+          params.sort = sortEvent.active;
+          params.sortDirection = sortEvent.direction;
+          this.userQueryParams.set(params);
+          this.accountService.setUserQueryParams(this.userQueryParams());
 
-        this.loadData();
-      })
+          this.loadData();
+        })
+      }
     }
   }
 
@@ -137,7 +139,7 @@ export class UsersComponent implements AfterViewInit, OnInit {
   }
 
   applyFilter(filterValueEvent: Event) {
-    this.searchService.applyFilter(filterValueEvent, this.paginator(), this.userQueryParams());
+    this.searchService.applyFilter(filterValueEvent, this.paginator()!, this.userQueryParams());
   }
 
   get existUser(): boolean {
