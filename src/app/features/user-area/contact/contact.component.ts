@@ -6,10 +6,11 @@ import { BaseEntityKeys } from 'src/app/shared/models/baseEntity';
 import { IContactUsMessage } from 'src/app/shared/models/contactUsMessage';
 
 @Component({
-  selector: 'app-contact',
-  templateUrl: './contact.component.html',
-  styleUrls: ['./contact.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-contact',
+    templateUrl: './contact.component.html',
+    styleUrls: ['./contact.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ContactComponent implements OnInit {
   contactForm!: FormGroup;

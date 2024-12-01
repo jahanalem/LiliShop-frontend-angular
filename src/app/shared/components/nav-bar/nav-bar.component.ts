@@ -10,10 +10,11 @@ import { IBasket } from '../../models/basket';
 import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
-  selector: 'app-nav-bar',
-  templateUrl: './nav-bar.component.html',
-  styleUrls: ['./nav-bar.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-nav-bar',
+    templateUrl: './nav-bar.component.html',
+    styleUrls: ['./nav-bar.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class NavBarComponent implements OnInit, OnDestroy {
   basket$     : Observable<IBasket | null>;

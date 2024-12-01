@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-paging-header',
-  templateUrl: './paging-header.component.html',
-  styleUrls: ['./paging-header.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-paging-header',
+    templateUrl: './paging-header.component.html',
+    styleUrls: ['./paging-header.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PagingHeaderComponent implements OnInit {
   pageNumber = input<number>(1);

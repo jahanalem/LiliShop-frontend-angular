@@ -11,10 +11,11 @@ import { IBasket } from 'src/app/shared/models/basket';
 import { IUser } from 'src/app/shared/models/user';
 
 @Component({
-  selector: 'app-checkout-review',
-  templateUrl: './checkout-review.component.html',
-  styleUrls: ['./checkout-review.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-checkout-review',
+    templateUrl: './checkout-review.component.html',
+    styleUrls: ['./checkout-review.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckoutReviewComponent implements OnInit, OnDestroy {
   appStepper = input.required<CdkStepper>();

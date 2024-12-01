@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-order-totals',
-  templateUrl: './order-totals.component.html',
-  styleUrls: ['./order-totals.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-order-totals',
+    templateUrl: './order-totals.component.html',
+    styleUrls: ['./order-totals.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class OrderTotalsComponent implements OnInit {
   shippingPrice = input<number>(0);

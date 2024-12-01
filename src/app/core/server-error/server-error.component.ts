@@ -2,10 +2,11 @@ import { Router } from '@angular/router';
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 
 @Component({
-  selector: 'app-server-error',
-  templateUrl: './server-error.component.html',
-  styleUrls: ['./server-error.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-server-error',
+    templateUrl: './server-error.component.html',
+    styleUrls: ['./server-error.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ServerErrorComponent implements OnInit {
   error = signal<any>(null);

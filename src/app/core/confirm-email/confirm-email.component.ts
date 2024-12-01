@@ -4,12 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-confirm-email',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './confirm-email.component.html',
-  styleUrl: './confirm-email.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-confirm-email',
+    imports: [CommonModule],
+    templateUrl: './confirm-email.component.html',
+    styleUrl: './confirm-email.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfirmEmailComponent implements OnInit, OnDestroy {
   success = signal<boolean | null>(null);

@@ -10,10 +10,11 @@ import { IProductType } from 'src/app/shared/models/productType';
 import { ProductTypeParams } from 'src/app/shared/models/productTypeParams';
 
 @Component({
-  selector: 'app-product-types',
-  templateUrl: './product-types.component.html',
-  styleUrls: ['./product-types.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-product-types',
+    templateUrl: './product-types.component.html',
+    styleUrls: ['./product-types.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ProductTypesComponent implements AfterViewInit {
   paginator = viewChild.required<MatPaginator>(MatPaginator);

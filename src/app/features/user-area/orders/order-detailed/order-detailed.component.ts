@@ -5,10 +5,11 @@ import { IOrder } from 'src/app/shared/models/order';
 import { OrdersService } from 'src/app/core/services/orders.service';
 
 @Component({
-  selector: 'app-order-detailed',
-  templateUrl: './order-detailed.component.html',
-  styleUrls: ['./order-detailed.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-order-detailed',
+    templateUrl: './order-detailed.component.html',
+    styleUrls: ['./order-detailed.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class OrderDetailedComponent implements OnInit {
   order = signal<IOrder | undefined>(undefined);

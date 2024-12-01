@@ -3,10 +3,11 @@ import { IBasketItem } from './../../models/basket';
 import { Component, OnInit, ChangeDetectionStrategy, output, input } from '@angular/core';
 
 @Component({
-  selector: 'app-basket-summary',
-  templateUrl: './basket-summary.component.html',
-  styleUrls: ['./basket-summary.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-basket-summary',
+    templateUrl: './basket-summary.component.html',
+    styleUrls: ['./basket-summary.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BasketSummaryComponent implements OnInit {
 

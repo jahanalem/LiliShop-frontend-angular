@@ -3,11 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-unsubscribe-confirmation',
-  standalone: true,
-  imports: [],
-  templateUrl: './unsubscribe-confirmation.component.html',
-  styleUrl: './unsubscribe-confirmation.component.scss'
+    selector: 'app-unsubscribe-confirmation',
+    imports: [],
+    templateUrl: './unsubscribe-confirmation.component.html',
+    styleUrl: './unsubscribe-confirmation.component.scss'
 })
 export class UnsubscribeConfirmationComponent {
   success = signal<boolean | null>(null);

@@ -8,10 +8,11 @@ import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
 
 
 @Component({
-  selector: 'app-checkout-delivery',
-  templateUrl: './checkout-delivery.component.html',
-  styleUrls: ['./checkout-delivery.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-checkout-delivery',
+    templateUrl: './checkout-delivery.component.html',
+    styleUrls: ['./checkout-delivery.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckoutDeliveryComponent implements OnInit, OnDestroy {
   checkoutForm = input.required<FormGroup>();

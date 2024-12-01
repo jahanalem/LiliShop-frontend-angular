@@ -6,10 +6,11 @@ import { delay, filter, Subject, takeUntil } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
-  selector: 'app-admin',
-  templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-admin',
+    templateUrl: './admin.component.html',
+    styleUrls: ['./admin.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export default class AdminComponent implements OnDestroy, AfterViewInit {
   sidenav = viewChild.required<MatSidenav>(MatSidenav);

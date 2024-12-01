@@ -2,10 +2,11 @@ import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { Component, OnInit, ElementRef, Self, viewChild, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'app-text-textarea',
-  templateUrl: './text-textarea.component.html',
-  styleUrls: ['./text-textarea.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-text-textarea',
+    templateUrl: './text-textarea.component.html',
+    styleUrls: ['./text-textarea.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TextTextareaComponent implements OnInit, ControlValueAccessor {
   textarea = viewChild.required<ElementRef>('textarea');
