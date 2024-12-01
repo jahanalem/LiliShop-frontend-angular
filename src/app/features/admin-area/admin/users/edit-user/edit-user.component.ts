@@ -8,10 +8,11 @@ import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
 import { IRole } from 'src/app/shared/models/role';
 
 @Component({
-  selector: 'app-edit-user',
-  templateUrl: './edit-user.component.html',
-  styleUrls: ['./edit-user.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-edit-user',
+    templateUrl: './edit-user.component.html',
+    styleUrls: ['./edit-user.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EditUserComponent implements OnInit, OnDestroy {
   adminUserForm!: FormGroup;

@@ -6,10 +6,11 @@ import { IUser } from 'src/app/shared/models/user';
 import { AccountService } from 'src/app/core/services/account.service';
 
 @Component({
-  selector: 'app-checkout-success',
-  templateUrl: './checkout-success.component.html',
-  styleUrls: ['./checkout-success.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-checkout-success',
+    templateUrl: './checkout-success.component.html',
+    styleUrls: ['./checkout-success.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckoutSuccessComponent {
   protected currentUser$: Observable<IUser | null> = of(null);

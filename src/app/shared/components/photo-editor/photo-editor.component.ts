@@ -10,15 +10,16 @@ import { IProductPhoto } from '../../models/productPhoto';
 import { ProductService } from 'src/app/core/services/product.service';
 
 @Component({
-  selector: 'app-photo-editor',
-  templateUrl: './photo-editor.component.html',
-  styleUrls: ['./photo-editor.component.scss'],
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    multi: true,
-    useExisting: PhotoEditorComponent
-  }],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-photo-editor',
+    templateUrl: './photo-editor.component.html',
+    styleUrls: ['./photo-editor.component.scss'],
+    providers: [{
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: PhotoEditorComponent
+        }],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
   product             = input.required<IProduct | undefined>();

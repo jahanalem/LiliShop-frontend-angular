@@ -8,10 +8,11 @@ import { BasketService } from 'src/app/core/services/basket.service';
 import { IProduct } from 'src/app/shared/models/product';
 
 @Component({
-  selector: 'app-product-item',
-  templateUrl: './product-item.component.html',
-  styleUrls: ['./product-item.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-product-item',
+    templateUrl: './product-item.component.html',
+    styleUrls: ['./product-item.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ProductItemComponent implements OnInit {
   product = input.required<IProduct>();

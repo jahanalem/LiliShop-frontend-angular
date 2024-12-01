@@ -10,10 +10,11 @@ import { PolicyNames } from 'src/app/shared/models/policy';
 
 /* sample form: https://mdbootstrap.com/docs/standard/extended/login/ */
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm!: FormGroup;

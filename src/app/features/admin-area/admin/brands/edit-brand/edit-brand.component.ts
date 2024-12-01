@@ -10,10 +10,11 @@ import { DialogComponent } from 'src/app/shared/components/dialog/dialog.compone
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-edit-brand',
-  templateUrl: './edit-brand.component.html',
-  styleUrls: ['./edit-brand.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-edit-brand',
+    templateUrl: './edit-brand.component.html',
+    styleUrls: ['./edit-brand.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EditBrandComponent implements OnInit {
   brandForm!: FormGroup;

@@ -5,7 +5,8 @@ import { AccountService } from 'src/app/core/services/account.service';
 import { PolicyNames } from '../models/policy';
 
 @Directive({
-  selector: '[appCheckPolicy]'
+    selector: '[appCheckPolicy]',
+    standalone: false
 })
 export class CheckPolicyDirective implements OnInit, OnDestroy {
   @Input() appCheckPolicy!: PolicyNames;

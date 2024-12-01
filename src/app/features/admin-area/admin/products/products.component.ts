@@ -12,10 +12,11 @@ import { SearchService } from 'src/app/core/services/utility-services/search.ser
 import { PolicyNames } from 'src/app/shared/models/policy';
 
 @Component({
-  selector: 'app-products',
-  templateUrl: './products.component.html',
-  styleUrls: ['./products.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-products',
+    templateUrl: './products.component.html',
+    styleUrls: ['./products.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   paginator = viewChild.required<MatPaginator>(MatPaginator);

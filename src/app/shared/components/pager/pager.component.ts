@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, input, OnInit, output } from '@angu
 import { PageEvent } from '@angular/material/paginator';
 
 @Component({
-  selector: 'app-pager',
-  templateUrl: './pager.component.html',
-  styleUrls: ['./pager.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-pager',
+    templateUrl: './pager.component.html',
+    styleUrls: ['./pager.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PagerComponent implements OnInit {
   pageSize   = input<number>(6);

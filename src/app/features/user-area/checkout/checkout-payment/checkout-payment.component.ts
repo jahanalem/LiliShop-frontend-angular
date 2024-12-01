@@ -14,10 +14,11 @@ import { environment } from 'src/environments/environment';
 
 
 @Component({
-  selector: 'app-checkout-payment',
-  templateUrl: './checkout-payment.component.html',
-  styleUrls: ['./checkout-payment.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-checkout-payment',
+    templateUrl: './checkout-payment.component.html',
+    styleUrls: ['./checkout-payment.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   checkoutForm = input.required<FormGroup>();

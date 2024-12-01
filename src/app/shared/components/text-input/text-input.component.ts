@@ -6,10 +6,11 @@ import { ElementRef } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-text-input',
-  templateUrl: './text-input.component.html',
-  styleUrls: ['./text-input.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-text-input',
+    templateUrl: './text-input.component.html',
+    styleUrls: ['./text-input.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TextInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
   input = viewChild.required<ElementRef>('input');

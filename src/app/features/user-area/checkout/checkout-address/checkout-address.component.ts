@@ -6,10 +6,11 @@ import { AccountService } from 'src/app/core/services/account.service';
 import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
 
 @Component({
-  selector: 'app-checkout-address',
-  templateUrl: './checkout-address.component.html',
-  styleUrls: ['./checkout-address.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-checkout-address',
+    templateUrl: './checkout-address.component.html',
+    styleUrls: ['./checkout-address.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckoutAddressComponent implements OnDestroy {
   checkoutForm = input.required<FormGroup>();

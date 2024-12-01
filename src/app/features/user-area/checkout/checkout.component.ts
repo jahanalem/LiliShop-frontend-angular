@@ -8,10 +8,11 @@ import { IAddress } from 'src/app/shared/models/address';
 import { IBasketTotals } from 'src/app/shared/models/basket';
 
 @Component({
-  selector: 'app-checkout',
-  templateUrl: './checkout.component.html',
-  styleUrls: ['./checkout.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-checkout',
+    templateUrl: './checkout.component.html',
+    styleUrls: ['./checkout.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckoutComponent implements OnInit {
   checkoutForm!: FormGroup;

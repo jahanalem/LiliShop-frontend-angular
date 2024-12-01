@@ -10,10 +10,11 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { IProductType } from 'src/app/shared/models/productType';
 
 @Component({
-  selector: 'app-edit-product-type',
-  templateUrl: './edit-product-type.component.html',
-  styleUrls: ['./edit-product-type.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-edit-product-type',
+    templateUrl: './edit-product-type.component.html',
+    styleUrls: ['./edit-product-type.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EditProductTypeComponent implements OnDestroy {
   typeForm!: FormGroup;

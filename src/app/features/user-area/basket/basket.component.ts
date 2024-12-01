@@ -3,10 +3,11 @@ import { BasketService } from 'src/app/core/services/basket.service';
 import { IBasket, IBasketItem, IBasketTotals } from 'src/app/shared/models/basket';
 
 @Component({
-  selector: 'app-basket',
-  templateUrl: './basket.component.html',
-  styleUrls: ['./basket.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-basket',
+    templateUrl: './basket.component.html',
+    styleUrls: ['./basket.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BasketComponent implements OnInit {
   basket = signal<IBasket | null>(null);

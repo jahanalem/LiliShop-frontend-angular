@@ -9,10 +9,11 @@ import { IBrand } from 'src/app/shared/models/brand';
 import { PolicyNames } from 'src/app/shared/models/policy';
 
 @Component({
-  selector: 'app-brands',
-  templateUrl: './brands.component.html',
-  styleUrls: ['./brands.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-brands',
+    templateUrl: './brands.component.html',
+    styleUrls: ['./brands.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BrandsComponent implements AfterViewInit {
   paginator = viewChild.required<MatPaginator>(MatPaginator);
