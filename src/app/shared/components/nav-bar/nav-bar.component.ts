@@ -8,6 +8,10 @@ import { PolicyNames } from 'src/app/shared/models/policy';
 import { IUser } from '../../models/user';
 import { IBasket } from '../../models/basket';
 import { MatSidenav } from '@angular/material/sidenav';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { LOCAL_STORAGE_KEYS } from '../../constants/auth';
+import { StorageService } from 'src/app/core/services/storage.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-nav-bar',
@@ -25,9 +29,12 @@ export class NavBarComponent implements OnInit, OnDestroy {
 
   destroy$: Subject<void> = new Subject<void>();
 
-  private basketService        = inject(BasketService);
-  private accountService       = inject(AccountService);
   private authorizationService = inject(AuthorizationService);
+  private accountService       = inject(AccountService);
+  private storageService       = inject(StorageService);
+  private basketService        = inject(BasketService);
+  private snackBar             = inject(MatSnackBar);
+  private router               = inject(Router);
 
   constructor() {
     this.basket$      = this.basketService.basket$;
@@ -74,5 +81,28 @@ export class NavBarComponent implements OnInit, OnDestroy {
   logout() {
     this.accountService.logout();
   }
-}
 
+  logoutFromAllDevices() {
+    if (confirm("Are you sure you want to log out from all devices?")) {
+      this.accountService.logoutFromAllDevices().subscribe({
+        next: () => {
+          this.snackBar.open('Successfully logged out from all devices.', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top'
+          });
+          this.storageService.delete(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
+          this.router.navigateByUrl('/account/login');
+        },
+        error: (error) => {
+          this.snackBar.open('Failed to log out from all devices. Please try again.', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top'
+          });
+          console.error('Logout error:', error);
+        }
+      });
+    }
+  }
+}

@@ -182,6 +182,15 @@ export class AccountService {
     });
   }
 
+  logoutFromAllDevices(): Observable<any> {
+    return this.http.post(`${this.baseUrl}account/logout-from-all-devices`, {}).pipe(
+      catchError(error => {
+        console.error('Logout from all devices failed', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   refreshToken(): Observable<string> {
     return this.http.post<{ accessToken: string }>(`${this.baseUrl}account/refresh-token`, {}).pipe(
       map((response) => response.accessToken),
