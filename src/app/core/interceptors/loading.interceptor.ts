@@ -6,7 +6,6 @@ import { BusyService } from '../services/busy.service';
 
 export const loadingInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
   const busyService = inject(BusyService);
-  
   if (request.method === 'POST' && request.url.includes('orders')) {
     return next(request);
   }

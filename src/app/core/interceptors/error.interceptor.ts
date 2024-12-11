@@ -11,6 +11,10 @@ export const errorInterceptor: HttpInterceptorFn = (request: HttpRequest<any>, n
 
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
+       // Skip 401 errors as they are handled by jwtInterceptor
+       if (error.status === 401) {
+        return throwError(() => error);
+      }
       if (error.error instanceof ErrorEvent) {
         toastr.error('An unexpected client-side error occurred.');
         return throwError(() => new Error('Client-side error: ' + error.message));

@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 
-import { LoadingInterceptor } from './loading.interceptor';
+import { loadingInterceptor } from './loading.interceptor';
 
 describe('LoadingInterceptor', () => {
   beforeEach(() => TestBed.configureTestingModule({
     providers: [
-      LoadingInterceptor
+      loadingInterceptor
       ]
   }));
 
   it('should be created', () => {
-    const interceptor: LoadingInterceptor = TestBed.inject(LoadingInterceptor);
+    const interceptor = TestBed.inject(loadingInterceptor);
     expect(interceptor).toBeTruthy();
   });
 });

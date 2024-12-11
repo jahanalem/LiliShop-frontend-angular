@@ -49,7 +49,7 @@ export class AccountService {
   loadCurrentUser(token: string | null): Observable<IUser | null> {
     // If token is null, reset the current user state and return null.
     if (!token) {
-      this.currentUserSource.next(null);
+      this.resetCurrentUserState();
       return of(null);
     }
 
@@ -61,9 +61,12 @@ export class AccountService {
       tap((user: IUser) => {
         // If a user is returned, update the user state.
         if (user) {
-          this.storageService.set(LOCAL_STORAGE_KEYS.AUTH_TOKEN, user.token);
-          this.currentUserSource.next(user);
+          this.updateCurrentUserState(user);
         }
+      }),
+      catchError(() => {
+        this.logout();
+        return of(null);
       })
     );
   }
@@ -133,6 +136,11 @@ export class AccountService {
     );
   }
 
+  isLoggedIn(): boolean {
+    const token = this.storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
+    return !!token;
+  }
+
   /**
    * Registers a new user by sending their registration details to the server.
    *
@@ -167,9 +175,20 @@ export class AccountService {
    * current user state to null, and navigates to the home page.
    */
   logout(): void {
-    this.storageService.delete(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
-    this.resetCurrentUserState();
-    this.router.navigateByUrl('/');
+    this.http.post(`${this.baseUrl}account/logout`, {}).subscribe(() => {
+      this.storageService.delete(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
+      this.resetCurrentUserState();
+      this.router.navigateByUrl('/account/login');
+    });
+  }
+
+  refreshToken(): Observable<string> {
+    return this.http.post<{ accessToken: string }>(`${this.baseUrl}account/refresh-token`, {}).pipe(
+      map((response) => response.accessToken),
+      catchError((error) => {
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -224,6 +243,7 @@ export class AccountService {
    * Resets the current user state to null.
    */
   private resetCurrentUserState(): void {
+    this.storageService.delete(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
     this.currentUserSource.next(null);
   }
 

@@ -1,10 +1,11 @@
 
-import { map, Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { catchError, map, Observable, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { IDeliveryMethod } from 'src/app/shared/models/deliveryMethod';
 import { IOrder, IOrderToCreate } from 'src/app/shared/models/order';
+import { Router } from '@angular/router';
 
 
 @Injectable({
@@ -12,6 +13,7 @@ import { IOrder, IOrderToCreate } from 'src/app/shared/models/order';
 })
 export class CheckoutService {
   private readonly baseUrl: string = environment.apiUrl;
+  private router = inject(Router);
 
   constructor(private http: HttpClient) { }
 
@@ -25,7 +27,19 @@ export class CheckoutService {
   getDeliveryMethods(): Observable<IDeliveryMethod[]> {
     const url = `${this.baseUrl}orders/deliveryMethods`;
     return this.http.get<IDeliveryMethod[]>(url).pipe(
-      map((dm: IDeliveryMethod[]) => dm.sort((a, b) => b.price - a.price))
+      map((dm: IDeliveryMethod[]) => dm.sort((a, b) => b.price - a.price)),
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          console.error('User is not authenticated. Please log in.');
+          this.router.navigate(['/account/login']);
+        } else if (error.status === 404) {
+          console.warn('No delivery methods found.');
+        } else {
+          console.error('An error occurred while fetching delivery methods:', error);
+        }
+        
+        return of([]);
+      })
     );
   }
 
