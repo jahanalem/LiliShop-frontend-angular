@@ -23,15 +23,15 @@ export default class AdminComponent implements OnDestroy, AfterViewInit {
 
   navItems = [
     { name: 'Dashboard', link: '/admin',                     icon: 'dashboard' },
-    { name: 'Products',  link: '/admin/products',            icon: 'library_books' },
-    { name: 'Brands',    link: '/admin/brands',              icon: 'branding_watermark' },
+    { name: 'Products',  link: '/admin/products',            icon: 'storefront' },
+    { name: 'Brands',    link: '/admin/brands',              icon: 'verified' },
     { name: 'Types',     link: '/admin/product-types',       icon: 'category' },
     { name: 'Messages',  link: '/admin/contact-us-messages', icon: 'message' },
     { name: 'Users',     link: '/admin/users',               icon: 'supervisor_account' },
+    { name: 'Price Drop Alerts', link: '/admin/subscribers/drop-price', icon: 'price_change' },
   ];
 
   constructor() {
-
   }
 
   ngOnDestroy(): void {

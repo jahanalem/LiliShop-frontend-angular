@@ -15,7 +15,8 @@ const routes: Routes = [
       { path: 'brands', loadChildren: () => import('./brands/brands.module').then(m => m.BrandsModule) },
       { path: 'product-types', loadChildren: () => import('./product-types/product-types.module').then(m => m.ProductTypesModule) },
       { path: 'contact-us-messages', loadChildren: () => import('./contact-us-messages/contact-us-messages.module').then(m => m.ContactUsMessagesModule) },
-      { path: 'users', loadChildren: () => import('./users/users.module').then(m => m.UsersModule) }
+      { path: 'users', loadChildren: () => import('./users/users.module').then(m => m.UsersModule) },
+      { path: 'subscribers/drop-price', loadChildren: () => import('./price-drop-subscription/price-drop-subscription.module').then(m => m.PriceDropSubscriptionModule) },
     ]
   }
 ]

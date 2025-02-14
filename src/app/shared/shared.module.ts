@@ -41,6 +41,7 @@ import { CheckPolicyDirective } from './directives/check-policy.directive';
 import { FormatValuePipe } from './pipes/format-value.pipe';
 
 import { CloudinaryModule } from '@cloudinary/ng';
+import { MatSortModule } from '@angular/material/sort';
 
 const components = [
   NavBarComponent,
@@ -73,7 +74,8 @@ const matModules = [
   MatPaginatorModule,
   MatCardModule,
   MatProgressBarModule,
-  MatTableModule
+  MatTableModule,
+  MatSortModule
 ];
 
 const thirdPartyModules = [

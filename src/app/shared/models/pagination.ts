@@ -1,6 +1,7 @@
 import { IAdminAreaUser } from "./adminAreaUser";
 import { IBrand } from "./brand";
 import { IContactUsMessage } from "./contactUsMessage";
+import { IPriceDropSubscription } from "./priceDropSubscription";
 import { IProduct } from "./product";
 import { IProductType } from "./productType";
 
@@ -24,8 +25,9 @@ export class PaginationWithData<T> implements IPaginationWithData<T> {
   data     : T[]    = [];
 }
 
-export type ProductPagination          = PaginationWithData<IProduct>;
-export type BrandPagination            = PaginationWithData<IBrand>;
-export type ProductTypePagination      = PaginationWithData<IProductType>;
-export type UserPagination             = PaginationWithData<IAdminAreaUser>;
-export type ContactUsMessagePagination = PaginationWithData<IContactUsMessage>;
+export type ProductPagination               = PaginationWithData<IProduct>;
+export type BrandPagination                 = PaginationWithData<IBrand>;
+export type ProductTypePagination           = PaginationWithData<IProductType>;
+export type UserPagination                  = PaginationWithData<IAdminAreaUser>;
+export type ContactUsMessagePagination      = PaginationWithData<IContactUsMessage>;
+export type PriceDropSubscriptionPagination = PaginationWithData<IPriceDropSubscription>;

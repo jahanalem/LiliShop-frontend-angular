@@ -1,0 +1,78 @@
+<div class="subscription-management">
+  <!-- Filterfeld -->
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Filter</mat-label>
+    <input matInput (input)="applyFilter($event)" placeholder="Search subscriptions" #input>
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <!-- Table -->
+  <div class="table-container mat-elevation-z8">
+    <table mat-table [dataSource]="subscriptions()" matSort class="full-width-table">
+
+      <!-- userId -->
+      <ng-container matColumnDef="userId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>User ID</th>
+        <td mat-cell *matCellDef="let sub">{{ sub.userId }}</td>
+      </ng-container>
+
+      <!-- displayName -->
+      <ng-container matColumnDef="displayName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Display Name</th>
+        <td mat-cell *matCellDef="let sub">{{ sub.displayName }}</td>
+      </ng-container>
+
+      <!-- email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let sub">{{ sub.email }}</td>
+      </ng-container>
+
+      <!-- productId -->
+      <ng-container matColumnDef="productId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Product ID</th>
+        <td mat-cell *matCellDef="let sub">{{ sub.productId }}</td>
+      </ng-container>
+
+      <!-- productName -->
+      <ng-container matColumnDef="productName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Product Name</th>
+        <td mat-cell *matCellDef="let sub"><a [routerLink]="['/admin/products/edit', sub.productId]" target="_blank">{{ sub.productName }}</a></td>
+      </ng-container>
+
+      <!-- productPrice -->
+      <ng-container matColumnDef="productPrice">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+        <td mat-cell *matCellDef="let sub">{{ sub.productPrice | currency }}</td>
+      </ng-container>
+
+      <!-- subscriptionDate -->
+      <ng-container matColumnDef="subscriptionDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Subscription Date</th>
+        <td mat-cell *matCellDef="let sub">{{ sub.subscriptionDate | date:'short' }}</td>
+      </ng-container>
+
+      <!-- oldPrice -->
+      <ng-container matColumnDef="oldPrice">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Old Price</th>
+        <td mat-cell *matCellDef="let sub">
+          {{ sub.oldPrice ? (sub.oldPrice | currency) : '-' }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToDisplay"></tr>
+      <tr mat-row *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="columnsToDisplay.length">No subscriptions found.</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Paginator -->
+  <mat-paginator [length]="totalCount()"
+                 [pageSize]="queryParams().pageSize!"
+                 [pageIndex]="queryParams().pageNumber! - 1"
+                 [pageSizeOptions]="pageSizeOptions()"
+                 showFirstLastButtons>
+  </mat-paginator>
+</div>

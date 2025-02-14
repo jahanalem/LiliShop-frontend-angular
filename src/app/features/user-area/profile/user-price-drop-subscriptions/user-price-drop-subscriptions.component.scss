@@ -1,0 +1,41 @@
+.subscriptions-card {
+  margin: 16px;
+}
+
+mat-card-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.subscriptions-table {
+  width: 100%;
+}
+
+.no-data-row td {
+  text-align: center;
+  font-style: italic;
+  color: gray;
+}
+
+.no-subscriptions {
+  display: flex;
+  align-items: center;
+  color: #555;
+  margin: 16px 0;
+
+  mat-icon {
+    margin-right: 8px;
+    color: #757575; /* Optional: etwas dezenterer Farbton */
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}

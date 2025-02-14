@@ -14,6 +14,7 @@ const routes: Routes = [
       { path: 'orders', canMatch: [authGuard], loadChildren: () => import('./orders/orders.module').then(mod => mod.OrdersModule), data: { breadcrumb: 'orders' } },
       { path: 'about', loadChildren: () => import('./about/about.module').then(mod => mod.AboutModule), data: { breadcrumb: 'About' } },
       { path: 'contact', loadChildren: () => import('./contact/contact.module').then(mod => mod.ContactModule), data: { breadcrumb: 'Contact' } },
+      { path: 'price-drop-subscriptions', loadComponent: () => import('./profile/user-price-drop-subscriptions/user-price-drop-subscriptions.component').then((c) => c.UserPriceDropSubscriptionsComponent), data: { breadcrumb: 'My Subscriptions' } }
     ]
   }
 ]

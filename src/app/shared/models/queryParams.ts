@@ -7,5 +7,5 @@ export interface ISortParams {
   sortDirection: string;
 }
 export interface ISearchParams {
-  search: string;
+  search: string | null;
 }
