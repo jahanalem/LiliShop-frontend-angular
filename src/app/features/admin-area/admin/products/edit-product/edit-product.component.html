@@ -21,15 +21,22 @@
 
         <mat-form-field appearance="outline" class="input-field">
           <mat-label>Description</mat-label>
-          <textarea formControlName="description" matInput #inputDsc cdkTextareaAutosize cdkAutosizeMinRows="10"
-            cdkAutosizeMaxRows="50" maxlength="300" placeholder="Enter product description"></textarea>
+          <textarea formControlName="description"
+                    matInput
+                    #inputDsc
+                    cdkTextareaAutosize
+                    cdkAutosizeMinRows="10"
+                    cdkAutosizeMaxRows="50"
+                    maxlength="300"
+                    placeholder="Enter product description">
+          </textarea>
           <mat-hint align="end">{{inputDsc.value.length}}/300</mat-hint>
         </mat-form-field>
 
         <mat-form-field hintLabel="Max 10000" appearance="outline" class="input-field">
           <mat-label>Price</mat-label>
           <input formControlName="price" matInput #inputPrice type="number" min="1" max="10000" step="0.01"
-            placeholder="Product price">
+                 placeholder="Product price">
           <span matPrefix>€&nbsp;</span>
         </mat-form-field>
 
@@ -37,7 +44,7 @@
         <mat-form-field hintLabel="Optional" appearance="outline" class="input-field">
           <mat-label>Previous Price</mat-label>
           <input formControlName="previousPrice" matInput type="number" min="1" max="10000" step="0.01"
-            placeholder="Previous product price">
+                 placeholder="Previous product price">
           <span matPrefix>€&nbsp;</span>
         </mat-form-field>
 
@@ -46,41 +53,43 @@
           Discount Active?
         </mat-checkbox>
 
-        <!-- Discount Start Date -->
-        <mat-form-field appearance="outline" class="input-field" *ngIf="productForm.get('isDiscountActive')?.value">
-          <mat-label>Discount Start Date</mat-label>
-          <input matInput [matDatepicker]="startDatePicker" formControlName="discountStartDateDate"
-            placeholder="Select start date">
-          <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #startDatePicker></mat-datepicker>
-        </mat-form-field>
+        <!-- Discount Start (Date & Time in one row) -->
+        <div class="discount-row" *ngIf="productForm.get('isDiscountActive')?.value">
+          <mat-form-field appearance="outline" class="input-field date-field">
+            <mat-label>Discount Start Date</mat-label>
+            <input matInput [matDatepicker]="startDatePicker" formControlName="discountStartDateDate"
+                   placeholder="Select start date">
+            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #startDatePicker></mat-datepicker>
+          </mat-form-field>
 
-        <!-- Discount Start Time -->
-        <mat-form-field appearance="outline" class="input-field" *ngIf="productForm.get('isDiscountActive')?.value">
-          <mat-label>Discount Start Time</mat-label>
-          <input matInput [matTimepicker]="startTimePicker" formControlName="discountStartDateTime"
-            placeholder="Select start time">
-          <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
-          <mat-timepicker #startTimePicker></mat-timepicker>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="input-field time-field">
+            <mat-label>Discount Start Time</mat-label>
+            <input matInput [matTimepicker]="startTimePicker" formControlName="discountStartDateTime"
+                   placeholder="Select start time">
+            <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
+            <mat-timepicker #startTimePicker></mat-timepicker>
+          </mat-form-field>
+        </div>
 
-        <!-- Discount End Date -->
-        <mat-form-field appearance="outline" class="input-field" *ngIf="productForm.get('isDiscountActive')?.value">
-          <mat-label>Discount End Date</mat-label>
-          <input matInput [matDatepicker]="endDatePicker" formControlName="discountEndDateDate"
-            placeholder="Select end date">
-          <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #endDatePicker></mat-datepicker>
-        </mat-form-field>
+        <!-- Discount End (Date & Time in one row) -->
+        <div class="discount-row" *ngIf="productForm.get('isDiscountActive')?.value">
+          <mat-form-field appearance="outline" class="input-field date-field">
+            <mat-label>Discount End Date</mat-label>
+            <input matInput [matDatepicker]="endDatePicker" formControlName="discountEndDateDate"
+                   placeholder="Select end date">
+            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #endDatePicker></mat-datepicker>
+          </mat-form-field>
 
-        <!-- Discount End Time -->
-        <mat-form-field appearance="outline" class="input-field" *ngIf="productForm.get('isDiscountActive')?.value">
-          <mat-label>Discount End Time</mat-label>
-          <input matInput [matTimepicker]="endTimePicker" formControlName="discountEndDateTime"
-            placeholder="Select end time">
-          <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
-          <mat-timepicker #endTimePicker></mat-timepicker>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="input-field time-field">
+            <mat-label>Discount End Time</mat-label>
+            <input matInput [matTimepicker]="endTimePicker" formControlName="discountEndDateTime"
+                   placeholder="Select end time">
+            <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
+            <mat-timepicker #endTimePicker></mat-timepicker>
+          </mat-form-field>
+        </div>
 
         <!-- Brand Selection -->
         <ng-container *ngIf="brands()">
@@ -109,8 +118,9 @@
         <!-- Size and Quantity Management -->
         <ng-container formArrayName="productCharacteristics">
           <ng-container *ngFor="let sizeFormCtrl of dynamicDropDownSize.controls; let i=index">
-            <div [formGroup]="getFormGroup(sizeFormCtrl)" class="size-group">
-              <mat-form-field appearance="outline" class="input-field">
+            <!-- Size and Quantity side-by-side -->
+            <div [formGroup]="getFormGroup(sizeFormCtrl)" class="size-qty-row">
+              <mat-form-field appearance="outline" class="input-field size-field">
                 <mat-label>Size</mat-label>
                 <mat-select formControlName="sizeId" placeholder="Select a size">
                   <mat-option *ngFor="let size of getAvailableSizeList(sizeFormCtrl)" [value]="size.id">
@@ -119,7 +129,7 @@
                 </mat-select>
               </mat-form-field>
 
-              <mat-form-field appearance="outline" class="input-field">
+              <mat-form-field appearance="outline" class="input-field qty-field">
                 <mat-label>Quantity</mat-label>
                 <input formControlName="quantity" type="number" matInput placeholder="Enter quantity">
               </mat-form-field>
@@ -144,6 +154,7 @@
       </ng-container>
     </form>
   </div>
+
   <!-- Right Form for Upload -->
   <div class="form-right">
     <ng-container *ngIf="isProductIdValid; else noProductTemplate">
@@ -152,8 +163,9 @@
     </ng-container>
 
     <ng-template #noProductTemplate>
-      <p class="alert-message">Please create a product first. Once the product is created, you'll be able to
-        upload images.</p>
+      <p class="alert-message">
+        Please create a product first. Once the product is created, you'll be able to upload images.
+      </p>
     </ng-template>
   </div>
 </div>

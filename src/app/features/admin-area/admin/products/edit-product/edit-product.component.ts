@@ -29,7 +29,10 @@ export class EditProductComponent implements OnInit, OnDestroy {
   brands  = signal<IBrand[]>([]);
   types   = signal<IProductType[]>([]);
   sizes   = signal<ISizeClassification[]>([]);
+
   disabledAddSizeButton = signal<boolean>(false);
+  dynamicSizeAdded      = signal<boolean>(false);
+  dynamicSizeRemoved    = signal<boolean>(false);
 
   productIdFromUrl      : number = 0;                     // 0 means new product
   productCharacteristics: IProductCharacteristic[] = [];
@@ -250,8 +253,8 @@ export class EditProductComponent implements OnInit, OnDestroy {
       return;
     }
 
-    chars.forEach((_pc) => {
-      this.addDynamicDropDownSize(_pc.sizeId, _pc.quantity, _pc.id, _pc.productId);
+    chars.forEach((pc) => {
+      this.addDynamicDropDownSize(pc.sizeId, pc.quantity, pc.id, pc.productId);
     });
   }
 
@@ -392,6 +395,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
   removeSize(index: number) {
     this.dynamicDropDownSize.removeAt(index);
     this.disabledAddSizeButton.set(false);
+    this.dynamicSizeRemoved.set(true);
   }
 
   addSize() {
@@ -407,6 +411,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
     if (this.validSizeList.length > 0) {
       const defaultSizeId = this.validSizeList[0].id;
       this.addDynamicDropDownSize(defaultSizeId, 1, 0, effectiveProductId);
+      this.dynamicSizeAdded.set(true);
     }
 
     this.disabledAddSizeButton.set(this.validSizeList.length <= 1);
@@ -457,7 +462,8 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
 
   get isSaveDisabled(): boolean {
-    return !this.productForm.dirty || !this.productForm.valid;
+    return !(this.productForm.valid &&
+      (this.productForm.dirty || this.dynamicSizeAdded() || this.dynamicSizeRemoved()));
   }
 
   private fetchData<T>(fetchDataFn: () => Observable<T>, updateFn: (data: T) => void): void {

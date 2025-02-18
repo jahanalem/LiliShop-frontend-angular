@@ -50,13 +50,39 @@
   margin-bottom: 16px;
 }
 
-/* Size Management */
-.size-group {
+/* For discount date/time on one row */
+.discount-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
+  gap: 16px;
   margin-bottom: 16px;
+}
+
+.discount-row .date-field {
+  flex: 1; /* date 50% width by default */
+}
+
+.discount-row .time-field {
+  flex: 1; /* time 50% width */
+}
+
+/* Size and Quantity in one row */
+.size-qty-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.size-qty-row .size-field {
+  flex: 1;
+}
+
+.size-qty-row .qty-field {
+  flex: 1;
+}
+
+.remove-size-button {
+  margin-left: auto; /* push the delete button to the end if wanted */
 }
 
 /* Buttons */
@@ -67,13 +93,7 @@
 }
 
 .add-size-btn {
-  display: flex;
-  justify-content: flex-start;
   margin-bottom: 16px;
-}
-
-.remove-size-button {
-  margin-left: 16px;
 }
 
 /* Alert Messages */
@@ -103,17 +123,14 @@
     width: 100%;
   }
 
-  .input-field {
-    width: 100%;
-  }
-
-  .button-group {
+  .discount-row,
+  .size-qty-row {
     flex-direction: column;
-    align-items: center;
   }
 
   .remove-size-button {
     margin-left: 0;
     width: 100%;
+    margin-top: 8px;
   }
 }
