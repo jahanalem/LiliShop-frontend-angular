@@ -1,5 +1,5 @@
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EMPTY, Observable, Subject, catchError, firstValueFrom, of, switchMap, takeUntil } from 'rxjs';
+import { Observable, Subject, catchError, firstValueFrom, of, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, signal, inject, ChangeDetectorRef } from '@angular/core';
@@ -44,7 +44,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
   private backupStartDate: string | null = null;
   private backupEndDate: string | null   = null;
 
-
   destroy$ = new Subject<void>();
 
   private cdRef          = inject(ChangeDetectorRef);
@@ -67,15 +66,26 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     try {
-      await this.createProductForm();
-      await this.getBrands();
-      await this.getTypes();
-      await this.getSizes();
-      await this.getProduct();
+      this.createProductForm();
+
+      await Promise.all([
+        this.loadBrands(),
+        this.loadTypes(),
+        this.loadSizes(),
+        this.loadProduct()
+      ]);
+
+      await Promise.all([
+        this.getProductFormValues(),
+        this.loadArrayOfDropDownSize(),
+        this.setProductInLocalStorage()
+      ]);
+
       await this.isDiscountActiveControlShouldBeEnable();
       await this.setupDiscountValidation();
+
     } catch (error) {
-      console.error('Error in loading sequence:', error);
+      console.error("Fehler bei ngOnInit:", error);
     }
   }
 
@@ -148,16 +158,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Helper method to combine date and time
-  private combineDateAndTime(date: Date | null, time: Date | null): Date | null {
-    if (!date || !time) return null;
-
-    const combinedDate = new Date(date);
-    combinedDate.setHours(time.getHours(), time.getMinutes(), 0, 0);
-    return combinedDate;
-  }
-
-  createProductForm(): Promise<void> {
+  createProductForm(): void {
     this.productForm = this.formBuilder.group({
       isActive              : [false],
       name                  : [null, Validators.required],
@@ -174,7 +175,102 @@ export class EditProductComponent implements OnInit, OnDestroy {
       discountEndDateDate   : [null],                                                                    // Date part of Discount End
       discountEndDateTime   : [null],                                                                    // Time part of Discount End
     });
+  }
+
+  async loadBrands(): Promise<void>  {
+    this.fetchData(() => this.productService.getBrands(true), (response) => { this.brands.set([...response]); });
     return Promise.resolve();
+  }
+
+  async loadTypes(): Promise<void>  {
+    this.fetchData(() => this.productService.getTypes(true), (response) => { this.types.set([...response]); });
+    return Promise.resolve()
+  }
+
+  async loadSizes(): Promise<void> {
+    this.fetchData(() => this.productService.getSizes(true), (response) => { this.sizes.set([...response]); });
+    return Promise.resolve()
+  }
+
+  async loadProduct(): Promise<void> {
+    try {
+      const prod = await firstValueFrom(
+        this.activatedRoute.paramMap.pipe(
+          switchMap((params: ParamMap) => {
+            const id = params.get('id');
+            this.productIdFromUrl = (id === null ? 0 : +id);
+            if (this.productIdFromUrl > 0) {
+              return this.productService.getProduct(this.productIdFromUrl);
+            } else {
+              return of(null);
+            }
+          }),
+          catchError((error: any) => {
+            this.handleApiError(error);
+            return of(null);
+          }),
+          takeUntil(this.destroy$)
+        )
+      );
+
+      if (prod) {
+        this.product.set(prod);
+
+        this.productForm.setControl('productCharacteristics', this.formBuilder.array([]));
+      }
+    } catch (error) {
+      console.error("Error loading product:", error);
+    }
+  }
+
+  async getProductFormValues(): Promise<void> {
+    if (!this.productForm) {
+      console.error('productForm is not initialized');
+      return;
+    }
+
+    const currentProduct = this.product();
+
+    if (currentProduct) {
+      // Extract date and time from discountStartDate and discountEndDate
+      const start = this.extractDateTime(currentProduct.discountStartDate);
+      const end = this.extractDateTime(currentProduct.discountEndDate);
+
+      // Patch the form with product data
+      this.productForm.patchValue({
+        isActive             : currentProduct.isActive,
+        name                 : currentProduct.name,
+        description          : currentProduct.description,
+        price                : currentProduct.price,
+        productBrandId       : currentProduct.productBrandId,
+        productTypeId        : currentProduct.productTypeId,
+        previousPrice        : currentProduct.previousPrice,
+        isDiscountActive     : currentProduct.isDiscountActive,
+        productPhotos        : currentProduct.productPhotos,      // Patch productPhotos
+        discountStartDateDate: start.date,
+        discountStartDateTime: start.time,
+        discountEndDateDate  : end.date,
+        discountEndDateTime  : end.time,
+      });
+    }
+  }
+
+  async loadArrayOfDropDownSize(): Promise<void> {
+    const chars = this.product()?.productCharacteristics;
+    if (!chars) {
+      return;
+    }
+
+    chars.forEach((pc) => {
+      this.addDynamicDropDownSize(pc.sizeId, pc.quantity, pc.id, pc.productId);
+    });
+  }
+
+  async setProductInLocalStorage(): Promise<void> {
+    if (this.product()) {
+      const key = `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
+      this.storageService.set(key, JSON.stringify(this.product()));
+    }
   }
 
   async isDiscountActiveControlShouldBeEnable(): Promise<void> {
@@ -202,7 +298,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
     });
   }
 
-  private async setupDiscountValidation(): Promise<void> {
+  async setupDiscountValidation(): Promise<void> {
     const isDiscountActiveControl      = this.productForm.get('isDiscountActive');
     const discountStartDateDateControl = this.productForm.get('discountStartDateDate');
     const discountStartDateTimeControl = this.productForm.get('discountStartDateTime');
@@ -267,10 +363,19 @@ export class EditProductComponent implements OnInit, OnDestroy {
       discountEndDateTimeControl?.updateValueAndValidity();
     });
   }
+  // Helper method to combine date and time
+  private combineDateAndTime(date: Date | null, time: Date | null): Date | null {
+    if (!date || !time) return null;
+
+    const combinedDate = new Date(date);
+    combinedDate.setHours(time.getHours(), time.getMinutes(), 0, 0);
+    return combinedDate;
+  }
 
   get dynamicDropDownSize() {
     return this.productForm.controls['productCharacteristics'] as FormArray;
   }
+
   addDynamicDropDownSize(sizeId: number | string = '', qty: number = 0, id: number, productId: number) {
     const sizeForm = this.formBuilder.group({
       id       : [id],
@@ -279,48 +384,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
       quantity : [qty],
     });
     this.dynamicDropDownSize.push(sizeForm);
-  }
-  loadArrayOfDropDownSize() {
-    const chars = this.product()?.productCharacteristics;
-    if (!chars) {
-      return;
-    }
-
-    chars.forEach((pc) => {
-      this.addDynamicDropDownSize(pc.sizeId, pc.quantity, pc.id, pc.productId);
-    });
-  }
-
-  getProductFormValues(): void {
-    if (!this.productForm) {
-      console.error('productForm is not initialized');
-      return;
-    }
-
-    const currentProduct = this.product();
-
-    if (currentProduct) {
-      // Extract date and time from discountStartDate and discountEndDate
-      const start = this.extractDateTime(currentProduct.discountStartDate);
-      const end = this.extractDateTime(currentProduct.discountEndDate);
-
-      // Patch the form with product data
-      this.productForm.patchValue({
-        isActive             : currentProduct.isActive,
-        name                 : currentProduct.name,
-        description          : currentProduct.description,
-        price                : currentProduct.price,
-        productBrandId       : currentProduct.productBrandId,
-        productTypeId        : currentProduct.productTypeId,
-        previousPrice        : currentProduct.previousPrice,
-        isDiscountActive     : currentProduct.isDiscountActive,
-        productPhotos        : currentProduct.productPhotos,      // Patch productPhotos
-        discountStartDateDate: start.date,
-        discountStartDateTime: start.time,
-        discountEndDateDate  : end.date,
-        discountEndDateTime  : end.time,
-      });
-    }
   }
 
   // Helper method to extract date and time from a string
@@ -342,56 +405,8 @@ export class EditProductComponent implements OnInit, OnDestroy {
     return { date: dateOnly, time: timeOnly };
   }
 
-  async getProduct(): Promise<void> {
-    try {
-      const prod = await firstValueFrom(
-        this.activatedRoute.paramMap.pipe(
-          switchMap((params: ParamMap) => {
-            const id = params.get('id');
-            this.productIdFromUrl = (id === null ? 0 : +id);
-            if (this.productIdFromUrl > 0) {
-              return this.productService.getProduct(this.productIdFromUrl);
-            } else {
-              return of(null);
-            }
-          }),
-          catchError((error: any) => {
-            this.handleApiError(error);
-            return EMPTY;
-          }),
-          takeUntil(this.destroy$)
-        )
-      );
-
-      if (prod) {
-        this.product.set(prod);
-        this.getProductFormValues();
-        // Reset form array
-        this.productForm.setControl('productCharacteristics', this.formBuilder.array([]));
-        this.loadArrayOfDropDownSize();
-        this.setProductInLocalStorage();
-      }
-    } catch (error) {
-      console.error("Error loading product:", error);
-    }
-  }
-
   handleApiError(error: any): void {
     console.error(error);
-  }
-
-  async getBrands(): Promise<void>  {
-    this.fetchData(() => this.productService.getBrands(true), (response) => { this.brands.set([...response]); });
-    return Promise.resolve();
-  }
-
-  async getTypes(): Promise<void>  {
-    this.fetchData(() => this.productService.getTypes(true), (response) => { this.types.set([...response]); });
-    return Promise.resolve()
-  }
-  async getSizes(): Promise<void> {
-    this.fetchData(() => this.productService.getSizes(true), (response) => { this.sizes.set([...response]); });
-    return Promise.resolve()
   }
 
   onSizeSelected(eventTarget: EventTarget): void {
@@ -420,12 +435,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
     this.product.set(updatedProduct);
   }
 
-  setProductInLocalStorage(): void {
-    if (this.product()) {
-      const key = `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
-      this.storageService.set(key, JSON.stringify(this.product()));
-    }
-  }
   getProductKey(): string {
     return `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
   }
@@ -458,7 +467,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
     this.disabledAddSizeButton.set(this.validSizeList.length <= 1);
   }
-
 
   getAvailableSizeList(control: AbstractControl): ISizeClassification[] {
     const formGroup = control as FormGroup;
