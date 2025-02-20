@@ -1,5 +1,5 @@
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EMPTY, Observable, Subject, catchError, switchMap, takeUntil } from 'rxjs';
+import { EMPTY, Observable, Subject, catchError, firstValueFrom, of, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { IProduct } from './../../../../../shared/models/product';
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, signal, inject, ChangeDetectorRef } from '@angular/core';
@@ -39,6 +39,12 @@ export class EditProductComponent implements OnInit, OnDestroy {
   validSizeList         : ISizeClassification[] = [];
   colorCheckbox         : ThemePalette;
 
+  private backupStartTime: string | null = null;
+  private backupEndTime: string | null   = null;
+  private backupStartDate: string | null = null;
+  private backupEndDate: string | null   = null;
+
+
   destroy$ = new Subject<void>();
 
   private cdRef          = inject(ChangeDetectorRef);
@@ -59,13 +65,18 @@ export class EditProductComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  ngOnInit(): void {
-    this.createProductForm();
-    this.getBrands();
-    this.getTypes();
-    this.getSizes();
-    this.getProduct();
-    this.setupDiscountValidation();
+  async ngOnInit(): Promise<void> {
+    try {
+      await this.createProductForm();
+      await this.getBrands();
+      await this.getTypes();
+      await this.getSizes();
+      await this.getProduct();
+      await this.isDiscountActiveControlShouldBeEnable();
+      await this.setupDiscountValidation();
+    } catch (error) {
+      console.error('Error in loading sequence:', error);
+    }
   }
 
   onSubmit() {
@@ -79,8 +90,12 @@ export class EditProductComponent implements OnInit, OnDestroy {
     const isUpdate        = !!existingProduct && existingProduct.id > 0;
 
     // Combine date and time for discount start and end
-    const discountStartDate = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
-    const discountEndDate   = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
+    let discountStartDate = null;
+    let discountEndDate   = null;
+    if (formValues.isDiscountActive) {
+      discountStartDate = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
+      discountEndDate   = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
+    }
 
     // Construct the payload
     const productPayload: Partial<IProduct> = {
@@ -142,7 +157,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
     return combinedDate;
   }
 
-  createProductForm(): void {
+  createProductForm(): Promise<void> {
     this.productForm = this.formBuilder.group({
       isActive              : [false],
       name                  : [null, Validators.required],
@@ -153,81 +168,99 @@ export class EditProductComponent implements OnInit, OnDestroy {
       previousPrice         : [{ value: null, disabled: true }],
       productCharacteristics: this.formBuilder.array([]),
       productPhotos         : [null],
-      isDiscountActive      : [false],
+      isDiscountActive      : [{ value: false, disabled: false },Validators.required],
       discountStartDateDate : [null],                                                                    // Date part of Discount Start
       discountStartDateTime : [null],                                                                    // Time part of Discount Start
       discountEndDateDate   : [null],                                                                    // Date part of Discount End
       discountEndDateTime   : [null],                                                                    // Time part of Discount End
     });
+    return Promise.resolve();
   }
 
-  private setupDiscountValidation(): void {
+  async isDiscountActiveControlShouldBeEnable(): Promise<void> {
+    const prevPrice = this.product()?.previousPrice ?? 0;
+    const basePrice = this.product()?.price ?? 0;
+    const price = this.productForm.get("price")?.value ?? 0;
+
+    if (price < prevPrice || price < basePrice) {
+      this.productForm.get("isDiscountActive")?.enable();
+      this.productForm.get("isDiscountActive")?.setValue(true);
+    } else {
+      this.productForm.get("isDiscountActive")?.setValue(false);
+      this.productForm.get("isDiscountActive")?.disable();
+    }
+
+    // Price change subscription
+    this.productForm.get("price")?.valueChanges.subscribe((newPrice) => {
+      if (newPrice < prevPrice || newPrice < basePrice) {
+        this.productForm.get("isDiscountActive")?.enable();
+        this.productForm.get("isDiscountActive")?.setValue(true);
+      } else {
+        this.productForm.get("isDiscountActive")?.setValue(false);
+        this.productForm.get("isDiscountActive")?.disable();
+      }
+    });
+  }
+
+  private async setupDiscountValidation(): Promise<void> {
     const isDiscountActiveControl      = this.productForm.get('isDiscountActive');
     const discountStartDateDateControl = this.productForm.get('discountStartDateDate');
     const discountStartDateTimeControl = this.productForm.get('discountStartDateTime');
     const discountEndDateDateControl   = this.productForm.get('discountEndDateDate');
     const discountEndDateTimeControl   = this.productForm.get('discountEndDateTime');
 
+    this.backupStartTime = discountStartDateTimeControl?.value;
+    this.backupEndTime   = discountEndDateTimeControl?.value;
+    this.backupStartDate = discountStartDateDateControl?.value;
+    this.backupEndDate   = discountEndDateDateControl?.value;
+
     if (!isDiscountActiveControl || !discountStartDateDateControl || !discountEndDateDateControl) {
       return;
     }
 
-    // **Backup storage for original time values**
-    let backupStartTime: string | null = null;
-    let backupEndTime: string | null   = null;
-
     isDiscountActiveControl.valueChanges.subscribe((isActive: boolean) => {
       if (isActive) {
-        const product        = this.product();
-        const now            = new Date();
-        const defaultEndDate = new Date();
-        defaultEndDate.setMonth(defaultEndDate.getMonth() + 1);
+        const product = this.product();
+        // Restore dates from product
+        if (product?.discountStartDate) {
+          const startDate = new Date(product.discountStartDate);
+          discountStartDateDateControl.setValue(this.backupStartDate ?? formatDate(startDate, 'yyyy-MM-dd', 'en-US'));
+          // Use backup time if available, otherwise use product's time
+          discountStartDateTimeControl?.setValue(this.backupStartTime ?? formatDate(startDate, 'HH:mm', 'en-US'));
+        } else {
+          discountStartDateDateControl.setValue(null);
+          discountStartDateTimeControl?.setValue(this.backupStartTime);
+        }
 
-        // Use existing values if available, otherwise set default values
-        const startDate = product?.discountStartDate ? new Date(product.discountStartDate) : now;
-        const endDate   = product?.discountEndDate ? new Date(product.discountEndDate) : defaultEndDate;
+        if (product?.discountEndDate) {
+          const endDate = new Date(product.discountEndDate);
+          discountEndDateDateControl.setValue(this.backupEndDate ?? formatDate(endDate, 'yyyy-MM-dd', 'en-US'));
+          discountEndDateTimeControl?.setValue(this.backupEndTime ?? formatDate(endDate, 'HH:mm', 'en-US'));
+        } else {
+          discountEndDateDateControl.setValue(null);
+          discountEndDateTimeControl?.setValue(this.backupEndTime);
+        }
 
-        discountStartDateDateControl.setValue(formatDate(startDate, 'yyyy-MM-dd', 'en-US'));
-        discountStartDateTimeControl?.setValue(backupStartTime ?? formatDate(startDate, 'HH:mm', 'en-US'));
-
-        discountEndDateDateControl.setValue(formatDate(endDate, 'yyyy-MM-dd', 'en-US'));
-        discountEndDateTimeControl?.setValue(backupEndTime ?? formatDate(endDate, 'HH:mm', 'en-US'));
-
-        // Enable the fields
+        // Enable controls
         discountStartDateDateControl.enable();
         discountStartDateTimeControl?.enable();
         discountEndDateDateControl.enable();
         discountEndDateTimeControl?.enable();
-
-        // Add required validators
-        discountStartDateDateControl.setValidators([Validators.required]);
-        discountStartDateTimeControl?.setValidators([Validators.required]);
-        discountEndDateDateControl.setValidators([Validators.required]);
-        discountEndDateTimeControl?.setValidators([Validators.required]);
       } else {
-        // **Backup existing time values before clearing**
-        backupStartTime = discountStartDateTimeControl?.value ?? null;
-        backupEndTime = discountEndDateTimeControl?.value ?? null;
+        // Backup current times before clearing
+        this.backupStartTime = discountStartDateTimeControl?.value;
+        this.backupEndTime   = discountEndDateTimeControl?.value;
+        this.backupStartDate = discountStartDateDateControl?.value;
+        this.backupEndDate   = discountEndDateDateControl?.value;
 
-        // Disable and clear values
-        discountStartDateDateControl.setValue(null);
-        discountStartDateTimeControl?.setValue(null);
-        discountEndDateDateControl.setValue(null);
-        discountEndDateTimeControl?.setValue(null);
-
+        // disable controls
         discountStartDateDateControl.disable();
         discountStartDateTimeControl?.disable();
         discountEndDateDateControl.disable();
         discountEndDateTimeControl?.disable();
-
-        // Remove validators
-        discountStartDateDateControl.clearValidators();
-        discountStartDateTimeControl?.clearValidators();
-        discountEndDateDateControl.clearValidators();
-        discountEndDateTimeControl?.clearValidators();
       }
 
-      // Update validation state
+      // Update validation
       discountStartDateDateControl.updateValueAndValidity();
       discountStartDateTimeControl?.updateValueAndValidity();
       discountEndDateDateControl.updateValueAndValidity();
@@ -309,50 +342,57 @@ export class EditProductComponent implements OnInit, OnDestroy {
     return { date: dateOnly, time: timeOnly };
   }
 
-  getProduct(): void {
-    this.activatedRoute.paramMap.pipe(
-      switchMap((params: ParamMap) => {
-        const id = params.get('id');
-        this.productIdFromUrl = (id === null ? 0 : +id);
-        if (this.productIdFromUrl && +this.productIdFromUrl > 0) {
-          return this.productService.getProduct(+this.productIdFromUrl);
-        } else {
-          return EMPTY;
-        }
-      }),
-      catchError((error: any) => {
-        this.handleApiError(error);
-        return EMPTY;
-      })
-    ).pipe(takeUntil(this.destroy$)).subscribe((prod) => {
+  async getProduct(): Promise<void> {
+    try {
+      const prod = await firstValueFrom(
+        this.activatedRoute.paramMap.pipe(
+          switchMap((params: ParamMap) => {
+            const id = params.get('id');
+            this.productIdFromUrl = (id === null ? 0 : +id);
+            if (this.productIdFromUrl > 0) {
+              return this.productService.getProduct(this.productIdFromUrl);
+            } else {
+              return of(null);
+            }
+          }),
+          catchError((error: any) => {
+            this.handleApiError(error);
+            return EMPTY;
+          }),
+          takeUntil(this.destroy$)
+        )
+      );
+
       if (prod) {
         this.product.set(prod);
         this.getProductFormValues();
-
-        // Reset the FormArray before loading new values
+        // Reset form array
         this.productForm.setControl('productCharacteristics', this.formBuilder.array([]));
         this.loadArrayOfDropDownSize();
-
         this.setProductInLocalStorage();
       }
-    });
+    } catch (error) {
+      console.error("Error loading product:", error);
+    }
   }
 
   handleApiError(error: any): void {
     console.error(error);
   }
 
-  getBrands(): void {
+  async getBrands(): Promise<void>  {
     this.fetchData(() => this.productService.getBrands(true), (response) => { this.brands.set([...response]); });
+    return Promise.resolve();
   }
 
-  getTypes(): void {
+  async getTypes(): Promise<void>  {
     this.fetchData(() => this.productService.getTypes(true), (response) => { this.types.set([...response]); });
+    return Promise.resolve()
   }
-  getSizes(): void {
+  async getSizes(): Promise<void> {
     this.fetchData(() => this.productService.getSizes(true), (response) => { this.sizes.set([...response]); });
+    return Promise.resolve()
   }
-
 
   onSizeSelected(eventTarget: EventTarget): void {
     const sizeId = +(eventTarget as HTMLInputElement).value;
@@ -381,8 +421,10 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
 
   setProductInLocalStorage(): void {
-    const key = `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
-    this.storageService.set(key, JSON.stringify(this.product));
+    if (this.product()) {
+      const key = `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
+      this.storageService.set(key, JSON.stringify(this.product()));
+    }
   }
   getProductKey(): string {
     return `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
