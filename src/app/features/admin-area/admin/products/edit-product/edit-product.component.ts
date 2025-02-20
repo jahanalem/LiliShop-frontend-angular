@@ -287,7 +287,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
     }
 
     // Price change subscription
-    this.productForm.get("price")?.valueChanges.subscribe((newPrice) => {
+    this.productForm.get("price")?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((newPrice) => {
       if (newPrice < prevPrice || newPrice < basePrice) {
         this.productForm.get("isDiscountActive")?.enable();
         this.productForm.get("isDiscountActive")?.setValue(true);
@@ -314,7 +314,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
       return;
     }
 
-    isDiscountActiveControl.valueChanges.subscribe((isActive: boolean) => {
+    isDiscountActiveControl.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((isActive: boolean) => {
       if (isActive) {
         const product = this.product();
         // Restore dates from product
