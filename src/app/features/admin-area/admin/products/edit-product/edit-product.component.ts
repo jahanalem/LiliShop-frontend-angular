@@ -81,7 +81,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
         this.setProductInLocalStorage()
       ]);
 
-      await this.isDiscountActiveControlShouldBeEnable();
+      await this.updateIsDiscountActiveControl();
       await this.setupDiscountValidation();
 
     } catch (error) {
@@ -273,7 +273,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
     }
   }
 
-  async isDiscountActiveControlShouldBeEnable(): Promise<void> {
+  async updateIsDiscountActiveControl(): Promise<void> {
     const prevPrice = this.product()?.previousPrice ?? 0;
     const basePrice = this.product()?.price ?? 0;
     const price = this.productForm.get("price")?.value ?? 0;
