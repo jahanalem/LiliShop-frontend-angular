@@ -4,61 +4,102 @@
       <!-- Product Image -->
       <div class="product-image-section">
         <div class="product-image-container">
-          <img *ngIf="product().pictureUrl" title="Product Image" class="product-image" [ngSrc]="product().pictureUrl"
-            width="500" height="500" priority [alt]="product().name" />
+          <img
+            *ngIf="product().pictureUrl"
+            title="Product Image"
+            class="product-image"
+            [ngSrc]="product().pictureUrl"
+            width="500"
+            height="500"
+            priority
+            [alt]="product().name"
+          />
         </div>
       </div>
+
       @if(product().name){
-      <!-- Product Info -->
-      <div class="product-info-section">
-        <div class="product-info">
-          <h1 class="product-title">{{ product().name }}</h1>
+        <!-- Product Info -->
+        <div class="product-info-section">
+          <div class="product-info">
+            <h1 class="product-title">{{ product().name }}</h1>
 
-          <div class="price-section">
-            <p class="price">{{ product().price | currency }}</p>
-            <p class="original-price"></p>
-          </div>
+            <!-- price and discount section-->
+            <div class="price-section" *ngIf="discountActiveNow(); else normalPrice">
+              <p class="original-price">
+                {{ product().previousPrice | currency }}
+              </p>
+              <p class="price">
+                {{ product().price | currency }}
+              </p>
 
-          <p class="product-description">{{ product().description }}</p>
+              <!-- Countdown display when discount is active -->
+              <div class="discount-timer" *ngIf="discountTimeLeft()">
+                <strong>Offer ends in: {{ discountTimeLeft() }}</strong>
+              </div>
+            </div>
 
-          <!-- Quantity Selector -->
-          <div class="quantity-selector">
-            <button title="decrement" mat-icon-button (click)="decrementQuantity()" color="primary"
-              aria-label="Decrement Quantity">
-              <mat-icon>remove_circle_outline</mat-icon>
-            </button>
+            <!-- Fallback: Normal price if no discount -->
+            <ng-template #normalPrice>
+              <p class="price">{{ product().price | currency }}</p>
+            </ng-template>
 
-            <span class="quantity-value">{{ quantity() }}</span>
+            <p class="product-description">
+              {{ product().description }}
+            </p>
 
-            <button title="increment" mat-icon-button (click)="incrementQuantity()" color="primary"
-              aria-label="Increment Quantity">
-              <mat-icon>add_circle_outline</mat-icon>
-            </button>
-          </div>
+            <!-- Quantity Selector -->
+            <div class="quantity-selector">
+              <button
+                title="decrement"
+                mat-icon-button
+                (click)="decrementQuantity()"
+                color="primary"
+                aria-label="Decrement Quantity"
+              >
+                <mat-icon>remove_circle_outline</mat-icon>
+              </button>
 
-          <!-- Action Buttons -->
-          <div class="action-buttons">
-            <button mat-raised-button color="primary" (click)="addItemToBasket()" class="action-button">
-              <mat-icon>shopping_cart</mat-icon>
-              Add to cart
-            </button>
+              <span class="quantity-value">{{ quantity() }}</span>
 
-            @if(currentUserId() > 0 && currentUserEmailConfirmed()){
-            <button mat-raised-button [ngClass]="{
-                  'mat-primary': isSubscribed(),
-                  'mat-accent': !isSubscribed()
-                }" (click)="toggleSubscription()" class="action-button">
-              <mat-icon>
-                {{ isSubscribed() ? 'notifications_off' : 'notifications' }}
-              </mat-icon>
-              {{ isSubscribed() ? 'Unsubscribe from price drops' : 'Notify me of price drops' }}
-            </button>
-            }
+              <button
+                title="increment"
+                mat-icon-button
+                (click)="incrementQuantity()"
+                color="primary"
+                aria-label="Increment Quantity"
+              >
+                <mat-icon>add_circle_outline</mat-icon>
+              </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button mat-raised-button color="primary" (click)="addItemToBasket()" class="action-button">
+                <mat-icon>shopping_cart</mat-icon>
+                Add to cart
+              </button>
+
+              @if(currentUserId() > 0 && currentUserEmailConfirmed()){
+                <button
+                  mat-raised-button
+                  [ngClass]="{
+                    'mat-primary': isSubscribed(),
+                    'mat-accent': !isSubscribed()
+                  }"
+                  (click)="toggleSubscription()"
+                  class="action-button"
+                >
+                  <mat-icon>
+                    {{ isSubscribed() ? 'notifications_off' : 'notifications' }}
+                  </mat-icon>
+                  {{ isSubscribed() ? 'Unsubscribe from price drops' : 'Notify me of price drops' }}
+                </button>
+              }
+            </div>
           </div>
         </div>
-      </div>
       }@else {
-      <p>Loading product details...</p>
+        <p>Loading product details...</p>
       }
     </div>
   </div>

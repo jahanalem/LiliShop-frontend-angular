@@ -53,6 +53,18 @@
           Discount Active?
         </mat-checkbox>
 
+        <mat-form-field hintLabel="Optional" appearance="outline" class="input-field">
+          <mat-label>Schedule Price</mat-label>
+          <input
+            formControlName="scheduledPrice"
+            matInput
+            type="number"
+        
+            placeholder="Enter scheduled price"
+          />
+          <span matPrefix>€&nbsp;</span>
+        </mat-form-field>
+
         <!-- Discount Start (Date & Time in one row) -->
         <div class="discount-row" *ngIf="productForm.get('isDiscountActive')?.value">
           <mat-form-field appearance="outline" class="input-field date-field">

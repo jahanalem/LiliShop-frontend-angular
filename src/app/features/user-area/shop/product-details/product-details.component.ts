@@ -1,13 +1,12 @@
 import { NotificationService } from './../../../../core/services/notification.service';
 import { of, switchMap } from 'rxjs';
 import { IProduct } from 'src/app/shared/models/product';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { ProductService } from 'src/app/core/services/product.service';
 import { INotificationSubscription } from 'src/app/shared/models/notificationSubscription';
 import { AccountService } from 'src/app/core/services/account.service';
-
 
 @Component({
     selector: 'app-product-details',
@@ -16,18 +15,23 @@ import { AccountService } from 'src/app/core/services/account.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
-export class ProductDetailsComponent implements OnInit {
+export class ProductDetailsComponent implements OnInit, OnDestroy {
   product                   = signal<IProduct>({} as IProduct);
   quantity                  = signal<number>(1);
   isSubscribed              = signal<boolean>(false);
   currentUserId             = signal<number>(0);
   currentUserEmailConfirmed = signal<boolean>(false);
 
+  discountTimeLeft = signal<string>('');
+
+  private discountInterval: any;
+
   private activatedRoute      = inject(ActivatedRoute);
   private basketService       = inject(BasketService);
   private productService      = inject(ProductService);
   private notificationService = inject(NotificationService);
   private accountService      = inject(AccountService);
+   private cdRef              = inject(ChangeDetectorRef);
 
   constructor() {
   }
@@ -43,6 +47,12 @@ export class ProductDetailsComponent implements OnInit {
       error:(err)=>{console.log("err = ", err);}
     });
     this.loadProduct();
+  }
+
+  ngOnDestroy(): void {
+    if (this.discountInterval) {
+      clearInterval(this.discountInterval);
+    }
   }
 
   /*
@@ -69,18 +79,24 @@ export class ProductDetailsComponent implements OnInit {
   loadProduct() {
     this.activatedRoute.paramMap.pipe(
       switchMap((params: ParamMap) => {
-        const id = params.get('id'); // === this.activatedRoute.snapshot.paramMap.get('id')
+        const id = params.get('id');
         return id ? this.productService.getProduct(+id) : of();
       })
     ).subscribe({
       next: (product) => {
-        this.product.set(product);
+        this.product.update(()=>product);
+        this.cdRef.detectChanges();
+        if (this.discountActiveNow()) {
+          this.startDiscountCountdown();
+        }
+
         this.checkSubscriptionStatus();
       },
       error: (error) => {
         console.error(error);
       }
     });
+    this.cdRef.detectChanges();
   }
 
   incrementQuantity() {
@@ -158,5 +174,70 @@ export class ProductDetailsComponent implements OnInit {
         alert('There was an error subscribing to notifications.');
       }
     });
+  }
+
+  // === NEW METHODS FOR THE COUNTDOWN ===
+
+  discountActiveNow(): boolean {
+    const prod = this.product();
+    if (!prod.isDiscountActive || !prod.discountStartDate || !prod.discountEndDate) {
+      return false;
+    }
+    const now   = new Date().getTime();
+    const start = new Date(prod.discountStartDate).getTime();
+    const end   = new Date(prod.discountEndDate).getTime();
+
+    return now >= start && now <= end;
+  }
+
+  private startDiscountCountdown(): void {
+    // Calculate once at startup
+    this.updateDiscountTimeLeft();
+
+    // Recalculate every second
+    this.discountInterval = setInterval(() => {
+      this.updateDiscountTimeLeft();
+    }, 1000);
+  }
+
+  private updateDiscountTimeLeft(): void {
+    const productEndDate = this.product().discountEndDate;
+    if (!productEndDate) {
+      return;
+    }
+
+    const now = new Date().getTime();
+    const end = new Date(productEndDate).getTime();
+    const distance = end - now;
+
+    if (distance <= 0) {
+      this.discountTimeLeft.set('Offer ended');
+      clearInterval(this.discountInterval);
+
+      const updatedProd = { ...this.product() };
+      updatedProd.isDiscountActive = false;
+      updatedProd.price = this.product().previousPrice ?? this.product().price
+      this.product.set(updatedProd);
+      this.cdRef.detectChanges();
+
+      return;
+    }
+
+    // If discount is still active, compute the days/hours/min/sec left
+    const days    = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours   = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // Simple display format, e.g. "1d 04:22:11"
+    if (days > 0) {
+      this.discountTimeLeft.set(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+    } else if(hours > 0) {
+      this.discountTimeLeft.set(`${hours}h ${minutes}m ${seconds}s`);
+    } else if(minutes > 0){
+      this.discountTimeLeft.set(`${minutes}m ${seconds}s`);
+    } else if(seconds > 0){
+      this.discountTimeLeft.set(`${seconds}s`);
+    }
   }
 }

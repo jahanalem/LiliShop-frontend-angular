@@ -85,7 +85,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
       await this.setupDiscountValidation();
 
     } catch (error) {
-      console.error("Fehler bei ngOnInit:", error);
+      console.error("Error in ngOnInit:", error);
     }
   }
 
@@ -103,8 +103,14 @@ export class EditProductComponent implements OnInit, OnDestroy {
     let discountStartDate = null;
     let discountEndDate   = null;
     if (formValues.isDiscountActive) {
+      if (!formValues.discountStartDateDate) {
+        formValues.discountStartDateDate = new Date();
+      }
       discountStartDate = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
       discountEndDate   = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
+
+      this.backupStartTime = formValues.discountStartDateTime;
+      this.backupEndTime   = formValues.discountEndDateTime;
     }
 
     // Construct the payload
@@ -114,6 +120,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
       description           : formValues.description,
       price                 : formValues.price,
       previousPrice         : formValues.previousPrice,
+      scheduledPrice        : formValues.scheduledPrice,
       pictureUrl            : existingProduct?.pictureUrl || '',
       productType           : existingProduct?.productType,
       productTypeId         : formValues.productTypeId,
@@ -139,9 +146,14 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
         // Patch the form with the updated product data, including productPhotos
         this.productForm.patchValue({
-          productPhotos: updatedProduct.productPhotos,
+          productPhotos   : updatedProduct.productPhotos,
+          previousPrice   : updatedProduct.previousPrice,
+          scheduledPrice  : updatedProduct.scheduledPrice,
+          price           : updatedProduct.price,
+          isDiscountActive: updatedProduct.isDiscountActive,
         });
         // Mark the form as pristine
+        this.productForm.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => this.cdRef.detectChanges());
         this.productForm.markAsPristine();
 
         // Show success message
@@ -167,6 +179,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
       productBrandId        : [null, Validators.required],
       productTypeId         : [null, Validators.required],
       previousPrice         : [{ value: null, disabled: true }],
+      scheduledPrice        : [{ value: null, disabled: true }],
       productCharacteristics: this.formBuilder.array([]),
       productPhotos         : [null],
       isDiscountActive      : [{ value: false, disabled: false },Validators.required],
@@ -215,7 +228,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
       if (prod) {
         this.product.set(prod);
-
         this.productForm.setControl('productCharacteristics', this.formBuilder.array([]));
       }
     } catch (error) {
@@ -234,7 +246,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
     if (currentProduct) {
       // Extract date and time from discountStartDate and discountEndDate
       const start = this.extractDateTime(currentProduct.discountStartDate);
-      const end = this.extractDateTime(currentProduct.discountEndDate);
+      const end   = this.extractDateTime(currentProduct.discountEndDate);
 
       // Patch the form with product data
       this.productForm.patchValue({
@@ -245,6 +257,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
         productBrandId       : currentProduct.productBrandId,
         productTypeId        : currentProduct.productTypeId,
         previousPrice        : currentProduct.previousPrice,
+        scheduledPrice       : currentProduct.scheduledPrice,
         isDiscountActive     : currentProduct.isDiscountActive,
         productPhotos        : currentProduct.productPhotos,      // Patch productPhotos
         discountStartDateDate: start.date,
@@ -274,11 +287,12 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
 
   async updateIsDiscountActiveControl(): Promise<void> {
-    const prevPrice = this.product()?.previousPrice ?? 0;
-    const basePrice = this.product()?.price ?? 0;
-    const price = this.productForm.get("price")?.value ?? 0;
+    const prevPrice      = this.product()?.previousPrice ?? 0;
+    const basePrice      = this.product()?.price ?? 0;
+    const price          = this.productForm.get("price")?.value ?? 0;
+    const scheduledPrice = this.product()?.scheduledPrice ?? 0;
 
-    if (price < prevPrice || price < basePrice) {
+    if (price < prevPrice || price < basePrice || (scheduledPrice !== null && scheduledPrice > 0)) {
       this.productForm.get("isDiscountActive")?.enable();
       this.productForm.get("isDiscountActive")?.setValue(true);
     } else {
@@ -324,8 +338,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
           // Use backup time if available, otherwise use product's time
           discountStartDateTimeControl?.setValue(this.backupStartTime ?? formatDate(startDate, 'HH:mm', 'en-US'));
         } else {
-          discountStartDateDateControl.setValue(null);
-          discountStartDateTimeControl?.setValue(this.backupStartTime);
+          const now = new Date();
+          discountStartDateDateControl.setValue(formatDate(now, 'yyyy-MM-dd', 'en-US'));
+          discountStartDateTimeControl?.setValue(now);
         }
 
         if (product?.discountEndDate) {
@@ -333,8 +348,10 @@ export class EditProductComponent implements OnInit, OnDestroy {
           discountEndDateDateControl.setValue(this.backupEndDate ?? formatDate(endDate, 'yyyy-MM-dd', 'en-US'));
           discountEndDateTimeControl?.setValue(this.backupEndTime ?? formatDate(endDate, 'HH:mm', 'en-US'));
         } else {
-          discountEndDateDateControl.setValue(null);
-          discountEndDateTimeControl?.setValue(this.backupEndTime);
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          discountEndDateDateControl.setValue(formatDate(tomorrow, 'yyyy-MM-dd', 'en-US'));
+          discountEndDateTimeControl?.setValue(tomorrow);
         }
 
         // Enable controls
@@ -343,7 +360,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
         discountEndDateDateControl.enable();
         discountEndDateTimeControl?.enable();
       } else {
-        // Backup current times before clearing
+        // Backup current times
         this.backupStartTime = discountStartDateTimeControl?.value;
         this.backupEndTime   = discountEndDateTimeControl?.value;
         this.backupStartDate = discountStartDateDateControl?.value;
@@ -388,7 +405,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   // Helper method to extract date and time from a string
   private extractDateTime(dateStr: string | null | undefined): { date: Date | null; time: Date | null } {
-    if (!dateStr) return { date: null, time: null };
+    if (!dateStr) {
+      return { date: null, time: null };
+    }
 
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) {

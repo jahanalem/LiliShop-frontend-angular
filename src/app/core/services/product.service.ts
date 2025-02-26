@@ -35,7 +35,7 @@ export class ProductService {
   }
 
   getProduct(productId: number): Observable<IProduct> {
-    return this.http.get<IProduct>(this.baseUrl + 'products/' + productId);
+    return this.http.get<IProduct>(`${this.baseUrl}products/${productId}`);
   }
 
   getProducts(isActive?: boolean): Observable<ProductPagination> {

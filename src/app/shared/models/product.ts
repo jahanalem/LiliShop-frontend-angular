@@ -7,7 +7,8 @@ export interface IProduct {
   name                  :  string;
   description           :  string;
   price                 :  number;
-  previousPrice         ?: number
+  previousPrice         ?: number;
+  scheduledPrice        ?: number;
   pictureUrl            :  string;
   productType           ?: string;
   productTypeId         ?: number;
