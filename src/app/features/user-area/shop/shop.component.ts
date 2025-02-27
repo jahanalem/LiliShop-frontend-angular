@@ -1,6 +1,6 @@
 
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
-import { Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProduct } from 'src/app/shared/models/product';
@@ -10,11 +10,11 @@ import { IProductType } from 'src/app/shared/models/productType';
 
 
 @Component({
-    selector: 'app-shop',
-    templateUrl: './shop.component.html',
-    styleUrls: ['./shop.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-shop',
+  templateUrl: './shop.component.html',
+  styleUrls: ['./shop.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class ShopComponent implements OnInit {
   searchTerm = viewChild.required<ElementRef<HTMLInputElement>>('search');
@@ -42,10 +42,12 @@ export class ShopComponent implements OnInit {
     this.shopParams.set(this.productService.getShopParams());
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.checkScreenSize();
-    this.getProducts(true);
-    this.getFilters();
+    await Promise.all([
+      await this.getProducts(true),
+      await this.getFilters()
+    ])
   }
 
   @HostListener('window:resize', ['$event'])
@@ -73,57 +75,58 @@ export class ShopComponent implements OnInit {
     }
   }
 
-  getProducts(isActive?: boolean): void {
-    this.productService.getProducts(isActive).subscribe({
-      next: (response) => {
-        if (response) {
-          this.products.set(response.data);
-          this.totalCount.set(response.count);
-        }
-      },
-      error: (error) => { console.error(error); }
-    });
+  async getProducts(isActive?: boolean): Promise<void> {
+    try {
+      const response = await firstValueFrom(this.productService.getProducts(isActive));
+      if (response) {
+        this.products.set(response.data);
+        this.totalCount.set(response.count);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  getFilters(): void {
-    this.getData(this.productService.getBrands(true), (response) => {
-      this.brands.set([{ id: 0, name: 'All' }, ...response]);
-    });
-
-    this.getData(this.productService.getTypes(true), (response) => {
-      this.types.set([{ id: 0, name: 'All' }, ...response]);
-    });
-
-    this.getData(this.productService.getSizes(true), (response) => {
-      this.sizes.set([{ id: 0, size: 'All', isActive: false }, ...response]);
-    });
+  async getFilters(): Promise<void> {
+    try {
+      const [brands, types, sizes] = await Promise.all([
+        firstValueFrom(this.productService.getBrands(true)),
+        firstValueFrom(this.productService.getTypes(true)),
+        firstValueFrom(this.productService.getSizes(true)),
+      ]);
+      this.brands.set([{ id: 0, name: 'All' }, ...brands]);
+      this.types.set([{ id: 0, name: 'All' }, ...types]);
+      this.sizes.set([{ id: 0, size: 'All', isActive: false }, ...sizes]);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  onPageChanged(event: { pageNumber: number, pageSize: number }) {
+  async onPageChanged(event: { pageNumber: number, pageSize: number }): Promise<void> {
     const params = this.shopParams();
     params.pageNumber = event.pageNumber;
     params.pageSize = event.pageSize;
     this.shopParams.set(params);
-    this.getProducts();
+    await this.getProducts();
   }
 
-  onSearch(): void {
+  async onSearch(): Promise<void> {
     const params = this.productService.getShopParams();
     params.search = this.searchTerm().nativeElement.value;
     params.pageNumber = 1;
     this.productService.setShopParams(params);
-    this.getProducts();
+    await this.getProducts();
   }
 
-  onReset(): void {
+  async onReset(): Promise<void> {
     this.searchTerm().nativeElement.value = '';
     this.shopParams.set(new ProductQueryParams());
     this.productService.setShopParams(this.shopParams());
     this.productService.clearProductCache();
-    this.getProducts();
+    await this.getProducts();
   }
 
-  onFilterSelected(filterValue: any | null, filterType: string): void {
+  async onFilterSelected(filterValue: any | null, filterType: string): Promise<void> {
     const params = this.productService.getShopParams();
 
     switch (filterType) {
@@ -145,15 +148,6 @@ export class ShopComponent implements OnInit {
 
     params.pageNumber = 1;
     this.productService.setShopParams(params);
-    this.getProducts();
-  }
-
-  private getData<T>(apiCall: Observable<T>, successCallback: (response: T) => void): void {
-    apiCall.subscribe({
-      next: successCallback,
-      error: (error) => {
-        console.error(error);
-      }
-    });
+    await this.getProducts();
   }
 }

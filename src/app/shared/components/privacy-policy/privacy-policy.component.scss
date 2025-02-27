@@ -1,48 +1,73 @@
-/* privacy-policy.component.css */
-.privacy-policy-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  font-family: 'Roboto', sans-serif;
+/* Simple, professional CSS layout */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+header,
+main,
+footer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header h1 {
+  text-align: center;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+h2,
+h3 {
+  margin-top: 30px;
   color: #333;
 }
 
-.privacy-policy-container h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-  color: #004a9f;
+section {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+section h2 {
+  margin-top: 0;
+}
+
+ul {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+.button-container {
   text-align: center;
+  margin: 30px 0;
 }
 
-.privacy-policy-container h2 {
-  font-size: 1.8rem;
-  margin-top: 1.5rem;
-  color: #004a9f;
-}
-
-.privacy-policy-container p {
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-.privacy-policy-container ul {
-  margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
-}
-
-.privacy-policy-container ul li {
-  margin-bottom: 0.5rem;
-}
-
-.privacy-policy-container a {
-  color: #004a9f;
+.home-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 4px;
   text-decoration: none;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
-.privacy-policy-container a:hover {
-  text-decoration: underline;
+.home-button:hover {
+  background-color: #0056b3;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 20px;
 }

@@ -195,3 +195,117 @@ body {
 .icon-disabled {
   color: gray !important;
 }
+
+/* Material Icons Base Styles */
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.5em;
+  line-height: 1;
+  letter-spacing: normal;
+  display: inline-flex;
+  vertical-align: middle;
+  white-space: nowrap;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Cookie Consent Styling */
+.cookie-consent {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1.5rem;
+  box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+
+.cookie-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cookie-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.cookie-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cookie-button.primary {
+  background-color: #2c3e50;
+  color: white;
+}
+
+.cookie-button.secondary {
+  background-color: #f3f3f3;
+  color: #333;
+}
+
+/* Loading Animation */
+.app-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  z-index: 9999;
+}
+
+.spinner {
+  animation: rotate 1.4s linear infinite;
+  width: 50px;
+  height: 50px;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.path {
+  stroke-dasharray: 80, 200;
+  stroke-dashoffset: 0;
+  stroke: #2c3e50;
+  animation: dash 1.4s ease-in-out infinite;
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 200;
+  }
+
+  50% {
+    stroke-dasharray: 100, 200;
+  }
+
+  100% {
+    stroke-dasharray: 100, 200;
+  }
+}

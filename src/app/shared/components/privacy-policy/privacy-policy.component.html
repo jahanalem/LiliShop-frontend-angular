@@ -1,65 +1,395 @@
-<!-- privacy-policy.component.html -->
-<div class="privacy-policy-container">
-  <h1>Privacy Policy</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiliShop Privacy Policy</title>
+  
+</head>
+<body>
 
-  <p>
-    Welcome to <strong>LiliShop</strong>. Please note that this website is currently in a testing and
-    development phase. The purpose of this site is to evaluate its functionality, gather feedback, and make
-    improvements before the official launch. As such, all data, including user interactions and purchases, are
-    simulated and not real.
-  </p>
+  <header>
+    <h1>LiliShop Privacy Policy</h1>
+    <p style="text-align:center; color:#666;">Last Updated: February 27, 2025</p>
+  </header>
 
-  <h2>Data Collection</h2>
-  <p>
-    During this testing phase, we may collect the following types of data:
-  </p>
-  <ul>
-    <li><strong>Fake Personal Information:</strong> Any personal information you provide, such as your name, email address, and payment details, is considered fake or simulated data for testing purposes only.</li>
-    <li><strong>Usage Data:</strong> We collect non-personal data related to how you use and interact with the website. This may include your IP address, browser type, and browsing behavior on the site.</li>
-  </ul>
+  <main>
 
-  <h2>Use of Data</h2>
-  <p>
-    The data collected during this phase is used exclusively for:
-  </p>
-  <ul>
-    <li>Testing the functionality of our website.</li>
-    <li>Identifying and fixing bugs or issues.</li>
-    <li>Improving the user experience based on feedback.</li>
-  </ul>
+    <!-- INTRODUCTION -->
+    <section>
+      <h2>Introduction</h2>
+      <p>
+        Welcome to LiliShop! This Privacy Policy explains how we collect, use, and protect your information when you use our website.
+        <strong>Please note:</strong> LiliShop is currently in <strong>test mode</strong>. This means any data we collect is primarily
+        <strong>simulated or fake data</strong> for testing purposes. We want to be transparent about our practices, even during this test phase.
+        By using LiliShop (in its testing phase), you agree to the handling of data as described in this policy.
+      </p>
+    </section>
 
-  <h2>No Real Transactions</h2>
-  <p>
-    Please note that any purchases or financial transactions made on this website are entirely fictitious. No real payment processing occurs, and no actual products or services are being offered or delivered.
-  </p>
+    <!-- INFORMATION WE COLLECT -->
+    <section>
+      <h2>Information We Collect</h2>
+      <p>
+        Even though LiliShop is in test mode, we may collect certain information to allow the site’s features to function properly.
+        This includes:
+      </p>
+      <ul>
+        <li>
+          <strong>Email Address:</strong> If you register a test account, we store the email address you provide.
+          (Feel free to use a dummy email for testing.)
+        </li>
+        <li>
+          <strong>Shipping Address:</strong> If you simulate a purchase or place a test order, we may ask for a shipping name and address.
+          This information can be fictitious because orders are not actually fulfilled in test mode.
+        </li>
+        <li>
+          <strong>Payment Information:</strong> <em>Important:</em> We do <strong>not</strong> collect or store real payment card details on LiliShop.
+          For test orders, we integrate Stripe in “Test Mode.” All payment details you enter (e.g., test card numbers) are handled by Stripe
+          and are not real transactions.
+        </li>
+      </ul>
+      <p>
+        We do <strong>not</strong> intentionally collect sensitive personal data during testing.
+        Please refrain from submitting real personal information.
+        If you do provide real data, we will treat it as personal data and protect it under this policy.
+      </p>
+    </section>
 
-  <h2>Third-Party Services</h2>
-  <p>
-    We may use third-party services, such as analytics tools, to help us understand how our website is performing.
-    These services may collect anonymized data about your use of the site. However, since all user data is simulated,
-    no real personal information is shared with these services.
-  </p>
+    <!-- HOW WE USE YOUR INFORMATION -->
+    <section>
+      <h2>How We Use Your Information</h2>
+      <p>Any information collected in test mode is used solely for the following purposes:</p>
+      <ul>
+        <li>
+          <strong>To Provide and Operate the Service:</strong>
+          We use your email to create and log you into your test account, and your provided address to simulate order processing and shipping in the e-commerce workflow.
+        </li>
+        <li>
+          <strong>To Communicate:</strong>
+          We may send you test emails (e.g., registration confirmations or order notifications) via our email system to demonstrate site functionality.
+        </li>
+        <li>
+          <strong>To Improve the Site:</strong>
+          Even with fake data, understanding how features are used helps us refine LiliShop for the future.
+        </li>
+        <li>
+          <strong>No Marketing Use:</strong>
+          We will <strong>not</strong> use any data you provide in test mode for marketing or promotional purposes.
+          You will not receive marketing emails or newsletters at this stage.
+        </li>
+      </ul>
+      <p>
+        We will not share or sell any information from test mode to third parties for their own marketing.
+        The only sharing that occurs is with the service providers listed below (see “Third-Party Services”).
+      </p>
+    </section>
 
-  <h2>Security</h2>
-  <p>
-    Even though the website is in a testing phase, we take the security of our platform seriously. We employ
-    reasonable measures to protect the data we collect during this phase, but please be aware that this site is not
-    intended for real user interactions.
-  </p>
+    <!-- COOKIES -->
+    <section>
+      <h2>Cookies and Tracking Technologies</h2>
+      <p>
+        LiliShop uses cookies and similar technologies to ensure the site works properly, especially for authentication. Here’s how we use cookies in our test environment:
+      </p>
+      <ul>
+        <li>
+          <strong>Session & Authentication Cookies:</strong>
+          When you log in, our system (built on .NET 9) issues a secure <strong>refresh token cookie</strong>.
+          This cookie is stored in your browser so you can remain logged in without repeatedly entering your credentials.
+          It’s an <strong>HTTP-only</strong> cookie (not accessible by scripts) used purely for managing your session.
+        </li>
+        <li>
+          <strong>Stripe Cookies:</strong>
+          Because we use Stripe for test payment processing, Stripe may set its own cookies in your browser when you interact with the payment page.
+          These cookies are controlled by Stripe and are used to enable payment functionality and prevent fraud.
+          We do not have direct access to or control over Stripe’s cookies.
+        </li>
+        <li>
+          <strong>No Analytics/Tracking Cookies:</strong>
+          Aside from the above, we do not use any analytics or advertising cookies during this test phase.
+          There are no Google Analytics, Facebook pixels, or similar trackers on the test site.
+        </li>
+      </ul>
+      <p>
+        <strong>Your Choices:</strong> You can adjust your browser settings to refuse or delete cookies.
+        However, disabling cookies may affect site functionality (for example, you may not be able to stay logged in).
+        Since we only use essential cookies in test mode, we recommend allowing them for the best experience.
+      </p>
+    </section>
 
-  <h2>Feedback</h2>
-  <p>
-    We welcome your feedback on the functionality and design of our website. Please contact us at <a href="mailto:s.r.alem@gmail.com">s.r.alem&#64;gmail.com</a> if you encounter any issues or have suggestions for improvement.
-  </p>
+    <!-- THIRD-PARTY SERVICES -->
+    <section>
+      <h2>Third-Party Services</h2>
+      <p>
+        Even though LiliShop is still in test mode, we rely on a few third-party services to help operate our site, send emails, store images,
+        and simulate payments. We want you to know who they are and what that means for your data:
+      </p>
+      <ul>
+        <li>
+          <strong>Microsoft Azure (Hosting):</strong>
+          LiliShop is hosted on Microsoft Azure servers located in the European Union (specifically in Germany).
+          All data you provide to LiliShop (account info, test orders, etc.) is stored on these secure servers.
+          Azure is a reputable hosting provider with robust security and GDPR compliance in the EU region.
+        </li>
+        <li>
+          <strong>Cloudinary (Image Storage):</strong>
+          We use Cloudinary to store and deliver images (e.g., product images on LiliShop).
+          While we primarily use Cloudinary’s service, <strong>Cloudinary’s infrastructure may process data outside the EU</strong>.
+          This means images or related data could be transmitted to or stored on servers in other countries.
+          We do not upload personal data to Cloudinary—only site images.
+          However, if any personal data were included in an image, it could be transferred internationally via Cloudinary.
+        </li>
+        <li>
+          <strong>SendGrid (Email Delivery):</strong>
+          We use SendGrid to send test emails (such as verification codes or order confirmations). SendGrid’s servers are based in the United States.
+          This means that if you sign up with an email or perform an action that triggers an email, your email address and the email content
+          will be processed on SendGrid’s U.S. servers. We use SendGrid in test mode to ensure our email functionality works—no marketing emails are sent.
+        </li>
+        <li>
+          <strong>Stripe (Payment Processing):</strong>
+          We have integrated Stripe to simulate payment processing.
+          <strong>We are using Stripe in Test Mode</strong>, so no real payments occur.
+          If you go through the checkout process, you may enter test card information—this data goes directly to Stripe.
+          Stripe may temporarily process that payment information on their systems (often located in the U.S. or elsewhere).
+          LiliShop does not see or store your card numbers. Stripe is a PCI-DSS compliant payment processor and may also set cookies or trackers.
+          Even though no real transaction occurs, Stripe’s involvement is purely for demonstrating the payment flow.
+        </li>
+      </ul>
+      <p>
+        <strong>No Formal DPAs Yet:</strong>
+        Because LiliShop is currently in a testing phase, we have <strong>not yet signed formal Data Processing Agreements (DPAs)</strong>
+        with these third-party providers. In a production environment, DPAs ensure that third parties handle personal data
+        in compliance with GDPR and other laws. While we have not formalized these agreements in test mode, we trust these providers
+        and use their standard terms of service, which include data protection commitments.
+        As we move toward a live product, we will establish proper DPAs and ensure full compliance.
+      </p>
+    </section>
 
-  <h2>Changes to This Privacy Policy</h2>
-  <p>
-    This privacy policy may be updated as we continue to develop and test our website. Any changes will be posted on
-    this page, so please review it periodically.
-  </p>
+    <!-- DATA SECURITY -->
+    <section>
+      <h2>Data Security</h2>
+      <p>
+        We take the security of your data seriously, even in a test environment. Here are some of the measures we have in place
+        to protect information on LiliShop:
+      </p>
+      <ul>
+        <li>
+          <strong>Password Protection:</strong>
+          If you create a test account, your password is <strong>encrypted</strong> before being stored in our database.
+          We do not store it in plain text.
+        </li>
+        <li>
+          <strong>Secure Hosting:</strong>
+          By using Microsoft Azure in the EU, we benefit from enterprise-level security features, including network security,
+          encryption at rest, and regular backups. Azure data centers are highly secure environments.
+        </li>
+        <li>
+          <strong>Limited Access:</strong>
+          In this test phase, only the LiliShop development team has access to the database and systems,
+          and that access is strictly for testing and development purposes. All team members are aware of privacy obligations.
+        </li>
+        <li>
+          <strong>HTTPS:</strong>
+          Our website (even in test mode) is served over HTTPS. This encrypts data between your browser and our server,
+          so information (such as your email or address) is protected during transmission.
+        </li>
+        <li>
+          <strong>Minimal Personal Data:</strong>
+          We intentionally collect only limited data (and encourage using fake data). Fewer personal details mean lower risk.
+          We do not collect highly sensitive information (e.g., government IDs or real payment info) in test mode.
+        </li>
+      </ul>
+      <p>
+        Although this is a testing environment, we treat any data as if it were real personal data and apply appropriate security measures.
+        We believe the measures above are suitable for this stage. As LiliShop evolves, we will continuously assess and improve
+        our security practices.
+      </p>
+    </section>
 
-  <h2>Contact Us</h2>
-  <p>
-    If you have any questions about this privacy policy or the testing process, please contact us at <a href="mailto:s.r.alem@gmail.com">s.r.alem&#64;gmail.com</a>.
-  </p>
-</div>
+    <!-- DATA RETENTION -->
+    <section>
+      <h2>Data Retention</h2>
+      <p>
+        Because LiliShop is operating in test mode, our approach to data retention differs from a typical live service:
+      </p>
+      <ul>
+        <li>
+          <strong>Temporary Nature of Data:</strong>
+          Any data you provide (email, addresses, test orders) is considered test data.
+          We do <strong>not</strong> intend to keep it long-term. We retain it only so you can reuse your test account
+          and view your test order history during the testing period.
+        </li>
+        <li>
+          <strong>Periodic Deletion:</strong>
+          We may <strong>periodically delete</strong> or reset data in our system, including test accounts, orders,
+          and other stored information, especially when updating the system or preparing for production.
+          We may not provide advance notice of these deletions, as part of test environment maintenance.
+        </li>
+        <li>
+          <strong>No Fixed Retention Schedule:</strong>
+          We have not set a specific timeline (e.g., “we keep data for X days”) because the test phase timing is flexible.
+          Data might be kept throughout the test phase and then purged once testing is concluded or it’s no longer needed.
+        </li>
+        <li>
+          <strong>User-Initiated Deletion:</strong>
+          If you want your test data removed sooner (e.g., if you used a real email and later want it deleted),
+          you can request deletion at any time (see “Your Rights” below). We will promptly erase your account
+          and any related information upon request.
+        </li>
+      </ul>
+      <p>
+        Rest assured, we do not use test data for any purpose beyond testing the site’s features and functionality.
+        Once the testing phase is over or data is no longer needed, it will be deleted from our systems.
+        As we transition to a live environment, we will establish clear retention policies appropriate for real user data.
+      </p>
+    </section>
+
+    <!-- YOUR RIGHTS -->
+    <section>
+      <h2>Your Rights (GDPR and Data Protection)</h2>
+      <p>
+        Even though LiliShop is in a test phase, if you are an individual in the European Union (or a jurisdiction with similar data protection laws),
+        you have certain rights regarding any personal data you provide. LiliShop is committed to upholding these principles:
+      </p>
+      <ul>
+        <li>
+          <strong>Right of Access:</strong>
+          You have the right to request a copy of any personal data we hold about you.
+        </li>
+        <li>
+          <strong>Right to Rectification:</strong>
+          If you believe the information we have is incorrect or incomplete, you have the right to have it corrected.
+        </li>
+        <li>
+          <strong>Right to Erasure (Right to be Forgotten):</strong>
+          You can request that we delete any personal data we have about you.
+          <strong>We honor deletion requests for test accounts at any time.</strong>
+        </li>
+        <li>
+          <strong>Right to Restrict Processing:</strong>
+          You can ask us to limit how we use your data. Given the test nature, our usage is already limited,
+          but you retain this right regardless.
+        </li>
+        <li>
+          <strong>Right to Data Portability:</strong>
+          You may request that we provide your personal data to you (or another service) in a commonly used format.
+        </li>
+        <li>
+          <strong>Right to Object:</strong>
+          You can object to the processing of your data. Since we are not conducting marketing or profiling,
+          this essentially means you can object to us holding your test data—leading to its deletion.
+        </li>
+        <li>
+          <strong>Right to Withdraw Consent:</strong>
+          If our processing is based on your consent (e.g., you agreed to test the site with your info), you can withdraw that consent.
+          We will then stop using your data and delete it.
+        </li>
+        <li>
+          <strong>Right to Lodge a Complaint:</strong>
+          If you feel we have not handled your data properly, you have the right to lodge a complaint with your local data protection authority.
+          We encourage you to contact us first to resolve any concerns.
+        </li>
+      </ul>
+      <p>
+        To exercise any of these rights, please contact us (see “Contact Us” below).
+        Since this is a test environment, we aim to make it straightforward to handle your requests quickly.
+      </p>
+      <p>
+        Additionally, we want to emphasize: <strong>We do not actively store or use real personal data in this test phase.</strong>
+        The site is for demonstration and development. We encourage testers to use fake data.
+        If you do choose to provide real personal data, we will treat it with care and respect your rights as outlined.
+      </p>
+    </section>
+
+    <!-- INTERNATIONAL DATA TRANSFERS -->
+    <section>
+      <h2>International Data Transfers</h2>
+      <p>
+        As mentioned in the Third-Party Services section, some of your data may be transferred or processed outside your home country:
+      </p>
+      <ul>
+        <li>Data stored in <strong>Microsoft Azure’s EU servers</strong> remains in Europe, which has strong data protection laws.</li>
+        <li>Data sent to <strong>Cloudinary</strong> may be routed outside the EU (e.g., to servers in the U.S. or other regions).</li>
+        <li><strong>SendGrid</strong> processes email data in the United States.</li>
+        <li><strong>Stripe</strong> may process payment-related data on servers outside your country (Stripe has global infrastructure).</li>
+      </ul>
+      <p>
+        When data leaves the European Economic Area (EEA), it could be subject to different privacy laws.
+        However, we use reputable providers that commit to protecting data (for example, via standard contractual clauses
+        or other legal mechanisms). By using the LiliShop test site and providing information, you acknowledge that your data
+        may be transferred to and processed in countries outside your own.
+      </p>
+      <p>
+        If this is a concern for you, we recommend using only fake/test data on our site, or refraining from using the site
+        until we launch in production with full compliance measures.
+      </p>
+    </section>
+
+    <!-- CHILDREN'S PRIVACY -->
+    <section>
+      <h2>Children’s Privacy</h2>
+      <p>
+        LiliShop is not intended for use by children. We do not knowingly collect personal information from anyone under the age of 16
+        (or the relevant minimum age in your jurisdiction) in this test environment. Since all data here is for testing,
+        we expect that children will not participate. If you are a parent or guardian and believe a minor has provided real personal data
+        on our test site, please contact us immediately so we can remove it.
+      </p>
+    </section>
+
+    <!-- CHANGES TO THIS PRIVACY POLICY -->
+    <section>
+      <h2>Changes to This Privacy Policy</h2>
+      <p>
+        We may update this Privacy Policy from time to time as our site develops. During the test phase—and especially when we transition
+        to a live production site—the way we handle data may change (for example, we might collect real data and integrate more services).
+      </p>
+      <ul>
+        <li>
+          If we make significant changes, we will update the “Last Updated” date at the top.
+          In a live environment, we may also provide additional notice (e.g., an email to users or a notice on our website).
+        </li>
+        <li>
+          We encourage you to review this Privacy Policy periodically to stay informed about how we protect your information.
+        </li>
+        <li>
+          This version of the policy is tailored to our <strong>testing stage</strong>.
+          A more comprehensive policy will be provided once LiliShop is live and collecting real customer data.
+        </li>
+      </ul>
+      <p>
+        Your continued use of the LiliShop test site after any changes to this policy will be considered acceptance of those changes.
+      </p>
+    </section>
+
+    <!-- CONTACT US -->
+    <section>
+      <h2>Contact Us</h2>
+      <p>
+        If you have any questions, concerns, or requests regarding this Privacy Policy or your data, please feel free to reach out.
+        Since we are in test mode, the team is small, and we’re happy to help.
+      </p>
+      <p>
+        <strong>Contact Email:</strong> <a href="mailto:s.r.alem@gmail.com">s.r.alem&#64;gmail.com</a>
+        (Please include “Privacy” in the subject line.)
+      </p>
+      <p>
+        You may also contact us through any available contact form or support channel on the LiliShop website.
+      </p>
+      <hr>
+      <p>
+        Thank you for helping us test LiliShop. We value your privacy and appreciate your understanding that this is a testing environment.
+        We are committed to protecting any data you share with us and will continue to prioritize privacy as we move toward a full launch.
+      </p>
+    </section>
+
+    <div class="button-container">
+      <a href="/" class="home-button">Back to Home</a>
+    </div>
+
+  </main>
+
+  <footer>
+    &copy; 2025 LiliShop — Test Environment
+  </footer>
+
+</body>
+</html>

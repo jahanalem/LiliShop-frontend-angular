@@ -16,6 +16,7 @@
         "listitem": "off",
         "list": "off"
       }
-    ]
+    ],
+    "apple-touch-icons": "off"
   }
 }
