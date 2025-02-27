@@ -1,0 +1,39 @@
+.confirmation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  background-color: #f5f5f5;
+  padding: 2rem;
+}
+
+.confirmation-card {
+  text-align: center;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+}
+
+.confirmation-icon {
+  font-size: 4rem;
+  color: #4caf50; /* Angular Material green */
+  margin-bottom: 1rem;
+}
+
+.confirmation-title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.confirmation-message {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.confirmation-buttons button {
+  margin: 0.5rem;
+}
