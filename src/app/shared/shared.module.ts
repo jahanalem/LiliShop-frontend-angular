@@ -40,7 +40,6 @@ import { FooterComponent } from './components/footer/footer.component';
 import { CheckPolicyDirective } from './directives/check-policy.directive';
 import { FormatValuePipe } from './pipes/format-value.pipe';
 
-import { CloudinaryModule } from '@cloudinary/ng';
 import { MatSortModule } from '@angular/material/sort';
 
 const components = [
@@ -79,7 +78,6 @@ const matModules = [
 ];
 
 const thirdPartyModules = [
-  CloudinaryModule,
   FileUploadModule,
   BreadcrumbComponent,
   BreadcrumbItemDirective

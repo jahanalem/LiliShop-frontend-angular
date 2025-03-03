@@ -49,8 +49,10 @@
     "xng-breadcrumb": "^13.0.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^17.3.12",
-    "@angular/cli": "~19.2.0",
+    "@angular-devkit/architect": "^0.1902.0",
+    "@angular-devkit/build-angular": "^19.2.0",
+    "@angular-devkit/core": "^19.2.0",
+    "@angular/cli": "^19.2.0",
     "@angular/compiler-cli": "^19.2.0",
     "@types/jasmine": "~5.1.7",
     "@types/stripe": "^8.0.417",
