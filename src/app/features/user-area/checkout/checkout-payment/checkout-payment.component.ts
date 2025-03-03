@@ -75,7 +75,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
       console.log('Running stripe in production mode');
     }
     else {
-      this.stripe = getStripeInstance('pk_test_51Lz52AF9mJP0HDJllK6M7K8UyPc6xtoICZB9soUuoKmComGEA5yzUL1mLBBOglE8wPAMs5A8wFwNXuDWhFOxaqdF00L70K47Pm');
+      this.stripe = getStripeInstance('pk_test_51Lz52AF9mJP0HDJlxywtwHnNN6oYxUatlItmQhmUMJLwTHPIMJPVgWzz6ijcK6T8Cu1p6peNKGMmqXuVs8bh2K2K00ln2GWH1N');
       console.log('Running stripe in development mode');
     }
     const elements = this.stripe.elements();
