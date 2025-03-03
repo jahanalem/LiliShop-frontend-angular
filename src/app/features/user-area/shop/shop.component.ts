@@ -107,6 +107,7 @@ export class ShopComponent implements OnInit {
     params.pageNumber = event.pageNumber;
     params.pageSize = event.pageSize;
     this.shopParams.set(params);
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     await this.getProducts();
   }
 
