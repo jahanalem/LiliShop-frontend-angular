@@ -1,5 +1,8 @@
 @if(product()) {
 <mat-card class="mat-elevation-z4 product-card">
+  
+  <div class="sale-ribbon" *ngIf="discountActiveNow()">SALE</div>
+
   <a routerLink="/shop/{{product().id}}" class="image-container">
     <img [ngSrc]="product().pictureUrl"
     class="product-image"

@@ -3,6 +3,7 @@
   margin: auto;
   border-radius: 8px;
   overflow: hidden;
+  position: relative; /* important so that the ribbon can be positioned correctly */
 }
 
 .image-container {
@@ -42,4 +43,20 @@
 
 .w-100 {
   width: 100%;
+}
+
+/* SALE-Band (Corner Ribbon) */
+.sale-ribbon {
+  position: absolute;
+  top: 10px;
+  right: -30px;
+  width: 100px;
+  padding: 5px 0;
+  background: #e53935;
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+  transform: rotate(45deg);
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }

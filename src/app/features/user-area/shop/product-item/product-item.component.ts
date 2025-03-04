@@ -25,4 +25,16 @@ export class ProductItemComponent implements OnInit {
   addItemToBasket() {
     this.basketService.addItemToBasket(this.product());
   }
+
+  discountActiveNow(): boolean {
+    const prod = this.product();
+    if (!prod.isDiscountActive || !prod.discountStartDate || !prod.discountEndDate) {
+      return false;
+    }
+    const now   = new Date().getTime();
+    const start = new Date(prod.discountStartDate).getTime();
+    const end   = new Date(prod.discountEndDate).getTime();
+
+    return now >= start && now <= end;
+  }
 }
