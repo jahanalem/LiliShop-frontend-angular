@@ -10,7 +10,8 @@
     <button mat-button routerLink="/shop" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:true}">
       Shop
     </button>
-    <button mat-button routerLink="/contact" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: false }">
+    <button mat-button routerLink="/contact" routerLinkActive="active-link"
+      [routerLinkActiveOptions]="{ exact: false }">
       Contact
     </button>
     <button mat-button routerLink="/about" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
@@ -65,7 +66,11 @@
     </mat-menu>
   </ng-template>
 </mat-toolbar>
-
+<mat-progress-bar *ngIf="busyService.loading()"
+                  mode="indeterminate"
+                  color="accent"
+                  track-color="--mat-primary">
+</mat-progress-bar>
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="over" class="sidenav" (closedStart)="closeSidenav()">
     <div class="sidenav-logo">

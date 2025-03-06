@@ -1,25 +1,25 @@
-import { Injectable } from '@angular/core';
-import { NgxSpinnerService } from 'ngx-spinner';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BusyService {
   busyRequestCount = 0;
+  loading = signal<boolean>(false);
 
-  constructor(private spinnerService: NgxSpinnerService) {
+  constructor() {
   }
 
   busy() {
     this.busyRequestCount++;
-    this.spinnerService.show();
+    this.loading.set(true);
   }
 
   idle() {
     this.busyRequestCount--;
     if (this.busyRequestCount <= 0) {
       this.busyRequestCount = 0;
-      this.spinnerService.hide();
+      this.loading.set(false);
     }
   }
 }

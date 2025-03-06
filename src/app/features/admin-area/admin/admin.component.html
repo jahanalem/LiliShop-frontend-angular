@@ -5,7 +5,11 @@
   </button>
   <span class="admin-panel-title">Admin Panel</span>
 </mat-toolbar>
-
+<mat-progress-bar *ngIf="busyService.loading()"
+                  mode="indeterminate"
+                  color="accent"
+                  track-color="--mat-primary">
+</mat-progress-bar>
 <mat-sidenav-container>
   <mat-sidenav #sidenav="matSidenav" class="mat-elevation-z8">
     <div class="logo-container">

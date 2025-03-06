@@ -12,6 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LOCAL_STORAGE_KEYS } from '../../constants/auth';
 import { StorageService } from 'src/app/core/services/storage.service';
 import { Router } from '@angular/router';
+import { BusyService } from 'src/app/core/services/busy.service';
 
 @Component({
     selector: 'app-nav-bar',
@@ -35,6 +36,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
   private basketService        = inject(BasketService);
   private snackBar             = inject(MatSnackBar);
   private router               = inject(Router);
+  protected busyService        = inject(BusyService);
 
   constructor() {
     this.basket$      = this.basketService.basket$;

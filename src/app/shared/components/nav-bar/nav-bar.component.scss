@@ -13,6 +13,18 @@
   height: 64px;
 }
 
+mat-progress-bar {
+  position: fixed;
+  top: 64px; /* Matches the toolbar's height */
+  left: 0;
+  right: 0;
+  z-index: 1001; /* Higher than the toolbar */
+}
+/* Adjust the margin-top of the sidenav-container to account for toolbar and progress bar */
+.sidenav-container {
+  margin-top: calc(64px + 4px); /* 64px (toolbar) + 4px (progress bar height) */
+}
+
 .logo-container {
   display: flex;
   align-items: center;
@@ -147,6 +159,19 @@
 }
 
 @media (max-width: 768px) {
+
+  .toolbar {
+    height: 56px;
+  }
+
+  mat-progress-bar {
+    top: 56px; /* Adjusted for mobile toolbar height */
+  }
+
+  .sidenav-container {
+    margin-top: calc(56px + 4px); /* 56px (mobile toolbar) + 4px (progress bar) */
+  }
+
   .menu-button {
     display: block;
   }

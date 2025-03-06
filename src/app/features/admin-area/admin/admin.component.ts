@@ -4,6 +4,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
 import { delay, filter, Subject, takeUntil } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { BusyService } from 'src/app/core/services/busy.service';
 
 @Component({
     selector: 'app-admin',
@@ -20,6 +21,7 @@ export default class AdminComponent implements OnDestroy, AfterViewInit {
   private observer       = inject(BreakpointObserver);
   private router         = inject(Router);
   private accountService = inject(AccountService);
+  protected busyService  = inject(BusyService);
 
   navItems = [
     { name: 'Dashboard', link: '/admin',                     icon: 'dashboard' },
