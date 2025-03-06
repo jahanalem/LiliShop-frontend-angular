@@ -1,5 +1,5 @@
 import { AccountService } from 'src/app/core/services/account.service';
-import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, AfterViewInit, Renderer2, OnInit } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
 import { delay, filter, Subject, takeUntil } from 'rxjs';
@@ -13,7 +13,7 @@ import { BusyService } from 'src/app/core/services/busy.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false
 })
-export default class AdminComponent implements OnDestroy, AfterViewInit {
+export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit {
   sidenav = viewChild.required<MatSidenav>(MatSidenav);
 
   private destroy$       = new Subject<void>();
@@ -22,6 +22,7 @@ export default class AdminComponent implements OnDestroy, AfterViewInit {
   private router         = inject(Router);
   private accountService = inject(AccountService);
   protected busyService  = inject(BusyService);
+  private renderer2      = inject(Renderer2);
 
   navItems = [
     { name: 'Dashboard', link: '/admin',                     icon: 'dashboard' },
@@ -34,6 +35,9 @@ export default class AdminComponent implements OnDestroy, AfterViewInit {
   ];
 
   constructor() {
+  }
+  ngOnInit(): void {
+    this.renderer2.setStyle(document.body, 'overflow', 'hidden');
   }
 
   ngOnDestroy(): void {

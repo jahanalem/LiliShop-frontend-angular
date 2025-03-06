@@ -15,14 +15,14 @@
 
 mat-progress-bar {
   position: fixed;
-  top: 64px; /* Matches the toolbar's height */
+  top: 60px; /* Matches the toolbar's height */
   left: 0;
   right: 0;
   z-index: 1001; /* Higher than the toolbar */
 }
 /* Adjust the margin-top of the sidenav-container to account for toolbar and progress bar */
 .sidenav-container {
-  margin-top: calc(64px + 4px); /* 64px (toolbar) + 4px (progress bar height) */
+  margin-top: calc(60px + 4px); /* 64px (toolbar) + 4px (progress bar height) */
 }
 
 .logo-container {

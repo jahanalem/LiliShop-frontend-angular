@@ -20,6 +20,7 @@ button:hover {
 .product-management {
   background-color: #f9f9f9;
   border-radius: 8px;
+  padding: 16px;
 }
 
 .filter-field {
@@ -57,9 +58,13 @@ tr.mat-row:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Paginator styles */
+
+
+/* Paginator Styles */
 mat-paginator {
-  margin-top: 16px;
+  margin: 8px 0;
+  display: flex;
+  justify-content: center;
   background-color: #fafafa;
 }
 

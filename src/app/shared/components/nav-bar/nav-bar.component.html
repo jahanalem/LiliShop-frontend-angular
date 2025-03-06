@@ -65,12 +65,13 @@
       </button>
     </mat-menu>
   </ng-template>
-</mat-toolbar>
+
 <mat-progress-bar *ngIf="busyService.loading()"
                   mode="indeterminate"
                   color="accent"
                   track-color="--mat-primary">
 </mat-progress-bar>
+</mat-toolbar>
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="over" class="sidenav" (closedStart)="closeSidenav()">
     <div class="sidenav-logo">
