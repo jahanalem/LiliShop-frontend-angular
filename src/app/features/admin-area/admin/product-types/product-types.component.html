@@ -21,7 +21,7 @@
             <button (click)="editProductType(row.id)" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" mat-icon-button color="accent">
               <mat-icon class="edit-icon">edit</mat-icon>
             </button>
-            <button (click)="deleteProductType(row.id)" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" mat-icon-button color="warn">
+            <button (click)="deleteProductType(row.id)" [appCheckPolicy]="policyNames.RequireSuperAdminRole" mat-icon-button color="warn">
               <mat-icon class="delete-icon">delete</mat-icon>
             </button>
 

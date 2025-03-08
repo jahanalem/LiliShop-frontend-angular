@@ -21,7 +21,7 @@
             <button (click)="editBrand(row.id)" mat-icon-button color="accent" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole">
               <mat-icon class="edit-icon">edit</mat-icon>
             </button>
-            <button (click)="deleteBrand(row.id)" mat-icon-button color="warn" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole">
+            <button (click)="deleteBrand(row.id)" mat-icon-button color="warn" [appCheckPolicy]="policyNames.RequireSuperAdminRole">
               <mat-icon class="delete-icon">delete</mat-icon>
             </button>
           } @else {
