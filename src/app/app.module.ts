@@ -4,7 +4,7 @@ import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
@@ -25,6 +25,7 @@ import { AppComponent } from './app.component';
   providers: [
     provideExperimentalZonelessChangeDetection(),
     provideHttpClient(withInterceptors([jwtInterceptor, loadingInterceptor, errorInterceptor])),
+    provideClientHydration(withEventReplay()),
   ]
 })
 export class AppModule { }

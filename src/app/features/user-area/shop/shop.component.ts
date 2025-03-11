@@ -1,5 +1,6 @@
 
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, PLATFORM_ID, signal, viewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
 import { IBrand } from 'src/app/shared/models/brand';
@@ -37,6 +38,7 @@ export class ShopComponent implements OnInit {
   ]
 
   private productService = inject(ProductService);
+    private platformId = inject(PLATFORM_ID)
 
   constructor() {
     this.shopParams.set(this.productService.getShopParams());
@@ -52,15 +54,19 @@ export class ShopComponent implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
-    const width = event.target.innerWidth;
-    this.updateFilterVisibility(width);
-    this.isMobileScreen.set(width <= 768);
+    if (isPlatformBrowser(this.platformId)) {
+      const width = event.target.innerWidth;
+      this.updateFilterVisibility(width);
+      this.isMobileScreen.set(width <= 768);
+    }
   }
 
   checkScreenSize() {
-    const width = window.innerWidth;
-    this.isMobileScreen.set(width <= 768);
-    this.updateFilterVisibility(width);
+    if (isPlatformBrowser(this.platformId)) {
+      const width = window.innerWidth;
+      this.isMobileScreen.set(width <= 768);
+      this.updateFilterVisibility(width);
+    }
   }
 
   toggleFilters() {
@@ -107,16 +113,21 @@ export class ShopComponent implements OnInit {
     params.pageNumber = event.pageNumber;
     params.pageSize = event.pageSize;
     this.shopParams.set(params);
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+
+    if (isPlatformBrowser(this.platformId)) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
     await this.getProducts();
   }
 
   async onSearch(): Promise<void> {
-    const params = this.productService.getShopParams();
-    params.search = this.searchTerm().nativeElement.value;
-    params.pageNumber = 1;
-    this.productService.setShopParams(params);
-    await this.getProducts();
+    if (isPlatformBrowser(this.platformId)) {
+      const params = this.productService.getShopParams();
+      params.search = this.searchTerm().nativeElement.value;
+      params.pageNumber = 1;
+      this.productService.setShopParams(params);
+      await this.getProducts();
+    }
   }
 
   async onReset(): Promise<void> {

@@ -29,9 +29,7 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [
-
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -62,7 +60,13 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
-              "aot": false
+              "aot": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -70,7 +74,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "sslCert":"ssl/localhost.pem",
+            "sslCert": "ssl/localhost.pem",
             "sslKey": "ssl/localhost-key.pem",
             "ssl": false
           },
@@ -109,6 +113,72 @@
               "node_modules/choices.js/public/assets/scripts/choices.js"
             ]
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/LiliShop/server",
+            "main": "src/server.ts",
+            "tsConfig": "tsconfig.server.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false,
+              "vendorChunk": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.ts"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@angular-devkit/build-angular:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "LiliShop:build:development",
+              "serverTarget": "LiliShop:server:development"
+            },
+            "production": {
+              "browserTarget": "LiliShop:build:production",
+              "serverTarget": "LiliShop:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@angular-devkit/build-angular:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "LiliShop:build:production",
+              "serverTarget": "LiliShop:server:production"
+            },
+            "development": {
+              "browserTarget": "LiliShop:build:development",
+              "serverTarget": "LiliShop:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }

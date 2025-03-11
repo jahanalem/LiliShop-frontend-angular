@@ -27,7 +27,7 @@
 
   <!-- Inline Critical CSS -->
   <style>
-    
+
   </style>
 </head>
 
@@ -64,6 +64,15 @@
     (function () {
       'use strict';
 
+       // 1) Prüfen, ob window/localStorage existieren (d.h. ob wir im Browser sind)
+       if (typeof window === 'undefined' || !window.localStorage) {
+        // Wir befinden uns wahrscheinlich im SSR-Kontext oder localStorage ist nicht verfügbar.
+        // Definieren Sie leere Funktionen, damit die Buttons im HTML nicht brechen.
+        window.handleAccept = function () {};
+        window.handleDecline = function () {};
+        return;
+      }
+      
       const COOKIE_CONSENT_KEY = 'cookie_consent';
       const STRIPE_CONSENT_KEY = 'stripe_consent';
 

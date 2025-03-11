@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, Renderer2 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, PLATFORM_ID, Renderer2 } from '@angular/core';
 
 @Component({
   selector: 'app-user-layout',
@@ -10,11 +11,13 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, Renderer2 } from '@
 export class UserLayoutComponent implements OnInit {
 
   private renderer2 = inject(Renderer2);
-
+  private platformId = inject(PLATFORM_ID);
   constructor() {
   }
-  
+
   ngOnInit(): void {
-    this.renderer2.setStyle(document.body, 'overflow', 'auto');
+    if (isPlatformBrowser(this.platformId)) {
+      this.renderer2.setStyle(document.body, 'overflow', 'auto');
+    }
   }
 }
