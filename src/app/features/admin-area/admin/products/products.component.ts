@@ -31,7 +31,16 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   dataSource       = signal<IProduct[]>([]);
   pageSizeOptions  = signal<number[]>([5, 10, 25]);
 
-  columnsToDisplay: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'Action'];
+  columnsToDisplay: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'isDiscountActive', 'Action'];
+  columnDisplayNames: { [key: string]: string } = {
+    'id'              : 'ID',
+    'name'            : 'Name',
+    'price'           : 'Price',
+    'productType'     : 'Type',
+    'productBrand'    : 'Brand',
+    'isDiscountActive': 'Sale',
+    'Action'          : 'Action'
+  };
 
   destroy$ = new Subject<void>();
 
@@ -127,5 +136,16 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   createProduct() {
     this.router.navigateByUrl(`/admin/products/edit/${-1}`);
+  }
+
+
+  getSaleStatusClass(product: IProduct): string {
+    if (product.isDiscountActive && product.scheduledPrice != null) {
+      return 'sale-scheduled';
+    } else if (product.isDiscountActive) {
+      return 'sale-yes';
+    } else {
+      return 'sale-no';
+    }
   }
 }

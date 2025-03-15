@@ -96,3 +96,16 @@ mat-paginator {
     width: 100%;
   }
 }
+
+.sale-yes {
+  color: #28a745; /* Green for "Yes" */
+  font-weight: 500;
+}
+
+.sale-no {
+  color: #dc3545; /* Red for "No" */
+}
+
+.sale-scheduled {
+  color: #ffc107; /* Yellow/Orange for "Scheduled" */
+}

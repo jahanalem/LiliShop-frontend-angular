@@ -47,7 +47,7 @@ export class ProductService {
       this.productCache.clear();
     }
 
-    const key = this.generateCacheKey();;
+    const key = this.generateCacheKey();
 
     if (useCache && this.productCache.has(key)) {
       const cachedData = this.productCache.get(key);
@@ -79,6 +79,7 @@ export class ProductService {
       ['sizeId', 'sizeId'],
       ['sort', 'sort'],
       ['search', 'search'],
+      ['sale', 'sale'],
       ['sortDirection', 'sortDirection'],
       ['pageNumber', 'pageIndex'],
       ['pageSize', 'pageSize']

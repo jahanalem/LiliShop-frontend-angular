@@ -12,4 +12,5 @@ export class ProductQueryParams implements ISortParams, IPaginationParams, ISear
   pageSize     : number = 10;
 
   search       : string = '';
+  sale         : string = 'all';
 }

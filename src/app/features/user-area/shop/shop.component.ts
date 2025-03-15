@@ -36,6 +36,12 @@ export class ShopComponent implements OnInit {
     { name: 'Price: High to low', value: 'priceDesc' },
   ]
 
+  readonly saleOptions = [
+    {name:'All Products', value:'all'},
+    {name:'Only Sale Products', value:'sale'},
+    {name:'Non-Sale Products', value:'nonSale'},
+  ]
+
   private productService = inject(ProductService);
 
   constructor() {
@@ -142,6 +148,9 @@ export class ShopComponent implements OnInit {
         break;
       case 'sort':
         params.sort = filterValue;
+        break;
+      case 'sale':
+        params.sale = filterValue;
         break;
       default:
         break;

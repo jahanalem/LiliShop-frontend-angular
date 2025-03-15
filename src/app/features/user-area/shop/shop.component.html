@@ -18,6 +18,17 @@
           <mat-icon matSuffix (click)="onReset()">refresh</mat-icon>
         </mat-form-field>
 
+        <!-- Sale -->
+        <h6 class="section-title">Sale</h6>
+        <mat-form-field appearance="outline" class="full-width custom-margin">
+          <mat-label>Sale</mat-label>
+          <mat-select [(ngModel)]="shopParams().sale" (selectionChange)="onFilterSelected($event.value, 'sale')">
+            <mat-option *ngFor="let sale of saleOptions" [value]="sale.value">
+              {{ sale.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
         <!-- Sort -->
         <h6 class="section-title">Sort</h6>
         <mat-form-field appearance="outline" class="full-width custom-margin">
