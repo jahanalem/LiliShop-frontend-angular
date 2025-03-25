@@ -1,0 +1,40 @@
+<!-- 👇 Control Bar on top -->
+<div class="control-bar">
+  <div class="template-selector">
+    <label for="templateSelect">Choose a template:</label>
+    <select id="templateSelect" [value]="templateName()" (change)="onTemplateChange($any($event.target).value)">
+      <option *ngFor="let t of templates()" [value]="t.name">
+        {{ t.name }}
+      </option>
+    </select>
+  </div>
+
+  <div class="mode-toggle">
+    <button (click)="useCallback.set(false)" [class.active]="!useCallback()">Polling</button>
+    <button (click)="useCallback.set(true)" [class.active]="useCallback()">Callback</button>
+  </div>
+
+  <div class="generate-button">
+    <button (click)="useCallback() ? startCallbackJob() : downloadPdf()" [disabled]="isButtonDisabled()">
+      {{
+        isCallbackLoading
+        ? 'Processing...'
+        : isPollingLoading()
+        ? 'Downloading...'
+        : 'Generate PDF'
+      }}
+    </button>
+  </div>
+</div>
+
+<!-- 👇 Hint message if needed -->
+<div *ngIf="useCallback() && !saveToken()" class="hint text-center">
+  ⚠️ Edit and save your design in the Printess Editor first! (click on 'Add to Basket' button)
+</div>
+
+<!-- 👇 Printess Editor Iframe -->
+<div class="editor-container">
+  <iframe title="Printess Editor" width="100%" height="600px" id="printess"
+    src="https://editor.printess.com/printess-editor/embed.html">
+  </iframe>
+</div>

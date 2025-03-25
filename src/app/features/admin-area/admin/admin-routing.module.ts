@@ -17,6 +17,7 @@ const routes: Routes = [
       { path: 'contact-us-messages', loadChildren: () => import('./contact-us-messages/contact-us-messages.module').then(m => m.ContactUsMessagesModule) },
       { path: 'users', loadChildren: () => import('./users/users.module').then(m => m.UsersModule) },
       { path: 'subscribers/drop-price', loadChildren: () => import('./price-drop-subscription/price-drop-subscription.module').then(m => m.PriceDropSubscriptionModule) },
+      { path: 'printess-editor', loadComponent: () => import('./printess-editor/printess-editor.component').then(c => c.PrintessEditorComponent) }
     ]
   }
 ]
