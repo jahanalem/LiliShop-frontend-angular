@@ -165,22 +165,7 @@ export class PrintessEditorComponent implements OnInit, OnDestroy {
       const isZip   = contentType === 'application/zip';
 
       if (resp.status === 200 && (isPdf || isImage || isZip)) {
-        const blob = new Blob([resp.body!], { type: contentType });
-        const url  = window.URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-
-        // Name based on type
-        if (isPdf) {
-          a.download = 'printess-output.pdf';
-        } else if (isImage) {
-          a.download = 'printess-output.png';
-        } else if (isZip) {
-          a.download = 'printess-images.zip';
-        }
-
-        a.href = url;
-        a.click();
-        window.URL.revokeObjectURL(url);
+        console.log('File download was triggered successfully by backend.');
       } else {
         alert('No valid file received from backend.');
       }
