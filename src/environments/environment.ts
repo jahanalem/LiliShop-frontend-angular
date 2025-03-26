@@ -4,7 +4,7 @@
 
 export const environment = {
   production     : false,
-  apiUrl         : 'https://90a8-185-5-9-101.ngrok-free.app/api/',//'https://localhost:6001/api/',
+  apiUrl         : 'https://0b8c-185-5-9-101.ngrok-free.app/api/',//'https://localhost:6001/api/',
   useCache       : false,
   google_clientId: '797123597277-up577hukrvbuo0qoig4ivpeaj7ssi129.apps.googleusercontent.com'
 };

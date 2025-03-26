@@ -8,6 +8,13 @@
       </option>
     </select>
   </div>
+  <div class="output-type-selector">
+    <label for="outputType">Output type:</label>
+    <select id="outputType" [value]="outputType()" (change)="outputType.set($any($event.target).value)">
+      <option value="pdf">PDF</option>
+      <option value="image">Image</option>
+    </select>
+  </div>
 
   <div class="mode-toggle">
     <button (click)="useCallback.set(false)" [class.active]="!useCallback()">Polling</button>
@@ -15,13 +22,13 @@
   </div>
 
   <div class="generate-button">
-    <button (click)="useCallback() ? startCallbackJob() : downloadPdf()" [disabled]="isButtonDisabled()">
+    <button (click)="useCallback() ? startCallbackJob() : downloadDocument()" [disabled]="isButtonDisabled()">
       {{
         isCallbackLoading
         ? 'Processing...'
         : isPollingLoading()
-        ? 'Downloading...'
-        : 'Generate PDF'
+        ? 'Processing...'
+        : 'Generate file'
       }}
     </button>
   </div>

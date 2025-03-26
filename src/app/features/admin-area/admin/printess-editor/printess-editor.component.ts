@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { PrintessSignalRService } from 'src/app/core/services/printess-signal-r.service';
 import { environment } from 'src/environments/environment';
 
 interface TemplateDto {
-  name: string;
+  name        : string;
   thumbnailUrl: string;
 }
-
 
 @Component({
   selector: 'app-printess-editor',
@@ -17,19 +16,21 @@ interface TemplateDto {
   imports: [CommonModule, HttpClientModule]
 })
 export class PrintessEditorComponent implements OnInit, OnDestroy {
-  shopToken = 'eyJhbGciOiJSUzI1NiIsImtpZCI6InByaW50ZXNzLXNhYXMtYWxwaGEiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJkYmJlYzIzY2Q3ODA0OWNhOTg4M2I0NWQ2MjdiOTcxMyIsImp0aSI6IkJVWHl0b09RMjlwSURzc0dkRnMxMTZqV0tWSzhib29WIiwicm9sZSI6InNob3AiLCJuYmYiOjE3NDI0MTM3NDcsImV4cCI6MjA1Nzc3Mzc0NywiaWF0IjoxNzQyNDEzNzQ3LCJpc3MiOiJQcmludGVzcyBHbWJIICYgQ28uS0ciLCJhdWQiOiJwcmludGVzcy1zYWFzIn0.YjGEt6U_FtrHHnsE_fvGv-Usf2fKdgVhIGl2VpHLvJT1UkmxOuH0DtxvF7z10M9eSc9MAASfVqwEipwrJJCqG3tYOp_1ALBUFsDavq0QivSvDc_2CGKam8TcTfJ9W46zQO9B5-TA2vLhaAOy4O5kV7i6h1afhWwqbo1pPtk_zzgfU0QegN-0NGYD3PEQsuC3JnR7wEeWMzTxjye3FXnsq-lOiCC8dJcOQSSOYo_x7egb9_W_N-4ea30bKgtuLCFx__FWTQeX9YkpXdiwvqXMy9oEGG_xnk_KY_DFBTiwh8exI22AJ-0Fq_zdNb0R_ui6Ss2uL1pyIqlwWH_bfMZAyJa3Kx3YDjj_k88htt19EsDTUQ56Y3UW38g3NGplKlerab_0A59gHBp12cSXFtTkRdJs85rruLgYuhF2a_0Zh5AiUL5iPjSEreWUbNutMJMcagDwiCy9KcAZLd_Wgx-u-70YryfBW6iruQYqi6Q6J3JCN3H7md1NwATLvYGH7EgvwgQhhjQ6kXn91XhDapLmmzlCOX44JHRahT1p3jfvUHY3JRu82Qa6zYU6-w3DQJqrHWpEdbKVpvSxKFUfpI3WgzNZWzIEozceiAv75tWHdaEK67BnA0vzwCO6otV_GHkG2vIPLS5vngGXiizjsI7u8ybHh7PIQvgvqDwzjXd5wGc';
-  _iframeMessageListenerAttached = false;
-  baseUrl = environment.apiUrl;
-  templateName = signal<string>('');
-  templates = signal<TemplateDto[]>([]);
-  iframeId = 'printess';
+  shopToken        = 'eyJhbGciOiJSUzI1NiIsImtpZCI6InByaW50ZXNzLXNhYXMtYWxwaGEiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJkYmJlYzIzY2Q3ODA0OWNhOTg4M2I0NWQ2MjdiOTcxMyIsImp0aSI6IkJVWHl0b09RMjlwSURzc0dkRnMxMTZqV0tWSzhib29WIiwicm9sZSI6InNob3AiLCJuYmYiOjE3NDI0MTM3NDcsImV4cCI6MjA1Nzc3Mzc0NywiaWF0IjoxNzQyNDEzNzQ3LCJpc3MiOiJQcmludGVzcyBHbWJIICYgQ28uS0ciLCJhdWQiOiJwcmludGVzcy1zYWFzIn0.YjGEt6U_FtrHHnsE_fvGv-Usf2fKdgVhIGl2VpHLvJT1UkmxOuH0DtxvF7z10M9eSc9MAASfVqwEipwrJJCqG3tYOp_1ALBUFsDavq0QivSvDc_2CGKam8TcTfJ9W46zQO9B5-TA2vLhaAOy4O5kV7i6h1afhWwqbo1pPtk_zzgfU0QegN-0NGYD3PEQsuC3JnR7wEeWMzTxjye3FXnsq-lOiCC8dJcOQSSOYo_x7egb9_W_N-4ea30bKgtuLCFx__FWTQeX9YkpXdiwvqXMy9oEGG_xnk_KY_DFBTiwh8exI22AJ-0Fq_zdNb0R_ui6Ss2uL1pyIqlwWH_bfMZAyJa3Kx3YDjj_k88htt19EsDTUQ56Y3UW38g3NGplKlerab_0A59gHBp12cSXFtTkRdJs85rruLgYuhF2a_0Zh5AiUL5iPjSEreWUbNutMJMcagDwiCy9KcAZLd_Wgx-u-70YryfBW6iruQYqi6Q6J3JCN3H7md1NwATLvYGH7EgvwgQhhjQ6kXn91XhDapLmmzlCOX44JHRahT1p3jfvUHY3JRu82Qa6zYU6-w3DQJqrHWpEdbKVpvSxKFUfpI3WgzNZWzIEozceiAv75tWHdaEK67BnA0vzwCO6otV_GHkG2vIPLS5vngGXiizjsI7u8ybHh7PIQvgvqDwzjXd5wGc';
+  baseUrl          = environment.apiUrl;
+  iframeId         = 'printess';
   isPollingLoading = signal<boolean>(false);
+  saveToken        = signal<string | null>(null);
+  useCallback      = signal<boolean>(false);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // Default to polling
+  templates        = signal<TemplateDto[]>([]);
+  templateName     = signal<string>('');
+  outputType       = signal<'pdf' | 'image'>('pdf');
+  _iframeMessageListenerAttached = false;
 
-  saveToken = signal<string | null>(null);
+  printessSignalR = inject(PrintessSignalRService);
+  http            = inject(HttpClient);
 
-  useCallback = signal<boolean>(false); // Default to polling
-
-  constructor(private http: HttpClient, private printessSignalR: PrintessSignalRService) { }
+  constructor() { }
 
   ngOnInit(): void {
     this.loadTemplateList();
@@ -56,7 +57,7 @@ export class PrintessEditorComponent implements OnInit, OnDestroy {
         next: (data) => {
           this.templates.set(data);
           if (data.length > 0) {
-            this.templateName.set(data[0].name); // Select first by default
+            this.templateName.set(data[0].name);
             this.reloadEditor();
           }
         },
@@ -65,6 +66,7 @@ export class PrintessEditorComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   onTemplateChange(name: string): void {
     this.templateName.set(name);
     this.useCallback.update(() => false);
@@ -79,9 +81,9 @@ export class PrintessEditorComponent implements OnInit, OnDestroy {
       iframe.contentWindow?.postMessage({
         cmd: "attach",
         properties: {
-          templateName: this.templateName(),
+          templateName   : this.templateName(),
           templateVersion: "draft",
-          token: this.shopToken
+          token          : this.shopToken
         }
       }, "*");
     };
@@ -98,9 +100,10 @@ export class PrintessEditorComponent implements OnInit, OnDestroy {
   loadPrintess(): void {
     const iframe = document.getElementById(this.iframeId) as HTMLIFrameElement;
 
-    if (!iframe) return;
+    if (!iframe) {
+      return;
+    }
 
-    // Attach iframe event handler once
     if (!this._iframeMessageListenerAttached) {
       window.addEventListener("message", (event) => {
         switch (event.data.cmd) {
@@ -116,85 +119,103 @@ export class PrintessEditorComponent implements OnInit, OnDestroy {
       this._iframeMessageListenerAttached = true;
     }
 
-    // Setup iframe onload to post template data
     iframe.onload = () => {
       iframe.contentWindow?.postMessage({
         cmd: "attach",
         properties: {
-          templateName: this.templateName(), // 👈 signal call
+          templateName   : this.templateName(),
           templateVersion: "draft",
-          token: this.shopToken
+          token          : this.shopToken
         }
       }, "*");
     };
 
-    // Set iframe src (forces reload)
     iframe.src = "https://editor.printess.com/printess-editor/embed.html";
 
-    // Optional: forward viewport info to iframe
+    // Optional: forward viewport info to iframe https://www.printess.com/kb.html#api-reference/iframe-ui.html:forwarding-the-visual-viewport
     if (window.visualViewport) {
       window.visualViewport.addEventListener("scroll", () => {
         iframe.contentWindow?.postMessage({
-          cmd: "viewportScroll",
-          height: window.visualViewport?.height,
+          cmd      : "viewportScroll",
+          height   : window.visualViewport?.height,
           offsetTop: window.visualViewport?.offsetTop
         }, "*");
       });
     }
   }
 
-
-  downloadPdf(): void {
-    const body = {
-      saveToken: this.saveToken(),
-      templateName: this.templateName()
-    };
-
+  downloadDocument(): void {
     this.isPollingLoading.set(true);
 
-    this.http.post(`${this.baseUrl}printessEditor/render-pdf`, body, {
+    const requestPayload = {
+      templateName: this.templateName(),
+      saveToken   : this.saveToken(),
+      outputFormat: this.outputType()
+    };
+
+    this.http.post(`${this.baseUrl}printessEditor/render-document`, requestPayload, {
       responseType: 'blob',
       observe: 'response'
-    }).subscribe({
-      next: (resp) => {
-        const contentType = resp.headers.get('content-type') ?? '';
-        if (resp.status === 200 && contentType.includes('application/pdf')) {
-          const blob = new Blob([resp.body!], { type: 'application/pdf' });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
+    }).subscribe(resp => {
+      const contentType = resp.headers.get('content-type') ?? '';
+      console.log('Content-Type:', contentType);
+
+      // Detect file type
+      const isPdf   = contentType.includes('application/pdf');
+      const isImage = contentType.startsWith('image/');
+      const isZip   = contentType === 'application/zip';
+
+      if (resp.status === 200 && (isPdf || isImage || isZip)) {
+        const blob = new Blob([resp.body!], { type: contentType });
+        const url  = window.URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+
+        // Name based on type
+        if (isPdf) {
           a.download = 'printess-output.pdf';
-          a.click();
-          window.URL.revokeObjectURL(url);
-        } else {
-          alert('No valid PDF response!');
+        } else if (isImage) {
+          a.download = 'printess-output.png';
+        } else if (isZip) {
+          a.download = 'printess-images.zip';
         }
-        this.isPollingLoading.set(false);
-      },
-      error: err => {
-        console.error('PDF error:', err);
-        alert('Could not download PDF from backend.');
-        this.isPollingLoading.set(false);
+
+        a.href = url;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        alert('No valid file received from backend.');
       }
+
+      this.isPollingLoading.set(false);
+    }, err => {
+      console.error('Error:', err);
+      alert('Download failed: ' + err.message);
+      this.isPollingLoading.set(false);
     });
   }
 
-
   startCallbackJob(): void {
-    if (!this.saveToken() || !this.templateName()) {
-      alert('Please choose a template and save your design!');
+    if (!this.templateName()) {
+      alert('Please choose a template!');
       return;
     }
 
-    // set loading true for callback mode
+    if (!this.saveToken()) {
+      alert('Your design is not saved. Please click the "Add to Basket" button in the editor!');
+      return;
+    }
+
     this.printessSignalR.isLoading.set(true);
 
-    this.http.post(`${this.baseUrl}printessEditor/start-callback-job`, {
-      saveToken: this.saveToken(),
-      templateName: this.templateName()
-    }).subscribe({
+    const requestPayload = {
+      templateName: this.templateName(),
+      saveToken   : this.saveToken(),
+      outputFormat: this.outputType()     // can be 'pdf' or 'png'
+    };
+
+    this.http.post(`${this.baseUrl}printessEditor/start-callback-job`, requestPayload).subscribe({
       next: () => {
-        // SignalR will handle job finished
+        // SignalR will handle loading indicator reset once the job is completed
       },
       error: (err) => {
         this.printessSignalR.isLoading.set(false);

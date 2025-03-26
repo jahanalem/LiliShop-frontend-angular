@@ -21,26 +21,51 @@ export class PrintessSignalRService {
       .then(() => console.log('SignalR Connected!'))
       .catch(err => console.error('SignalR Connection Error:', err));
 
-    this.hubConnection.on('PdfReady', (data) => {
-      console.log('PDF is ready!', data);
-
+    this.hubConnection.on('PrintessOutputReady', (data) => {
+      console.log('Received from SignalR:', data);
       this.isLoading.set(false);
 
-      const a = document.createElement('a');
-      a.href = data.pdfUrl;
-      a.download = 'printess-output.pdf';
-      a.click();
+      const url: string = data.url;
+      const type: string = data.type;
 
-      alert('Your PDF is ready!');
+      this.isLoading.set(false);
+      try {
+        if (type === 'pdf') {
+          this.downloadFile(url, 'printess-output.pdf');
+          alert('Your PDF is ready!');
+        }
+        else if (type === 'image') {
+          this.downloadFile(url, 'printess-output.png');
+          alert('Your image is ready!');
+        }
+        else if (type === 'zip') {
+          this.downloadFile(url, 'printess-images.zip');
+          alert('Your image ZIP is ready!');
+        }
+        else {
+          alert(`Unknown file type or empty result! ${data.type, url}`);
+        }
+      } catch (err) {
+        console.error('SignalR file download failed:', err);
+        alert('Download failed!');
+      }
     });
   }
 
+  private downloadFile(url: string, fileName: string) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   listenForJobCompletion() {
-    this.hubConnection.on('JobCompleted', (jobId, isSuccess, pdfUrl, error) => {
-      console.log('JobCompleted Event:', { jobId, isSuccess, pdfUrl, error });
+    this.hubConnection.on('JobCompleted', (jobId, isSuccess, fileUrl, error) => {
+      console.log('JobCompleted Event:', { jobId, isSuccess, fileUrl, error });
 
       if (isSuccess) {
-        window.open(pdfUrl, '_blank');
+        window.open(fileUrl, '_blank');
       } else {
         alert(`Error: ${error}`);
       }
