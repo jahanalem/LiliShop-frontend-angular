@@ -1,4 +1,3 @@
-<!-- 👇 Control Bar on top -->
 <div class="control-bar">
   <div class="template-selector">
     <label for="templateSelect">Choose a template:</label>
@@ -34,12 +33,11 @@
   </div>
 </div>
 
-<!-- 👇 Hint message if needed -->
 <div *ngIf="useCallback() && !saveToken()" class="hint text-center">
   ⚠️ Edit and save your design in the Printess Editor first! (click on 'Add to Basket' button)
 </div>
 
-<!-- 👇 Printess Editor Iframe -->
+<!-- Printess Editor Iframe -->
 <div class="editor-container">
   <iframe title="Printess Editor" width="100%" height="600px" id="printess"
     src="https://editor.printess.com/printess-editor/embed.html">
