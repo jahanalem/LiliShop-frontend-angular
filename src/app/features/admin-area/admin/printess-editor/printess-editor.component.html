@@ -24,11 +24,11 @@
   <div class="generate-button">
     <button (click)="useCallback() ? startCallbackJob() : downloadDocument()" [disabled]="isButtonDisabled()">
       {{
-        isCallbackLoading
-        ? 'Processing...'
-        : isPollingLoading()
-        ? 'Processing...'
-        : 'Generate file'
+        useCallback() && isCallbackLoading
+        ? 'Generating via Callback...'
+        : !useCallback() && isPollingLoading()
+        ? 'Generating via Polling...'
+        : 'Generate Document'
       }}
     </button>
   </div>
