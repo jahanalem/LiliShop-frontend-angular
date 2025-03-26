@@ -25,49 +25,40 @@ export class PrintessSignalRService {
       console.log('Received from SignalR:', data);
       this.isLoading.set(false);
 
-      const url: string = data.url;
-      const type: string = data.type;
+      const base64      = data.file;
+      const fileName    = data.fileName;
+      const contentType = data.contentType;
+      const type        = data.type;
 
-      this.isLoading.set(false);
-      try {
-        if (type === 'pdf') {
-          this.downloadFile(url, 'printess-output.pdf');
-          alert('Your PDF is ready!');
-        }
-        else if (type === 'image') {
-          this.downloadFile(url, 'printess-output.png');
-          alert('Your image is ready!');
-        }
-        else if (type === 'zip') {
-          this.downloadFile(url, 'printess-images.zip');
-          alert('Your image ZIP is ready!');
-        }
-        else {
-          alert(`Unknown file type or empty result! ${data.type, url}`);
-        }
-      } catch (err) {
-        console.error('SignalR file download failed:', err);
-        alert('Download failed!');
+      if (!base64 || !fileName || !contentType) {
+        alert('Missing file data from server.');
+        return;
       }
-    });
-  }
 
-  private downloadFile(url: string, fileName: string) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+      try {
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
 
-  listenForJobCompletion() {
-    this.hubConnection.on('JobCompleted', (jobId, isSuccess, fileUrl, error) => {
-      console.log('JobCompleted Event:', { jobId, isSuccess, fileUrl, error });
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
 
-      if (isSuccess) {
-        window.open(fileUrl, '_blank');
-      } else {
-        alert(`Error: ${error}`);
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob      = new Blob([byteArray], { type: contentType });
+        const url       = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        // Show success message
+        const icons: any = { pdf: '📄', image: '🖼️', zip: '🗂️' };
+        alert(`${icons[type] ?? '✅'} Your ${type.toUpperCase()} is ready!`);
+      } catch (err) {
+        console.error('Error decoding file:', err);
+        alert('File download failed!');
       }
     });
   }

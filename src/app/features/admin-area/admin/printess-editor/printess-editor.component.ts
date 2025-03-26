@@ -37,7 +37,6 @@ export class PrintessEditorComponent implements OnInit, OnDestroy {
     if (!this.printessSignalR.isConnected()) {
       this.printessSignalR.startConnection();
     }
-    this.printessSignalR.listenForJobCompletion();
   }
   ngOnDestroy(): void {
     this.printessSignalR.stopConnection();
