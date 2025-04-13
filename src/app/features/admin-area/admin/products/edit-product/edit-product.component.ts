@@ -14,6 +14,7 @@ import { IProductType } from 'src/app/shared/models/productType';
 import { StorageService } from 'src/app/core/services/storage.service';
 import { ToastrService } from 'ngx-toastr';
 import { formatDate } from '@angular/common';
+import { IDiscount } from 'src/app/shared/models/discount';
 
 @Component({
   selector: 'app-edit-product',
@@ -100,20 +101,63 @@ export class EditProductComponent implements OnInit, OnDestroy {
     const isUpdate        = !!existingProduct && existingProduct.id > 0;
 
     // Combine date and time for discount start and end
-    let discountStartDate = null;
-    let discountEndDate   = null;
+
     if (formValues.isDiscountActive) {
       if (!formValues.discountStartDateDate) {
         formValues.discountStartDateDate = new Date();
       }
-      discountStartDate = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
-      discountEndDate   = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
-
       this.backupStartTime = formValues.discountStartDateTime;
       this.backupEndTime   = formValues.discountEndDateTime;
     }
 
     // Construct the payload
+    let discount: Partial<IDiscount> | null = null;
+
+    const oldDiscount = this.product()?.discount;
+    const hasExistingDiscount = !!oldDiscount;
+
+    if (formValues.isDiscountActive !== null && formValues.isDiscountActive !== undefined) {
+      const updatedDiscount: Partial<IDiscount> = {};
+
+      if (hasExistingDiscount) {
+        updatedDiscount.id = oldDiscount.id;
+      }
+
+      if (!hasExistingDiscount ||
+        oldDiscount.isActive !== formValues.isDiscountActive ||
+        !(formValues.isDiscountActive && (formValues.scheduledPrice && formValues.scheduledPrice > 0))) {
+        updatedDiscount.isActive = formValues.isDiscountActive;
+      }
+
+      const defaultName = "Single Discount";
+      if (!hasExistingDiscount || oldDiscount.name !== defaultName) {
+        updatedDiscount.name = defaultName;
+      }
+
+      if (!hasExistingDiscount || oldDiscount.isPercentage !== false) {
+        updatedDiscount.isPercentage = false;
+      }
+
+      if (formValues.discountStartDateDate) {
+        const newStart = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime)?.toISOString();
+        if (!hasExistingDiscount || oldDiscount.startDate !== newStart) {
+          updatedDiscount.startDate = newStart;
+        }
+      }
+
+      if (formValues.discountEndDateDate) {
+        const newEnd = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime)?.toISOString();
+        if (!hasExistingDiscount || oldDiscount.endDate !== newEnd) {
+          updatedDiscount.endDate = newEnd;
+        }
+      }
+
+      discount = Object.keys(updatedDiscount).length > 1 ? updatedDiscount : null;
+
+    } else {
+      discount = null;
+    }
+
     const productPayload: Partial<IProduct> = {
       id                    : existingProduct?.id || 0,
       name                  : formValues.name,
@@ -127,10 +171,8 @@ export class EditProductComponent implements OnInit, OnDestroy {
       productBrand          : existingProduct?.productBrand,
       productBrandId        : formValues.productBrandId,
       isActive              : formValues.isActive,
-      isDiscountActive      : formValues.isDiscountActive,
-      discountStartDate     : discountStartDate?.toISOString() || null,
-      discountEndDate       : discountEndDate?.toISOString() || null,
       productCharacteristics: formValues.productCharacteristics || [],
+      discount              : discount
     };
 
     // Determine the action: update or create
@@ -142,7 +184,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
     productAction.pipe(takeUntil(this.destroy$)).subscribe({
       next: (updatedProduct) => {
         // Update the product signal with the response
-        this.product.set(updatedProduct);
+        this.product.set(updatedProduct as IProduct);
 
         // Patch the form with the updated product data, including productPhotos
         this.productForm.patchValue({
@@ -150,7 +192,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
           previousPrice   : updatedProduct.previousPrice,
           scheduledPrice  : updatedProduct.scheduledPrice,
           price           : updatedProduct.price,
-          isDiscountActive: updatedProduct.isDiscountActive,
+          isDiscountActive: updatedProduct.discount?.isActive,
         });
         // Mark the form as pristine
         this.productForm.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => this.cdRef.detectChanges());
@@ -245,8 +287,15 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
     if (currentProduct) {
       // Extract date and time from discountStartDate and discountEndDate
-      const start = this.extractDateTime(currentProduct.discountStartDate);
-      const end   = this.extractDateTime(currentProduct.discountEndDate);
+      let start = null;
+      let end = null;
+      let discount = null;
+      if(currentProduct.discount){
+         discount = currentProduct.discount;
+         start = this.extractDateTime(discount.startDate);
+         end   = this.extractDateTime(discount.endDate);
+      }
+
 
       // Patch the form with product data
       this.productForm.patchValue({
@@ -258,12 +307,12 @@ export class EditProductComponent implements OnInit, OnDestroy {
         productTypeId        : currentProduct.productTypeId,
         previousPrice        : currentProduct.previousPrice,
         scheduledPrice       : currentProduct.scheduledPrice,
-        isDiscountActive     : currentProduct.isDiscountActive,
+        isDiscountActive     : discount?.isActive,
         productPhotos        : currentProduct.productPhotos,      // Patch productPhotos
-        discountStartDateDate: start.date,
-        discountStartDateTime: start.time,
-        discountEndDateDate  : end.date,
-        discountEndDateTime  : end.time,
+        discountStartDateDate: start?.date,
+        discountStartDateTime: start?.time,
+        discountEndDateDate  : end?.date,
+        discountEndDateTime  : end?.time,
       });
     }
   }
@@ -289,10 +338,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
   async updateIsDiscountActiveControl(): Promise<void> {
     const prevPrice      = this.product()?.previousPrice ?? 0;
     const basePrice      = this.product()?.price ?? 0;
-    const price          = this.productForm.get("price")?.value ?? 0;
     const scheduledPrice = this.product()?.scheduledPrice ?? 0;
 
-    if (price < prevPrice || price < basePrice || (scheduledPrice !== null && scheduledPrice > 0)) {
+    if ((scheduledPrice && scheduledPrice > 0)) {
       this.productForm.get("isDiscountActive")?.enable();
       this.productForm.get("isDiscountActive")?.setValue(true);
     } else {
@@ -300,6 +348,10 @@ export class EditProductComponent implements OnInit, OnDestroy {
       this.productForm.get("isDiscountActive")?.disable();
     }
 
+    this.productForm.get("isDiscountActive")?.setValue(this.product()?.discount?.isActive);
+    this.product()?.discount?.isActive ?
+      this.productForm.get("isDiscountActive")?.enable() :
+      this.productForm.get("isDiscountActive")?.disable();
     // Price change subscription
     this.productForm.get("price")?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((newPrice) => {
       if (newPrice < prevPrice || newPrice < basePrice) {
@@ -331,9 +383,10 @@ export class EditProductComponent implements OnInit, OnDestroy {
     isDiscountActiveControl.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((isActive: boolean) => {
       if (isActive) {
         const product = this.product();
+        const discount = product?.discount;
         // Restore dates from product
-        if (product?.discountStartDate) {
-          const startDate = new Date(product.discountStartDate);
+        if (discount?.startDate) {
+          const startDate = new Date(discount?.startDate);
           discountStartDateDateControl.setValue(this.backupStartDate ?? formatDate(startDate, 'yyyy-MM-dd', 'en-US'));
           // Use backup time if available, otherwise use product's time
           discountStartDateTimeControl?.setValue(this.backupStartTime ?? formatDate(startDate, 'HH:mm', 'en-US'));
@@ -343,8 +396,8 @@ export class EditProductComponent implements OnInit, OnDestroy {
           discountStartDateTimeControl?.setValue(now);
         }
 
-        if (product?.discountEndDate) {
-          const endDate = new Date(product.discountEndDate);
+        if (discount?.endDate) {
+          const endDate = new Date(discount?.endDate);
           discountEndDateDateControl.setValue(this.backupEndDate ?? formatDate(endDate, 'yyyy-MM-dd', 'en-US'));
           discountEndDateTimeControl?.setValue(this.backupEndTime ?? formatDate(endDate, 'HH:mm', 'en-US'));
         } else {
@@ -382,10 +435,14 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
   // Helper method to combine date and time
   private combineDateAndTime(date: Date | null, time: Date | null): Date | null {
-    if (!date || !time) return null;
+    if (!date || !time)
+    {
+      return null;
+    }
 
     const combinedDate = new Date(date);
     combinedDate.setHours(time.getHours(), time.getMinutes(), 0, 0);
+    
     return combinedDate;
   }
 

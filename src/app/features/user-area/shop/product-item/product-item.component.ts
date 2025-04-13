@@ -28,12 +28,17 @@ export class ProductItemComponent implements OnInit {
 
   discountActiveNow(): boolean {
     const prod = this.product();
-    if (!prod.isDiscountActive || !prod.discountStartDate || !prod.discountEndDate) {
+    const discount = prod.discount;
+    if(!discount){
       return false;
     }
+    if ((!discount.isActive || !discount.startDate || !discount.endDate)) {
+      return false;
+    }
+
     const now   = new Date().getTime();
-    const start = new Date(prod.discountStartDate).getTime();
-    const end   = new Date(prod.discountEndDate).getTime();
+    const start = new Date(discount.startDate).getTime();
+    const end   = new Date(discount.endDate).getTime();
 
     return now >= start && now <= end;
   }

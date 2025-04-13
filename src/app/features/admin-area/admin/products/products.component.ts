@@ -140,9 +140,9 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   getSaleStatusClass(product: IProduct): string {
-    if (product.isDiscountActive && product.scheduledPrice != null) {
+    if (product?.discount?.isActive && product.scheduledPrice != null) {
       return 'sale-scheduled';
-    } else if (product.isDiscountActive) {
+    } else if (product?.discount?.isActive) {
       return 'sale-yes';
     } else {
       return 'sale-no';

@@ -1,6 +1,6 @@
 import { IProductPhoto } from './productPhoto';
 import { IProductCharacteristic } from "./productCharacteristic";
-
+import { IDiscount } from './discount';
 
 export interface IProduct {
   id                    :  number;
@@ -9,15 +9,15 @@ export interface IProduct {
   price                 :  number;
   previousPrice         ?: number;
   scheduledPrice        ?: number;
+  currentDiscountedPrice?: number;
   pictureUrl            :  string;
   productType           ?: string;
-  productTypeId         ?: number;
+  productTypeId         :  number;
   productBrand          ?: string;
-  productBrandId        ?: number;
+  productBrandId        :  number;
   isActive              :  boolean;
-  isDiscountActive      ?: boolean;
-  discountStartDate     ?: string | null;
-  discountEndDate       ?: string | null;
-  productCharacteristics:  IProductCharacteristic[];
-  productPhotos         :  IProductPhoto[];
+  discount              : Partial<IDiscount> | null;
+  productCharacteristics: IProductCharacteristic[];
+  productPhotos         : IProductPhoto[];
 }
+
