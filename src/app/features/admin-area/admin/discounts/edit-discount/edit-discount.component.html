@@ -1,1 +1,113 @@
-<p>edit-discount works!</p>
+<mat-horizontal-stepper [linear]="true" #stepper>
+  <!-- Step 1: Discount Info -->
+  <mat-step [stepControl]="discountInfoForm">
+    <form [formGroup]="discountInfoForm">
+      <ng-template matStepLabel>Discount Info</ng-template>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Discount Name</mat-label>
+        <input title="name" matInput formControlName="name" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Start Date</mat-label>
+        <input title="startDate" matInput type="date" formControlName="startDate" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>End Date</mat-label>
+        <input title="endDate" matInput type="date" formControlName="endDate" required />
+      </mat-form-field>
+
+      <mat-checkbox formControlName="isActive">Is Active</mat-checkbox>
+
+      <div class="step-buttons">
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <!-- Step 2: Tiers -->
+  <mat-step [stepControl]="tiersForm">
+    <form [formGroup]="tiersForm">
+      <ng-template matStepLabel>Discount Tiers</ng-template>
+
+      <div formArrayName="tiers">
+        <div *ngFor="let tier of tiers.controls; let i = index" [formGroupName]="i" class="tier-group">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Amount</mat-label>
+            <input title="amount" matInput type="number" formControlName="amount" required />
+          </mat-form-field>
+
+          <mat-checkbox formControlName="isPercentage">Is Percentage</mat-checkbox>
+          <mat-checkbox formControlName="isFreeShipping">Free Shipping</mat-checkbox>
+
+          <button mat-icon-button color="warn" (click)="removeTier(i)" aria-label="Remove tier">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <button mat-button (click)="addTier()">Add Tier</button>
+
+      <div class="step-buttons">
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <!-- Step 3: Conditions -->
+  <mat-step [stepControl]="discountGroupForm">
+    <form [formGroup]="discountGroupForm">
+      <ng-template matStepLabel>Condition Groups</ng-template>
+
+      <div formArrayName="conditionGroups">
+        <div *ngFor="let group of conditionGroups.controls; let i = index" [formGroupName]="i">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Tier Index</mat-label>
+            <input title="tierIndex" matInput type="number" formControlName="tierIndex" required />
+          </mat-form-field>
+
+          <div formArrayName="conditions">
+            <div *ngFor="let cond of getConditions(i).controls; let j = index" [formGroupName]="j">
+              <mat-form-field appearance="fill">
+                <mat-label>Target Entity</mat-label>
+                <mat-select formControlName="targetEntity">
+                  <mat-option *ngFor="let option of targetEntityOptions" [value]="option.value">
+                    {{ option.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Target Entity ID</mat-label>
+                <input title="targetEntityId" matInput type="number" formControlName="targetEntityId" />
+              </mat-form-field>
+
+              <button mat-icon-button color="warn" (click)="removeCondition(i, j)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <button mat-button (click)="addCondition(i)">Add Condition</button>
+          </div>
+
+          <button mat-button color="warn" (click)="removeConditionGroup(i)">Remove Condition Group</button>
+          <mat-divider></mat-divider>
+        </div>
+      </div>
+
+      <button mat-button (click)="addConditionGroup()">Add Condition Group</button>
+
+      <div class="step-buttons">
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button color="primary" (click)="submit()">
+          {{ isEditMode ? 'Update Discount' : 'Create Discount' }}
+        </button>
+      </div>
+    </form>
+  </mat-step>
+</mat-horizontal-stepper>
+

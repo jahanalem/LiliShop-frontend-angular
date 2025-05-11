@@ -1,0 +1,160 @@
+.full-width {
+  width: 100%;
+}
+
+.step-buttons {
+  margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tier-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+mat-divider {
+  margin: 12px 0;
+}
+
+/* edit-discount.component.css */
+.discount-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+.discount-form .form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.discount-form .form-header h2 {
+  margin: 0;
+  font-weight: 500;
+  color: #303f9f;
+  /* Indigo 700 */
+}
+
+.discount-form .form-card {
+  margin-bottom: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  background: white;
+  padding: 16px;
+}
+
+.discount-form .form-card-header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 16px;
+}
+
+.discount-form .form-card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.discount-form .row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.discount-form .row mat-form-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.discount-form .condition-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.discount-form .condition-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.discount-form .tiers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.discount-form .tier-card {
+  background: #e8eaf6;
+  /* Indigo 50 */
+  border-left: 4px solid #7986cb;
+  /* Indigo 300 */
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.discount-form .tier-options {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.discount-form .add-tier {
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
+/* Basic form field styling */
+.discount-form .form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.discount-form .form-field label {
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.discount-form .form-field input,
+.discount-form .form-field select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Button styles */
+.discount-form .btn {
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.discount-form .btn-primary {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+}
+
+.discount-form .btn-danger {
+  background-color: #f44336;
+  color: white;
+  border: none;
+}
+
+.discount-form .btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
