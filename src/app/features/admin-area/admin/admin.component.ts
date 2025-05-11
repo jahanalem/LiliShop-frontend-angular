@@ -30,6 +30,7 @@ export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit 
     { name: 'Brands',    link: '/admin/brands',              icon: 'verified' },
     { name: 'Types',     link: '/admin/product-types',       icon: 'category' },
     { name: 'Messages',  link: '/admin/contact-us-messages', icon: 'message' },
+    { name: 'Discounts', link: '/admin/discounts',           icon: 'price_check'},
     { name: 'Users',     link: '/admin/users',               icon: 'supervisor_account' },
     { name: 'Price Drop Alerts', link: '/admin/subscribers/drop-price', icon: 'price_change' },
     { name: 'Printess Editor', link: '/admin/printess-editor', icon: 'draw' },

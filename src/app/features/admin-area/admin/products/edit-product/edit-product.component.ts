@@ -14,7 +14,7 @@ import { IProductType } from 'src/app/shared/models/productType';
 import { StorageService } from 'src/app/core/services/storage.service';
 import { ToastrService } from 'ngx-toastr';
 import { formatDate } from '@angular/common';
-import { IDiscount } from 'src/app/shared/models/discount';
+import { ISingleDiscount } from 'src/app/shared/models/discount';
 
 @Component({
   selector: 'app-edit-product',
@@ -111,49 +111,59 @@ export class EditProductComponent implements OnInit, OnDestroy {
     }
 
     // Construct the payload
-    let discount: Partial<IDiscount> | null = null;
+    let discount: Partial<ISingleDiscount> | null = null;
 
     const oldDiscount = this.product()?.discount;
     const hasExistingDiscount = !!oldDiscount;
 
     if (formValues.isDiscountActive !== null && formValues.isDiscountActive !== undefined) {
-      const updatedDiscount: Partial<IDiscount> = {};
+      const updatedDiscount: Partial<ISingleDiscount> = {};
+      let hasChanges = false;
 
       if (hasExistingDiscount) {
         updatedDiscount.id = oldDiscount.id;
       }
 
-      if (!hasExistingDiscount ||
-        oldDiscount.isActive !== formValues.isDiscountActive ||
-        !(formValues.isDiscountActive && (formValues.scheduledPrice && formValues.scheduledPrice > 0))) {
+      if (!hasExistingDiscount || oldDiscount.isActive !== formValues.isDiscountActive) {
         updatedDiscount.isActive = formValues.isDiscountActive;
+        hasChanges = true;
       }
 
       const defaultName = "Single Discount";
       if (!hasExistingDiscount || oldDiscount.name !== defaultName) {
         updatedDiscount.name = defaultName;
+        hasChanges = true;
       }
 
       if (!hasExistingDiscount || oldDiscount.isPercentage !== false) {
         updatedDiscount.isPercentage = false;
+        hasChanges = true;
       }
 
       if (formValues.discountStartDateDate) {
-        const newStart = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime)?.toISOString();
-        if (!hasExistingDiscount || oldDiscount.startDate !== newStart) {
-          updatedDiscount.startDate = newStart;
+        const newStart = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
+        const oldStart = oldDiscount?.startDate ? new Date(oldDiscount.startDate) : null;
+
+        if (!hasExistingDiscount || !oldStart || oldStart.getTime() !== newStart?.getTime()) {
+          updatedDiscount.startDate = newStart?.toISOString();
+          hasChanges = true;
         }
       }
+
 
       if (formValues.discountEndDateDate) {
-        const newEnd = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime)?.toISOString();
-        if (!hasExistingDiscount || oldDiscount.endDate !== newEnd) {
-          updatedDiscount.endDate = newEnd;
+        const newEnd = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
+        const oldEnd = oldDiscount?.endDate ? new Date(oldDiscount.endDate) : null;
+
+        if (!hasExistingDiscount || !oldEnd || oldEnd.getTime() !== newEnd?.getTime()) {
+          updatedDiscount.endDate = newEnd?.toISOString();
+          hasChanges = true;
         }
       }
 
-      discount = Object.keys(updatedDiscount).length > 1 ? updatedDiscount : null;
 
+      discount = hasChanges ? updatedDiscount : null;
+      console.log("updated discount = ", discount);
     } else {
       discount = null;
     }
@@ -442,7 +452,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
     const combinedDate = new Date(date);
     combinedDate.setHours(time.getHours(), time.getMinutes(), 0, 0);
-    
+
     return combinedDate;
   }
 

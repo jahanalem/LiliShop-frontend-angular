@@ -1,4 +1,4 @@
-export interface IDiscount {
+export interface ISingleDiscount {
   id          :  number;
   isActive    :  boolean;
   name        :  string;
