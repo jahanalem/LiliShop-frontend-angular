@@ -10,6 +10,11 @@ export interface ITargetEntityOption {
   label: string;
   value: number;
 }
+export interface ITierOption {
+  label: string;
+  value: number;
+}
+
 export interface IDiscount {
   id           ?: number;
   name         :  string;

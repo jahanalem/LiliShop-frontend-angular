@@ -6,17 +6,17 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Discount Name</mat-label>
-        <input title="name" matInput formControlName="name"  />
+        <input title="name" matInput formControlName="name" />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Start Date</mat-label>
-        <input title="startDate" matInput type="date" formControlName="startDate"  />
+        <input title="startDate" matInput type="date" formControlName="startDate" />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>End Date</mat-label>
-        <input title="endDate" matInput type="date" formControlName="endDate"  />
+        <input title="endDate" matInput type="date" formControlName="endDate" />
       </mat-form-field>
 
       <mat-checkbox formControlName="isActive">Is Active</mat-checkbox>
@@ -53,7 +53,7 @@
 
       <div class="step-buttons">
         <button type="button" mat-button matStepperPrevious>Back</button>
-        <button type="button" mat-button matStepperNext>Next</button>
+        <button type="button" mat-button matStepperNext (click)="onBeforeNextStepFromTiersForm()">Next</button>
       </div>
     </form>
   </mat-step>
@@ -67,8 +67,12 @@
         <div *ngFor="let group of conditionGroups.controls; let i = index" [formGroupName]="i">
 
           <mat-form-field appearance="fill">
-            <mat-label>Tier Index</mat-label>
-            <input title="tierIndex" matInput type="number" formControlName="tierIndex" required />
+            <mat-label>Tier</mat-label>
+            <mat-select formControlName="tierIndex">
+              <mat-option *ngFor="let tier of tierOptions()" [value]="tier.value">
+                {{ tier.label }}
+              </mat-option>
+            </mat-select>
           </mat-form-field>
 
           <div formArrayName="conditions">
@@ -85,7 +89,8 @@
               <mat-form-field appearance="fill">
                 <mat-label>Target Entity ID</mat-label>
                 <mat-select formControlName="targetEntityId">
-                  <mat-option *ngFor="let option of targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value)"
+                  <mat-option
+                    *ngFor="let option of targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value)"
                     [value]="option.value">
                     {{ option.label }}
                   </mat-option>

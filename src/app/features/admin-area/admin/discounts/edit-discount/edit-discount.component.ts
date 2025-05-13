@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DiscountTargetType, IDiscount, ITargetEntityOption } from 'src/app/shared/models/discount-system';
+import { DiscountTargetType, IDiscount, ITargetEntityOption, ITierOption } from 'src/app/shared/models/discount-system';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatDivider } from '@angular/material/divider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -60,8 +60,8 @@ export class EditDiscountComponent {
 
   targetEntityOptions = [
     { label: 'All', value: DiscountTargetType.All },
+    { label: 'Product Brand', value: DiscountTargetType.ProductBrand },
     { label: 'Product Type', value: DiscountTargetType.ProductType },
-    { label: 'Product Brand', value: DiscountTargetType.ProductBrand }
     //{ label: 'Size', value: DiscountTargetType.Size },
     //{ label: 'Product', value: DiscountTargetType.Product },
   ];
@@ -70,6 +70,8 @@ export class EditDiscountComponent {
 
   brands: IBrand[] = [];
   types: IProductType[] = [];
+  tierOptions = signal<ITierOption[]>([]);
+
   private productService = inject(ProductService);
 
   constructor(private fb: FormBuilder) { }
@@ -128,10 +130,35 @@ export class EditDiscountComponent {
       isPercentage: [true],
       isFreeShipping: [false]
     }));
+    this.updateTierOptions();
+
   }
 
   onRemoveTier(i: number): void {
     this.tiers.removeAt(i);
+    this.updateTierOptions();
+  }
+
+  private updateTierOptions(): void {
+    const updatedTiers = this.tiers.controls.map((tier, index) => {
+      const amount = tier.get('amount')?.value;
+      const isPercentage = tier.get('isPercentage')?.value;
+      const isFreeShipping = tier.get('isFreeShipping')?.value;
+
+      let label = `${amount}${isPercentage ? '%' : '€'}`;
+      if (isFreeShipping) label += ' + Free shipping';
+
+      return {
+        label,
+        value: index
+      };
+    });
+
+    this.tierOptions.set(updatedTiers);
+  }
+
+  onBeforeNextStepFromTiersForm() {
+    this.updateTierOptions();
   }
 
   get conditionGroups(): FormArray {
