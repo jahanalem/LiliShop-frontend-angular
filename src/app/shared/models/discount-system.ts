@@ -1,12 +1,15 @@
 // Enum for discount target types (matches server values)
 export enum DiscountTargetType {
-  ProductType  = 'ProductType',
+  All          = 'All',
   ProductBrand = 'ProductBrand',
-  Size         = 'Size',
-  Product      = 'Product',
-  All          = 'All'
+  ProductType  = 'ProductType',
+  //Size         = 'Size',
+  //Product      = 'Product',
 }
-
+export interface ITargetEntityOption {
+  label: string;
+  value: number;
+}
 export interface IDiscount {
   id           ?: number;
   name         :  string;

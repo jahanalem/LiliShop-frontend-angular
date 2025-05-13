@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -15,10 +15,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DiscountTargetType, IDiscount } from 'src/app/shared/models/discount-system';
+import { DiscountTargetType, IDiscount, ITargetEntityOption } from 'src/app/shared/models/discount-system';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatDivider } from '@angular/material/divider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { IBrand } from 'src/app/shared/models/brand';
+import { IProductType } from 'src/app/shared/models/productType';
+import { ProductService } from 'src/app/core/services/product.service';
 
 @Component({
   selector: 'app-edit-discount',
@@ -56,24 +59,53 @@ export class EditDiscountComponent {
   discountGroupForm!: FormGroup;
 
   targetEntityOptions = [
+    { label: 'All', value: DiscountTargetType.All },
     { label: 'Product Type', value: DiscountTargetType.ProductType },
-    { label: 'Product Brand', value: DiscountTargetType.ProductBrand },
-    { label: 'Size', value: DiscountTargetType.Size },
-    { label: 'Product', value: DiscountTargetType.Product },
-    { label: 'All', value: DiscountTargetType.All }
+    { label: 'Product Brand', value: DiscountTargetType.ProductBrand }
+    //{ label: 'Size', value: DiscountTargetType.Size },
+    //{ label: 'Product', value: DiscountTargetType.Product },
   ];
+
+  targetEntityIdOptionsMap = new Map<DiscountTargetType, ITargetEntityOption[]>();
+
+  brands: IBrand[] = [];
+  types: IProductType[] = [];
+  private productService = inject(ProductService);
 
   constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.initForms();
+    this.loadBrands()
+    this.loadTypes();
+  }
+
+  loadBrands() {
+    this.productService.getBrands(true).subscribe({
+      next: (activeBrands: IBrand[]) => {
+        this.brands = [{ id: 0, name: 'All' }, ...activeBrands];
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
+  }
+  loadTypes() {
+    this.productService.getTypes(true).subscribe({
+      next: (activeTypes: IProductType[]) => {
+        this.types = [{ id: 0, name: 'All' }, ...activeTypes];
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
   }
 
   private initForms(): void {
     this.discountInfoForm = this.fb.group({
-      name: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      name: ['',],
+      startDate: ['',],
+      endDate: ['',],
       isActive: [false]
     });
 
@@ -90,15 +122,15 @@ export class EditDiscountComponent {
     return this.tiersForm.get('tiers') as FormArray;
   }
 
-  addTier(): void {
+  onAddTier(): void {
     this.tiers.push(this.fb.group({
       amount: [0, Validators.required],
-      isPercentage: [false],
+      isPercentage: [true],
       isFreeShipping: [false]
     }));
   }
 
-  removeTier(i: number): void {
+  onRemoveTier(i: number): void {
     this.tiers.removeAt(i);
   }
 
@@ -106,14 +138,14 @@ export class EditDiscountComponent {
     return this.discountGroupForm.get('conditionGroups') as FormArray;
   }
 
-  addConditionGroup(): void {
+  onAddConditionGroup(): void {
     this.conditionGroups.push(this.fb.group({
       tierIndex: [0, Validators.required],
       conditions: this.fb.array([])
     }));
   }
 
-  removeConditionGroup(i: number): void {
+  onRemoveConditionGroup(i: number): void {
     this.conditionGroups.removeAt(i);
   }
 
@@ -121,19 +153,39 @@ export class EditDiscountComponent {
     return this.conditionGroups.at(groupIndex).get('conditions') as FormArray;
   }
 
-  addCondition(groupIndex: number): void {
+  onAddCondition(groupIndex: number): void {
     this.getConditions(groupIndex).push(this.fb.group({
-      targetEntity: [DiscountTargetType.Product, Validators.required],
+      targetEntity: [DiscountTargetType.All, Validators.required],
       targetEntityId: [null, Validators.required],
       shouldNotify: [false]
     }));
   }
 
-  removeCondition(groupIndex: number, conditionIndex: number): void {
+  onRemoveCondition(groupIndex: number, conditionIndex: number): void {
     this.getConditions(groupIndex).removeAt(conditionIndex);
   }
 
-  submit(): void {
+  updateTargetEntityIdOptions(targetEntityType: DiscountTargetType) {
+    if (!this.targetEntityIdOptionsMap.has(targetEntityType)) {
+      let options: ITargetEntityOption[] = [];
+
+      if (targetEntityType === DiscountTargetType.ProductBrand) {
+        options = this.brands.map(b => ({ label: b.name, value: b.id }));
+      } else if (targetEntityType === DiscountTargetType.ProductType) {
+        options = this.types.map(t => ({ label: t.name, value: t.id }));
+      }
+
+      this.targetEntityIdOptionsMap.set(targetEntityType, options);
+    }
+  }
+  onTargetEntityChange(i: number, j: number) {
+    const control = this.getConditions(i).at(j);
+    const targetEntityType = control.get('targetEntity')?.value as DiscountTargetType;
+
+    this.updateTargetEntityIdOptions(targetEntityType);
+  }
+
+  onSubmit(): void {
     if (this.discountInfoForm.invalid || this.tiersForm.invalid || this.discountGroupForm.invalid) {
       console.warn('Form invalid');
       return;
