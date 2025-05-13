@@ -122,10 +122,10 @@
       <mat-error *ngIf="discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair']"
         class="validation-error">
         <mat-icon>error</mat-icon>
-        Duplicate Product Brand/Type combination found in groups
+        {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].message }} in groups
         {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].groups.join(' and ') }}
       </mat-error>
-      
+
       <div class="step-buttons">
         <button type="button" mat-button matStepperPrevious>Back</button>
         <button type="submit" mat-button color="primary" (click)="onSubmit()">

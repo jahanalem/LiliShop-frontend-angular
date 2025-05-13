@@ -214,7 +214,13 @@ export class EditDiscountComponent {
   private uniqueBrandTypePairValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const conditionGroups = control as FormArray;
-      const pairs = new Map<string, number>(); // Key: "brandId-typeId", Value: group index
+      const pairs = new Map<string, number>();
+
+      // Track coverage in both directions
+      const brandCoverageMap = new Map<number, number>();       // Brand -> "All Types" group
+      const allBrandsForType = new Map<number, number>();       // Type -> "All Brands" group
+      const allTypesForBrand = new Map<number, number>();       // Brand -> "All Types" group
+      const specificBrandTypes = new Map<string, number>();     // "brand-type" -> group
 
       for (let groupIndex = 0; groupIndex < conditionGroups.length; groupIndex++) {
         const group = conditionGroups.at(groupIndex) as FormGroup;
@@ -223,7 +229,7 @@ export class EditDiscountComponent {
         let brandId: number | null = null;
         let typeId: number | null = null;
 
-        // Collect brand/type IDs from current group
+        // Collect brand/type IDs
         for (let conditionIndex = 0; conditionIndex < conditions.length; conditionIndex++) {
           const condition = conditions.at(conditionIndex) as FormGroup;
           const targetEntity = condition.get('targetEntity')?.value;
@@ -236,19 +242,100 @@ export class EditDiscountComponent {
           }
         }
 
-        // Only validate groups that have both IDs
         if (brandId !== null && typeId !== null) {
-          const pairKey = `${brandId}-${typeId}`;
+          // Case 1: All Brands (0) with specific type
+          if (brandId === 0 && typeId !== 0) {
+            // Conflict: Specific brands for this type already exist
+            const conflictingGroups = Array.from(specificBrandTypes.entries())
+              .filter(([key]) => key.endsWith(`-${typeId}`))
+              .map(([, groupIdx]) => groupIdx);
 
-          if (pairs.has(pairKey)) {
-            return {
-              duplicateBrandTypePair: {
-                message: 'ProductBrand/ProductType combination must be unique',
-                groups: [pairs.get(pairKey), groupIndex]
-              }
-            };
+            if (conflictingGroups.length > 0) {
+              return {
+                duplicateBrandTypePair: {
+                  message: 'All brands coverage makes specific brand rules redundant for this type',
+                  groups: [conflictingGroups[0], groupIndex]
+                }
+              };
+            }
+
+            // Conflict: Another "All Brands" for this type
+            if (allBrandsForType.has(typeId)) {
+              return {
+                duplicateBrandTypePair: {
+                  message: 'Type already covered by all brands',
+                  groups: [allBrandsForType.get(typeId)!, groupIndex]
+                }
+              };
+            }
+
+            allBrandsForType.set(typeId, groupIndex);
           }
-          pairs.set(pairKey, groupIndex);
+
+          // Case 2: All Types (0) with specific brand
+          else if (typeId === 0 && brandId !== 0) {
+            // Conflict: Specific types for this brand exist
+            const conflictingGroups = Array.from(specificBrandTypes.entries())
+              .filter(([key]) => key.startsWith(`${brandId}-`))
+              .map(([, groupIdx]) => groupIdx);
+
+            if (conflictingGroups.length > 0) {
+              return {
+                duplicateBrandTypePair: {
+                  message: 'All types coverage makes specific type rules redundant for this brand',
+                  groups: [conflictingGroups[0], groupIndex]
+                }
+              };
+            }
+
+            // Conflict: Another "All Types" for this brand
+            if (allTypesForBrand.has(brandId)) {
+              return {
+                duplicateBrandTypePair: {
+                  message: 'Brand already has all types coverage',
+                  groups: [allTypesForBrand.get(brandId)!, groupIndex]
+                }
+              };
+            }
+
+            allTypesForBrand.set(brandId, groupIndex);
+          }
+
+          // Case 3: Specific brand + specific type
+          else if (brandId !== 0 && typeId !== 0) {
+            // Check against "All Brands" for this type
+            if (allBrandsForType.has(typeId)) {
+              return {
+                duplicateBrandTypePair: {
+                  message: 'Specific brand covered by all brands rule for this type',
+                  groups: [allBrandsForType.get(typeId)!, groupIndex]
+                }
+              };
+            }
+
+            // Check against "All Types" for this brand
+            if (allTypesForBrand.has(brandId)) {
+              return {
+                duplicateBrandTypePair: {
+                  message: 'Specific type covered by all types rule for this brand',
+                  groups: [allTypesForBrand.get(brandId)!, groupIndex]
+                }
+              };
+            }
+
+            // Check duplicate specific combinations
+            const pairKey = `${brandId}-${typeId}`;
+            if (specificBrandTypes.has(pairKey)) {
+              return {
+                duplicateBrandTypePair: {
+                  message: 'Duplicate brand/type combination',
+                  groups: [specificBrandTypes.get(pairKey)!, groupIndex]
+                }
+              };
+            }
+
+            specificBrandTypes.set(pairKey, groupIndex);
+          }
         }
       }
 
