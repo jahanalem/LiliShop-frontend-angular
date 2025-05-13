@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 // Angular Material Modules
@@ -116,7 +116,7 @@ export class EditDiscountComponent {
     });
 
     this.discountGroupForm = this.fb.group({
-      conditionGroups: this.fb.array([])
+      conditionGroups: this.fb.array([], [this.uniqueBrandTypePairValidator()])
     });
   }
 
@@ -168,7 +168,7 @@ export class EditDiscountComponent {
   onAddConditionGroup(): void {
     this.conditionGroups.push(this.fb.group({
       tierIndex: [0, Validators.required],
-      conditions: this.fb.array([])
+      conditions: this.fb.array([], this.uniqueTargetEntityValidator())
     }));
   }
 
@@ -181,11 +181,83 @@ export class EditDiscountComponent {
   }
 
   onAddCondition(groupIndex: number): void {
-    this.getConditions(groupIndex).push(this.fb.group({
-      targetEntity: [DiscountTargetType.All, Validators.required],
+    const conditions = this.getConditions(groupIndex);
+    // List of all existing targetEntity values ​​in this group
+    const usedEntities = conditions.controls.map(c => c.get('targetEntity')?.value);
+    // Find the first unused DiscountTargetType
+    const availableTarget = Object.values(DiscountTargetType).find(
+      target => !usedEntities.includes(target)
+    );
+    if (!availableTarget) {
+      console.warn('All available conditions have already been added.');
+      return;
+    }
+
+    conditions.push(this.fb.group({
+      targetEntity: [availableTarget, Validators.required],
       targetEntityId: [null, Validators.required],
       shouldNotify: [false]
     }));
+  }
+  uniqueTargetEntityValidator(): ValidatorFn {
+    return (formArray: AbstractControl): ValidationErrors | null => {
+      if (!(formArray instanceof FormArray)) {
+        return null;
+      }
+
+      const values = formArray.controls.map(c => c.get('targetEntity')?.value);
+      const hasDuplicates = new Set(values).size !== values.length;
+
+      return hasDuplicates ? { duplicateTargetEntity: true } : null;
+    };
+  }
+  private uniqueBrandTypePairValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const conditionGroups = control as FormArray;
+      const pairs = new Map<string, number>(); // Key: "brandId-typeId", Value: group index
+
+      for (let groupIndex = 0; groupIndex < conditionGroups.length; groupIndex++) {
+        const group = conditionGroups.at(groupIndex) as FormGroup;
+        const conditions = group.get('conditions') as FormArray;
+
+        let brandId: number | null = null;
+        let typeId: number | null = null;
+
+        // Collect brand/type IDs from current group
+        for (let conditionIndex = 0; conditionIndex < conditions.length; conditionIndex++) {
+          const condition = conditions.at(conditionIndex) as FormGroup;
+          const targetEntity = condition.get('targetEntity')?.value;
+          const targetEntityId = condition.get('targetEntityId')?.value;
+
+          if (targetEntity === DiscountTargetType.ProductBrand) {
+            brandId = targetEntityId;
+          } else if (targetEntity === DiscountTargetType.ProductType) {
+            typeId = targetEntityId;
+          }
+        }
+
+        // Only validate groups that have both IDs
+        if (brandId !== null && typeId !== null) {
+          const pairKey = `${brandId}-${typeId}`;
+
+          if (pairs.has(pairKey)) {
+            return {
+              duplicateBrandTypePair: {
+                message: 'ProductBrand/ProductType combination must be unique',
+                groups: [pairs.get(pairKey), groupIndex]
+              }
+            };
+          }
+          pairs.set(pairKey, groupIndex);
+        }
+      }
+
+      return null;
+    };
+  }
+
+  get conditions(): FormArray {
+    return this.discountGroupForm.get('conditionGroups') as FormArray;
   }
 
   onRemoveCondition(groupIndex: number, conditionIndex: number): void {
@@ -213,6 +285,16 @@ export class EditDiscountComponent {
   }
 
   onSubmit(): void {
+    this.conditionGroups.controls.forEach(group => {
+      const conditions = group.get('conditions') as FormArray;
+      conditions.updateValueAndValidity({ emitEvent: true });
+    });
+
+    if (this.discountGroupForm.invalid) {
+      console.warn('Duplicate combinations found');
+      return;
+    }
+
     if (this.discountInfoForm.invalid || this.tiersForm.invalid || this.discountGroupForm.invalid) {
       console.warn('Form invalid');
       return;

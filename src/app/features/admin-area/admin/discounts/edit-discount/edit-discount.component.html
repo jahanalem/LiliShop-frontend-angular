@@ -101,6 +101,13 @@
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
+
+            <mat-error *ngIf="getConditions(i).errors?.['duplicateTargetEntity']" class="validation-error"
+              style="margin-top: 8px;">
+              <mat-icon>error</mat-icon>
+              Each condition must have a unique target type in this group.
+            </mat-error>
+
             <button type="button" mat-button (click)="onAddCondition(i)">Add Condition</button>
           </div>
 
@@ -112,6 +119,13 @@
 
       <button type="button" mat-button (click)="onAddConditionGroup()">Add Condition Group</button>
 
+      <mat-error *ngIf="discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair']"
+        class="validation-error">
+        <mat-icon>error</mat-icon>
+        Duplicate Product Brand/Type combination found in groups
+        {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].groups.join(' and ') }}
+      </mat-error>
+      
       <div class="step-buttons">
         <button type="button" mat-button matStepperPrevious>Back</button>
         <button type="submit" mat-button color="primary" (click)="onSubmit()">
