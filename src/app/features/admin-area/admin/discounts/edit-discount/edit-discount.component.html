@@ -10,13 +10,17 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Start Date</mat-label>
-        <input title="startDate" matInput type="date" formControlName="startDate" />
+        <mat-label>Startdatum</mat-label>
+        <input title="startDate" matInput [matDatepicker]="startPicker" formControlName="startDate">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>End Date</mat-label>
-        <input title="endDate" matInput type="date" formControlName="endDate" />
+        <mat-label>Enddatum</mat-label>
+        <input title="endDate" matInput [matDatepicker]="endPicker" formControlName="endDate">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
       </mat-form-field>
 
       <mat-checkbox formControlName="isActive">Is Active</mat-checkbox>
@@ -39,6 +43,12 @@
             <mat-label>Amount</mat-label>
             <input title="amount" matInput type="number" formControlName="amount" required />
           </mat-form-field>
+          <mat-error *ngIf="tier.hasError('amountTooLow')">
+            Amount must be greater than 0.
+          </mat-error>
+          <mat-error *ngIf="tier.hasError('percentageTooHigh')">
+            Percentage cannot be 100 or more.
+          </mat-error>
 
           <mat-checkbox formControlName="isPercentage">Is Percentage</mat-checkbox>
           <mat-checkbox formControlName="isFreeShipping">Free Shipping</mat-checkbox>

@@ -58,6 +58,10 @@ export class EditDiscountComponent {
   tiersForm!: FormGroup;
   discountGroupForm!: FormGroup;
 
+  brands: IBrand[]       = [];
+  types : IProductType[] = [];
+  tierOptions     = signal<ITierOption[]>([]);
+
   targetEntityOptions = [
     { label: 'All', value: DiscountTargetType.All },
     { label: 'Product Brand', value: DiscountTargetType.ProductBrand },
@@ -65,16 +69,12 @@ export class EditDiscountComponent {
     //{ label: 'Size', value: DiscountTargetType.Size },
     //{ label: 'Product', value: DiscountTargetType.Product },
   ];
-
   targetEntityIdOptionsMap = new Map<DiscountTargetType, ITargetEntityOption[]>();
 
-  brands: IBrand[] = [];
-  types: IProductType[] = [];
-  tierOptions = signal<ITierOption[]>([]);
-
   private productService = inject(ProductService);
+  private fb             = inject(FormBuilder);
 
-  constructor(private fb: FormBuilder) { }
+  constructor() { }
 
   ngOnInit(): void {
     this.initForms();
@@ -104,11 +104,19 @@ export class EditDiscountComponent {
   }
 
   private initForms(): void {
+    const today        = new Date();
+    const oneWeekLater = new Date(today);
+    oneWeekLater.setDate(today.getDate() + 7);
+
+    const defaultName        = `discount - ${this.formatDate(today)}`;
+    const formattedToday     = this.formatDateForInput(today);          // yyyy-MM-dd
+    const formattedWeekLater = this.formatDateForInput(oneWeekLater);   // yyyy-MM-dd
+
     this.discountInfoForm = this.fb.group({
-      name: ['',],
-      startDate: ['',],
-      endDate: ['',],
-      isActive: [false]
+      name     : [defaultName, Validators.required],
+      startDate: [formattedToday, Validators.required],
+      endDate  : [formattedWeekLater, Validators.required],
+      isActive : [false]
     });
 
     this.tiersForm = this.fb.group({
@@ -126,12 +134,28 @@ export class EditDiscountComponent {
 
   onAddTier(): void {
     this.tiers.push(this.fb.group({
-      amount: [0, Validators.required],
-      isPercentage: [true],
+      amount        : [10],
+      isPercentage  : [true],
       isFreeShipping: [false]
-    }));
-    this.updateTierOptions();
+    }, { validators: this.amountValidator() }));
 
+    this.updateTierOptions();
+  }
+  private amountValidator(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const amount = group.get('amount')?.value;
+      const isPercentage = group.get('isPercentage')?.value;
+
+      if (amount <= 0) {
+        return { amountTooLow: true };
+      }
+
+      if (isPercentage && amount >= 100) {
+        return { percentageTooHigh: true };
+      }
+
+      return null;
+    };
   }
 
   onRemoveTier(i: number): void {
@@ -141,8 +165,8 @@ export class EditDiscountComponent {
 
   private updateTierOptions(): void {
     const updatedTiers = this.tiers.controls.map((tier, index) => {
-      const amount = tier.get('amount')?.value;
-      const isPercentage = tier.get('isPercentage')?.value;
+      const amount         = tier.get('amount')?.value;
+      const isPercentage   = tier.get('isPercentage')?.value;
       const isFreeShipping = tier.get('isFreeShipping')?.value;
 
       let label = `${amount}${isPercentage ? '%' : '€'}`;
@@ -167,7 +191,7 @@ export class EditDiscountComponent {
 
   onAddConditionGroup(): void {
     this.conditionGroups.push(this.fb.group({
-      tierIndex: [0, Validators.required],
+      tierIndex : [0, Validators.required],
       conditions: this.fb.array([], this.uniqueTargetEntityValidator())
     }));
   }
@@ -217,29 +241,31 @@ export class EditDiscountComponent {
       const conditionGroups = control as FormArray;
 
       // Track coverage in all forms
-      const allBrandsForType = new Map<number, number>();       // Type -> "All Brands" group
-      const allTypesForBrand = new Map<number, number>();       // Brand -> "All Types" group
-      const specificBrandTypes = new Map<string, number>();     // "brand-type" -> group
-      let universalGroupIndex: number | null = null;            // Tracks universal discount group
+      const allBrandsForType   = new Map<number, number>();  // Type -> "All Brands" group
+      const allTypesForBrand   = new Map<number, number>();  // Brand -> "All Types" group
+      const specificBrandTypes = new Map<string, number>();  // "brand-type" -> group
+
+      let   universalGroupIndex: number | null = null;       // Tracks universal discount group
+
       const partialAllGroups = {
         allBrands: new Set<number>(),
-        allTypes: new Set<number>()
+        allTypes : new Set<number>()
       };
 
       for (let groupIndex = 0; groupIndex < conditionGroups.length; groupIndex++) {
-        const group = conditionGroups.at(groupIndex) as FormGroup;
+        const group      = conditionGroups.at(groupIndex) as FormGroup;
         const conditions = group.get('conditions') as FormArray;
 
         let brandId: number | null = null;
-        let typeId: number | null = null;
-        let hasAllCondition = false;
-        let hasAllBrand = false;
-        let hasAllType = false;
+        let typeId: number | null  = null;
+        let hasAllCondition        = false;
+        let hasAllBrand            = false;
+        let hasAllType             = false;
 
         // Parse conditions
         for (let conditionIndex = 0; conditionIndex < conditions.length; conditionIndex++) {
-          const condition = conditions.at(conditionIndex) as FormGroup;
-          const targetEntity = condition.get('targetEntity')?.value;
+          const condition      = conditions.at(conditionIndex) as FormGroup;
+          const targetEntity   = condition.get('targetEntity')?.value;
           const targetEntityId = condition.get('targetEntityId')?.value;
 
           if (targetEntity === DiscountTargetType.All) {
@@ -260,7 +286,7 @@ export class EditDiscountComponent {
             return {
               duplicateBrandTypePair: {
                 message: 'Must specify both Brand and Type unless using "All"',
-                groups: [groupIndex]
+                groups : [groupIndex]
               }
             };
           }
@@ -269,7 +295,7 @@ export class EditDiscountComponent {
         // Handle universal cases (All products)
         if (hasAllCondition || (hasAllBrand && hasAllType)) {
           brandId = 0;
-          typeId = 0;
+          typeId  = 0;
         }
 
         // Case 4: Universal discount (All products)
@@ -278,7 +304,7 @@ export class EditDiscountComponent {
             return {
               duplicateBrandTypePair: {
                 message: 'Only one universal discount group allowed',
-                groups: [universalGroupIndex, groupIndex]
+                groups : [universalGroupIndex, groupIndex]
               }
             };
           }
@@ -286,10 +312,11 @@ export class EditDiscountComponent {
             return {
               duplicateBrandTypePair: {
                 message: 'Universal discount cannot coexist with specific rules',
-                groups: [groupIndex]
+                groups : [groupIndex]
               }
             };
           }
+
           universalGroupIndex = groupIndex;
 
           continue;
@@ -301,7 +328,7 @@ export class EditDiscountComponent {
           return {
             duplicateBrandTypePair: {
               message: 'When using "All" for Brand/Type, you must specify the other',
-              groups: [groupIndex]
+              groups : [groupIndex]
             }
           };
         }
@@ -318,7 +345,7 @@ export class EditDiscountComponent {
           return {
             duplicateBrandTypePair: {
               message: 'Cannot add specific rules after universal discount',
-              groups: [universalGroupIndex, groupIndex]
+              groups : [universalGroupIndex, groupIndex]
             }
           };
         }
@@ -335,7 +362,7 @@ export class EditDiscountComponent {
               return {
                 duplicateBrandTypePair: {
                   message: 'All brands coverage makes specific brand rules redundant for this type',
-                  groups: [conflictingGroups[0], groupIndex]
+                  groups : [conflictingGroups[0], groupIndex]
                 }
               };
             }
@@ -344,7 +371,7 @@ export class EditDiscountComponent {
               return {
                 duplicateBrandTypePair: {
                   message: 'Type already covered by all brands',
-                  groups: [allBrandsForType.get(typeId)!, groupIndex]
+                  groups : [allBrandsForType.get(typeId)!, groupIndex]
                 }
               };
             }
@@ -361,7 +388,7 @@ export class EditDiscountComponent {
               return {
                 duplicateBrandTypePair: {
                   message: 'All types coverage makes specific type rules redundant for this brand',
-                  groups: [conflictingGroups[0], groupIndex]
+                  groups : [conflictingGroups[0], groupIndex]
                 }
               };
             }
@@ -370,7 +397,7 @@ export class EditDiscountComponent {
               return {
                 duplicateBrandTypePair: {
                   message: 'Brand already has all types coverage',
-                  groups: [allTypesForBrand.get(brandId)!, groupIndex]
+                  groups : [allTypesForBrand.get(brandId)!, groupIndex]
                 }
               };
             }
@@ -383,7 +410,7 @@ export class EditDiscountComponent {
               return {
                 duplicateBrandTypePair: {
                   message: 'Specific brand covered by all brands rule for this type',
-                  groups: [allBrandsForType.get(typeId)!, groupIndex]
+                  groups : [allBrandsForType.get(typeId)!, groupIndex]
                 }
               };
             }
@@ -392,7 +419,7 @@ export class EditDiscountComponent {
               return {
                 duplicateBrandTypePair: {
                   message: 'Specific type covered by all types rule for this brand',
-                  groups: [allTypesForBrand.get(brandId)!, groupIndex]
+                  groups : [allTypesForBrand.get(brandId)!, groupIndex]
                 }
               };
             }
@@ -402,7 +429,7 @@ export class EditDiscountComponent {
               return {
                 duplicateBrandTypePair: {
                   message: 'Duplicate brand/type combination',
-                  groups: [specificBrandTypes.get(pairKey)!, groupIndex]
+                  groups : [specificBrandTypes.get(pairKey)!, groupIndex]
                 }
               };
             }
@@ -421,7 +448,7 @@ export class EditDiscountComponent {
         return {
           duplicateBrandTypePair: {
             message: 'Combination of "All Brands" and "All Types" groups creates ambiguity',
-            groups: Array.from(partialAllGroups.allBrands).concat(Array.from(partialAllGroups.allTypes))
+            groups : Array.from(partialAllGroups.allBrands).concat(Array.from(partialAllGroups.allTypes))
           }
         };
       }
@@ -457,9 +484,10 @@ export class EditDiscountComponent {
     return options;
   }
   onTargetEntityChange(i: number, j: number) {
-    const control = this.getConditions(i).at(j);
+    const control          = this.getConditions(i).at(j);
     const targetEntityType = control.get('targetEntity')?.value as DiscountTargetType;
-    const options = this.updateTargetEntityIdOptions(targetEntityType);
+    const options          = this.updateTargetEntityIdOptions(targetEntityType);
+
     if (options.length == 0) {
       control.get('targetEntityId')?.setValue(0);
     }
@@ -475,7 +503,6 @@ export class EditDiscountComponent {
       console.warn('Duplicate combinations found');
       return;
     }
-
     if (this.discountInfoForm.invalid || this.tiersForm.invalid || this.discountGroupForm.invalid) {
       console.warn('Form invalid');
       return;
@@ -485,7 +512,7 @@ export class EditDiscountComponent {
       ...this.discountInfoForm.value,
       tiers: this.tiersForm.value.tiers,
       discountGroup: {
-        name: this.discountInfoForm.value.name + '_group', // Or some logic
+        name: this.discountInfoForm.value.name + '_group',
         conditionGroups: this.discountGroupForm.value.conditionGroups
       }
     };
@@ -498,4 +525,18 @@ export class EditDiscountComponent {
       // Call create service
     }
   }
+
+  private formatDate(date: Date): string {
+    const day   = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');  // Months are 0-based
+    const year  = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  }
+  private formatDateForInput(date: Date): string {
+    const day   = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year  = date.getFullYear();
+    return `${year}-${month}-${day}`; // Format for <input type="date">
+ }
 }
