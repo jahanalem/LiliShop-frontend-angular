@@ -82,27 +82,6 @@ export class EditDiscountComponent {
     this.loadTypes();
   }
 
-  loadBrands() {
-    this.productService.getBrands(true).subscribe({
-      next: (activeBrands: IBrand[]) => {
-        this.brands = [{ id: 0, name: 'All' }, ...activeBrands];
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
-  }
-  loadTypes() {
-    this.productService.getTypes(true).subscribe({
-      next: (activeTypes: IProductType[]) => {
-        this.types = [{ id: 0, name: 'All' }, ...activeTypes];
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
-  }
-
   private initForms(): void {
     const today        = new Date();
     const oneWeekLater = new Date(today);
@@ -131,6 +110,69 @@ export class EditDiscountComponent {
   get tiers(): FormArray {
     return this.tiersForm.get('tiers') as FormArray;
   }
+  get conditions(): FormArray {
+    return this.discountGroupForm.get('conditionGroups') as FormArray;
+  }
+  get conditionGroups(): FormArray {
+    return this.discountGroupForm.get('conditionGroups') as FormArray;
+  }
+  getConditions(groupIndex: number): FormArray {
+    return this.conditionGroups.at(groupIndex).get('conditions') as FormArray;
+  }
+
+  loadBrands() {
+    this.productService.getBrands(true).subscribe({
+      next: (activeBrands: IBrand[]) => {
+        this.brands = [{ id: 0, name: 'All' }, ...activeBrands];
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
+  }
+  loadTypes() {
+    this.productService.getTypes(true).subscribe({
+      next: (activeTypes: IProductType[]) => {
+        this.types = [{ id: 0, name: 'All' }, ...activeTypes];
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
+  }
+
+  onSubmit(): void {
+    this.conditionGroups.controls.forEach(group => {
+      const conditions = group.get('conditions') as FormArray;
+      conditions.updateValueAndValidity({ emitEvent: true });
+    });
+
+    if (this.discountGroupForm.invalid) {
+      console.warn('Duplicate combinations found');
+      return;
+    }
+    if (this.discountInfoForm.invalid || this.tiersForm.invalid || this.discountGroupForm.invalid) {
+      console.warn('Form invalid');
+      return;
+    }
+
+    const discount: IDiscount = {
+      ...this.discountInfoForm.value,
+      tiers: this.tiersForm.value.tiers,
+      discountGroup: {
+        name: this.discountInfoForm.value.name + '_group',
+        conditionGroups: this.discountGroupForm.value.conditionGroups
+      }
+    };
+
+    if (this.isEditMode) {
+      console.log('Update Discount', discount);
+      // Call update service
+    } else {
+      console.log('Create Discount', discount);
+      // Call create service
+    }
+  }
 
   onAddTier(): void {
     this.tiers.push(this.fb.group({
@@ -141,52 +183,10 @@ export class EditDiscountComponent {
 
     this.updateTierOptions();
   }
-  private amountValidator(): ValidatorFn {
-    return (group: AbstractControl): ValidationErrors | null => {
-      const amount = group.get('amount')?.value;
-      const isPercentage = group.get('isPercentage')?.value;
-
-      if (amount <= 0) {
-        return { amountTooLow: true };
-      }
-
-      if (isPercentage && amount >= 100) {
-        return { percentageTooHigh: true };
-      }
-
-      return null;
-    };
-  }
 
   onRemoveTier(i: number): void {
     this.tiers.removeAt(i);
     this.updateTierOptions();
-  }
-
-  private updateTierOptions(): void {
-    const updatedTiers = this.tiers.controls.map((tier, index) => {
-      const amount         = tier.get('amount')?.value;
-      const isPercentage   = tier.get('isPercentage')?.value;
-      const isFreeShipping = tier.get('isFreeShipping')?.value;
-
-      let label = `${amount}${isPercentage ? '%' : '€'}`;
-      if (isFreeShipping) label += ' + Free shipping';
-
-      return {
-        label,
-        value: index
-      };
-    });
-
-    this.tierOptions.set(updatedTiers);
-  }
-
-  onBeforeNextStepFromTiersForm() {
-    this.updateTierOptions();
-  }
-
-  get conditionGroups(): FormArray {
-    return this.discountGroupForm.get('conditionGroups') as FormArray;
   }
 
   onAddConditionGroup(): void {
@@ -200,8 +200,8 @@ export class EditDiscountComponent {
     this.conditionGroups.removeAt(i);
   }
 
-  getConditions(groupIndex: number): FormArray {
-    return this.conditionGroups.at(groupIndex).get('conditions') as FormArray;
+  onBeforeNextStepFromTiersForm() {
+    this.updateTierOptions();
   }
 
   onAddCondition(groupIndex: number): void {
@@ -223,7 +223,76 @@ export class EditDiscountComponent {
       shouldNotify: [false]
     }));
   }
-  uniqueTargetEntityValidator(): ValidatorFn {
+
+  onRemoveCondition(groupIndex: number, conditionIndex: number): void {
+    this.getConditions(groupIndex).removeAt(conditionIndex);
+  }
+
+  onTargetEntityChange(i: number, j: number) {
+    const control          = this.getConditions(i).at(j);
+    const targetEntityType = control.get('targetEntity')?.value as DiscountTargetType;
+    const options          = this.updateTargetEntityIdOptions(targetEntityType);
+
+    if (options.length == 0) {
+      control.get('targetEntityId')?.setValue(0);
+    }
+  }
+
+  private updateTierOptions(): void {
+    const updatedTiers = this.tiers.controls.map((tier, index) => {
+      const amount         = tier.get('amount')?.value;
+      const isPercentage   = tier.get('isPercentage')?.value;
+      const isFreeShipping = tier.get('isFreeShipping')?.value;
+
+      let label = `${amount}${isPercentage ? '%' : '€'}`;
+      if (isFreeShipping) label += ' + Free shipping';
+
+      return {
+        label,
+        value: index
+      };
+    });
+
+    this.tierOptions.set(updatedTiers);
+  }
+
+  updateTargetEntityIdOptions(targetEntityType: DiscountTargetType): ITargetEntityOption[] {
+    let options: ITargetEntityOption[] = [];
+
+    if (!this.targetEntityIdOptionsMap.has(targetEntityType)) {
+      if (targetEntityType === DiscountTargetType.ProductBrand) {
+        options = this.brands.map(b => ({ label: b.name, value: b.id }));
+      } else if (targetEntityType === DiscountTargetType.ProductType) {
+        options = this.types.map(t => ({ label: t.name, value: t.id }));
+      }
+      else {
+        options = [];
+      }
+
+      this.targetEntityIdOptionsMap.set(targetEntityType, options);
+    }
+
+    return options;
+  }
+
+  private amountValidator(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const amount = group.get('amount')?.value;
+      const isPercentage = group.get('isPercentage')?.value;
+
+      if (amount <= 0) {
+        return { amountTooLow: true };
+      }
+
+      if (isPercentage && amount >= 100) {
+        return { percentageTooHigh: true };
+      }
+
+      return null;
+    };
+  }
+
+  private uniqueTargetEntityValidator(): ValidatorFn {
     return (formArray: AbstractControl): ValidationErrors | null => {
       if (!(formArray instanceof FormArray)) {
         return null;
@@ -455,75 +524,6 @@ export class EditDiscountComponent {
 
       return null;
     };
-  }
-
-  get conditions(): FormArray {
-    return this.discountGroupForm.get('conditionGroups') as FormArray;
-  }
-
-  onRemoveCondition(groupIndex: number, conditionIndex: number): void {
-    this.getConditions(groupIndex).removeAt(conditionIndex);
-  }
-
-  updateTargetEntityIdOptions(targetEntityType: DiscountTargetType): ITargetEntityOption[] {
-    let options: ITargetEntityOption[] = [];
-
-    if (!this.targetEntityIdOptionsMap.has(targetEntityType)) {
-      if (targetEntityType === DiscountTargetType.ProductBrand) {
-        options = this.brands.map(b => ({ label: b.name, value: b.id }));
-      } else if (targetEntityType === DiscountTargetType.ProductType) {
-        options = this.types.map(t => ({ label: t.name, value: t.id }));
-      }
-      else {
-        options = [];
-      }
-
-      this.targetEntityIdOptionsMap.set(targetEntityType, options);
-    }
-
-    return options;
-  }
-  onTargetEntityChange(i: number, j: number) {
-    const control          = this.getConditions(i).at(j);
-    const targetEntityType = control.get('targetEntity')?.value as DiscountTargetType;
-    const options          = this.updateTargetEntityIdOptions(targetEntityType);
-
-    if (options.length == 0) {
-      control.get('targetEntityId')?.setValue(0);
-    }
-  }
-
-  onSubmit(): void {
-    this.conditionGroups.controls.forEach(group => {
-      const conditions = group.get('conditions') as FormArray;
-      conditions.updateValueAndValidity({ emitEvent: true });
-    });
-
-    if (this.discountGroupForm.invalid) {
-      console.warn('Duplicate combinations found');
-      return;
-    }
-    if (this.discountInfoForm.invalid || this.tiersForm.invalid || this.discountGroupForm.invalid) {
-      console.warn('Form invalid');
-      return;
-    }
-
-    const discount: IDiscount = {
-      ...this.discountInfoForm.value,
-      tiers: this.tiersForm.value.tiers,
-      discountGroup: {
-        name: this.discountInfoForm.value.name + '_group',
-        conditionGroups: this.discountGroupForm.value.conditionGroups
-      }
-    };
-
-    if (this.isEditMode) {
-      console.log('Update Discount', discount);
-      // Call update service
-    } else {
-      console.log('Create Discount', discount);
-      // Call create service
-    }
   }
 
   private formatDate(date: Date): string {
