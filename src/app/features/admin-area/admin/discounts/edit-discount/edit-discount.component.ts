@@ -211,16 +211,20 @@ export class EditDiscountComponent {
       return hasDuplicates ? { duplicateTargetEntity: true } : null;
     };
   }
+
   private uniqueBrandTypePairValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const conditionGroups = control as FormArray;
-      const pairs = new Map<string, number>();
 
-      // Track coverage in both directions
-      const brandCoverageMap = new Map<number, number>();       // Brand -> "All Types" group
+      // Track coverage in all forms
       const allBrandsForType = new Map<number, number>();       // Type -> "All Brands" group
       const allTypesForBrand = new Map<number, number>();       // Brand -> "All Types" group
       const specificBrandTypes = new Map<string, number>();     // "brand-type" -> group
+      let universalGroupIndex: number | null = null;            // Tracks universal discount group
+      const partialAllGroups = {
+        allBrands: new Set<number>(),
+        allTypes: new Set<number>()
+      };
 
       for (let groupIndex = 0; groupIndex < conditionGroups.length; groupIndex++) {
         const group = conditionGroups.at(groupIndex) as FormGroup;
@@ -228,24 +232,101 @@ export class EditDiscountComponent {
 
         let brandId: number | null = null;
         let typeId: number | null = null;
+        let hasAllCondition = false;
+        let hasAllBrand = false;
+        let hasAllType = false;
 
-        // Collect brand/type IDs
+        // Parse conditions
         for (let conditionIndex = 0; conditionIndex < conditions.length; conditionIndex++) {
           const condition = conditions.at(conditionIndex) as FormGroup;
           const targetEntity = condition.get('targetEntity')?.value;
           const targetEntityId = condition.get('targetEntityId')?.value;
 
-          if (targetEntity === DiscountTargetType.ProductBrand) {
+          if (targetEntity === DiscountTargetType.All) {
+            hasAllCondition = true;
+          } else if (targetEntity === DiscountTargetType.ProductBrand) {
             brandId = targetEntityId;
+            if (targetEntityId === 0) hasAllBrand = true;
           } else if (targetEntity === DiscountTargetType.ProductType) {
             typeId = targetEntityId;
+            if (targetEntityId === 0) hasAllType = true;
           }
         }
 
+        // Validate condition pairing
+        if (!hasAllCondition) {
+          if ((brandId === null && typeId !== null) ||
+            (brandId !== null && typeId === null)) {
+            return {
+              duplicateBrandTypePair: {
+                message: 'Must specify both Brand and Type unless using "All"',
+                groups: [groupIndex]
+              }
+            };
+          }
+        }
+
+        // Handle universal cases (All products)
+        if (hasAllCondition || (hasAllBrand && hasAllType)) {
+          brandId = 0;
+          typeId = 0;
+        }
+
+        // Case 4: Universal discount (All products)
+        if (brandId === 0 && typeId === 0) {
+          if (universalGroupIndex !== null) {
+            return {
+              duplicateBrandTypePair: {
+                message: 'Only one universal discount group allowed',
+                groups: [universalGroupIndex, groupIndex]
+              }
+            };
+          }
+          if (allBrandsForType.size > 0 || allTypesForBrand.size > 0 || specificBrandTypes.size > 0) {
+            return {
+              duplicateBrandTypePair: {
+                message: 'Universal discount cannot coexist with specific rules',
+                groups: [groupIndex]
+              }
+            };
+          }
+          universalGroupIndex = groupIndex;
+
+          continue;
+        }
+
+        // Validate partial "All" conditions
+        if ((brandId === 0 && (typeId === null || typeId === 0)) ||
+          (typeId === 0 && (brandId === null || brandId === 0))) {
+          return {
+            duplicateBrandTypePair: {
+              message: 'When using "All" for Brand/Type, you must specify the other',
+              groups: [groupIndex]
+            }
+          };
+        }
+        // Check for conflicting partial "All" groups
+        if (brandId === 0) {
+          partialAllGroups.allBrands.add(typeId!);
+        }
+        if (typeId === 0) {
+          partialAllGroups.allTypes.add(brandId!);
+        }
+
+        // Block specific rules if universal exists
+        if (universalGroupIndex !== null) {
+          return {
+            duplicateBrandTypePair: {
+              message: 'Cannot add specific rules after universal discount',
+              groups: [universalGroupIndex, groupIndex]
+            }
+          };
+        }
+
+        // Original validation logic for non-universal cases
         if (brandId !== null && typeId !== null) {
-          // Case 1: All Brands (0) with specific type
+          // Case 1: All Brands with specific type
           if (brandId === 0 && typeId !== 0) {
-            // Conflict: Specific brands for this type already exist
             const conflictingGroups = Array.from(specificBrandTypes.entries())
               .filter(([key]) => key.endsWith(`-${typeId}`))
               .map(([, groupIdx]) => groupIdx);
@@ -259,7 +340,6 @@ export class EditDiscountComponent {
               };
             }
 
-            // Conflict: Another "All Brands" for this type
             if (allBrandsForType.has(typeId)) {
               return {
                 duplicateBrandTypePair: {
@@ -271,10 +351,8 @@ export class EditDiscountComponent {
 
             allBrandsForType.set(typeId, groupIndex);
           }
-
-          // Case 2: All Types (0) with specific brand
+          // Case 2: All Types with specific brand
           else if (typeId === 0 && brandId !== 0) {
-            // Conflict: Specific types for this brand exist
             const conflictingGroups = Array.from(specificBrandTypes.entries())
               .filter(([key]) => key.startsWith(`${brandId}-`))
               .map(([, groupIdx]) => groupIdx);
@@ -288,7 +366,6 @@ export class EditDiscountComponent {
               };
             }
 
-            // Conflict: Another "All Types" for this brand
             if (allTypesForBrand.has(brandId)) {
               return {
                 duplicateBrandTypePair: {
@@ -300,10 +377,8 @@ export class EditDiscountComponent {
 
             allTypesForBrand.set(brandId, groupIndex);
           }
-
-          // Case 3: Specific brand + specific type
+          // Case 3: Specific brand + type
           else if (brandId !== 0 && typeId !== 0) {
-            // Check against "All Brands" for this type
             if (allBrandsForType.has(typeId)) {
               return {
                 duplicateBrandTypePair: {
@@ -313,7 +388,6 @@ export class EditDiscountComponent {
               };
             }
 
-            // Check against "All Types" for this brand
             if (allTypesForBrand.has(brandId)) {
               return {
                 duplicateBrandTypePair: {
@@ -323,7 +397,6 @@ export class EditDiscountComponent {
               };
             }
 
-            // Check duplicate specific combinations
             const pairKey = `${brandId}-${typeId}`;
             if (specificBrandTypes.has(pairKey)) {
               return {
@@ -339,6 +412,20 @@ export class EditDiscountComponent {
         }
       }
 
+      // Check for cross-group "All" conflicts
+      const hasOverlappingAll =
+        partialAllGroups.allBrands.size > 0 &&
+        partialAllGroups.allTypes.size > 0;
+
+      if (hasOverlappingAll) {
+        return {
+          duplicateBrandTypePair: {
+            message: 'Combination of "All Brands" and "All Types" groups creates ambiguity',
+            groups: Array.from(partialAllGroups.allBrands).concat(Array.from(partialAllGroups.allTypes))
+          }
+        };
+      }
+
       return null;
     };
   }
@@ -351,24 +438,31 @@ export class EditDiscountComponent {
     this.getConditions(groupIndex).removeAt(conditionIndex);
   }
 
-  updateTargetEntityIdOptions(targetEntityType: DiscountTargetType) {
-    if (!this.targetEntityIdOptionsMap.has(targetEntityType)) {
-      let options: ITargetEntityOption[] = [];
+  updateTargetEntityIdOptions(targetEntityType: DiscountTargetType): ITargetEntityOption[] {
+    let options: ITargetEntityOption[] = [];
 
+    if (!this.targetEntityIdOptionsMap.has(targetEntityType)) {
       if (targetEntityType === DiscountTargetType.ProductBrand) {
         options = this.brands.map(b => ({ label: b.name, value: b.id }));
       } else if (targetEntityType === DiscountTargetType.ProductType) {
         options = this.types.map(t => ({ label: t.name, value: t.id }));
       }
+      else {
+        options = [];
+      }
 
       this.targetEntityIdOptionsMap.set(targetEntityType, options);
     }
+
+    return options;
   }
   onTargetEntityChange(i: number, j: number) {
     const control = this.getConditions(i).at(j);
     const targetEntityType = control.get('targetEntity')?.value as DiscountTargetType;
-
-    this.updateTargetEntityIdOptions(targetEntityType);
+    const options = this.updateTargetEntityIdOptions(targetEntityType);
+    if (options.length == 0) {
+      control.get('targetEntityId')?.setValue(0);
+    }
   }
 
   onSubmit(): void {
