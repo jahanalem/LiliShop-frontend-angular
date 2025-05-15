@@ -22,6 +22,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProductType } from 'src/app/shared/models/productType';
 import { ProductService } from 'src/app/core/services/product.service';
+import { DiscountService } from 'src/app/core/services/discount.service';
 
 @Component({
   selector: 'app-edit-discount',
@@ -71,8 +72,9 @@ export class EditDiscountComponent {
   ];
   targetEntityIdOptionsMap = new Map<DiscountTargetType, ITargetEntityOption[]>();
 
-  private productService = inject(ProductService);
-  private fb             = inject(FormBuilder);
+  private productService  = inject(ProductService);
+  private discountService = inject(DiscountService);
+  private fb              = inject(FormBuilder);
 
   constructor() { }
 
@@ -148,7 +150,7 @@ export class EditDiscountComponent {
     });
 
     if (this.discountGroupForm.invalid) {
-      console.warn('Duplicate combinations found');
+      console.warn('ERROR HAPPENED!');
       return;
     }
     if (this.discountInfoForm.invalid || this.tiersForm.invalid || this.discountGroupForm.invalid) {
@@ -166,11 +168,15 @@ export class EditDiscountComponent {
     };
 
     if (this.isEditMode) {
-      console.log('Update Discount', discount);
-      // Call update service
+      this.discountService.updateDiscount(discount).subscribe({
+        next: () => console.log('Update Discount', discount),
+        error: err => console.error('Error updating discount:', err)
+      });
     } else {
-      console.log('Create Discount', discount);
-      // Call create service
+      this.discountService.createDiscount(discount).subscribe({
+        next: () => console.log('Create Discount', discount),
+        error: err => console.error('Error creating discount:', err)
+      });
     }
   }
 
@@ -218,9 +224,9 @@ export class EditDiscountComponent {
     }
 
     conditions.push(this.fb.group({
-      targetEntity: [availableTarget, Validators.required],
-      targetEntityId: [null, Validators.required],
-      shouldNotify: [false]
+      targetEntity  : [availableTarget, Validators.required],
+      targetEntityId: [null],
+      shouldNotify  : [false]
     }));
   }
 
@@ -300,7 +306,6 @@ export class EditDiscountComponent {
 
       const values = formArray.controls.map(c => c.get('targetEntity')?.value);
       const hasDuplicates = new Set(values).size !== values.length;
-
       return hasDuplicates ? { duplicateTargetEntity: true } : null;
     };
   }

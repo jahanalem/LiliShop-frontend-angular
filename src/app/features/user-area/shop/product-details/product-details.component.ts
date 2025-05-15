@@ -181,10 +181,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   discountActiveNow(): boolean {
     const prod = this.product();
     const discount = prod.discount;
-    console.log("DISSSSSSS = ", discount);
-    console.log("discount.isActive = ", discount?.isActive);
     if (!discount?.isActive || !discount.startDate || !discount.endDate) {
-      console.log("FALSE");
       return false;
     }
     const now   = new Date().getTime();
@@ -206,7 +203,6 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   private updateDiscountTimeLeft(): void {
     const productEndDate = this.product().discount?.endDate;
-    console.log("EndDate = ", productEndDate);
     if (!productEndDate) {
       return;
     }
@@ -233,7 +229,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     const hours   = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    console.log("TIME =", days,hours,minutes,seconds);
+
     // Simple display format, e.g. "1d 04:22:11"
     if (days > 0) {
       this.discountTimeLeft.set(`${days}d ${hours}h ${minutes}m ${seconds}s`);
