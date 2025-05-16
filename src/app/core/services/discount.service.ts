@@ -42,9 +42,19 @@ export class DiscountService {
       if (discountParameters.pageSize > 0) {
         params = params.append('pageSize', discountParameters.pageSize.toString());
       }
+      if(discountParameters.search){
+        params = params.append('search', discountParameters.search.trim())
+      }
+      if(discountParameters.sort){
+        params = params.append('sort', discountParameters.sort);
+      }
+      if(discountParameters.sortDirection){
+        params = params.append('sortDirection', discountParameters.sortDirection);
+      }
     }
 
-    return this.http.get<DiscountPagination>(`${this.baseUrl}discount/discounts`, { observe: 'response', params })
+    return this.http.get<DiscountPagination>(`${this.baseUrl}discount/discounts`,
+      { observe: 'response', params })
       .pipe(
         tap(response => this.pagination = response.body ?? ({} as DiscountPagination)),
         map(response => response.body as DiscountPagination)

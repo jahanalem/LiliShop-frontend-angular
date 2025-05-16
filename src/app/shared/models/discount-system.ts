@@ -49,6 +49,7 @@ export interface IDiscountTier {
 }
 
 // Example of creating a discount object that matches the JSON
+/*
 const betaSaleDiscount: IDiscount = {
   id: 89,
   name: "BETA Sale",
@@ -108,3 +109,4 @@ const betaSaleDiscount: IDiscount = {
     }
   ]
 };
+*/

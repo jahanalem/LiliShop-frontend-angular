@@ -1,7 +1,7 @@
 import { IPaginationParams, ISearchParams, ISortParams } from "./queryParams";
 
 export class DiscountParams implements IPaginationParams, ISortParams, ISearchParams {
-  search       : string | null = '';
+  search       : string        = '';
   sort         : string        = 'id';
   sortDirection: string        = 'desc';
   pageNumber   : number        = 1;

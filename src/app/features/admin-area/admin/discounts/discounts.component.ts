@@ -1,4 +1,4 @@
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -28,9 +28,9 @@ import { CommonModule } from '@angular/common';
   templateUrl: './discounts.component.html',
   styleUrl: './discounts.component.scss'
 })
-export class DiscountsComponent {
+export class DiscountsComponent implements OnInit, AfterViewInit, OnDestroy {
   paginator = viewChild.required<MatPaginator>(MatPaginator);
-  sort = viewChild.required<MatSort>(MatSort);
+  sort      = viewChild.required<MatSort>(MatSort);
 
   policyNames = PolicyNames;
 
@@ -53,10 +53,10 @@ export class DiscountsComponent {
 
   destroy$ = new Subject<void>();
 
-  private router = inject(Router);
+  private router          = inject(Router);
   private discountService = inject(DiscountService);
-  private deleteService = inject(DeleteService);
-  private searchService = inject(SearchService<IDiscount>);
+  private deleteService   = inject(DeleteService);
+  private searchService   = inject(SearchService<IDiscount>);
 
   constructor() {
     this.discountParams.set(new DiscountParams());
@@ -68,7 +68,10 @@ export class DiscountsComponent {
   }
 
   ngOnInit(): void {
-    this.searchService.handleSearch(() => this.discountService.getDiscounts(this.discountParams()))
+    this.searchService.handleSearch(()=> {
+      const currentParams = this.discountParams();
+      return this.discountService.getDiscounts(currentParams)
+    })
       .pipe(takeUntil(this.destroy$))
       .subscribe(response => this.updateDiscounts(response));
   }
