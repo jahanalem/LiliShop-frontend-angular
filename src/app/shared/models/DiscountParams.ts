@@ -5,5 +5,5 @@ export class DiscountParams implements IPaginationParams, ISortParams, ISearchPa
   sort         : string        = 'id';
   sortDirection: string        = 'desc';
   pageNumber   : number        = 1;
-  pageSize     : number        = 5;
+  pageSize     : number        = 20;
 }

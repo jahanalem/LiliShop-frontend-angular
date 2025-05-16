@@ -1,3 +1,59 @@
-<p>discounts works!</p>
+<div class="discount-management">
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Filter</mat-label>
+    <input matInput (input)="applyFilter($event)" placeholder="Search discounts" #input>
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+  <div class="new-discount-container">
+    <button mat-raised-button color="primary" class="new-discount-button"
+      [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" (click)="createDiscount()">
+      <mat-icon>add_circle_outline</mat-icon> New Discount
+    </button>
+  </div>
+  <div class="table-container mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource()" matSort>
 
-<a href="/admin/discounts/new">Create New Discount</a>
+      <ng-container *ngFor="let column of columnsToDisplay" [matColumnDef]="column">
+        <th mat-header-cell *matHeaderCellDef>
+          <ng-container *ngIf="column !== 'Action'; else noSort">
+            <div mat-sort-header>{{columnDisplayNames[column]}}</div>
+          </ng-container>
+          <ng-template #noSort>
+            {{columnDisplayNames[column]}}
+          </ng-template>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngIf="column === 'Action'; else normalCell">
+            <button mat-icon-button color="accent" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole"
+              (click)="editDiscount(row.id)">
+              <mat-icon class="edit-icon">edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" [appCheckPolicy]="policyNames.RequireSuperAdminRole"
+              (click)="deleteDiscount(row.id)">
+              <mat-icon class="delete-icon">delete</mat-icon>
+            </button>
+          </ng-container>
+          <ng-template #normalCell>
+             <span>
+              {{row[column] | formatValue:column:row}}
+            </span>
+            <ng-template #defaultCell>
+              {{ row[column] | formatValue:column:row }}
+            </ng-template>
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+
+      <!-- Row shown when there is no matching data. -->
+      <tr mat-row *matNoDataRow>
+        <td class="mat-cell" colspan="columnsToDisplay.length">No data matching the filter "{{input.value}}"</td>
+      </tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 50, 100]" [length]="totalCount()" showFirstLastButtons
+      [pageSize]="this.discountParams().pageSize!" [pageIndex]="discountParams().pageNumber!-1">
+    </mat-paginator>
+  </div>
+</div>

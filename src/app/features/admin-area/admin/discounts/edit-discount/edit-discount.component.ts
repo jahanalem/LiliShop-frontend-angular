@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, ParamMap, RouterModule } from '@angular/router';
 
 // Angular Material Modules
 import { MatCardModule } from '@angular/material/card';
@@ -23,6 +23,7 @@ import { IBrand } from 'src/app/shared/models/brand';
 import { IProductType } from 'src/app/shared/models/productType';
 import { ProductService } from 'src/app/core/services/product.service';
 import { DiscountService } from 'src/app/core/services/discount.service';
+import { catchError, firstValueFrom, of, Subject, switchMap, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-edit-discount',
@@ -54,34 +55,44 @@ import { DiscountService } from 'src/app/core/services/discount.service';
 })
 export class EditDiscountComponent {
   isEditMode = false;
+  discountIdFromUrl      : number = 0;                     // 0 means new discount
 
-  discountInfoForm!: FormGroup;
-  tiersForm!: FormGroup;
+  discountInfoForm! : FormGroup;
+  tiersForm!        : FormGroup;
   discountGroupForm!: FormGroup;
 
   brands: IBrand[]       = [];
   types : IProductType[] = [];
   tierOptions     = signal<ITierOption[]>([]);
 
+  discount = signal<IDiscount | undefined>(undefined);
+
   targetEntityOptions = [
     { label: 'All', value: DiscountTargetType.All },
     { label: 'Product Brand', value: DiscountTargetType.ProductBrand },
-    { label: 'Product Type', value: DiscountTargetType.ProductType },
-    //{ label: 'Size', value: DiscountTargetType.Size },
-    //{ label: 'Product', value: DiscountTargetType.Product },
+    { label: 'Product Type', value: DiscountTargetType.ProductType }
   ];
   targetEntityIdOptionsMap = new Map<DiscountTargetType, ITargetEntityOption[]>();
 
   private productService  = inject(ProductService);
   private discountService = inject(DiscountService);
   private fb              = inject(FormBuilder);
+  private activatedRoute      = inject(ActivatedRoute);
+
+  destroy$ = new Subject<void>();
 
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  async ngOnInit(): Promise<void> {
     this.initForms();
     this.loadBrands()
     this.loadTypes();
+    await this.loadDiscount();
   }
 
   private initForms(): void {
@@ -94,6 +105,7 @@ export class EditDiscountComponent {
     const formattedWeekLater = this.formatDateForInput(oneWeekLater);   // yyyy-MM-dd
 
     this.discountInfoForm = this.fb.group({
+      id       : [0],
       name     : [defaultName, Validators.required],
       startDate: [formattedToday, Validators.required],
       endDate  : [formattedWeekLater, Validators.required],
@@ -142,6 +154,84 @@ export class EditDiscountComponent {
       }
     });
   }
+async loadDiscount(): Promise<void> {
+  try {
+    const fetchedDiscount = await firstValueFrom(
+      this.activatedRoute.paramMap.pipe(
+        switchMap((params: ParamMap) => {
+          const id = params.get('id');
+          this.discountIdFromUrl = (id === null ? 0 : +id);
+          if (this.discountIdFromUrl > 0) {
+            return this.discountService.getDiscount(this.discountIdFromUrl);
+          } else {
+            return of(null);
+          }
+        }),
+        catchError((error: any) => {
+          this.handleApiError(error);
+          return of(null);
+        }),
+        takeUntil(this.destroy$)
+      )
+    );
+
+    if (fetchedDiscount) {
+      this.discount.set(fetchedDiscount);
+      this.isEditMode = true;
+      // 1. Populate Discount Info Form
+      this.discountInfoForm.patchValue({
+        id: fetchedDiscount.id,
+        name: fetchedDiscount.name,
+        startDate: this.formatDateForInput(new Date(fetchedDiscount.startDate)),
+        endDate: this.formatDateForInput(new Date(fetchedDiscount.endDate)),
+        isActive: fetchedDiscount.isActive
+      });
+
+      // 2. Populate Tiers Form Array
+      const tiersArray = this.tiers;
+      tiersArray.clear();
+      fetchedDiscount.tiers?.forEach(tier => {
+        tiersArray.push(this.fb.group({
+          amount: [tier.amount],
+          isPercentage: [tier.isPercentage],
+          isFreeShipping: [tier.isFreeShipping]
+        }, { validators: this.amountValidator() }));
+      });
+      this.updateTierOptions(); // Update signal-based options
+
+      // 3. Populate Condition Groups Form Array
+      const conditionGroupsArray = this.conditionGroups;
+      conditionGroupsArray.clear();
+      fetchedDiscount.discountGroup?.conditionGroups.forEach(group => {
+        const newGroup = this.fb.group({
+          tierIndex: [group.tierIndex, Validators.required],
+          conditions: this.fb.array([], this.uniqueTargetEntityValidator())
+        });
+
+        const conditionsArray = newGroup.get('conditions') as FormArray;
+        group.conditions.forEach(condition => {
+          const targetEntity = condition.targetEntity;
+          const targetEntityId = condition.targetEntityId;
+
+          // Initialize options for this target entity type
+          this.updateTargetEntityIdOptions(targetEntity);
+
+          conditionsArray.push(this.fb.group({
+            targetEntity: [targetEntity, Validators.required],
+            targetEntityId: [targetEntityId || 0],
+            shouldNotify: [condition.shouldNotify ?? false]
+          }));
+        });
+
+        conditionGroupsArray.push(newGroup);
+      });
+
+      this.tierOptions.set([...this.tierOptions()]);
+    }
+  } catch (error) {
+    console.error("Error loading discount:", error);
+  }
+}
 
   onSubmit(): void {
     this.conditionGroups.controls.forEach(group => {
@@ -543,5 +633,8 @@ export class EditDiscountComponent {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year  = date.getFullYear();
     return `${year}-${month}-${day}`; // Format for <input type="date">
+ }
+ handleApiError(error: any): void {
+    console.error(error);
  }
 }

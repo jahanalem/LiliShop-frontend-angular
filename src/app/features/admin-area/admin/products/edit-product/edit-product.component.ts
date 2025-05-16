@@ -163,7 +163,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
 
       discount = hasChanges ? updatedDiscount : null;
-      console.log("updated discount = ", discount);
     } else {
       discount = null;
     }

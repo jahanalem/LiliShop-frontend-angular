@@ -104,6 +104,9 @@
                     [value]="option.value">
                     {{ option.label }}
                   </mat-option>
+                  <mat-option *ngIf="!targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value)?.length" disabled>
+                    No options available
+                  </mat-option>
                 </mat-select>
               </mat-form-field>
 

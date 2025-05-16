@@ -3,9 +3,13 @@ export enum DiscountTargetType {
   All          = 'All',
   ProductBrand = 'ProductBrand',
   ProductType  = 'ProductType',
-  //Size         = 'Size',
-  //Product      = 'Product',
 }
+export const DiscountTargetTypeName = {
+  [DiscountTargetType.All]: 'All',
+  [DiscountTargetType.ProductBrand]: 'ProductBrand',
+  [DiscountTargetType.ProductType]: 'ProductType',
+} as const;
+
 export interface ITargetEntityOption {
   label: string;
   value: number;

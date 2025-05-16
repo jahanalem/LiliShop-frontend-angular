@@ -1,0 +1,111 @@
+.new-discount-container {
+  display: flex;
+  justify-content: flex-start;
+}
+/* Button styles */
+.new-discount-button {
+  margin-bottom: 16px;
+  font-size: 18px;
+  padding: 10px 20px;
+}
+
+button {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+button:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 4px 6px rgba(0, 0, 0, 0.24);
+}
+
+.discount-management {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.filter-field {
+  width: 100%;
+  max-width: 300px;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+th {
+  font-weight: bold;
+  background-color: #e0e0e0;
+}
+
+tr.mat-row:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+tr.mat-row:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* Paginator Styles */
+mat-paginator {
+  margin: 8px 0;
+  display: flex;
+  justify-content: center;
+  background-color: #fafafa;
+}
+
+/* Button icons */
+.details-icon {
+  color: #3f51b5;
+}
+
+.edit-icon {
+  color: #FFC107;
+}
+
+.delete-icon {
+  color: #f44336;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .new-product-container {
+    width: 100%;
+    justify-content: center;
+  }
+
+  th, td {
+    padding: 8px;
+  }
+
+  .filter-field {
+    width: 100%;
+  }
+}
+
+.sale-yes {
+  color: #28a745; /* Green for "Yes" */
+  font-weight: 500;
+}
+
+.sale-no {
+  color: #dc3545; /* Red for "No" */
+}
+
+.sale-scheduled {
+  color: #ffc107; /* Yellow/Orange for "Scheduled" */
+}

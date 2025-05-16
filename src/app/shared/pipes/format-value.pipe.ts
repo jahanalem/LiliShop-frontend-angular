@@ -17,6 +17,8 @@ export class FormatValuePipe implements PipeTransform {
       case 'quantity':
         return `${value} units`; // Adds "units" to the end of the value
       case 'createdDate':
+      case 'startDate':
+      case 'endDate':
         return formatDate(value, 'MMM d, y, h:mm a', 'en-US');
       case 'message':
         return value.length > 200 ? `${value.substr(0, 200)}...` : value;

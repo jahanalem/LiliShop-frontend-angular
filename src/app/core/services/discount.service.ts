@@ -1,7 +1,7 @@
 import { IDiscount } from './../../shared/models/discount-system';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { DiscountParams } from 'src/app/shared/models/DiscountParams';
 import { DiscountPagination, PaginationWithData } from 'src/app/shared/models/pagination';
 
@@ -62,5 +62,12 @@ export class DiscountService {
   updateDiscount(discount: IDiscount): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}discount/update/${discount.id}`, discount);
   }
-}
 
+  deleteDiscount(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}discount/delete/${id}`)
+      .pipe(catchError(error => {
+        console.error(error);
+        return throwError(() => error);
+      }));
+  }
+}
