@@ -1,42 +1,44 @@
-import { HttpClient } from '@angular/common/http';
+// notification.service.ts
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { INotificationSubscription } from 'src/app/shared/models/notificationSubscription';
-import { PriceDropSubscriptionPagination } from 'src/app/shared/models/pagination';
-import { IPriceDropSubscription } from 'src/app/shared/models/priceDropSubscription';
-import { PriceDropSubscriptionQueryParams } from 'src/app/shared/models/priceDropSubscriptionQueryParams';
-import { environment } from 'src/environments/environment';
+import { MatSnackBar, MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class NotificationService {
-  baseUrl: string = environment.apiUrl;
+  private readonly defaultDuration = 5000; // 5 seconds
+  private readonly horizontalPosition: MatSnackBarHorizontalPosition = 'center';
+  private readonly verticalPosition: MatSnackBarVerticalPosition = 'top';
+  private readonly actionLabel = 'Dismiss';
 
-  constructor(private http: HttpClient) { }
+  constructor(private snackBar: MatSnackBar) { }
 
+  private getConfig(panelClass: string | string[], duration?: number): MatSnackBarConfig {
+    const classes = Array.isArray(panelClass) ? panelClass : [panelClass];
+    if (duration && duration > this.defaultDuration) {
+      classes.push('long-duration');
+    }
 
-  addSubscription(subscription: INotificationSubscription): Observable<INotificationSubscription> {
-    return this.http.post<INotificationSubscription>(`${this.baseUrl}notificationSubscription/add`, subscription);
+    return {
+      duration: duration ?? this.defaultDuration,
+      panelClass: [...classes, 'global-snackbar'],
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+      politeness: 'polite'
+    };
   }
 
-  removeSubscription(subscription: INotificationSubscription): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}notificationSubscription/delete`, { body: subscription });
+  showSuccess(message: string, duration?: number): void {
+    this.snackBar.open(
+      message,
+      this.actionLabel,
+      this.getConfig('success-snackbar', duration)
+    );
   }
 
-  unsubscribe(userId: number, productId: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}notificationSubscription/unsubscribe/${userId}/${productId}`);
-  }
-
-  checkSubscription(productId: number, userId: number): Observable<boolean> {
-    return this.http.get<boolean>(`${this.baseUrl}NotificationSubscription/check?productId=${productId}&userId=${userId}`);
-  }
-
-  getPriceDropSubscriptions(queryParams: PriceDropSubscriptionQueryParams): Observable<PriceDropSubscriptionPagination> {
-    return this.http.get<PriceDropSubscriptionPagination>(`${this.baseUrl}notificationSubscription/subscriptions/price-drop`, { params: queryParams.toHttpParams() })
-  }
-
-  getUserSubscriptions(userId: number): Observable<IPriceDropSubscription[]> {
-    return this.http.get<IPriceDropSubscription[]>(`${this.baseUrl}notificationSubscription/subscriptions/price-drop/${userId}`)
+  showError(message: string, duration?: number): void {
+    this.snackBar.open(
+      message,
+      this.actionLabel,
+      this.getConfig('error-snackbar', duration)
+    );
   }
 }

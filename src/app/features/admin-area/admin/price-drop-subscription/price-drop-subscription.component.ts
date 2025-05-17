@@ -1,3 +1,4 @@
+import { SubscriptionService } from '../../../../core/services/subscription.service';
 import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy, OnDestroy, inject, viewChild, signal } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -5,7 +6,6 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { IPriceDropSubscription } from 'src/app/shared/models/priceDropSubscription';
 
-import { NotificationService } from 'src/app/core/services/notification.service';
 import { PriceDropSubscriptionQueryParams } from 'src/app/shared/models/priceDropSubscriptionQueryParams';
 import { PriceDropSubscriptionPagination } from 'src/app/shared/models/pagination';
 
@@ -20,7 +20,7 @@ export class PriceDropSubscriptionComponent implements OnInit, AfterViewInit, On
   paginator = viewChild.required<MatPaginator>(MatPaginator);
   sort = viewChild.required<MatSort>(MatSort);
 
-  private notificationService = inject(NotificationService);
+  private subscriptionService = inject(SubscriptionService);
 
   pageSizeOptions = signal<number[]>([5, 10, 25]);
   queryParams = signal<PriceDropSubscriptionQueryParams>(new PriceDropSubscriptionQueryParams());
@@ -79,7 +79,7 @@ export class PriceDropSubscriptionComponent implements OnInit, AfterViewInit, On
 
   getSubscriptions(): void {
     this.isLoading.set(true);
-    this.notificationService.getPriceDropSubscriptions(this.queryParams())
+    this.subscriptionService.getPriceDropSubscriptions(this.queryParams())
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: PriceDropSubscriptionPagination) => {

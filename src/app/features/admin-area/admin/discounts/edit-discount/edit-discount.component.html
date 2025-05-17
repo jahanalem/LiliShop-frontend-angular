@@ -4,22 +4,22 @@
     <form [formGroup]="discountInfoForm">
       <ng-template matStepLabel>Discount Info</ng-template>
 
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="full-width" style="margin-top: 1rem;">
         <mat-label>Discount Name</mat-label>
         <input title="name" matInput formControlName="name" />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Startdatum</mat-label>
+        <mat-label>Start date</mat-label>
         <input title="startDate" matInput [matDatepicker]="startPicker" formControlName="startDate">
-        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker-toggle matPrefix [for]="startPicker"></mat-datepicker-toggle>
         <mat-datepicker #startPicker></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Enddatum</mat-label>
+        <mat-label>Endd ate</mat-label>
         <input title="endDate" matInput [matDatepicker]="endPicker" formControlName="endDate">
-        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker-toggle matPrefix [for]="endPicker"></mat-datepicker-toggle>
         <mat-datepicker #endPicker></mat-datepicker>
       </mat-form-field>
 
@@ -104,7 +104,9 @@
                     [value]="option.value">
                     {{ option.label }}
                   </mat-option>
-                  <mat-option *ngIf="!targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value)?.length" disabled>
+                  <mat-option
+                    *ngIf="!targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value)?.length"
+                    disabled>
                     No options available
                   </mat-option>
                 </mat-select>

@@ -6,7 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { AccountService } from 'src/app/core/services/account.service';
-import { NotificationService } from 'src/app/core/services/notification.service';
+import { SubscriptionService } from 'src/app/core/services/subscription.service';
 import { IPriceDropSubscription } from 'src/app/shared/models/priceDropSubscription';
 
 @Component({
@@ -18,7 +18,7 @@ import { IPriceDropSubscription } from 'src/app/shared/models/priceDropSubscript
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserPriceDropSubscriptionsComponent implements OnInit {
-  private notificationService = inject(NotificationService);
+  private subscriptionService = inject(SubscriptionService);
   private accountService      = inject(AccountService);
 
   private userId = signal<number | null>(null);
@@ -55,7 +55,7 @@ export class UserPriceDropSubscriptionsComponent implements OnInit {
     this.isLoading.set(true);
     const currentUserId = this.userId();
     if (currentUserId !== null) {
-      this.notificationService.getUserSubscriptions(currentUserId)
+      this.subscriptionService.getUserSubscriptions(currentUserId)
         .subscribe({
           next: (subs) => {
             this.subscriptions.set(subs);
@@ -70,7 +70,7 @@ export class UserPriceDropSubscriptionsComponent implements OnInit {
   }
 
   unsubscribe(productId: number): void {
-    this.notificationService.unsubscribe(this.userId()!, productId)
+    this.subscriptionService.unsubscribe(this.userId()!, productId)
       .subscribe({
         next: () => {
           this.subscriptions.set(this.subscriptions().filter(s => s.productId !== productId));

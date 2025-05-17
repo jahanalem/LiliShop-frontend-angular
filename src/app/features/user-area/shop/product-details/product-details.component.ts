@@ -1,4 +1,4 @@
-import { NotificationService } from './../../../../core/services/notification.service';
+import { SubscriptionService } from '../../../../core/services/subscription.service';
 import { of, switchMap } from 'rxjs';
 import { IProduct } from 'src/app/shared/models/product';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
@@ -29,7 +29,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   private activatedRoute      = inject(ActivatedRoute);
   private basketService       = inject(BasketService);
   private productService      = inject(ProductService);
-  private notificationService = inject(NotificationService);
+  private subscriptionService = inject(SubscriptionService);
   private accountService      = inject(AccountService);
    private cdRef              = inject(ChangeDetectorRef);
 
@@ -115,7 +115,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   checkSubscriptionStatus() {
     if (this.currentUserId() > 0) {
-      this.notificationService.checkSubscription(this.product().id, this.currentUserId()).subscribe({
+      this.subscriptionService.checkSubscription(this.product().id, this.currentUserId()).subscribe({
         next: (data: boolean) => {
           this.isSubscribed.set(data);
         },
@@ -140,7 +140,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     };
 
     if (this.isSubscribed()) {
-      this.notificationService.removeSubscription(subscription).subscribe({
+      this.subscriptionService.removeSubscription(subscription).subscribe({
         next: () => {
           this.isSubscribed.set(false);
         },
@@ -149,7 +149,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         }
       });
     } else {
-      this.notificationService.addSubscription(subscription).subscribe({
+      this.subscriptionService.addSubscription(subscription).subscribe({
         next: () => {
           this.isSubscribed.set(true);
         },
@@ -167,7 +167,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       alertType: 'PriceDrop',
       isActive: true
     }
-    this.notificationService.addSubscription(subscription).subscribe({
+    this.subscriptionService.addSubscription(subscription).subscribe({
       next: () => { alert('You have successfully subscribed to price drop notifications!'); },
       error: (error: any) => {
         console.error(error);

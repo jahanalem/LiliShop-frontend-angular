@@ -24,6 +24,7 @@ import { IProductType } from 'src/app/shared/models/productType';
 import { ProductService } from 'src/app/core/services/product.service';
 import { DiscountService } from 'src/app/core/services/discount.service';
 import { catchError, firstValueFrom, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { NotificationService } from 'src/app/core/services/notification.service';
 
 @Component({
   selector: 'app-edit-discount',
@@ -77,7 +78,8 @@ export class EditDiscountComponent {
   private productService  = inject(ProductService);
   private discountService = inject(DiscountService);
   private fb              = inject(FormBuilder);
-  private activatedRoute      = inject(ActivatedRoute);
+  private activatedRoute  = inject(ActivatedRoute);
+  private notificationService = inject(NotificationService);
 
   destroy$ = new Subject<void>();
 
@@ -259,13 +261,23 @@ async loadDiscount(): Promise<void> {
 
     if (this.isEditMode) {
       this.discountService.updateDiscount(discount).subscribe({
-        next: () => console.log('Update Discount', discount),
-        error: err => console.error('Error updating discount:', err)
+        next: () => {
+          this.notificationService.showSuccess('Discount updated successfully');
+        },
+        error: err => {
+          this.notificationService.showError('Failed to update discount');
+          console.error('Error updating discount:', err);}
       });
     } else {
       this.discountService.createDiscount(discount).subscribe({
-        next: () => console.log('Create Discount', discount),
-        error: err => console.error('Error creating discount:', err)
+        next: () => {
+          this.notificationService.showSuccess('Discount created successfully');
+          console.log('Create Discount', discount);
+        },
+        error: (err) => {
+          this.notificationService.showError('Failed to create discount');
+          console.error('Error creating discount:', err);
+        }
       });
     }
   }

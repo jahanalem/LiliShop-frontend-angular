@@ -1,7 +1,6 @@
 @import "../node_modules/ngx-toastr/toastr.css";
 @import "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css";
 
-
 .form-control,
 .btn,
 .rounded-pill {
@@ -305,3 +304,95 @@ body {
     stroke-dasharray: 100, 200;
   }
 }
+
+
+// NOTIFICATION MESSAGE
+
+.success-snackbar {
+  background: #4CAF50 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border-left: 4px solid hsl(122.5, 49%, 33.9%) !important; /* Darkened manually */
+
+  .mdc-snackbar__surface {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .mat-mdc-snack-bar-label {
+    padding: 16px 24px !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+  }
+
+  .mat-mdc-button {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 600 !important;
+    margin-right: 8px !important;
+
+    &:hover {
+      color: white !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+}
+
+.error-snackbar {
+  background: #F44336 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border-left: 4px solid hsl(4, 89.3%, 48.4%) !important; /* Darkened manually */
+
+  .mdc-snackbar__surface {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .mat-mdc-snack-bar-label {
+    padding: 16px 24px !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+  }
+
+  .mat-mdc-button {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 600 !important;
+    margin-right: 8px !important;
+
+    &:hover {
+      color: white !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+}
+
+.mat-mdc-snack-bar-container {
+  margin-top: 24px !important;
+  max-width: min(600px, 90vw) !important;
+
+  &.mat-mdc-snack-bar-handset {
+    width: 90vw !important;
+    max-width: 90vw !important;
+  }
+}
+
+.long-duration {
+  .mat-mdc-snack-bar-label::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    animation: progressBar linear forwards;
+  }
+}
+
+@keyframes progressBar {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+// ------------------------------ End of Notification styles ------------------------------------

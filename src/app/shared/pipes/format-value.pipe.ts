@@ -1,6 +1,7 @@
 import { formatDate } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 import { IProduct } from '../models/product';
+import { IDiscount } from '../models/discount-system';
 
 @Pipe({
   name: 'formatValue',
@@ -8,7 +9,7 @@ import { IProduct } from '../models/product';
 })
 export class FormatValuePipe implements PipeTransform {
 
-  transform(value: any, columnName: string, context?:any): any {
+  transform(value: any, columnName: string, context?: any): any {
     if (value == null) return '-';
 
     switch (columnName) {
@@ -31,6 +32,9 @@ export class FormatValuePipe implements PipeTransform {
         } else {
           return 'No';
         }
+      case 'isActive':
+        const discount = context as IDiscount;
+        return discount?.isActive ? 'Yes' : 'No'
       default:
         return value;
     }
