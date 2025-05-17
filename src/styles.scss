@@ -33,8 +33,6 @@ label.xng-breadcrumb-trail {
   padding: 0 0;
 }
 
-
-
 /* ╔══════════════════════════════════════════════════════════════════╗ */
 /* ║                RESPONSIVE STYLES – MEDIA QUERIES AREA            ║ */
 /* ║      (Small devices → Large devices: use min-width strategy)     ║ */
@@ -342,11 +340,53 @@ label.xng-breadcrumb-trail {
 /* Success notification */
 .success-snackbar {
   background: linear-gradient(135deg, #4CAF50, #43A047);
+  color: #fff !important;
 }
 
-/* Error notification */
+/* Force override internal MDC surface */
+.success-snackbar .mdc-snackbar__surface {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Force label section to be transparent */
+.success-snackbar .mat-mdc-snack-bar-label {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+/* Remove ripple background effect from button */
+.success-snackbar .mat-mdc-button-ripple {
+  background-color: transparent !important;
+}
+
+/* Error snackbar root */
 .error-snackbar {
-  background: linear-gradient(135deg, #f44336, #e53935);
+  background: linear-gradient(135deg, #f44336, #e53935) !important;
+  color: #fff !important;
+}
+
+/* Remove default MDC surface background and shadow */
+.error-snackbar .mdc-snackbar__surface {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Make label transparent, text white */
+.error-snackbar .mat-mdc-snack-bar-label {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+/* Remove ripple background effect from Dismiss button */
+.error-snackbar .mat-mdc-button-ripple {
+  background-color: transparent !important;
+}
+
+/* Style the Dismiss action */
+.error-snackbar .mat-mdc-snack-bar-action {
+  color: #fff !important;
+  font-weight: bold;
 }
 
 /* Optional: extra style for longer duration snackbars */
