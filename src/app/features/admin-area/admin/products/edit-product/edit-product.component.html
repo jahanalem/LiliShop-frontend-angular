@@ -21,22 +21,40 @@
 
         <mat-form-field appearance="outline" class="input-field">
           <mat-label>Description</mat-label>
-          <textarea formControlName="description"
-                    matInput
-                    #inputDsc
-                    cdkTextareaAutosize
-                    cdkAutosizeMinRows="10"
-                    cdkAutosizeMaxRows="50"
-                    maxlength="300"
-                    placeholder="Enter product description">
+          <textarea formControlName="description" matInput #inputDsc cdkTextareaAutosize cdkAutosizeMinRows="10"
+            cdkAutosizeMaxRows="50" maxlength="300" placeholder="Enter product description">
           </textarea>
           <mat-hint align="end">{{inputDsc.value.length}}/300</mat-hint>
         </mat-form-field>
 
+        <!-- Discount Info Banner -->
+        <div class="discount-info"
+          [ngClass]="{ 'group-discount': isDiscountGroup(), 'single-discount': !isDiscountGroup() }">
+          <mat-icon class="info-icon">info</mat-icon>
+          <div class="info-text">
+            <ng-container *ngIf="isDiscountGroup(); else singleDiscount">
+              <h4>Group Discount</h4>
+              <p>
+                This product is currently part of a predefined <strong>group discount</strong>.
+                Modifying the discount values here will override the group settings and apply only to this product.
+                <br />
+                <em>(Group discounts are shared across multiple products. Overrides have higher priority.)</em>
+              </p>
+            </ng-container>
+            <ng-template #singleDiscount>
+              <h4>Single Discount</h4>
+              <p>
+                This product has its <strong>own discount configuration</strong>, which takes the highest priority.
+                You can adjust the discount details below as needed.
+              </p>
+            </ng-template>
+          </div>
+        </div>
+
         <mat-form-field hintLabel="Max 10000" appearance="outline" class="input-field">
           <mat-label>Price</mat-label>
           <input formControlName="price" matInput #inputPrice type="number" min="1" max="10000" step="0.01"
-                 placeholder="Product price">
+            placeholder="Product price">
           <span matPrefix>€&nbsp;</span>
         </mat-form-field>
 
@@ -44,7 +62,7 @@
         <mat-form-field hintLabel="Optional" appearance="outline" class="input-field">
           <mat-label>Previous Price</mat-label>
           <input formControlName="previousPrice" matInput type="number" min="1" max="10000" step="0.01"
-                 placeholder="Previous product price">
+            placeholder="Previous product price">
           <span matPrefix>€&nbsp;</span>
         </mat-form-field>
 
@@ -55,13 +73,7 @@
 
         <mat-form-field hintLabel="Optional" appearance="outline" class="input-field">
           <mat-label>Schedule Price</mat-label>
-          <input
-            formControlName="scheduledPrice"
-            matInput
-            type="number"
-        
-            placeholder="Enter scheduled price"
-          />
+          <input formControlName="scheduledPrice" matInput type="number" placeholder="Enter scheduled price" />
           <span matPrefix>€&nbsp;</span>
         </mat-form-field>
 
@@ -70,7 +82,7 @@
           <mat-form-field appearance="outline" class="input-field date-field">
             <mat-label>Discount Start Date</mat-label>
             <input matInput [matDatepicker]="startDatePicker" formControlName="discountStartDateDate"
-                   placeholder="Select start date">
+              placeholder="Select start date">
             <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
             <mat-datepicker #startDatePicker></mat-datepicker>
           </mat-form-field>
@@ -78,7 +90,7 @@
           <mat-form-field appearance="outline" class="input-field time-field">
             <mat-label>Discount Start Time</mat-label>
             <input matInput [matTimepicker]="startTimePicker" formControlName="discountStartDateTime"
-                   placeholder="Select start time">
+              placeholder="Select start time">
             <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
             <mat-timepicker #startTimePicker></mat-timepicker>
           </mat-form-field>
@@ -89,7 +101,7 @@
           <mat-form-field appearance="outline" class="input-field date-field">
             <mat-label>Discount End Date</mat-label>
             <input matInput [matDatepicker]="endDatePicker" formControlName="discountEndDateDate"
-                   placeholder="Select end date">
+              placeholder="Select end date">
             <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
             <mat-datepicker #endDatePicker></mat-datepicker>
           </mat-form-field>
@@ -97,7 +109,7 @@
           <mat-form-field appearance="outline" class="input-field time-field">
             <mat-label>Discount End Time</mat-label>
             <input matInput [matTimepicker]="endTimePicker" formControlName="discountEndDateTime"
-                   placeholder="Select end time">
+              placeholder="Select end time">
             <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
             <mat-timepicker #endTimePicker></mat-timepicker>
           </mat-form-field>

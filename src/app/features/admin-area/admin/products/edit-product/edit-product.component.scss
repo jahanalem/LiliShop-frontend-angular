@@ -58,11 +58,13 @@
 }
 
 .discount-row .date-field {
-  flex: 1; /* date 50% width by default */
+  flex: 1;
+  /* date 50% width by default */
 }
 
 .discount-row .time-field {
-  flex: 1; /* time 50% width */
+  flex: 1;
+  /* time 50% width */
 }
 
 /* Size and Quantity in one row */
@@ -82,7 +84,8 @@
 }
 
 .remove-size-button {
-  margin-left: auto; /* push the delete button to the end if wanted */
+  margin-left: auto;
+  /* push the delete button to the end if wanted */
 }
 
 /* Buttons */
@@ -132,5 +135,64 @@
     margin-left: 0;
     width: 100%;
     margin-top: 8px;
+  }
+}
+
+
+//--------------- discount-info ------------------//
+.discount-info {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border-radius: 12px;
+  margin: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background-color: #f1f8ff;
+  border-left: 5px solid #2196f3;
+  transition: background-color 0.3s ease;
+
+  &.group-discount {
+    background-color: #fff8e1;
+    border-left-color: #fbc02d;
+  }
+
+  &.single-discount {
+    background-color: #e8f5e9;
+    border-left-color: #43a047;
+  }
+
+.info-icon {
+  margin-right: 1rem;
+  font-size: 28px;
+  color: #1976d2;
+  line-height: 1;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 28px;
+  width: 28px;
+  overflow: visible;
+}
+  .info-text {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 0.3rem 0;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: #444;
+    }
+
+    em {
+      font-size: 12px;
+      color: #888;
+    }
   }
 }

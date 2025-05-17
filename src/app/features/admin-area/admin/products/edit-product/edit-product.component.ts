@@ -116,7 +116,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
     const oldDiscount = this.product()?.discount;
     const hasExistingDiscount = !!oldDiscount;
 
-    if (formValues.isDiscountActive !== null && formValues.isDiscountActive !== undefined) {
+    const forceSingleDiscount = this.shouldForceSingleDiscount(formValues);
+
+    if (forceSingleDiscount && formValues.isDiscountActive !== null && formValues.isDiscountActive !== undefined) {
       const updatedDiscount: Partial<ISingleDiscount> = {};
       let hasChanges = false;
 
@@ -599,6 +601,46 @@ export class EditProductComponent implements OnInit, OnDestroy {
   get isSaveDisabled(): boolean {
     return !(this.productForm.valid &&
       (this.productForm.dirty || this.dynamicSizeAdded() || this.dynamicSizeRemoved()));
+  }
+
+  isDiscountGroup(): boolean{
+    const discountGroupId = this.product()?.discount?.discountGroupId;
+    if(discountGroupId && discountGroupId > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  private shouldForceSingleDiscount(formValues: any): boolean {
+    const discountGroupId = this.product()?.discount?.discountGroupId;
+
+    if (!discountGroupId || discountGroupId <= 0) {
+      return false;
+    }
+
+    const productDiscount = this.product()?.discount;
+
+    const formIsActive = formValues.isDiscountActive;
+    const formPrice = formValues.price;
+
+    const originalIsActive = productDiscount?.isActive;
+    const originalPrice = this.product()?.price;
+
+    const startDateForm = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
+    const endDateForm = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
+
+    const originalStart = productDiscount?.startDate ? new Date(productDiscount.startDate) : null;
+    const originalEnd = productDiscount?.endDate ? new Date(productDiscount.endDate) : null;
+
+    const startChanged = (startDateForm?.getTime() || null) !== (originalStart?.getTime() || null);
+    const endChanged = (endDateForm?.getTime() || null) !== (originalEnd?.getTime() || null);
+
+    return (
+      formIsActive !== originalIsActive ||
+      formPrice !== originalPrice ||
+      startChanged ||
+      endChanged
+    );
   }
 
   private fetchData<T>(fetchDataFn: () => Observable<T>, updateFn: (data: T) => void): void {
