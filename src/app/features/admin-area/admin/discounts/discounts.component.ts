@@ -24,13 +24,13 @@ import { CommonModule } from '@angular/common';
     MatFormFieldModule,
     MatIconModule,
     SharedModule
-],
+  ],
   templateUrl: './discounts.component.html',
   styleUrl: './discounts.component.scss'
 })
 export class DiscountsComponent implements OnInit, AfterViewInit, OnDestroy {
   paginator = viewChild.required<MatPaginator>(MatPaginator);
-  sort      = viewChild.required<MatSort>(MatSort);
+  sort = viewChild.required<MatSort>(MatSort);
 
   policyNames = PolicyNames;
 
@@ -68,7 +68,7 @@ export class DiscountsComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.searchService.handleSearch(()=> {
+    this.searchService.handleSearch(() => {
       const currentParams = this.discountParams();
       return this.discountService.getDiscounts(currentParams)
     })
@@ -119,12 +119,39 @@ export class DiscountsComponent implements OnInit, AfterViewInit, OnDestroy {
         next: (response) => {
           if (response) {
             this.updateDiscounts(response);
+
+            // Additional check for empty data after successful response
+            if (response.data.length === 0) {
+              this.handleNoDiscounts();
+            }
+          } else {
+            this.handleNoDiscounts();
           }
         },
         error: (error) => {
           console.error(error);
         }
       });
+  }
+
+  private handleNoDiscounts(): void {
+    // Clear all discounts
+    this.discounts.set([]);
+    this.dataSource.set([]);
+    this.totalCount.set(0);
+
+    // Reset pagination
+    const paginator = this.paginator();
+    if (paginator.pageIndex > 0) {
+      paginator.pageIndex = 0;
+
+      // Update params to match new pagination state
+      this.discountParams.update(params => ({
+        ...params,
+        pageNumber: 1,
+        pageSize: params.pageSize
+      }));
+    }
   }
 
   applyFilter(filterValueEvent: Event) {
