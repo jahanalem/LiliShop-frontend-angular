@@ -1,6 +1,17 @@
 @import "../node_modules/ngx-toastr/toastr.css";
 @import "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css";
 
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  overflow: auto;
+}
+
 .form-control,
 .btn,
 .rounded-pill {
@@ -21,6 +32,13 @@ label.xng-breadcrumb-trail {
 .xng-breadcrumb-separator {
   padding: 0 0;
 }
+
+
+
+/* ╔══════════════════════════════════════════════════════════════════╗ */
+/* ║                RESPONSIVE STYLES – MEDIA QUERIES AREA            ║ */
+/* ║      (Small devices → Large devices: use min-width strategy)     ║ */
+/* ╚══════════════════════════════════════════════════════════════════╝ */
 
 /* Small devices (landscape phones, 576px and up)*/
 @media (min-width: 576px) {
@@ -162,17 +180,6 @@ label.xng-breadcrumb-trail {
   }
 }
 
-html,
-body {
-  height: 100%;
-}
-
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  overflow: auto;
-}
-
 .page-container {
   display: flex;
   flex-direction: column;
@@ -208,7 +215,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Cookie Consent Styling */
+/* ╔══════════════════════════════════════════════════════════════════╗ */
+/* ║                      COOKIE CONSENT STYLING                      ║ */
+/* ╚══════════════════════════════════════════════════════════════════╝ */
+
 .cookie-consent {
   display: none;
   position: fixed;
@@ -253,6 +263,11 @@ body {
   background-color: #f3f3f3;
   color: #333;
 }
+
+/* ╔══════════════════════════════════════════════════════════════════╗ */
+/* ║                        LOADING ANIMATION AREA                    ║ */
+/* ║       (Styles and keyframes for the global app loading spinner)  ║ */
+/* ╚══════════════════════════════════════════════════════════════════╝ */
 
 /* Loading Animation */
 .app-loading {
@@ -305,94 +320,57 @@ body {
   }
 }
 
+/* ╔══════════════════════════════════════════════════════════════════╗ */
+/* ║                          SNACKBAR STYLES                         ║ */
+/* ╚══════════════════════════════════════════════════════════════════╝ */
 
-// NOTIFICATION MESSAGE
+/* Global styling for all snackbars */
+.global-snackbar {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 12px;
+  padding: 16px 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeInUp 0.3s ease-out;
+  color: #fff;
+}
 
+/* Success notification */
 .success-snackbar {
-  background: #4CAF50 !important;
-  color: white !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  border-left: 4px solid hsl(122.5, 49%, 33.9%) !important; /* Darkened manually */
-
-  .mdc-snackbar__surface {
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  .mat-mdc-snack-bar-label {
-    padding: 16px 24px !important;
-    font-weight: 500 !important;
-    font-size: 14px !important;
-  }
-
-  .mat-mdc-button {
-    color: rgba(255, 255, 255, 0.9) !important;
-    font-weight: 600 !important;
-    margin-right: 8px !important;
-
-    &:hover {
-      color: white !important;
-      background: rgba(255, 255, 255, 0.1) !important;
-    }
-  }
+  background: linear-gradient(135deg, #4CAF50, #43A047);
 }
 
+/* Error notification */
 .error-snackbar {
-  background: #F44336 !important;
-  color: white !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  border-left: 4px solid hsl(4, 89.3%, 48.4%) !important; /* Darkened manually */
-
-  .mdc-snackbar__surface {
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  .mat-mdc-snack-bar-label {
-    padding: 16px 24px !important;
-    font-weight: 500 !important;
-    font-size: 14px !important;
-  }
-
-  .mat-mdc-button {
-    color: rgba(255, 255, 255, 0.9) !important;
-    font-weight: 600 !important;
-    margin-right: 8px !important;
-
-    &:hover {
-      color: white !important;
-      background: rgba(255, 255, 255, 0.1) !important;
-    }
-  }
+  background: linear-gradient(135deg, #f44336, #e53935);
 }
 
-.mat-mdc-snack-bar-container {
-  margin-top: 24px !important;
-  max-width: min(600px, 90vw) !important;
-
-  &.mat-mdc-snack-bar-handset {
-    width: 90vw !important;
-    max-width: 90vw !important;
-  }
-}
-
+/* Optional: extra style for longer duration snackbars */
 .long-duration {
-  .mat-mdc-snack-bar-label::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.3);
-    animation: progressBar linear forwards;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+/* Dismiss button style (optional override if you want it custom-styled) */
+.mat-mdc-snack-bar-action {
+  color: #fff !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+/* Smooth entrance animation */
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(-20%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
-
-@keyframes progressBar {
-  from { width: 100%; }
-  to { width: 0%; }
-}
-
-// ------------------------------ End of Notification styles ------------------------------------
