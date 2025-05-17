@@ -1,12 +1,12 @@
-import { ToastrService } from 'ngx-toastr';
 import { inject } from '@angular/core';
 import { HttpRequest, HttpEvent, HttpErrorResponse, HttpInterceptorFn, HttpHandlerFn } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ErrorService } from '../services/utility-services/error.service';
+import { NotificationService } from '../services/notification.service';
 
 export const errorInterceptor: HttpInterceptorFn = (request: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
-  const toastr = inject(ToastrService);
+  const notificationService = inject(NotificationService);
   const errorService = inject(ErrorService);
 
   return next(request).pipe(
@@ -16,7 +16,7 @@ export const errorInterceptor: HttpInterceptorFn = (request: HttpRequest<any>, n
         return throwError(() => error);
       }
       if (error.error instanceof ErrorEvent) {
-        toastr.error('An unexpected client-side error occurred.');
+        notificationService.showError('An unexpected client-side error occurred.');
         return throwError(() => new Error('Client-side error: ' + error.message));
       }
 

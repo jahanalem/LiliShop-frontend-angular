@@ -38,7 +38,6 @@
     "leaflet": "^1.9.4",
     "masonry-layout": "^4.2.2",
     "ng2-file-upload": "^8.0.0",
-    "ngx-toastr": "^19.0.0",
     "nouislider": "^15.8.1",
     "rxjs": "~7.8.2",
     "swiper": "^11.2.4",

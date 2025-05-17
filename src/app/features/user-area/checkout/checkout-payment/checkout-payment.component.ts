@@ -1,6 +1,5 @@
 
 import { PaymentIntentResult, Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement } from '@stripe/stripe-js';
-import { ToastrService } from 'ngx-toastr';
 import { FormGroup } from '@angular/forms';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, OnDestroy, signal, ViewChild } from '@angular/core';
 import { IBasket } from 'src/app/shared/models/basket';
@@ -11,6 +10,7 @@ import { CheckoutService } from 'src/app/core/services/checkout.service';
 import { IOrder, IOrderToCreate } from 'src/app/shared/models/order';
 import { getStripeInstance } from 'src/app/core/helpers/stripe-utils';
 import { environment } from 'src/environments/environment';
+import { NotificationService } from 'src/app/core/services/notification.service';
 
 
 @Component({
@@ -44,10 +44,10 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   cardCvcValid    = signal(false);
   loading         = signal(false);
 
-  private basketService   = inject(BasketService);
-  private checkoutService = inject(CheckoutService);
-  public  toastr          = inject(ToastrService);
-  private router          = inject(Router);
+  private basketService       = inject(BasketService);
+  private checkoutService     = inject(CheckoutService);
+  public  notificationService = inject(NotificationService);
+  private router              = inject(Router);
 
   constructor() {
 
@@ -122,7 +122,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
         this.handleSuccessfulPayment(createdOrder, basket);
       } else {
         // Handle card failure or other Stripe issues.
-        this.toastr.error(paymentResult.error.message);
+        this.notificationService.showError(paymentResult.error.message ?? 'Error!');
       }
     } catch (error) {
       console.error('An error occurred while submitting the order:', error);
@@ -162,7 +162,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
     // Validate that the client secret exists
     if (!basket.clientSecret) {
       const errorMsg = 'Client secret is missing';
-      this.toastr.error(errorMsg);  // Show error notification
+      this.notificationService.showError(errorMsg);  // Show error notification
       throw new Error(errorMsg);
     }
 

@@ -5,7 +5,7 @@ import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { IPolicyDictionary, PolicyNames } from 'src/app/shared/models/policy';
 import { AccountService } from './account.service';
-import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from './notification.service';
 
 export enum Action {
   Create = 'Create',
@@ -23,7 +23,7 @@ export class AuthorizationService {
   constructor(
     private http: HttpClient,
     private accountService: AccountService,
-    private toastr: ToastrService
+    private notificationService: NotificationService
   ) { }
 
   getPolicies(): Observable<IPolicyDictionary> {
@@ -57,7 +57,7 @@ export class AuthorizationService {
   }
 
   private handleAuthorizationError(action: Action): void {
-    this.toastr.error(`You are not authorized to perform this action: ${action}`, 'Unauthorized');
+    this.notificationService.showError(`Unauthorized: You are not authorized to perform this action: ${action}`);
   }
 
   isActionAllowed(action: Action, userRole: string): Observable<boolean> {

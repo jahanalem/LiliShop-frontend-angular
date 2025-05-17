@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
 import { ContactService } from 'src/app/core/services/contact.service';
+import { NotificationService } from 'src/app/core/services/notification.service';
 import { BaseEntityKeys } from 'src/app/shared/models/baseEntity';
 import { IContactUsMessage } from 'src/app/shared/models/contactUsMessage';
 
@@ -15,8 +15,8 @@ import { IContactUsMessage } from 'src/app/shared/models/contactUsMessage';
 export class ContactComponent implements OnInit {
   contactForm!: FormGroup;
 
-  private contactService = inject(ContactService);
-  private toastr         = inject(ToastrService);
+  private contactService      = inject(ContactService);
+  private notificationService = inject(NotificationService);
 
   isSubmitting = signal<boolean>(false);
 
@@ -45,12 +45,12 @@ export class ContactComponent implements OnInit {
     const message = this.contactForm.value as Omit<IContactUsMessage, BaseEntityKeys>;
     this.contactService.createMessage(message).subscribe({
       next: () => {
-        this.toastr.success('Message sent successfully', 'Success');
+        this.notificationService.showSuccess('Message sent successfully');
         this.resetForm();
       },
       error: err => {
         this.isSubmitting.set(false);
-        this.toastr.error('Error sending message', 'Error');
+        this.notificationService.showError('Error sending message');
         console.log("Error is: ", err);
       },
       complete: () => {

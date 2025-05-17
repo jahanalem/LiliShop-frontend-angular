@@ -1,14 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../notification.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorService {
+  private notificationService = inject(NotificationService);
+  private router              = inject(Router);
 
-  constructor(private router: Router, private toastr: ToastrService) { }
+  constructor() { }
 
   handleError(response: HttpErrorResponse) {
     let defaultErrorMessage = "An error occurred";
@@ -37,12 +39,11 @@ export class ErrorService {
 
     const message = error.title || defaultErrorMessage;
 
-
-    this.toastr.error(message, `Error ${response.status}`);
+    this.notificationService.showError(`Error ${response.status}: ${message}`);
   }
 
   handleNotFound() {
-    this.toastr.error('The resource was not found.', '404 Error');
+    this.notificationService.showError('404 Error: The resource was not found.');
     this.router.navigateByUrl('/not-found');
   }
 

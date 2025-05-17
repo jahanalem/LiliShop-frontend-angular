@@ -12,9 +12,9 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IProductType } from 'src/app/shared/models/productType';
 import { StorageService } from 'src/app/core/services/storage.service';
-import { ToastrService } from 'ngx-toastr';
 import { formatDate } from '@angular/common';
 import { ISingleDiscount } from 'src/app/shared/models/discount';
+import { NotificationService } from 'src/app/core/services/notification.service';
 
 @Component({
   selector: 'app-edit-product',
@@ -47,14 +47,14 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   destroy$ = new Subject<void>();
 
-  private cdRef          = inject(ChangeDetectorRef);
-  private productService = inject(ProductService);
-  private dialog         = inject(MatDialog);
-  private activatedRoute = inject(ActivatedRoute);
-  private router         = inject(Router);
-  private formBuilder    = inject(FormBuilder);
-  private storageService = inject(StorageService);
-  private toastr         = inject(ToastrService);
+  private cdRef               = inject(ChangeDetectorRef);
+  private productService      = inject(ProductService);
+  private dialog              = inject(MatDialog);
+  private activatedRoute      = inject(ActivatedRoute);
+  private router              = inject(Router);
+  private formBuilder         = inject(FormBuilder);
+  private storageService      = inject(StorageService);
+  private notificationService = inject(NotificationService);
 
   constructor() {
   }
@@ -92,7 +92,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.productForm.invalid) {
-      this.toastr.error('Please fill out the form correctly.', 'Form Validation Error');
+      this.notificationService.showError('Form Validation Error: Please fill out the form correctly.');
       return;
     }
 
@@ -209,13 +209,13 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
         // Show success message
         const action = isUpdate ? 'updated' : 'created';
-        this.toastr.success(`Product ${action} successfully`, 'Success');
+        this.notificationService.showSuccess(`Success: Product ${action} successfully`);
 
         // Trigger change detection
         this.cdRef.detectChanges();
       },
       error: (err) => {
-        this.toastr.error('An error occurred while saving the product.', 'Error');
+        this.notificationService.showError('Error: An error occurred while saving the product.');
         console.error('Error saving product:', err);
       },
     });

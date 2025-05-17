@@ -1,9 +1,9 @@
-import { ToastrService } from 'ngx-toastr';
 import { FormGroup } from '@angular/forms';
 import { ChangeDetectionStrategy, Component, inject, input, OnDestroy } from '@angular/core';
 import { IAddress } from 'src/app/shared/models/address';
 import { AccountService } from 'src/app/core/services/account.service';
 import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
+import { NotificationService } from 'src/app/core/services/notification.service';
 
 @Component({
     selector: 'app-checkout-address',
@@ -17,8 +17,8 @@ export class CheckoutAddressComponent implements OnDestroy {
 
   destroy$ = new Subject<void>();
 
-  private accountService = inject(AccountService);
-  private toastr         = inject(ToastrService);
+  private accountService      = inject(AccountService);
+  private notificationService = inject(NotificationService);
 
   constructor() {
 
@@ -36,11 +36,11 @@ export class CheckoutAddressComponent implements OnDestroy {
         .pipe(
           takeUntil(this.destroy$),
           tap((address: IAddress) => {
-            this.toastr.success('Address saved.');
+            this.notificationService.showSuccess('Address saved.');
             this.checkoutForm()?.get('addressForm')?.reset(address);
           }),
           catchError((error: any) => {
-            this.toastr.error(error.message);
+            this.notificationService.showError(error.message);
             console.error(error);
             return of();
           })

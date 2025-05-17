@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators, FormsModule } from '@angular/forms';
-import { ToastrModule } from 'ngx-toastr';
 import { of, throwError } from 'rxjs';
 import { IAddress } from 'src/app/shared/models/address';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -28,7 +27,6 @@ describe('CheckoutAddressComponent', () => {
         AppRoutingModule,
         FormsModule,
         ReactiveFormsModule,
-        ToastrModule.forRoot(),
         MatInputModule,
         MatFormFieldModule
       ],
