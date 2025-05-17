@@ -1,26 +1,28 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
-
+import { NotificationService } from '../notification.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DeleteService {
+  private notificationService = inject(NotificationService);
+  private dialog              = inject(MatDialog);
 
-  constructor(private dialog: MatDialog) { }
+  constructor() { }
 
   deleteObject(
-    id: number,
-    deleteFn: (id: number) => Observable<any>,
+    id         : number,
+    deleteFn   : (id: number) => Observable<any>,
     fetchMethod: () => void,
   ) {
 
     const dialogData: IDialogData = {
-      title: 'Delete Dialog',
-      content: 'Would you like to delete this item?',
+      title                  : 'Delete Confirmation',
+      content                : 'Do you really want to delete this item?',
       showConfirmationButtons: true
     };
 
@@ -34,13 +36,19 @@ export class DeleteService {
 
         deleteFn.call(null, id).subscribe({
           next: () => {
-            console.log("object deleted!");
+            this.notificationService.showSuccess('Item deleted successfully.');
             fetchMethod();
           },
-          error: (error: any) => { console.error(error) }
+          error: (error: any) => {
+            console.error(error);
+            this.notificationService.showError('Failed to delete the item.');
+          }
         })
       },
-      error: (error) => { console.error(error) }
+      error: (error) => {
+        console.error(error);
+        this.notificationService.showError('An error occurred while closing the dialog.');
+      }
     })
   }
 }
