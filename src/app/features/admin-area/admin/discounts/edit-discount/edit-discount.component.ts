@@ -236,6 +236,8 @@ async loadDiscount(): Promise<void> {
 }
 
   onSubmit(): void {
+    this.removeUnusedTiers();
+
     this.conditionGroups.controls.forEach(group => {
       const conditions = group.get('conditions') as FormArray;
       conditions.updateValueAndValidity({ emitEvent: true });
@@ -381,6 +383,40 @@ async loadDiscount(): Promise<void> {
     }
 
     return options;
+  }
+
+  private removeUnusedTiers(): void {
+    const usedTierIndices = new Set<number>();
+    const currentTierCount = this.tiers.length;
+
+    // 1. Identify used tiers from condition groups
+    this.conditionGroups.controls.forEach(group => {
+      const tierIndex = group.get('tierIndex')?.value;
+      if (typeof tierIndex === 'number' && tierIndex >= 0 && tierIndex < currentTierCount) {
+        usedTierIndices.add(tierIndex);
+      }
+    });
+
+    // 2. Create old > new index mapping for remaining tiers
+    const sortedUsedIndices = Array.from(usedTierIndices).sort((a, b) => a - b);
+    const indexMap = new Map(sortedUsedIndices.map((oldIndex, newIndex) => [oldIndex, newIndex]));
+
+    // 3. Filter and keep only used tiers (maintain original order)
+    const tiersToKeep = this.tiers.controls.filter((_, index) => usedTierIndices.has(index));
+
+    // 4. Replace tiers array
+    this.tiers.clear();
+    tiersToKeep.forEach(tier => this.tiers.push(tier));
+
+    // 5. Update condition groups with new tier indices
+    this.conditionGroups.controls.forEach(group => {
+      const oldIndex = group.get('tierIndex')?.value;
+      if (typeof oldIndex === 'number' && indexMap.has(oldIndex)) {
+        group.get('tierIndex')?.setValue(indexMap.get(oldIndex));
+      }
+    });
+
+    this.updateTierOptions();
   }
 
   private amountValidator(): ValidatorFn {
