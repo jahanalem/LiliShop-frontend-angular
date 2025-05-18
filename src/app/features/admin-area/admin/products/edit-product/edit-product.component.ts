@@ -91,6 +91,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    console.log("submitting...");
     if (this.productForm.invalid) {
       this.notificationService.showError('Form Validation Error: Please fill out the form correctly.');
       return;
@@ -115,56 +116,25 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
     const oldDiscount = this.product()?.discount;
     const hasExistingDiscount = !!oldDiscount;
-
     const forceSingleDiscount = this.shouldForceSingleDiscount(formValues);
-
-    if (forceSingleDiscount && formValues.isDiscountActive !== null && formValues.isDiscountActive !== undefined) {
+    if (forceSingleDiscount) {
       const updatedDiscount: Partial<ISingleDiscount> = {};
-      let hasChanges = false;
 
       if (hasExistingDiscount) {
         updatedDiscount.id = oldDiscount.id;
       }
 
-      if (!hasExistingDiscount || oldDiscount.isActive !== formValues.isDiscountActive) {
-        updatedDiscount.isActive = formValues.isDiscountActive;
-        hasChanges = true;
-      }
+      updatedDiscount.isActive = formValues.isDiscountActive;
 
       const defaultName = "Single Discount";
-      if (!hasExistingDiscount || oldDiscount.name !== defaultName) {
-        updatedDiscount.name = defaultName;
-        hasChanges = true;
-      }
+      updatedDiscount.name = defaultName;
+      updatedDiscount.isPercentage = false;
+      const newStart = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
+      updatedDiscount.startDate = newStart?.toISOString();
+      const newEnd = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
+      updatedDiscount.endDate = newEnd?.toISOString();
 
-      if (!hasExistingDiscount || oldDiscount.isPercentage !== false) {
-        updatedDiscount.isPercentage = false;
-        hasChanges = true;
-      }
-
-      if (formValues.discountStartDateDate) {
-        const newStart = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
-        const oldStart = oldDiscount?.startDate ? new Date(oldDiscount.startDate) : null;
-
-        if (!hasExistingDiscount || !oldStart || oldStart.getTime() !== newStart?.getTime()) {
-          updatedDiscount.startDate = newStart?.toISOString();
-          hasChanges = true;
-        }
-      }
-
-
-      if (formValues.discountEndDateDate) {
-        const newEnd = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
-        const oldEnd = oldDiscount?.endDate ? new Date(oldDiscount.endDate) : null;
-
-        if (!hasExistingDiscount || !oldEnd || oldEnd.getTime() !== newEnd?.getTime()) {
-          updatedDiscount.endDate = newEnd?.toISOString();
-          hasChanges = true;
-        }
-      }
-
-
-      discount = hasChanges ? updatedDiscount : null;
+      discount = updatedDiscount;
     } else {
       discount = null;
     }
@@ -612,12 +582,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
 
   private shouldForceSingleDiscount(formValues: any): boolean {
-    const discountGroupId = this.product()?.discount?.discountGroupId;
-
-    if (!discountGroupId || discountGroupId <= 0) {
-      return false;
-    }
-
     const productDiscount = this.product()?.discount;
 
     const formIsActive = formValues.isDiscountActive;
@@ -636,10 +600,10 @@ export class EditProductComponent implements OnInit, OnDestroy {
     const endChanged = (endDateForm?.getTime() || null) !== (originalEnd?.getTime() || null);
 
     return (
-      formIsActive !== originalIsActive ||
+      (formIsActive !== originalIsActive ||
       formPrice !== originalPrice ||
       startChanged ||
-      endChanged
+      endChanged)
     );
   }
 
