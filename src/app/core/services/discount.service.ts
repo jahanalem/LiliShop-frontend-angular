@@ -53,7 +53,7 @@ export class DiscountService {
       }
     }
 
-    return this.http.get<DiscountPagination>(`${this.baseUrl}discount/discounts`,
+    return this.http.get<DiscountPagination>(`${this.baseUrl}discounts/discounts`,
       { observe: 'response', params })
       .pipe(
         tap(response => this.pagination = response.body ?? ({} as DiscountPagination)),
@@ -62,19 +62,19 @@ export class DiscountService {
   }
 
   getDiscount(id: number): Observable<IDiscount> {
-    return this.http.get<IDiscount>(`${this.baseUrl}discount/${id}`);
+    return this.http.get<IDiscount>(`${this.baseUrl}discounts/${id}`);
   }
 
   createDiscount(discount: IDiscount): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}discount/create/`, discount);
+    return this.http.post<void>(`${this.baseUrl}discounts/create/`, discount);
   }
 
   updateDiscount(discount: IDiscount): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}discount/update/${discount.id}`, discount);
+    return this.http.put<void>(`${this.baseUrl}discounts/update/${discount.id}`, discount);
   }
 
   deleteDiscount(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}discount/delete/${id}`)
+    return this.http.delete<void>(`${this.baseUrl}discounts/delete/${id}`)
       .pipe(catchError(error => {
         console.error(error);
         return throwError(() => error);
