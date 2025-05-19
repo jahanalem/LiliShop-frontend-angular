@@ -120,6 +120,10 @@ export class ProductService {
       }));
   }
 
+  getProductIdByDiscountId(discountId: number): Observable<number>{
+    return this.http.get<number>(`${this.baseUrl}products/productId/${discountId}`);
+  }
+
   getBrands(isActive: boolean | null = null): Observable<IBrand[]> {
     return this.fetchData(this.brands, 'products/brands', isActive);
   }

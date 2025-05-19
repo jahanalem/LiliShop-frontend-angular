@@ -15,6 +15,7 @@ import { PaginationWithData } from 'src/app/shared/models/pagination';
 import { PolicyNames } from 'src/app/shared/models/policy';
 import { SharedModule } from "../../../../shared/shared.module";
 import { CommonModule } from '@angular/common';
+import { ProductService } from 'src/app/core/services/product.service';
 
 @Component({
   selector: 'app-discounts',
@@ -55,6 +56,7 @@ export class DiscountsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private router          = inject(Router);
   private discountService = inject(DiscountService);
+  private productService  = inject(ProductService);
   private deleteService   = inject(DeleteService);
   private searchService   = inject(SearchService<IDiscount>);
 
@@ -158,8 +160,23 @@ export class DiscountsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.searchService.applyFilter(filterValueEvent, this.paginator(), this.discountParams());
   }
 
-  editDiscount(id: number) {
-    this.router.navigateByUrl(`/admin/discounts/edit/${id}`);
+  editDiscount(row: IDiscount): void {
+    if (row.discountGroupId) {
+      this.router.navigateByUrl(`/admin/discounts/edit/${row.id}`);
+    } else {
+      if (row.id)
+      {
+        this.productService.getProductIdByDiscountId(row.id).subscribe({
+          next: (productId) => {
+            console.log("Single discount! Navigating to product:", productId);
+            this.router.navigateByUrl(`/admin/products/edit/${productId}`);
+          },
+          error: (err) => {
+            console.error("Error while fetching productId for discount", row.id, err);
+          }
+        });
+      }
+    }
   }
 
   deleteDiscount(id: number) {

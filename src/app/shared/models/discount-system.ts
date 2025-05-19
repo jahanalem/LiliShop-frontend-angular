@@ -20,13 +20,14 @@ export interface ITierOption {
 }
 
 export interface IDiscount {
-  id           ?: number;
-  name         :  string;
-  startDate    :  string;
-  endDate      :  string;
-  isActive     :  boolean;
-  discountGroup?: IDiscountGroup;
-  tiers        ?: IDiscountTier[];
+  id             ?: number;
+  name           :  string;
+  startDate      :  string;
+  endDate        :  string;
+  isActive       :  boolean;
+  discountGroupId?: number;
+  discountGroup  ?: IDiscountGroup;
+  tiers          ?: IDiscountTier[];
 }
 export interface IDiscountGroup {
   name           : string;

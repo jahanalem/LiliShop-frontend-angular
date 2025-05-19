@@ -47,7 +47,6 @@ import { NotificationService } from 'src/app/core/services/notification.service'
     MatExpansionModule,
     MatTooltipModule,
     MatStepperModule,
-    MatFormFieldModule,
     MatDivider,
     MatCheckboxModule
   ],
@@ -243,10 +242,6 @@ async loadDiscount(): Promise<void> {
       conditions.updateValueAndValidity({ emitEvent: true });
     });
 
-    if (this.discountGroupForm.invalid) {
-      console.warn('ERROR HAPPENED!');
-      return;
-    }
     if (this.discountInfoForm.invalid || this.tiersForm.invalid || this.discountGroupForm.invalid) {
       console.warn('Form invalid');
       return;
