@@ -1,4 +1,3 @@
-
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
@@ -7,7 +6,6 @@ import { IProduct } from 'src/app/shared/models/product';
 import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { IProductType } from 'src/app/shared/models/productType';
-
 
 @Component({
   selector: 'app-shop',
@@ -34,13 +32,13 @@ export class ShopComponent implements OnInit {
     { name: 'Alphabetical', value: 'name' },
     { name: 'Price: Low to high', value: 'priceAsc' },
     { name: 'Price: High to low', value: 'priceDesc' },
-  ]
+  ];
 
   readonly saleOptions = [
-    {name:'All Products', value:'all'},
-    {name:'Only Sale Products', value:'sale'},
-    {name:'Non-Sale Products', value:'nonSale'},
-  ]
+    { name: 'All Products', value: 'all' },
+    { name: 'Only Sale Products', value: 'sale' },
+    { name: 'Non-Sale Products', value: 'nonSale' },
+  ];
 
   private productService = inject(ProductService);
 
@@ -53,19 +51,19 @@ export class ShopComponent implements OnInit {
     await Promise.all([
       await this.getProducts(true),
       await this.getFilters()
-    ])
+    ]);
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     const width = event.target.innerWidth;
     this.updateFilterVisibility(width);
-    this.isMobileScreen.set(width <= 768);
+    this.isMobileScreen.set(width <= 992);
   }
 
   checkScreenSize() {
     const width = window.innerWidth;
-    this.isMobileScreen.set(width <= 768);
+    this.isMobileScreen.set(width <= 992);
     this.updateFilterVisibility(width);
   }
 
@@ -74,13 +72,14 @@ export class ShopComponent implements OnInit {
   }
 
   private updateFilterVisibility(width: number) {
-    if (width <= 768) {
-      this.filtersHidden.set(true);
+    if (width <= 992) {
+      this.filtersHidden.set(true); // Filters hidden by default on mobile/tablet
     } else {
-      this.filtersHidden.set(false);
+      this.filtersHidden.set(false); // Filters shown by default on desktop
     }
   }
 
+  // getProducts method
   async getProducts(isActive?: boolean): Promise<void> {
     try {
       const response = await firstValueFrom(this.productService.getProducts(isActive));
@@ -93,6 +92,7 @@ export class ShopComponent implements OnInit {
     }
   }
 
+  // getFilters method
   async getFilters(): Promise<void> {
     try {
       const [brands, types, sizes] = await Promise.all([
@@ -100,37 +100,47 @@ export class ShopComponent implements OnInit {
         firstValueFrom(this.productService.getTypes(true)),
         firstValueFrom(this.productService.getSizes(true)),
       ]);
-      this.brands.set([{ id: 0, name: 'All' }, ...brands]);
-      this.types.set([{ id: 0, name: 'All' }, ...types]);
-      this.sizes.set([{ id: 0, size: 'All', isActive: false }, ...sizes]);
+
+      this.brands.set([{ id: 0, name: 'All Brands' }, ...brands]);
+      this.types.set([{ id: 0, name: 'All Types' }, ...types]);
+      this.sizes.set([{ id: 0, size: 'All Sizes', isActive: false }, ...sizes]);
     } catch (error) {
       console.error(error);
     }
   }
 
+  // onPageChanged method
   async onPageChanged(event: { pageNumber: number, pageSize: number }): Promise<void> {
     const params = this.shopParams();
     params.pageNumber = event.pageNumber;
     params.pageSize = event.pageSize;
     this.shopParams.set(params);
+
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     await this.getProducts();
   }
 
+  // onSearch method
   async onSearch(): Promise<void> {
     const params = this.productService.getShopParams();
-    params.search = this.searchTerm().nativeElement.value;
+    params.search = this.searchTerm().nativeElement.value || '';
     params.pageNumber = 1;
     this.productService.setShopParams(params);
     await this.getProducts();
   }
 
+  // This method clears the search input AND resets all shopParams in the service to new ProductQueryParams()
   async onReset(): Promise<void> {
-    this.searchTerm().nativeElement.value = '';
+    if (this.searchTerm()) {
+      this.searchTerm().nativeElement.value = '';
+    }
     this.shopParams.set(new ProductQueryParams());
     this.productService.setShopParams(this.shopParams());
     this.productService.clearProductCache();
     await this.getProducts();
+    if (this.isMobileScreen()) {
+      this.filtersHidden.set(true);
+    }
   }
 
   async onFilterSelected(filterValue: any | null, filterType: string): Promise<void> {

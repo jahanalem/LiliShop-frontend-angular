@@ -1,101 +1,140 @@
-<main>
+<main class="shop-page">
   <div class="page-container">
-    <div class="filter-toggle-container">
-      <!-- Toggle Button for Filters (Visible on Mobile) -->
-      <button *ngIf="isMobileScreen()" mat-raised-button color="primary" class="toggle-filter-btn"
-        (click)="toggleFilters()">
-        Toggle Filters
+
+    <div class="mobile-controls" *ngIf="isMobileScreen()">
+      <button mat-stroked-button (click)="toggleFilters()" class="toggle-filters-button">
+        <mat-icon>filter_list</mat-icon>
+        <span>Filters & Sort</span>
       </button>
     </div>
 
-    <div class="main-content">
-      <div class="filter-container" [ngClass]="{ 'mobile-hidden': filtersHidden() }">
-        <!-- Search -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Search</mat-label>
-          <input matInput placeholder="Search" #search (keyup.enter)="onSearch()" />
-          <mat-icon matSuffix (click)="onSearch()">search</mat-icon>
-          <mat-icon matSuffix (click)="onReset()">refresh</mat-icon>
-        </mat-form-field>
+    <div class="shop-content-wrapper">
+      <aside class="filters-panel" [class.filters-panel--visible-mobile]="!filtersHidden() && isMobileScreen()">
+        <div class="filters-panel__header" *ngIf="isMobileScreen()">
+          <h3>Filters & Sort</h3>
+          <button mat-icon-button (click)="toggleFilters()" aria-label="Close filters">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
 
-        <!-- Sale -->
-        <h6 class="section-title">Sale</h6>
-        <mat-form-field appearance="outline" class="full-width custom-margin">
-          <mat-label>Sale</mat-label>
-          <mat-select [(ngModel)]="shopParams().sale" (selectionChange)="onFilterSelected($event.value, 'sale')">
-            <mat-option *ngFor="let sale of saleOptions" [value]="sale.value">
-              {{ sale.name }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+        <div class="filters-panel__content">
+          <div class="filter-actions">
+            <button mat-stroked-button (click)="onReset()" class="full-width clear-all-button">
+              <mat-icon>clear_all</mat-icon> Clear All Filters
+            </button>
+          </div>
 
-        <!-- Sort -->
-        <h6 class="section-title">Sort</h6>
-        <mat-form-field appearance="outline" class="full-width custom-margin">
-          <mat-label>Sort</mat-label>
-          <mat-select [(ngModel)]="shopParams().sort" (selectionChange)="onFilterSelected($event.value, 'sort')">
-            <mat-option *ngFor="let sort of sortOptions" [value]="sort.value">
-              {{ sort.name }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+          <mat-card class="filter-group">
+            <mat-card-content>
+              <mat-form-field appearance="outline" class="full-width search-field">
+                <mat-label>Search Products</mat-label>
+                <input matInput
+                       placeholder="e.g., coat"
+                       #search (keyup.enter)="onSearch()" />
+                <button mat-icon-button matSuffix (click)="onSearch()" *ngIf="search.value" aria-label="Search">
+                  <mat-icon>search</mat-icon>
+                </button>
 
-        <!-- Brands, Types, Sizes -->
-        <ng-container *ngIf="types() && brands()">
-          <h6 class="section-title">Show by Brand</h6>
-          <mat-form-field appearance="outline" class="full-width custom-margin">
-            <mat-label>Show by Brand</mat-label>
-            <mat-select [(ngModel)]="shopParams().brandId" (selectionChange)="onFilterSelected($event.value, 'brand')">
-              <mat-option *ngFor="let brand of brands()" [value]="brand.id">
-                {{ brand.name }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+              </mat-form-field>
+            </mat-card-content>
+          </mat-card>
 
-          <h6 class="section-title">Show by Type</h6>
-          <mat-form-field appearance="outline" class="full-width custom-margin">
-            <mat-label>Show by Type</mat-label>
-            <mat-select [(ngModel)]="shopParams().typeId" (selectionChange)="onFilterSelected($event.value, 'type')">
-              <mat-option *ngFor="let type of types()" [value]="type.id">
-                {{ type.name }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+          <mat-card class="filter-group">
+            <mat-card-title class="filter-group__title">Refine By</mat-card-title>
+            <mat-card-content>
+              <label id="sale-label" class="filter-label">On Sale</label>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-select [(ngModel)]="shopParams().sale" (selectionChange)="onFilterSelected($event.value, 'sale')" aria-labelledby="sale-label">
+                  <mat-option *ngFor="let sale of saleOptions" [value]="sale.value">
+                    {{ sale.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
 
-          <h6 class="section-title">Show by Size</h6>
-          <mat-form-field appearance="outline" class="full-width custom-margin">
-            <mat-label>Show by Size</mat-label>
-            <mat-select [(ngModel)]="shopParams().sizeId" (selectionChange)="onFilterSelected($event.value, 'size')">
-              <mat-option *ngFor="let size of sizes()" [value]="size.id">
-                {{ size.size }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </ng-container>
-      </div>
+              <label id="sort-label" class="filter-label">Sort By</label>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-select [(ngModel)]="shopParams().sort" (selectionChange)="onFilterSelected($event.value, 'sort')" aria-labelledby="sort-label">
+                  <mat-option *ngFor="let sort of sortOptions" [value]="sort.value">
+                    {{ sort.name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </mat-card-content>
+          </mat-card>
 
-      <div class="product-grid-container">
-        <!-- Header -->
-        <div class="header-container">
+          <ng-container *ngIf="types() && brands()">
+            <mat-card class="filter-group">
+              <mat-card-title class="filter-group__title">Categories</mat-card-title>
+              <mat-card-content>
+                <label id="brand-label" class="filter-label">Brand</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select [(ngModel)]="shopParams().brandId" (selectionChange)="onFilterSelected($event.value, 'brand')" aria-labelledby="brand-label">
+                    <mat-option *ngFor="let brand of brands()" [value]="brand.id">
+                      {{ brand.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <label id="type-label" class="filter-label">Type</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select [(ngModel)]="shopParams().typeId" (selectionChange)="onFilterSelected($event.value, 'type')" aria-labelledby="type-label">
+                    <mat-option *ngFor="let type of types()" [value]="type.id">
+                      {{ type.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <label id="size-label" class="filter-label">Size</label>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-select [(ngModel)]="shopParams().sizeId" (selectionChange)="onFilterSelected($event.value, 'size')" aria-labelledby="size-label">
+                    <mat-option *ngFor="let size of sizes()" [value]="size.id">
+                      {{ size.size }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-card-content>
+            </mat-card>
+          </ng-container>
+          </div>
+      </aside>
+
+      <section class="products-area">
+        <div class="products-header">
           <app-paging-header
-          [pageNumber]="shopParams().pageNumber!"
-          [pageSize]="shopParams().pageSize!"
+            [pageNumber]="shopParams().pageNumber!"
+            [pageSize]="shopParams().pageSize!"
             [totalCount]="totalCount()">
           </app-paging-header>
-
         </div>
-        <div class="product-grid">
-          <div *ngFor="let item of products()">
+
+        <div *ngIf="products() && products().length > 0; else noProducts" class="product-grid">
+          <div *ngFor="let item of products()" class="product-item-wrapper">
             <app-product-item [product]="item"></app-product-item>
           </div>
         </div>
+        <ng-template #noProducts>
+          <div class="no-products-message">
+            <mat-icon class="no-products-icon">search_off</mat-icon>
+            <p>No products found matching your criteria.</p>
+            <p>Try adjusting your filters or search terms.</p>
+            <button mat-stroked-button (click)="onReset()">Clear Filters</button>
+          </div>
+        </ng-template>
 
-        <!-- Pagination -->
-        <nav aria-label="Page navigation">
-          <app-pager [pageSize]="shopParams().pageSize!" [totalCount]="totalCount()"
-            [pageNumber]="shopParams().pageNumber!" (pageChanged)="onPageChanged($event)"></app-pager>
+        <nav aria-label="Product page navigation" class="pagination-controls" *ngIf="totalCount() > 0 && totalCount() > shopParams().pageSize!">
+          <app-pager
+            [pageSize]="shopParams().pageSize!"
+            [totalCount]="totalCount()"
+            [pageNumber]="shopParams().pageNumber!"
+            (pageChanged)="onPageChanged($event)">
+          </app-pager>
         </nav>
-      </div>
+      </section>
+    </div>
+
+    <div class="filter-backdrop"
+         [class.filters-panel--visible-mobile]="!filtersHidden() && isMobileScreen()"
+         (click)="toggleFilters()">
     </div>
   </div>
 </main>
