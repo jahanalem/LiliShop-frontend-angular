@@ -14,9 +14,9 @@
 }
 
 html {
-  scrollbar-gutter: stable both-edges; // Reserves space for scrollbar, preventing layout shifts
-  -webkit-overflow-scrolling: touch; // Safari fallback
-  overflow-y: scroll; // Force scrollbar to always show in Safari
+  scrollbar-gutter: stable; /* Only reserve space on the side the scrollbar appears */
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll; // Keep this if you always want the scrollbar visible (helps with 'stable')
 }
 
 body {

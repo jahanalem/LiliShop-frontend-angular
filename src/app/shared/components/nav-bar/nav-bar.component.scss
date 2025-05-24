@@ -1,195 +1,292 @@
-.menu-button {
-  display: none;
-}
+// Toolbar Variables
+$toolbar-height-desktop: 64px;
+$toolbar-height-mobile: 56px;
+$progress-bar-height: 4px; // Standard height for mat-progress-bar
 
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.app-toolbar {
   position: fixed;
   top: 0;
-  width: 100%;
-  z-index: 1000;
-  height: 64px;
-}
-
-mat-progress-bar {
-  position: fixed;
-  top: 60px; /* Matches the toolbar's height */
   left: 0;
   right: 0;
-  z-index: 1001; /* Higher than the toolbar */
-}
-/* Adjust the margin-top of the sidenav-container to account for toolbar and progress bar */
-.sidenav-container {
-  margin-top: calc(60px + 4px); /* 64px (toolbar) + 4px (progress bar height) */
-}
-
-.logo-container {
+  z-index: 1000;
   display: flex;
   align-items: center;
-}
+  padding: 0 16px;
+  height: $toolbar-height-desktop;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Subtle shadow for elevation
 
-.logo {
-  max-height: 50px;
-}
-
-.spacer {
-  flex: 1;
-}
-
-.nav-icon {
-  position: relative;
-  margin-right: 16px;
-}
-
-.cart-badge {
-  position: absolute;
-  top: -6px;
-  right: -8px;
-  background-color: red;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 5px;
-  font-size: 10px;
-}
-
-.sidenav-container {
-  margin-top: 64px;
-}
-
-.sidenav {
-  width: 250px;
-}
-
-.sidenav-logo {
-  display: none;
-  justify-content: center;
-  padding: 16px 0;
-}
-
-.sidenav-logo img {
-  max-width: 100%;
-  height: auto;
-}
-
-.sidenav-buttons {
-  display: flex;
-  flex-direction: column;
-}
-
-.nav-links {
-  display: flex;
-  gap: 1rem;
-}
-
-.nav-links button {
-  position: relative;
-  transition: color 0.3s ease, background-color 0.3s ease;
-}
-
-.nav-links .active-link {
-  background-color: #3f51b5;
-  color: white;
-  font-weight: bold;
-  border-radius: 4px;
-}
-
-.nav-links .active-link::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 100%;
-  height: 3px;
-  background-color: #ff4081;
-  border-radius: 2px;
-  transition: width 0.3s ease;
-}
-
-.nav-links button:hover {
-  background-color: #5c6bc0;
-  color: white;
-}
-
-.nav-links button:not(.active-link)::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -4px;
-  width: 0;
-  height: 3px;
-  background-color: #ff4081;
-  /* Marker line under the active link */
-  border-radius: 2px;
-  transition: width 0.3s ease, left 0.3s ease;
-}
-
-.nav-links button:not(.active-link):hover::before {
-  width: 100%;
-  left: 0;
-}
-
-
-@media (max-width:480px) {
   .menu-button {
-    display: block;
+    display: none; // Hidden by default, shown on mobile
+    margin-right: 8px;
   }
 
   .logo-container {
-    display: none;
-  }
-
-  .sidenav-logo {
     display: flex;
-  }
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 0; // Give some vertical space for the logo
+    margin-right: 24px; // Space after logo
 
-  .sidenav-buttons {
-    flex-direction: column;
-    justify-content: space-around;
-  }
-
-  .sidenav-container {
-    margin-top: 56px;
+    .logo {
+      max-height: 40px; // Adjust as needed, ensures logo fits well
+      width: auto; // Maintain aspect ratio
+    }
   }
 
   .nav-links {
-    display: none;
+    display: flex;
+    align-items: center;
+    gap: 8px; // Reduced gap for a tighter look
+
+    a.mat-mdc-button { // Target the specific Material button class
+      font-weight: 500;
+      padding: 0 12px; // Adjust padding for nav links
+      min-width: auto;
+      // color: var(--app-primary-contrast, white); // Text color for links
+
+      &::before { // Underline effect container
+        content: '';
+        position: absolute;
+        left: 12px; // Align with padding
+        right: 12px; // Align with padding
+        bottom: 8px; // Position from bottom of button
+        height: 2px;
+        background-color: var(--app-accent-color, #ff4081);
+        transform: scaleX(0);
+        transition: transform 0.3s ease-in-out;
+        transform-origin: center;
+      }
+
+      &:hover::before,
+      &.active-link::before {
+        transform: scaleX(1);
+      }
+
+      &.active-link {
+        font-weight: 700; // Make active link bolder
+      }
+       // Remove default mat-button hover background to prefer underline
+      &:hover .mat-mdc-button-persistent-ripple::before,
+      &:hover .mat-mdc-button-ripple::before {
+        background-color: transparent !important;
+      }
+    }
+  }
+
+  .toolbar-spacer {
+    flex: 1 1 auto;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .action-icon, .auth-button, .user-menu-trigger {
+      // color: var(--app-primary-contrast, white);
+    }
+
+    .cart-button {
+      position: relative;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      background-color: var(--app-accent-color, #ff4081);
+      color: var(--app-primary-contrast, white);
+      border-radius: 50%;
+      font-size: 10px;
+      line-height: 1;
+      padding: 4px;
+      min-width: 18px; // Ensure it's circular even with single digit
+      min-height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      border: 1px solid var(--app-primary-color, #0056b3); // Border matching toolbar bg
+    }
+
+    .auth-button {
+      font-weight: 500;
+      &.signup-button {
+        // Uses color="accent" from HTML
+      }
+      &.login-button {
+        // Uses mat-stroked-button, color will be primary contrast
+        // border-color: rgba(var(--app-primary-contrast-rgb, 255,255,255), 0.7); // Example if using RGB var
+      }
+    }
+
+    .user-menu-trigger {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 20px; // Pill shape
+      padding: 4px 12px 4px 8px;
+      transition: background-color 0.2s ease-in-out;
+
+      &:hover {
+        background-color: var(--app-hover-bg, rgba(255,255,255,0.1)); // Use light hover from global or specific
+      }
+
+      .user-avatar-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+      .user-display-name {
+        font-size: 0.9rem;
+        font-weight: 500;
+        line-height: 1;
+      }
+      .user-menu-arrow {
+        font-size: 20px;
+      }
+    }
   }
 }
 
-@media (max-width: 768px) {
-
-  .toolbar {
-    height: 56px;
+// Styles for the user dropdown menu
+.user-dropdown-menu {
+  .mat-mdc-menu-item {
+    mat-icon {
+      margin-right: 12px;
+      color: var(--app-text-color-light, #555);
+    }
+    span {
+      font-size: 0.9rem;
+    }
   }
+}
+
+
+.progress-bar-container {
+  position: fixed;
+  top: $toolbar-height-desktop;
+  left: 0;
+  right: 0;
+  z-index: 999; // Just below toolbar if toolbar has higher actions like menus
+  height: $progress-bar-height;
 
   mat-progress-bar {
-    top: 56px; /* Adjusted for mobile toolbar height */
+    // The mat-progress-bar itself has height: 4px by default
+    // The color input="accent" will use the accent color from your Material theme
   }
+}
 
-  .sidenav-container {
-    margin-top: calc(56px + 4px); /* 56px (mobile toolbar) + 4px (progress bar) */
-  }
+.sidenav-container {
+  // Adjust margin-top to account for toolbar and progress bar
+  // Using CSS variables for dynamic height adjustment if toolbar height changes
+  --current-toolbar-height: #{$toolbar-height-desktop};
+  margin-top: calc(var(--current-toolbar-height) + #{$progress-bar-height});
+  height: calc(100vh - var(--current-toolbar-height) - #{$progress-bar-height}); // Ensure it takes full viewport height
+}
 
-  .menu-button {
-    display: block;
-  }
+.app-sidenav {
+  width: 260px; // Slightly wider for better touch targets
+  background-color: var(--app-sidenav-bg, white);
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1); // Shadow for sidenav
 
-  .logo-container {
-    display: none;
-  }
-
-  .sidenav-logo {
+  .sidenav-header {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--app-border-color, #e0e0e0);
+    height: $toolbar-height-desktop; // Match toolbar height
+    box-sizing: border-box;
+
+    .sidenav-logo-img {
+      max-height: 36px; // Adjust for sidenav header
+      width: auto;
+    }
   }
 
-  .sidenav-buttons {
-    flex-direction: column;
-    justify-content: space-around;
+  .sidenav-nav-list {
+    padding-top: 8px;
+
+    .mat-mdc-list-item {
+      color: var(--app-text-color, #333);
+      .mat-icon {
+        color: var(--app-text-color-light, #555);
+      }
+      &.active-sidenav-link {
+        background-color: var(--app-hover-bg, rgba(0,0,0,0.04));
+        color: var(--app-primary-color, #0056b3);
+        font-weight: 600;
+        .mat-icon {
+          color: var(--app-primary-color, #0056b3);
+        }
+      }
+    }
+  }
+}
+
+.main-content {
+  // Standard content styling will go here or in app.component.scss
+  // e.g. padding: 16px;
+}
+
+// Responsive Styles
+@media (max-width: 768px) {
+  .app-toolbar {
+    height: $toolbar-height-mobile;
+    padding: 0 8px; // Reduce padding on mobile
+
+    .menu-button {
+      display: inline-flex;
+    }
+
+    .logo-container {
+      // Optionally hide full logo and show a smaller icon/logomark
+      // Or make it smaller and remove margin-right
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%); // Center logo if nav-links are hidden
+      margin-right: 0;
+       .logo { max-height: 32px; }
+    }
+
+    .nav-links {
+      display: none; // Nav links hidden, moved to sidenav
+    }
+    .toolbar-actions {
+        .user-menu-trigger .user-display-name {
+            display: none; // Hide display name on smaller screens for space
+        }
+        .auth-button {
+          font-size: 0.8rem;
+          padding: 0 8px; // Smaller auth buttons
+          &.signup-button { margin-left: 4px;} // Reduce gap
+        }
+    }
+  }
+
+  .progress-bar-container {
+    top: $toolbar-height-mobile;
   }
 
   .sidenav-container {
-    margin-top: 56px;
+    --current-toolbar-height: #{$toolbar-height-mobile};
+    // margin-top and height will adjust automatically based on --current-toolbar-height
   }
+
+  .app-sidenav .sidenav-header {
+    height: $toolbar-height-mobile;
+  }
+}
+
+@media (max-width: 480px) {
+    .app-toolbar .logo-container {
+        // On very small screens, you might want to hide the centered logo
+        // if the menu button and actions get too cramped
+        display: none;
+    }
+    .app-toolbar .toolbar-actions {
+        gap: 4px; // Tighter gap for actions
+         .cart-button { margin-right: 0;}
+    }
 }
