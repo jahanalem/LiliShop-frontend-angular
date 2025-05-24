@@ -1,5 +1,5 @@
 import { AccountService } from 'src/app/core/services/account.service';
-import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, AfterViewInit, Renderer2, OnInit } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, AfterViewInit, OnInit } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
 import { delay, filter, Subject, takeUntil } from 'rxjs';
@@ -22,7 +22,6 @@ export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit 
   private router         = inject(Router);
   private accountService = inject(AccountService);
   protected busyService  = inject(BusyService);
-  private renderer2      = inject(Renderer2);
 
   navItems = [
     { name: 'Dashboard', link: '/admin',                     icon: 'dashboard' },
@@ -39,7 +38,7 @@ export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit 
   constructor() {
   }
   ngOnInit(): void {
-    this.renderer2.setStyle(document.body, 'overflow', 'hidden');
+
   }
 
   ngOnDestroy(): void {
@@ -49,7 +48,7 @@ export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit 
 
   ngAfterViewInit() {
     this.observer
-      .observe(['(max-width: 800px)'])
+      .observe(['(max-width: 992px)'])
       .pipe(takeUntil(this.destroy$), delay(1))
       .subscribe((res: { matches: boolean }) => {
         this.setSidenav(res.matches);
@@ -61,8 +60,8 @@ export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit 
         filter((e) => e instanceof NavigationEnd)
       )
       .subscribe(() => {
-        if (this.sidenav().mode === 'over') {
-          this.setSidenav(false);
+        if (this.sidenav().mode === 'over' && this.sidenav().opened) {
+          this.sidenav().close();
         }
       });
   }

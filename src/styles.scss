@@ -1,5 +1,28 @@
 @import "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css";
 
+:root {
+  --app-primary-color: #0056b3;
+  --app-primary-contrast: white;
+  --app-accent-color: #ff4081;
+  --app-sidenav-bg: #ffffff;
+  --app-content-bg: #f4f7fa;
+  --app-text-color: #333;
+  --app-text-color-light: #555; // Used for default nav items
+  --app-border-color: #e0e0e0;
+  --app-hover-bg: rgba(0, 0, 0, 0.04); // Light hover
+}
+
+html {
+  scrollbar-gutter: stable both-edges; // Reserves space for scrollbar, preventing layout shifts
+  -webkit-overflow-scrolling: touch; // Safari fallback
+  overflow-y: scroll; // Force scrollbar to always show in Safari
+}
+
+body {
+  margin: 0; // Ensure no default body margins are interfering
+  font-family: 'Roboto', sans-serif; // Or your preferred font
+}
+
 html,
 body {
   height: 100%;

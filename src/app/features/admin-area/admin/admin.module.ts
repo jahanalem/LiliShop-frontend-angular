@@ -12,6 +12,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { MatSelectModule } from '@angular/material/select';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     FormsModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatMenuModule,
+    MatListModule,
     OverlayModule,
     SharedModule,
   ]

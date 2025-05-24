@@ -1,95 +1,221 @@
-.mat-drawer-content {
-  overflow: hidden;
-}
-.mat-toolbar {
-  background: #004a9f;
-  color: white;
+// In styles.scss or your main global stylesheet
+html {
+  scrollbar-gutter: stable both-edges; // Reserves space for scrollbar, preventing layout shifts
 }
 
-.admin-panel-title {
-  margin-left: 8px;
+body {
+  margin: 0; // Ensure no default body margins are interfering
+  font-family: 'Roboto', sans-serif; // Or your preferred font
+}
+// If you don't have a full theme setup, you can use CSS variables for easier customization.
+:root {
+  --app-primary-color: #0056b3; // A slightly different blue, adjust as needed
+  --app-primary-contrast: white;
+  --app-accent-color: #ff4081; // Example accent
+  --app-sidenav-bg: #ffffff;
+  --app-content-bg: #f4f7fa; // Very light grey for content background
+  --app-text-color: #333;
+  --app-text-color-light: #555;
+  --app-border-color: #e0e0e0;
+  --app-hover-bg: rgba(0, 0, 0, 0.04);
+  --app-active-bg: rgba(0, 86, 179, 0.1); // Subtle active background for nav
+  --app-active-indicator: var(--app-primary-color); // Color for active item left border
 }
 
-.mat-sidenav {
-  width: 240px;
-  background-color: #fafafa;
+// Toolbar
+.app-toolbar {
+  background-color: var(--app-primary-color);
+  color: var(--app-primary-contrast);
+  position: sticky; // Makes toolbar stay at the top
+  top: 0;
+  z-index: 1000; // Ensures toolbar is above other content
+  height: 64px;
 }
 
-.mat-sidenav-container,
-.content {
-  height: calc(100vh - 65px);
+.toolbar-logo-icon {
+  height: 32px; // Adjust size
+  width: auto;
+  margin-right: 12px;
+  border-radius: 4px; // Slight rounding if desired
 }
 
-.content {
-  padding: 16px;
-  overflow: auto;
-  background-color: #f5f5f5;
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 500;
 }
 
-.logo-container {
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.user-avatar-icon { // If using an image for user avatar
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+// Progress Bar
+.app-progress-bar {
+  position: fixed; // Takes the progress bar out of the normal document flow
+  top: 64px;       // Position it directly below the 64px toolbar
+  left: 0;
+  right: 0;
+  z-index: 1001;   // Ensure it's above other content but potentially below modals if needed
+  height: 4px;     // Standard height for mat-progress-bar. Ensures space is consistent.
+                   // This won't reserve space when hidden by *ngIf, but since it's position:fixed,
+                   // it won't cause reflow of other elements.
+}
+.mat-mdc-progress-bar { // More specific selector for Material 15+
+    --mdc-linear-progress-active-indicator-color: var(--app-accent-color);
+    margin: 0;
+    // --mdc-linear-progress-track-color: color-mix(in srgb, var(--app-primary-color) 20%, transparent); // Example
+}
+
+
+// Sidenav Container
+.app-sidenav-container {
+  height: calc(100vh - 64px); // Adjust if toolbar height changes
+}
+
+// Sidenav
+.app-sidenav {
+  width: 250px; // Slightly wider for better spacing
+  background-color: var(--app-sidenav-bg);
+  border-right: 1px solid var(--app-border-color);
   display: flex;
-  justify-content: center;
-  padding: 16px 0;
+  flex-direction: column;
 }
 
-.logo {
-  max-width: 100%;
-  height: auto;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  cursor: pointer;
-}
+.sidenav-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  text-align: center;
 
-.logo:hover {
-  transform: scale(1.1);
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-}
+  .sidenav-logo {
+    width: 100px; // Adjust as needed
+    height: auto;
+    border-radius: 8px; // Soften edges
+    margin-bottom: 12px;
+    transition: transform 0.3s ease;
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
 
-.logo:active {
-  transform: scale(1.05);
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+  .sidenav-app-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--app-text-color);
+  }
 }
-
 
 .nav-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
+  padding-top: 8px;
+  flex-grow: 1;
+  overflow-y: auto;
+
+  .mat-mdc-list-item {
+    color: var(--app-text-color-light); // Default color for nav items
+    margin: 4px 8px;
+    border-radius: 6px;
+    padding-left: 16px !important; // From previous, ensure this is desired
+
+    // Default state for text and icon
+    .nav-icon, .mat-icon { // Targets both your class and the mat-icon element
+      color: inherit; // Inherits from .mat-mdc-list-item
+      margin-right: 16px; // From previous
+    }
+    .nav-item-name, .mdc-list-item__primary-text { // Targets your class and MDC internal
+      color: inherit; // Inherits from .mat-mdc-list-item
+      font-weight: 500; // Default font weight
+    }
+
+    &:hover {
+      background-color: var(--app-hover-bg);
+      // On hover, text and icon adopt the primary color for better feedback
+      .nav-item-name, .mdc-list-item__primary-text, .nav-icon, .mat-icon {
+        color: var(--app-primary-color);
+      }
+    }
+
+    &.active-nav-item {
+      // Use color-mix to create a light, distinct background from your primary color and sidenav background
+      background-color: color-mix(in srgb, var(--app-primary-color) 15%, var(--app-sidenav-bg));
+      // Example: If primary is #0056b3 and sidenav-bg is #FFFFFF, this gives a light blueish background.
+      // Adjust the percentage (15%) as needed for desired intensity.
+
+      // Active text and icon should be distinct
+      .nav-item-name, .mdc-list-item__primary-text {
+        color: var(--app-primary-color); // Use the main primary color for text
+        font-weight: 600; // Make it bolder than default
+      }
+      .nav-icon, .mat-icon {
+         color: var(--app-primary-color); // Use the main primary color for the icon
+      }
+
+      // The left border indicator (full height)
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;    // Align to the very top of the item
+        bottom: 0; // Align to the very bottom of the item
+        width: 4px; // Width of the indicator line
+        background-color: var(--app-primary-color); // Indicator color, can also be accent
+        // Optional: if you want the indicator to have rounded corners matching the item.
+        // border-top-left-radius: 6px; (if item has border-radius 6px)
+        // border-bottom-left-radius: 6px; (if item has border-radius 6px)
+      }
+    }
+  }
 }
 
-.nav-item {
-  padding: 8px 16px;
+// Sidenav Footer (if you implement it)
+.sidenav-footer {
+  padding: 8px;
+  margin-top: auto; // Pushes to the bottom
+  .logout-item {
+    // Similar styling to other nav items
+    color: var(--app-text-color-light);
+    margin: 4px 8px;
+    border-radius: 6px;
+    &:hover {
+      background-color: var(--app-hover-bg);
+      color: var(--app-accent-color); // Or your warn color
+    }
+  }
+}
+
+// Sidenav Content
+.app-sidenav-content {
+  background-color: var(--app-content-bg);
+}
+
+.content-wrapper {
+  padding: 24px;
+  overflow: auto;
+  height: 100%;
+}
+
+
+.logo {
+  // Original styles were good, can be adapted for .sidenav-logo
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   cursor: pointer;
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15); // Softer shadow
+  }
+  &:active {
+    transform: scale(1.05);
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); // Softer shadow
+  }
 }
 
-.nav-item a {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.nav-item a.active {
-  background-color: rgba(0, 0, 0, 0.1);
-  font-weight: bold;
-}
-
-.nav-item a:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.nav-icon {
-  margin-right: 16px;
-}
-
-.logout-container {
-  position: absolute;
-  bottom: 16px;
-  width: 100%;
-  text-align: center;
-}
-
-.avatar {
-  width: 150px;
-  border-radius: 5%;
-  margin: auto;
+.mat-icon {
+  vertical-align: middle;
 }
