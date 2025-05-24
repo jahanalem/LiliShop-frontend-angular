@@ -1,116 +1,328 @@
-.about-header h2 {
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2.5rem;
-  color: #3f51b5;
-}
-.profile-section {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 2rem;
-  flex-wrap: wrap;
+:host {
+  --app-primary-color: #3f51b5; /* Indigo */
+  --app-accent-color: #ff4081;  /* Pink */
+  --app-warn-color: #f44336;    /* Red */
+  --app-background-color: #fafafa;
+  --app-surface-color: #ffffff;
+  --app-text-color: #333333;
+  --app-secondary-text-color: #666666;
+  --app-divider-color: #e0e0e0;
+  --app-header-color: #2c3e50; /* A darker blue for headers */
+  --app-link-color: var(--app-primary-color);
+  --app-link-hover-color: var(--app-accent-color);
+
+  display: block;
+  background-color: var(--app-background-color);
+  color: var(--app-text-color);
+  padding-bottom: 3rem; /* Space at the bottom */
 }
 
-.profile-photo {
-  width: 150px;
-  height: 150px;
+.about-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+}
+
+.page-main-header {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.page-main-header h1 {
+  font-size: 2.8rem;
+  font-weight: 600;
+  color: var(--app-header-color);
+  margin-bottom: 0.5rem;
+}
+
+.page-main-header .subtitle {
+  font-size: 1.4rem;
+  color: var(--app-secondary-text-color);
+  font-weight: 300;
+}
+
+mat-divider {
+  margin: 2rem 0;
+  border-top-color: var(--app-divider-color);
+}
+
+/* About Me Personal Section */
+.about-me-personal-section {
+  padding: 1.5rem 0;
+}
+
+.personal-info-wrapper {
+  display: flex;
+  align-items: flex-start; /* Align items to the top */
+  gap: 2.5rem;
+}
+
+.profile-photo-main {
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  border: 4px solid var(--app-surface-color); /* Optional: for a nicer cutout effect */
 }
 
-.bio-section {
+.personal-bio {
   flex: 1;
-  min-width: 200px;
 }
 
-.bio-text {
-  font-size: 1.1rem;
-  color: #444;
+.personal-bio h2 {
+  font-size: 1.8rem;
+  color: var(--app-header-color);
   margin-bottom: 1rem;
-  line-height: 1.6;
+  border-bottom: 2px solid var(--app-primary-color);
+  padding-bottom: 0.5rem;
+  display: inline-block;
 }
 
-.social-links {
+.personal-bio p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--app-secondary-text-color);
+  margin-bottom: 1.5rem;
+}
+
+.social-links-main {
   display: flex;
-  gap: 1rem;
-  font-size: 1.5rem;
-  justify-content: flex-start;
   flex-wrap: wrap;
-}
-
-.social-links a {
-  text-decoration: none;
-  color: #3b5998; /* Facebook blue */
-  transition: color 0.3s;
-}
-
-.social-links a:hover {
-  color: #444;
-}
-
-.tech-stack-section {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.tech-card {
-  flex: 1;
-  padding: 1rem;
-  min-width: 250px;
-}
-
-.mat-card-header {
-  background-color: #f7f7f7;
-  border-bottom: 2px solid #ddd;
-}
-
-.mat-card-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
   gap: 0.5rem;
 }
 
-.mat-card-content ul {
+.social-links-main a.mat-icon-button {
+  color: var(--app-secondary-text-color);
+  background-color: rgba(0,0,0,0.05);
+}
+.social-links-main a.mat-icon-button:hover {
+  color: var(--app-primary-color);
+  background-color: rgba(0,0,0,0.08);
+}
+.social-links-main a.mat-icon-button mat-icon {
+  font-size: 28px; /* Ensure icons are large enough */
+  width: 28px;
+  height: 28px;
+  line-height: 28px; /* Center custom SVG icons */
+}
+
+
+/* Project Showcase Section */
+.project-showcase-section {
+  padding: 1.5rem 0;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-header h2 {
+  font-size: 2.2rem;
+  color: var(--app-header-color);
+  margin-bottom: 0.5rem;
+}
+.section-header .project-meta {
+  font-size: 1rem;
+  color: var(--app-secondary-text-color);
+}
+.section-header .project-meta a {
+  color: var(--app-link-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.section-header .project-meta a:hover {
+  color: var(--app-link-hover-color);
+  text-decoration: underline;
+}
+
+
+.lilishop-card {
+  margin-bottom: 1.5rem;
+  background-color: var(--app-surface-color);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08) !important; /* Override default mat-card shadow if needed */
+}
+
+.lilishop-card .mat-card-header { /* mat-card-header needs ::ng-deep or ViewEncapsulation.None for direct styling */
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--app-divider-color);
+  margin-bottom: 1rem;
+}
+
+.lilishop-card .mat-card-title {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--app-primary-color);
+}
+
+.lilishop-card mat-card-content p,
+.lilishop-panel ul {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--app-secondary-text-color);
+}
+.lilishop-card mat-card-content p strong,
+.lilishop-panel ul strong {
+  color: var(--app-text-color);
+  font-weight: 500;
+}
+.lilishop-card mat-card-content a {
+  color: var(--app-link-color);
+  text-decoration: none;
+}
+.lilishop-card mat-card-content a:hover {
+  color: var(--app-link-hover-color);
+  text-decoration: underline;
+}
+
+
+.lilishop-panel {
+  margin-bottom: 1rem;
+  background-color: var(--app-surface-color);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
+}
+
+.lilishop-panel .mat-expansion-panel-header { /* mat-expansion-panel-header might need ::ng-deep */
+  background-color: rgba(63, 81, 181, 0.05); /* Light primary color tint */
+}
+.lilishop-panel .mat-panel-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--app-primary-color);
+}
+
+.feature-category {
+  margin-bottom: 1.5rem;
+}
+.feature-category:last-child {
+  margin-bottom: 0;
+}
+.feature-category h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--app-text-color);
+  margin-bottom: 0.75rem;
+}
+.feature-category ul, .lilishop-panel ul {
+  list-style: none;
+  padding-left: 0;
+}
+.feature-category ul li, .lilishop-panel ul li {
+  padding: 0.3rem 0;
+  position: relative;
+  padding-left: 1.5rem; /* Space for custom bullet */
+}
+.feature-category ul li::before, .lilishop-panel ul li::before {
+  content: "▹"; /* Or use a mat-icon */
+  position: absolute;
+  left: 0;
+  color: var(--app-primary-color);
+  font-size: 1.2rem;
+}
+
+.tech-summary-card mat-chip-listbox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.tech-summary-card .mat-mdc-chip { /* Adjust if class name differs in your Angular Material version */
+  font-size: 0.9rem;
+}
+
+/* Personal Tech Stack Section */
+.personal-tech-stack-section {
+  padding: 1.5rem 0;
+}
+
+.tech-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.tech-card-personal {
+  background-color: var(--app-surface-color);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08) !important;
+}
+.tech-card-personal .mat-card-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--app-primary-color);
+}
+.tech-card-personal ul {
   list-style: none;
   padding-left: 0;
   font-size: 1rem;
-  color: #333;
-  line-height: 1.5;
+  color: var(--app-secondary-text-color);
 }
-
-.mat-card-content ul li {
-  padding: 0.5rem 0;
+.tech-card-personal ul li {
+  padding: 0.4rem 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.5rem; /* Space between emoji/icon and text */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .personal-info-wrapper {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .profile-photo-main {
+    width: 180px;
+    height: 180px;
+    margin-bottom: 1.5rem;
+  }
+  .personal-bio h2 {
+    display: block; /* Allow it to center */
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 1rem;
+  }
+  .social-links-main {
+    justify-content: center;
+  }
 }
 
 @media (max-width: 768px) {
-  .about-container {
+  .about-page-container {
     padding: 1rem;
   }
-
-  .profile-section {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
+  .page-main-header h1 {
+    font-size: 2.2rem;
   }
-
-  .bio-section {
-    text-align: center;
+  .page-main-header .subtitle {
+    font-size: 1.2rem;
   }
-
-  .tech-stack-section {
-    flex-direction: column;
+  .profile-photo-main {
+    width: 150px;
+    height: 150px;
   }
+  .personal-bio p {
+    font-size: 1rem;
+  }
+  .section-header h2 {
+    font-size: 1.8rem;
+  }
+  .tech-cards-container {
+    grid-template-columns: 1fr; /* Stack cards */
+  }
+}
 
-  .tech-card {
-    margin-bottom: 1rem;
+@media (max-width: 480px) {
+  .page-main-header h1 {
+    font-size: 1.8rem;
+  }
+  .page-main-header .subtitle {
+    font-size: 1rem;
+  }
+  .social-links-main a.mat-icon-button mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
   }
 }
