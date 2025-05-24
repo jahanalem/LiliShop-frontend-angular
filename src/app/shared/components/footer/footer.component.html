@@ -1,7 +1,6 @@
 <footer class="footer">
   <div class="footer-container">
     <div class="footer-row">
-      <!-- About Section -->
       <div class="footer-column about">
         <h3>About Lili Shop</h3>
         <p>
@@ -10,61 +9,73 @@
         </p>
       </div>
 
-      <!-- Quick Links Section -->
       <div class="footer-column links">
         <h3>Quick Links</h3>
         <ul>
           <li><a routerLink="/shop">Shop</a></li>
           <li><a routerLink="/contact">Contact</a></li>
-          <li><a routerLink="/about">About</a></li>
+          <li><a routerLink="/about">About Us</a></li>
           <li><a routerLink="/privacy-policy">Privacy Policy</a></li>
+          <li><a routerLink="/terms-of-service">Terms of Service</a></li>
         </ul>
       </div>
 
-      <!-- Contact Information Section -->
       <div class="footer-column contact">
-        <h3>Contact Me</h3>
+        <h3>Contact Us</h3>
         <p>
-          <mat-icon>location_on</mat-icon> 60438 Frankfurt am Main
+          <mat-icon>location_on</mat-icon>
+          <span>60438 Frankfurt am Main, Germany</span>
         </p>
         <p>
-          <mat-icon>email</mat-icon> s.r.alem&#64;gmail.com
+          <mat-icon>email</mat-icon>
+          <a href="mailto:s.r.alem@gmail.com">s.r.alem&#64;gmail.com</a>
         </p>
         <p>
-          <mat-icon>phone</mat-icon> +4917642784***
+          <mat-icon>phone</mat-icon>
+          <a href="tel:+4917642784000">+49 176 42784***</a>
         </p>
       </div>
 
-      <!-- Social Media Section -->
       <div class="footer-column social">
-        <h3>Follow Me</h3>
+        <h3>Follow Us</h3>
         <div class="social-icons">
-          <a title="facebook"
+          <a title="Facebook"
              href="https://www.facebook.com/roohiX19"
              target="_blank"
              class="social-link"
-             rel="noopener">
-            <mat-icon>facebook</mat-icon>
-          </a>
-          <a title="github"
+             aria-label="Lili Shop on Facebook"
+             rel="noopener noreferrer">
+            <mat-icon>facebook</mat-icon> </a>
+          <a title="GitHub"
              href="https://github.com/jahanalem"
              target="_blank"
              class="social-link"
-             rel="noopener">
-            <mat-icon><span class="material-symbols-outlined">code</span></mat-icon>
-          </a>
-          <a title="linkedin"
+             aria-label="Lili Shop on GitHub"
+             rel="noopener noreferrer">
+             <mat-icon>share</mat-icon> </a>
+          <a title="LinkedIn"
              href="https://www.linkedin.com/in/said-roohullah-allem/"
              target="_blank"
              class="social-link"
-             rel="noopener">
-            <mat-icon>linkedin</mat-icon>
-          </a>
+             aria-label="Lili Shop on LinkedIn"
+             rel="noopener noreferrer">
+            <mat-icon>linkedin</mat-icon> </a>
+          <a title="Instagram"
+             href="https://instagram.com"
+             target="_blank"
+             class="social-link"
+             aria-label="Lili Shop on Instagram"
+             rel="noopener noreferrer">
+            <mat-icon>photo_camera</mat-icon> </a>
         </div>
       </div>
     </div>
+
     <div class="footer-bottom">
-      <p>&copy; 2025 Lili Shop. All rights reserved.</p>
+      <p>&copy; {{ currentYear }} Lili Shop. All rights reserved.</p>
+      <p class="footer-credits">
+        Designed with <mat-icon class="heart-icon">favorite</mat-icon> by Said Roohullah Allem
+      </p>
     </div>
   </div>
 </footer>

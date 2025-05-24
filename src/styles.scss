@@ -10,6 +10,7 @@
   --app-text-color-light: #555; // Used for default nav items
   --app-border-color: #e0e0e0;
   --app-hover-bg: rgba(0, 0, 0, 0.04); // Light hover
+  --app-primary-color-dark: #004490; /* Pre-calculated darker shade */
 }
 
 html {
@@ -19,8 +20,8 @@ html {
 }
 
 body {
-  margin: 0; // Ensure no default body margins are interfering
-  font-family: 'Roboto', sans-serif; // Or your preferred font
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 html,
