@@ -10,29 +10,23 @@
   --app-text-color-light: #555; // Used for default nav items
   --app-border-color: #e0e0e0;
   --app-hover-bg: rgba(0, 0, 0, 0.04); // Light hover
-  --app-primary-color-dark: #004490; /* Pre-calculated darker shade */
-}
-
-html {
-  scrollbar-gutter: stable; /* Only reserve space on the side the scrollbar appears */
-  -webkit-overflow-scrolling: touch;
-  overflow-y: scroll; // Keep this if you always want the scrollbar visible (helps with 'stable')
-}
-
-body {
-  margin: 0;
-  font-family: 'Roboto', sans-serif;
+  --app-primary-color-dark: #004490;
+  /* Pre-calculated darker shade */
 }
 
 html,
 body {
   height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: overlay;
+  scroll-behavior: smooth;
 }
 
-body {
-  margin: 0;
+html {
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  overflow: auto;
 }
 
 .form-control,

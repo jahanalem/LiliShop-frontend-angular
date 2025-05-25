@@ -178,11 +178,8 @@ $progress-bar-height: 4px; // Standard height for mat-progress-bar
 }
 
 .sidenav-container {
-  // Adjust margin-top to account for toolbar and progress bar
-  // Using CSS variables for dynamic height adjustment if toolbar height changes
   --current-toolbar-height: #{$toolbar-height-desktop};
   margin-top: calc(var(--current-toolbar-height) + #{$progress-bar-height});
-  height: calc(100vh - var(--current-toolbar-height) - #{$progress-bar-height}); // Ensure it takes full viewport height
 }
 
 .app-sidenav {

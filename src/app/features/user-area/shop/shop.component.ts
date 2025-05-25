@@ -17,6 +17,8 @@ import { IProductType } from 'src/app/shared/models/productType';
 export class ShopComponent implements OnInit {
   searchTerm = viewChild.required<ElementRef<HTMLInputElement>>('search');
 
+  private productService = inject(ProductService);
+
   products   = signal<IProduct[]>([]);
   brands     = signal<IBrand[]>([]);
   types      = signal<IProductType[]>([]);
@@ -39,8 +41,6 @@ export class ShopComponent implements OnInit {
     { name: 'Only Sale Products', value: 'sale' },
     { name: 'Non-Sale Products', value: 'nonSale' },
   ];
-
-  private productService = inject(ProductService);
 
   constructor() {
     this.shopParams.set(this.productService.getShopParams());
@@ -116,8 +116,15 @@ export class ShopComponent implements OnInit {
     params.pageSize = event.pageSize;
     this.shopParams.set(params);
 
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     await this.getProducts();
+
+    requestAnimationFrame(() => {
+      try {
+        document.body.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (e) {
+        console.debug('Scroll method failed:', e);
+      }
+    });
   }
 
   // onSearch method
