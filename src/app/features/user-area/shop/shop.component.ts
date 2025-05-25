@@ -28,7 +28,7 @@ export class ShopComponent implements OnInit {
 
   cols           = signal<number>(3);
   isMobileScreen = signal<boolean>(false);
-  filtersHidden  = signal<boolean>(false);
+  filtersHidden  = signal<boolean>(true);
 
   readonly sortOptions = [
     { name: 'Alphabetical', value: 'name' },
@@ -57,26 +57,35 @@ export class ShopComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     const width = event.target.innerWidth;
-    this.updateFilterVisibility(width);
-    this.isMobileScreen.set(width <= 992);
+    const wasMobile = this.isMobileScreen();
+    const isNowMobile = width <= 992;
+
+    this.isMobileScreen.set(isNowMobile);
+    // Only update filtersHidden if the mobile/desktop mode *changes*
+    // This prevents keyboard appearance on mobile from closing an open filter panel.
+    if (wasMobile !== isNowMobile) {
+      if (isNowMobile) {
+        this.filtersHidden.set(true);
+      } else {
+        this.filtersHidden.set(false);
+      }
+    }
   }
 
   checkScreenSize() {
     const width = window.innerWidth;
-    this.isMobileScreen.set(width <= 992);
-    this.updateFilterVisibility(width);
+    const isNowMobile = width <= 992;
+    this.isMobileScreen.set(isNowMobile);
+
+    if (isNowMobile) {
+      this.filtersHidden.set(true);
+    } else {
+      this.filtersHidden.set(false);
+    }
   }
 
   toggleFilters() {
     this.filtersHidden.set(!this.filtersHidden());
-  }
-
-  private updateFilterVisibility(width: number) {
-    if (width <= 992) {
-      this.filtersHidden.set(true); // Filters hidden by default on mobile/tablet
-    } else {
-      this.filtersHidden.set(false); // Filters shown by default on desktop
-    }
   }
 
   // getProducts method
@@ -112,6 +121,10 @@ export class ShopComponent implements OnInit {
   // onPageChanged method
   async onPageChanged(event: { pageNumber: number, pageSize: number }): Promise<void> {
     const params = this.shopParams();
+    if (params.pageNumber === event.pageNumber && params.pageSize === event.pageSize) {
+      console.log("prevent redundant calls.");
+      return;
+    }
     params.pageNumber = event.pageNumber;
     params.pageSize = event.pageSize;
     this.shopParams.set(params);
@@ -141,8 +154,9 @@ export class ShopComponent implements OnInit {
     if (this.searchTerm()) {
       this.searchTerm().nativeElement.value = '';
     }
-    this.shopParams.set(new ProductQueryParams());
-    this.productService.setShopParams(this.shopParams());
+    const defaultParams = new ProductQueryParams();
+    this.shopParams.set(defaultParams);
+    this.productService.setShopParams(defaultParams);
     this.productService.clearProductCache();
     await this.getProducts();
     if (this.isMobileScreen()) {
