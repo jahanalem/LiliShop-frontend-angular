@@ -18,9 +18,11 @@
           "builder": "@angular/build:application",
           "options": {
             "outputPath": {
-              "base": "../../LiliShop-backend-dotnet/Lili.Shop/Main/Applications/Lili.Shop.API/wwwroot"
+              "base": "../../LiliShop-backend-dotnet/Lili.Shop/Main/Applications/Lili.Shop.API/wwwroot",
+              "browser": ""
             },
             "index": "src/index.html",
+            "browser": "src/main.ts",
             "polyfills": [
               "src/polyfills.ts"
             ],
@@ -34,8 +36,7 @@
             ],
             "scripts": [
 
-            ],
-            "browser": "src/main.ts"
+            ]
           },
           "configurations": {
             "production": {
