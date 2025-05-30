@@ -67,7 +67,7 @@ body {
                    // it won't cause reflow of other elements.
 }
 .mat-mdc-progress-bar { // More specific selector for Material 15+
-    --mdc-linear-progress-active-indicator-color: var(--app-accent-color);
+    --mat-progress-bar-active-indicator-color: var(--app-accent-color);
     margin: 0;
     // --mdc-linear-progress-track-color: color-mix(in srgb, var(--app-primary-color) 20%, transparent); // Example
 }

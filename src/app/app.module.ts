@@ -1,4 +1,4 @@
-import { NgModule, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { NgModule, provideZonelessChangeDetection } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
@@ -23,7 +23,7 @@ import { AppComponent } from './app.component';
     SharedModule,
   ],
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     provideHttpClient(withInterceptors([jwtInterceptor, loadingInterceptor, errorInterceptor])),
   ]
 })
