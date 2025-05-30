@@ -96,8 +96,10 @@ export class ProductService {
       .pipe(
         map(response => {
           const results = response.body;
-          this.productCache.set(key, { results, timestamp: Date.now() });
-          console.log("Data stored in cache!");
+           if(useCache){
+            this.productCache.set(key, { results, timestamp: Date.now() });
+            console.log("Data stored in cache!");
+          }
           this.pagination = results ?? ({} as ProductPagination);
           return this.pagination;
         })
