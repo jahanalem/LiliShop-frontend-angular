@@ -14,18 +14,17 @@ import { DiscountParams } from 'src/app/shared/models/DiscountParams';
 import { PaginationWithData } from 'src/app/shared/models/pagination';
 import { PolicyNames } from 'src/app/shared/models/policy';
 import { SharedModule } from "../../../../shared/shared.module";
-import { CommonModule } from '@angular/common';
+
 import { ProductService } from 'src/app/core/services/product.service';
 
 @Component({
   selector: 'app-discounts',
   imports: [
-    CommonModule,
     MatInputModule,
     MatFormFieldModule,
     MatIconModule,
     SharedModule
-  ],
+],
   templateUrl: './discounts.component.html',
   styleUrl: './discounts.component.scss'
 })

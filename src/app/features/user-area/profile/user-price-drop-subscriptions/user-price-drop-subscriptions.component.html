@@ -6,66 +6,62 @@
   </mat-card-header>
 
   <mat-card-content>
-    <div class="loading" *ngIf="isLoading(); else subscriptionsTable">
-      <mat-spinner></mat-spinner>
-    </div>
-
-    <ng-template #subscriptionsTable>
-      <table *ngIf="subscriptions().length>0; else noSubscriptionsFound" class="subscriptions-table" mat-table
-        [dataSource]="subscriptions()">
-        <!-- Product Name Column -->
-        <ng-container matColumnDef="productName">
-          <th mat-header-cell *matHeaderCellDef>Product Name</th>
-          <td mat-cell *matCellDef="let sub">
-            <a [routerLink]="['/shop', sub.productId]" target="_blank">{{ sub.productName }}</a>
-          </td>
-        </ng-container>
-
-        <!-- Current Price Column -->
-        <ng-container matColumnDef="currentPrice">
-          <th mat-header-cell *matHeaderCellDef>Current Price</th>
-          <td mat-cell *matCellDef="let sub">
-            {{ sub.productPrice | currency }}
-          </td>
-        </ng-container>
-
-        <!-- Old Price Column -->
-        <ng-container matColumnDef="oldPrice">
-          <th mat-header-cell *matHeaderCellDef>Old Price</th>
-          <td mat-cell *matCellDef="let sub">
-            <ng-container *ngIf="sub.oldPrice !== null; else noOldPrice">
-              {{ sub.oldPrice | currency }}
-            </ng-container>
-            <ng-template #noOldPrice>-</ng-template>
-          </td>
-        </ng-container>
-
-        <!-- Subscription Date Column -->
-        <ng-container matColumnDef="subscriptionDate">
-          <th mat-header-cell *matHeaderCellDef>Subscription Date</th>
-          <td mat-cell *matCellDef="let sub">{{ sub.subscriptionDate | date:'short' }}</td>
-        </ng-container>
-
-        <!-- Action Column -->
-        <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef>Action</th>
-          <td mat-cell *matCellDef="let sub">
-            <button mat-raised-button color="warn" (click)="unsubscribe(sub.productId)">Unsubscribe</button>
-          </td>
-        </ng-container>
-
-        <!-- Header / Row Definitions -->
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-      </table>
-      <ng-template #noSubscriptionsFound>
+    @if (isLoading()) {
+      <div class="loading">
+        <mat-spinner></mat-spinner>
+      </div>
+    } @else {
+      @if (subscriptions().length>0) {
+        <table class="subscriptions-table" mat-table
+          [dataSource]="subscriptions()">
+          <!-- Product Name Column -->
+          <ng-container matColumnDef="productName">
+            <th mat-header-cell *matHeaderCellDef>Product Name</th>
+            <td mat-cell *matCellDef="let sub">
+              <a [routerLink]="['/shop', sub.productId]" target="_blank">{{ sub.productName }}</a>
+            </td>
+          </ng-container>
+          <!-- Current Price Column -->
+          <ng-container matColumnDef="currentPrice">
+            <th mat-header-cell *matHeaderCellDef>Current Price</th>
+            <td mat-cell *matCellDef="let sub">
+              {{ sub.productPrice | currency }}
+            </td>
+          </ng-container>
+          <!-- Old Price Column -->
+          <ng-container matColumnDef="oldPrice">
+            <th mat-header-cell *matHeaderCellDef>Old Price</th>
+            <td mat-cell *matCellDef="let sub">
+              @if (sub.oldPrice !== null) {
+                {{ sub.oldPrice | currency }}
+              } @else {
+                -
+              }
+            </td>
+          </ng-container>
+          <!-- Subscription Date Column -->
+          <ng-container matColumnDef="subscriptionDate">
+            <th mat-header-cell *matHeaderCellDef>Subscription Date</th>
+            <td mat-cell *matCellDef="let sub">{{ sub.subscriptionDate | date:'short' }}</td>
+          </ng-container>
+          <!-- Action Column -->
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Action</th>
+            <td mat-cell *matCellDef="let sub">
+              <button mat-raised-button color="warn" (click)="unsubscribe(sub.productId)">Unsubscribe</button>
+            </td>
+          </ng-container>
+          <!-- Header / Row Definitions -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      } @else {
         <div class="no-subscriptions">
           <mat-icon>info_outline</mat-icon>
           <p>You don't have any active subscriptions</p>
         </div>
-      </ng-template>
+      }
+    }
 
-    </ng-template>
   </mat-card-content>
 </mat-card>

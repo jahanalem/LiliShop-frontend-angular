@@ -1,13 +1,15 @@
-<ng-container *ngIf="(breadcrumb$ | async) as breadcrumbs">
-  <section *ngIf="breadcrumbs.length > 0 && breadcrumbs[breadcrumbs.length - 1].label !== 'Home'" class="py-1 bg-light">
-    <div class="container ">
-      <div class="row">
-        <div class="col-lg-12 text-end">
-          <nav aria-label="breadcrumb">
-            <xng-breadcrumb></xng-breadcrumb>
-          </nav>
+@if ((breadcrumb$ | async); as breadcrumbs) {
+  @if (breadcrumbs.length > 0 && breadcrumbs[breadcrumbs.length - 1].label !== 'Home') {
+    <section class="py-1 bg-light">
+      <div class="container ">
+        <div class="row">
+          <div class="col-lg-12 text-end">
+            <nav aria-label="breadcrumb">
+              <xng-breadcrumb></xng-breadcrumb>
+            </nav>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-</ng-container>
+    </section>
+  }
+}

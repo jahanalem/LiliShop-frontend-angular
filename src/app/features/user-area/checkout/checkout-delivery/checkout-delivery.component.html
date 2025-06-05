@@ -1,25 +1,27 @@
 @if(checkoutForm(); as checkoutForm)
-{
+  {
   <div class="delivery-section" [formGroup]="checkoutForm">
     <h4>Choose your delivery method</h4>
     <div formGroupName="deliveryForm">
       <mat-radio-group formControlName="deliveryMethod">
-        <mat-radio-button *ngFor="let dMethod of deliveryMethods()" (click)="setShippingPrice(dMethod)"
-                          [value]="dMethod.id" class="delivery-option">
-          <strong>{{dMethod.shortName}} - {{dMethod.price | currency}}</strong>
-          <br>
-          <span class="label-description">{{dMethod.description}}</span>
-        </mat-radio-button>
-      </mat-radio-group>
+        @for (dMethod of deliveryMethods(); track dMethod) {
+          <mat-radio-button (click)="setShippingPrice(dMethod)"
+            [value]="dMethod.id" class="delivery-option">
+            <strong>{{dMethod.shortName}} - {{dMethod.price | currency}}</strong>
+            <br>
+              <span class="label-description">{{dMethod.description}}</span>
+            </mat-radio-button>
+          }
+        </mat-radio-group>
+      </div>
     </div>
-  </div>
 
-  <div class="action-buttons">
-    <button mat-stroked-button color="primary" cdkStepperPrevious>
-      <mat-icon>arrow_back</mat-icon> Back to address
-    </button>
-    <button mat-raised-button color="accent" [disabled]="checkoutForm.get('deliveryForm')?.invalid" cdkStepperNext>
-      Go to review <mat-icon>arrow_forward</mat-icon>
-    </button>
-  </div>
-}
+    <div class="action-buttons">
+      <button mat-stroked-button color="primary" cdkStepperPrevious>
+        <mat-icon>arrow_back</mat-icon> Back to address
+      </button>
+      <button mat-raised-button color="accent" [disabled]="checkoutForm.get('deliveryForm')?.invalid" cdkStepperNext>
+        Go to review <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  }

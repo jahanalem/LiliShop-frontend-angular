@@ -5,9 +5,9 @@
     <div class="payment-fields">
       <div class="stripe-element-container full-width">
         <div #cardNumber class="stripe-element"></div>
-        <ng-container *ngIf="cardErrors">
+        @if (cardErrors) {
           <span class="error-message">{{cardErrors}}</span>
-        </ng-container>
+        }
       </div>
 
       <div class="stripe-element-container half-width">
@@ -29,7 +29,7 @@
     Submit order
     <mat-icon>arrow_forward</mat-icon>
     @if(loading())
-    {
+      {
       <mat-icon class="loading-spinner">autorenew</mat-icon>
     }
   </button>

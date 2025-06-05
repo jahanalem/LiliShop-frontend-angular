@@ -4,16 +4,17 @@
       <!-- Product Image -->
       <div class="product-image-section">
         <div class="product-image-container">
-          <img
-            *ngIf="product().pictureUrl"
-            title="Product Image"
-            class="product-image"
-            [ngSrc]="product().pictureUrl"
-            width="500"
-            height="500"
-            priority
-            [alt]="product().name"
-          />
+          @if (product().pictureUrl) {
+            <img
+              title="Product Image"
+              class="product-image"
+              [ngSrc]="product().pictureUrl"
+              width="500"
+              height="500"
+              priority
+              [alt]="product().name"
+              />
+          }
         </div>
       </div>
 
@@ -24,24 +25,26 @@
             <h1 class="product-title">{{ product().name }}</h1>
 
             <!-- price and discount section-->
-            <div class="price-section" *ngIf="discountActiveNow(); else normalPrice">
-              <p class="original-price">
-                {{ product().previousPrice | currency }}
-              </p>
-              <p class="price">
-                {{ product().price | currency }}
-              </p>
-
-              <!-- Countdown display when discount is active -->
-              <div class="discount-timer" *ngIf="discountTimeLeft()">
-                <strong>Offer ends in: {{ discountTimeLeft() }}</strong>
+            @if (discountActiveNow()) {
+              <div class="price-section">
+                <p class="original-price">
+                  {{ product().previousPrice | currency }}
+                </p>
+                <p class="price">
+                  {{ product().price | currency }}
+                </p>
+                <!-- Countdown display when discount is active -->
+                @if (discountTimeLeft()) {
+                  <div class="discount-timer">
+                    <strong>Offer ends in: {{ discountTimeLeft() }}</strong>
+                  </div>
+                }
               </div>
-            </div>
+            } @else {
+              <p class="price">{{ product().price | currency }}</p>
+            }
 
             <!-- Fallback: Normal price if no discount -->
-            <ng-template #normalPrice>
-              <p class="price">{{ product().price | currency }}</p>
-            </ng-template>
 
             <p class="product-description">
               {{ product().description }}
@@ -55,7 +58,7 @@
                 (click)="decrementQuantity()"
                 color="primary"
                 aria-label="Decrement Quantity"
-              >
+                >
                 <mat-icon>remove_circle_outline</mat-icon>
               </button>
 
@@ -67,7 +70,7 @@
                 (click)="incrementQuantity()"
                 color="primary"
                 aria-label="Increment Quantity"
-              >
+                >
                 <mat-icon>add_circle_outline</mat-icon>
               </button>
             </div>
@@ -88,7 +91,7 @@
                   }"
                   (click)="toggleSubscription()"
                   class="action-button"
-                >
+                  >
                   <mat-icon>
                     {{ isSubscribed() ? 'notifications_off' : 'notifications' }}
                   </mat-icon>
@@ -98,7 +101,7 @@
             </div>
           </div>
         </div>
-      }@else {
+        }@else {
         <p>Loading product details...</p>
       }
     </div>

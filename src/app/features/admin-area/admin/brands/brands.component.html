@@ -9,12 +9,11 @@
     @for(column of columnsToDisplay; track column) {
       <ng-container [matColumnDef]="column">
         <th mat-header-cell *matHeaderCellDef>
-          <ng-container *ngIf="column !== 'Action'; else noSort">
+          @if (column !== 'Action') {
             <div mat-sort-header>{{column}}</div>
-          </ng-container>
-          <ng-template #noSort>
+          } @else {
             {{column}}
-          </ng-template>
+          }
         </th>
         <td mat-cell *matCellDef="let row">
           @if(column === 'Action') {

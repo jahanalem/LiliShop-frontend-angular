@@ -2,9 +2,11 @@
   <div class="template-selector">
     <label for="templateSelect">Choose a template:</label>
     <select id="templateSelect" [value]="templateName()" (change)="onTemplateChange($any($event.target).value)">
-      <option *ngFor="let t of templates()" [value]="t.name">
-        {{ t.name }}
-      </option>
+      @for (t of templates(); track t) {
+        <option [value]="t.name">
+          {{ t.name }}
+        </option>
+      }
     </select>
   </div>
   <div class="output-type-selector">
@@ -23,19 +25,21 @@
   <div class="generate-button">
     <button (click)="useCallback() ? startCallbackJob() : downloadDocument()" [disabled]="isButtonDisabled()">
       {{
-        useCallback() && isCallbackLoading
-        ? 'Generating via Callback...'
-        : !useCallback() && isPollingLoading()
-        ? 'Generating via Polling...'
-        : 'Generate Document'
+      useCallback() && isCallbackLoading
+      ? 'Generating via Callback...'
+      : !useCallback() && isPollingLoading()
+      ? 'Generating via Polling...'
+      : 'Generate Document'
       }}
     </button>
   </div>
 </div>
 
-<div *ngIf="useCallback() && !saveToken()" class="hint text-center">
-  ⚠️ Edit and save your design in the Printess Editor first! (click on 'Add to Basket' button)
-</div>
+@if (useCallback() && !saveToken()) {
+  <div class="hint text-center">
+    ⚠️ Edit and save your design in the Printess Editor first! (click on 'Add to Basket' button)
+  </div>
+}
 
 <!-- Printess Editor Iframe -->
 <div class="editor-container">

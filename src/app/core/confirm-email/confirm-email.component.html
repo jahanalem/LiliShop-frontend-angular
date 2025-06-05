@@ -1,13 +1,17 @@
 
-<div class="email-confirmation-container" *ngIf="success() !== null">
-  <h1>Email Confirmation</h1>
-
-  <div *ngIf="success()" class="success-message">
-    <p>Your email <span class="highlight">{{ email() }}</span> has been successfully confirmed!</p>
+@if (success() !== null) {
+  <div class="email-confirmation-container">
+    <h1>Email Confirmation</h1>
+    @if (success()) {
+      <div class="success-message">
+        <p>Your email <span class="highlight">{{ email() }}</span> has been successfully confirmed!</p>
+      </div>
+    }
+    @if (!success()) {
+      <div class="error-message">
+        <p>Unfortunately, there was a problem confirming your email <span class="highlight">{{ email() }}</span>.</p>
+      </div>
+    }
+    <button (click)="redirectToHome()" class="home-button">Go to Home Page</button>
   </div>
-
-  <div *ngIf="!success()" class="error-message">
-    <p>Unfortunately, there was a problem confirming your email <span class="highlight">{{ email() }}</span>.</p>
-  </div>
-  <button (click)="redirectToHome()" class="home-button">Go to Home Page</button>
-</div>
+}

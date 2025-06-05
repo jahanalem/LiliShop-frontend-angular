@@ -6,36 +6,38 @@
   <div class="logo-container" routerLink="/">
     <img src="assets/img/logo.png" class="logo" alt="Lili Shop Logo"> </div>
 
-  <nav class="nav-links" aria-label="Main navigation">
-    <a mat-button routerLink="/shop" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Shop</a>
-    <a mat-button routerLink="/contact" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: false}">Contact</a>
-    <a mat-button routerLink="/about" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">About</a>
-  </nav>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a mat-button routerLink="/shop" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Shop</a>
+      <a mat-button routerLink="/contact" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: false}">Contact</a>
+      <a mat-button routerLink="/about" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">About</a>
+    </nav>
 
-  <span class="toolbar-spacer"></span> <div class="toolbar-actions">
+    <span class="toolbar-spacer"></span> <div class="toolbar-actions">
     <button mat-icon-button routerLink="/basket" class="action-icon cart-button" aria-label="View Shopping Cart">
       <mat-icon>shopping_cart</mat-icon>
-      <span *ngIf="(basket$ | async)?.items?.length" class="cart-badge">
-        {{ (basket$ | async)?.items?.length }}
-      </span>
+      @if ((basket$ | async)?.items?.length) {
+        <span class="cart-badge">
+          {{ (basket$ | async)?.items?.length }}
+        </span>
+      }
     </button>
 
-    <ng-container *ngIf="!(currentUser$ | async); else loggedInTemplate">
+    @if (!(currentUser$ | async)) {
       <a mat-stroked-button routerLink="/account/login" class="auth-button login-button">Login</a>
       <a mat-flat-button color="accent" routerLink="/account/register" class="auth-button signup-button">Sign up</a>
-    </ng-container>
-
-    <ng-template #loggedInTemplate>
+    } @else {
       <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger" aria-label="User Menu">
         <mat-icon class="user-avatar-icon">account_circle</mat-icon>
         <span class="user-display-name">Hi, {{ (currentUser$ | async)?.displayName | slice:0:10 }}{{(currentUser$ | async)?.displayName && (currentUser$ | async)!.displayName!.length > 10 ? '...' : '' }}</span>
         <mat-icon class="user-menu-arrow">expand_more</mat-icon>
       </button>
       <mat-menu #userMenu="matMenu" class="user-dropdown-menu">
-        <button mat-menu-item routerLink="/admin" *ngIf="hasAccessToAdminPanel()">
-          <mat-icon>admin_panel_settings</mat-icon>
-          <span>Admin Panel</span>
-        </button>
+        @if (hasAccessToAdminPanel()) {
+          <button mat-menu-item routerLink="/admin">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span>Admin Panel</span>
+          </button>
+        }
         <button mat-menu-item routerLink="/basket">
           <mat-icon>shopping_cart</mat-icon>
           <span>My Cart</span>
@@ -55,63 +57,68 @@
           <mat-icon>phonelink_erase</mat-icon> <span>Logout All Devices</span>
         </button>
       </mat-menu>
-    </ng-template>
+    }
+
   </div>
 </mat-toolbar>
 
 <div class="progress-bar-container">
-  <mat-progress-bar *ngIf="busyService.loading()"
-                    mode="indeterminate"
-                    color="accent">
-  </mat-progress-bar>
+  @if (busyService.loading()) {
+    <mat-progress-bar
+      mode="indeterminate"
+      color="accent">
+    </mat-progress-bar>
+  }
 </div>
 
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="over" class="app-sidenav" (closedStart)="closeSidenav()" [autoFocus]="false">
     <div class="sidenav-header">
       <img src="assets/img/logo.png" class="sidenav-logo-img" alt="Lili Shop Logo"> <button mat-icon-button (click)="closeSidenav()" class="sidenav-close-button" aria-label="Close Sidenav">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-    <mat-nav-list class="sidenav-nav-list">
-      <a mat-list-item routerLink="/shop" routerLinkActive="active-sidenav-link" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidenav()">
-        <mat-icon matListItemIcon>storefront</mat-icon>
-        <span matListItemTitle>Shop</span>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <mat-nav-list class="sidenav-nav-list">
+    <a mat-list-item routerLink="/shop" routerLinkActive="active-sidenav-link" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidenav()">
+      <mat-icon matListItemIcon>storefront</mat-icon>
+      <span matListItemTitle>Shop</span>
+    </a>
+    <a mat-list-item routerLink="/contact" routerLinkActive="active-sidenav-link" (click)="closeSidenav()">
+      <mat-icon matListItemIcon>email</mat-icon>
+      <span matListItemTitle>Contact</span>
+    </a>
+    <a mat-list-item routerLink="/about" routerLinkActive="active-sidenav-link" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidenav()">
+      <mat-icon matListItemIcon>info</mat-icon>
+      <span matListItemTitle>About Us</span>
+    </a>
+    @if ((currentUser$ | async)) {
+      <mat-divider></mat-divider>
+    }
+    @if ((currentUser$ | async)) {
+      <a mat-list-item routerLink="/orders" (click)="closeSidenav()">
+        <mat-icon matListItemIcon>receipt_long</mat-icon>
+        <span matListItemTitle>My Orders</span>
       </a>
-      <a mat-list-item routerLink="/contact" routerLinkActive="active-sidenav-link" (click)="closeSidenav()">
-        <mat-icon matListItemIcon>email</mat-icon>
-        <span matListItemTitle>Contact</span>
+      <a mat-list-item (click)="logout(); closeSidenav();">
+        <mat-icon matListItemIcon>logout</mat-icon>
+        <span matListItemTitle>Logout</span>
       </a>
-      <a mat-list-item routerLink="/about" routerLinkActive="active-sidenav-link" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidenav()">
-        <mat-icon matListItemIcon>info</mat-icon>
-        <span matListItemTitle>About Us</span>
+    }
+    @if (!(currentUser$ | async)) {
+      <mat-divider></mat-divider>
+      <a mat-list-item routerLink="/account/login" (click)="closeSidenav()">
+        <mat-icon matListItemIcon>login</mat-icon>
+        <span matListItemTitle>Login</span>
       </a>
-      <mat-divider *ngIf="(currentUser$ | async)"></mat-divider>
-       <ng-container *ngIf="(currentUser$ | async)">
-        <a mat-list-item routerLink="/orders" (click)="closeSidenav()">
-          <mat-icon matListItemIcon>receipt_long</mat-icon>
-          <span matListItemTitle>My Orders</span>
-        </a>
-        <a mat-list-item (click)="logout(); closeSidenav();">
-          <mat-icon matListItemIcon>logout</mat-icon>
-          <span matListItemTitle>Logout</span>
-        </a>
-      </ng-container>
-       <ng-container *ngIf="!(currentUser$ | async)">
-        <mat-divider></mat-divider>
-        <a mat-list-item routerLink="/account/login" (click)="closeSidenav()">
-          <mat-icon matListItemIcon>login</mat-icon>
-          <span matListItemTitle>Login</span>
-        </a>
-        <a mat-list-item routerLink="/account/register" (click)="closeSidenav()">
-          <mat-icon matListItemIcon>person_add</mat-icon>
-          <span matListItemTitle>Sign Up</span>
-        </a>
-      </ng-container>
-    </mat-nav-list>
-  </mat-sidenav>
+      <a mat-list-item routerLink="/account/register" (click)="closeSidenav()">
+        <mat-icon matListItemIcon>person_add</mat-icon>
+        <span matListItemTitle>Sign Up</span>
+      </a>
+    }
+  </mat-nav-list>
+</mat-sidenav>
 
-  <mat-sidenav-content class="main-content">
-    <router-outlet></router-outlet>
-  </mat-sidenav-content>
+<mat-sidenav-content class="main-content">
+  <router-outlet></router-outlet>
+</mat-sidenav-content>
 </mat-sidenav-container>

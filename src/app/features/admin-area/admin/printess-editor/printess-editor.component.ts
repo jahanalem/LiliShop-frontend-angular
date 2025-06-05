@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { PrintessSignalRService } from 'src/app/core/services/printess-signal-r.service';
@@ -13,7 +13,7 @@ interface TemplateDto {
   selector: 'app-printess-editor',
   templateUrl: './printess-editor.component.html',
   styleUrl: './printess-editor.component.scss',
-  imports: [CommonModule, HttpClientModule]
+  imports: [HttpClientModule]
 })
 export class PrintessEditorComponent implements OnInit, OnDestroy {
   shopToken        = 'eyJhbGciOiJSUzI1NiIsImtpZCI6InByaW50ZXNzLXNhYXMtYWxwaGEiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJkYmJlYzIzY2Q3ODA0OWNhOTg4M2I0NWQ2MjdiOTcxMyIsImp0aSI6IkJVWHl0b09RMjlwSURzc0dkRnMxMTZqV0tWSzhib29WIiwicm9sZSI6InNob3AiLCJuYmYiOjE3NDI0MTM3NDcsImV4cCI6MjA1Nzc3Mzc0NywiaWF0IjoxNzQyNDEzNzQ3LCJpc3MiOiJQcmludGVzcyBHbWJIICYgQ28uS0ciLCJhdWQiOiJwcmludGVzcy1zYWFzIn0.YjGEt6U_FtrHHnsE_fvGv-Usf2fKdgVhIGl2VpHLvJT1UkmxOuH0DtxvF7z10M9eSc9MAASfVqwEipwrJJCqG3tYOp_1ALBUFsDavq0QivSvDc_2CGKam8TcTfJ9W46zQO9B5-TA2vLhaAOy4O5kV7i6h1afhWwqbo1pPtk_zzgfU0QegN-0NGYD3PEQsuC3JnR7wEeWMzTxjye3FXnsq-lOiCC8dJcOQSSOYo_x7egb9_W_N-4ea30bKgtuLCFx__FWTQeX9YkpXdiwvqXMy9oEGG_xnk_KY_DFBTiwh8exI22AJ-0Fq_zdNb0R_ui6Ss2uL1pyIqlwWH_bfMZAyJa3Kx3YDjj_k88htt19EsDTUQ56Y3UW38g3NGplKlerab_0A59gHBp12cSXFtTkRdJs85rruLgYuhF2a_0Zh5AiUL5iPjSEreWUbNutMJMcagDwiCy9KcAZLd_Wgx-u-70YryfBW6iruQYqi6Q6J3JCN3H7md1NwATLvYGH7EgvwgQhhjQ6kXn91XhDapLmmzlCOX44JHRahT1p3jfvUHY3JRu82Qa6zYU6-w3DQJqrHWpEdbKVpvSxKFUfpI3WgzNZWzIEozceiAv75tWHdaEK67BnA0vzwCO6otV_GHkG2vIPLS5vngGXiizjsI7u8ybHh7PIQvgvqDwzjXd5wGc';

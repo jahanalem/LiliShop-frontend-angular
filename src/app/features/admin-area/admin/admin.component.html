@@ -1,8 +1,14 @@
 <mat-toolbar color="primary" class="mat-elevation-z4 app-toolbar">
-  <button mat-icon-button *ngIf="sidenav.mode === 'over'" (click)="sidenav.toggle()">
-    <mat-icon *ngIf="!sidenav.opened">menu</mat-icon>
-    <mat-icon *ngIf="sidenav.opened">close</mat-icon>
-  </button>
+  @if (sidenav.mode === 'over') {
+    <button mat-icon-button (click)="sidenav.toggle()">
+      @if (!sidenav.opened) {
+        <mat-icon>menu</mat-icon>
+      }
+      @if (sidenav.opened) {
+        <mat-icon>close</mat-icon>
+      }
+    </button>
+  }
 
   <img routerLink="/" alt="logo-icon" class="toolbar-logo-icon" src="../../../../assets/img/logo-s.png" />
   <span class="app-title">LiliShop</span>
@@ -11,24 +17,26 @@
 
   <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
     <mat-icon>account_circle</mat-icon>
-    </button>
+  </button>
   <mat-menu #userMenu="matMenu">
     <button mat-menu-item routerLink="/admin/profile"> <mat-icon>person</mat-icon>
-      <span>Profile</span>
-    </button>
-    <button mat-menu-item (click)="logout()">
-      <mat-icon>exit_to_app</mat-icon>
-      <span>Logout</span>
-    </button>
-  </mat-menu>
+    <span>Profile</span>
+  </button>
+  <button mat-menu-item (click)="logout()">
+    <mat-icon>exit_to_app</mat-icon>
+    <span>Logout</span>
+  </button>
+</mat-menu>
 
 </mat-toolbar>
 
-<mat-progress-bar *ngIf="busyService.loading()"
-                  mode="indeterminate"
-                  color="accent"
-                  class="app-progress-bar">
-</mat-progress-bar>
+@if (busyService.loading()) {
+  <mat-progress-bar
+    mode="indeterminate"
+    color="accent"
+    class="app-progress-bar">
+  </mat-progress-bar>
+}
 
 <mat-sidenav-container class="app-sidenav-container">
   <mat-sidenav #sidenav="matSidenav" class="app-sidenav mat-elevation-z4" [opened]="sidenav.mode !== 'over'">
@@ -38,16 +46,18 @@
     <mat-divider></mat-divider>
 
     <mat-nav-list class="nav-list">
-      <a mat-list-item *ngFor="let item of navItems"
-         routerLink="{{ item.link }}"
-         [routerLinkActiveOptions]="{ exact:true }"
-         routerLinkActive="active-nav-item">
-        <mat-icon matListItemIcon class="nav-icon">{{ item.icon }}</mat-icon>
-        <span matListItemTitle class="nav-item-name">{{ item.name }}</span>
-      </a>
+      @for (item of navItems; track item) {
+        <a mat-list-item
+          routerLink="{{ item.link }}"
+          [routerLinkActiveOptions]="{ exact:true }"
+          routerLinkActive="active-nav-item">
+          <mat-icon matListItemIcon class="nav-icon">{{ item.icon }}</mat-icon>
+          <span matListItemTitle class="nav-item-name">{{ item.name }}</span>
+        </a>
+      }
     </mat-nav-list>
 
-    </mat-sidenav>
+  </mat-sidenav>
 
   <mat-sidenav-content class="app-sidenav-content">
     <div class="content-wrapper">

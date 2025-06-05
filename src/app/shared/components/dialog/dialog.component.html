@@ -6,18 +6,18 @@
   {{ data().content }}
 </div>
 <div mat-dialog-actions class="dialog-actions">
-  <ng-container *ngIf="!data().showConfirmationButtons">
+  @if (!data().showConfirmationButtons) {
     <button mat-button mat-dialog-close class="close-button">
       <mat-icon>close</mat-icon> Close
     </button>
-  </ng-container>
+  }
 
-  <ng-container *ngIf="data().showConfirmationButtons">
+  @if (data().showConfirmationButtons) {
     <button mat-raised-button [mat-dialog-close]="false" cdkFocusInitial class="no-button">
       <mat-icon>cancel</mat-icon> No
     </button>
     <button mat-raised-button color="primary" [mat-dialog-close]="true" class="yes-button">
       <mat-icon>check_circle</mat-icon> Yes
     </button>
-  </ng-container>
+  }
 </div>

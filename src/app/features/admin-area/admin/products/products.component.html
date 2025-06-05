@@ -13,39 +13,40 @@
   <div class="table-container mat-elevation-z8">
     <table mat-table [dataSource]="dataSource()" matSort>
 
-      <ng-container *ngFor="let column of columnsToDisplay" [matColumnDef]="column">
-        <th mat-header-cell *matHeaderCellDef>
-          <ng-container *ngIf="column !== 'Action'; else noSort">
-            <div mat-sort-header>{{columnDisplayNames[column]}}</div>
-          </ng-container>
-          <ng-template #noSort>
-            {{columnDisplayNames[column]}}
-          </ng-template>
-        </th>
-        <td mat-cell *matCellDef="let row">
-          <ng-container *ngIf="column === 'Action'; else normalCell">
-            <button mat-icon-button color="primary" (click)="showProduct(row.id)">
-              <mat-icon class="details-icon">open_in_new</mat-icon>
-            </button>
-            <button mat-icon-button color="accent" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole"
-              (click)="editProduct(row.id)">
-              <mat-icon class="edit-icon">edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" [appCheckPolicy]="policyNames.RequireSuperAdminRole"
-              (click)="deleteProduct(row.id)">
-              <mat-icon class="delete-icon">delete</mat-icon>
-            </button>
-          </ng-container>
-          <ng-template #normalCell>
-            <span *ngIf="column === 'isDiscountActive'; else defaultCell" [class]="getSaleStatusClass(row)">
-              {{row[column] | formatValue:column:row}}
-            </span>
-            <ng-template #defaultCell>
-              {{ row[column] | formatValue:column:row }}
-            </ng-template>
-          </ng-template>
-        </td>
-      </ng-container>
+      @for (column of columnsToDisplay; track column) {
+        <ng-container [matColumnDef]="column">
+          <th mat-header-cell *matHeaderCellDef>
+            @if (column !== 'Action') {
+              <div mat-sort-header>{{columnDisplayNames[column]}}</div>
+            } @else {
+              {{columnDisplayNames[column]}}
+            }
+          </th>
+          <td mat-cell *matCellDef="let row">
+            @if (column === 'Action') {
+              <button mat-icon-button color="primary" (click)="showProduct(row.id)">
+                <mat-icon class="details-icon">open_in_new</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole"
+                (click)="editProduct(row.id)">
+                <mat-icon class="edit-icon">edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" [appCheckPolicy]="policyNames.RequireSuperAdminRole"
+                (click)="deleteProduct(row.id)">
+                <mat-icon class="delete-icon">delete</mat-icon>
+              </button>
+            } @else {
+              @if (column === 'isDiscountActive') {
+                <span [class]="getSaleStatusClass(row)">
+                  {{row[column] | formatValue:column:row}}
+                </span>
+              } @else {
+                {{ row[column] | formatValue:column:row }}
+              }
+            }
+          </td>
+        </ng-container>
+      }
 
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
       <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>

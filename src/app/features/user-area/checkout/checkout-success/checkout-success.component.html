@@ -10,22 +10,24 @@
       Your order hasn't shipped yet but this is to be expected as we are not a real store.
     </p>
     <div class="confirmation-buttons">
-      <button
-        *ngIf="order()"
-        mat-raised-button
-        color="primary"
-        routerLink="/orders/{{ order().id }}"
-      >
-        View your order
-      </button>
-      <button
-        *ngIf="!order()"
-        mat-raised-button
-        color="primary"
-        routerLink="/orders"
-      >
-        View your orders
-      </button>
+      @if (order()) {
+        <button
+          mat-raised-button
+          color="primary"
+          routerLink="/orders/{{ order().id }}"
+          >
+          View your order
+        </button>
+      }
+      @if (!order()) {
+        <button
+          mat-raised-button
+          color="primary"
+          routerLink="/orders"
+          >
+          View your orders
+        </button>
+      }
     </div>
   </div>
 </section>

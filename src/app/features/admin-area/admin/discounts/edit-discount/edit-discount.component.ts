@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, RouterModule } from '@angular/router';
 
@@ -29,12 +29,9 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 @Component({
   selector: 'app-edit-discount',
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-
-    // Material Modules
     MatCardModule,
     MatInputModule,
     MatFormFieldModule,
@@ -49,7 +46,7 @@ import { NotificationService } from 'src/app/core/services/notification.service'
     MatStepperModule,
     MatDivider,
     MatCheckboxModule
-  ],
+],
   templateUrl: './edit-discount.component.html',
   styleUrl: './edit-discount.component.scss'
 })

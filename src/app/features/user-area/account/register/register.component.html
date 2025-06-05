@@ -15,11 +15,13 @@
           <mat-icon>person_add</mat-icon> Register
         </button>
 
-        <ul class="error-list" *ngIf="errors">
-          @for(error of errors(); track error){
-          <li>{{error}}</li>
-          }
-        </ul>
+        @if (errors()) {
+          <ul class="error-list">
+            @for(error of errors(); track error){
+              <li>{{error}}</li>
+            }
+          </ul>
+        }
       </form>
     </section>
     <div class="google-signin-container">

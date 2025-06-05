@@ -1,27 +1,35 @@
 <section class="cart-container">
-  <div class="cart-item" *ngFor="let item of items()">
-    <div class="product-info">
-      <img [src]="item.pictureUrl" [alt]="item.productName" class="product-image" title="product image">
-      <div class="product-details">
-        <h4>{{item.productName}}</h4>
-        <p><strong>Type:</strong> {{item.type}} <strong>Size:</strong> Large</p>
-        <span class="price">{{item.price | currency}}</span>
+  @for (item of items(); track item) {
+    <div class="cart-item">
+      <div class="product-info">
+        <img [src]="item.pictureUrl" [alt]="item.productName" class="product-image" title="product image">
+        <div class="product-details">
+          <h4>{{item.productName}}</h4>
+          <p><strong>Type:</strong> {{item.type}} <strong>Size:</strong> Large</p>
+          <span class="price">{{item.price | currency}}</span>
+        </div>
       </div>
+      <div class="quantity-controls">
+        @if (isBasket()) {
+          <button mat-icon-button color="primary" (click)="decrementItemQuantity(item)">
+            <mat-icon>remove</mat-icon>
+          </button>
+        }
+        <span class="quantity">{{item.quantity}}</span>
+        @if (isBasket()) {
+          <button mat-icon-button color="primary" (click)="incrementItemQuantity(item)">
+            <mat-icon >add</mat-icon>
+          </button>
+        }
+      </div>
+      <div class="total-price" [style]="addPadding()">
+        <span>{{item.price * item.quantity | currency}}</span>
+      </div>
+      @if (isBasket()) {
+        <button  mat-icon-button color="warn" (click)="removeBasketItem(item)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      }
     </div>
-    <div class="quantity-controls">
-      <button *ngIf="isBasket()" mat-icon-button color="primary" (click)="decrementItemQuantity(item)">
-        <mat-icon>remove</mat-icon>
-      </button>
-      <span class="quantity">{{item.quantity}}</span>
-      <button *ngIf="isBasket()" mat-icon-button color="primary" (click)="incrementItemQuantity(item)">
-        <mat-icon >add</mat-icon>
-      </button>
-    </div>
-    <div class="total-price" [style]="addPadding()">
-      <span>{{item.price * item.quantity | currency}}</span>
-    </div>
-    <button *ngIf="isBasket()"  mat-icon-button color="warn" (click)="removeBasketItem(item)">
-      <mat-icon>delete</mat-icon>
-    </button>
-  </div>
+  }
 </section>

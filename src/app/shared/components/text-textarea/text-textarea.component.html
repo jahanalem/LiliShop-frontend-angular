@@ -14,12 +14,18 @@
   </textarea>
 
   <!-- Valid Icon -->
-  <mat-icon matSuffix *ngIf="controlDir.control?.valid" color="primary" class="valid-icon">
-    check_circle
-  </mat-icon>
+  @if (controlDir.control?.valid) {
+    <mat-icon matSuffix color="primary" class="valid-icon">
+      check_circle
+    </mat-icon>
+  }
 
   <!-- Error Messages -->
-  <mat-error *ngIf="controlDir?.control?.invalid && controlDir?.control?.touched">
-    <span *ngIf="isThereAnyRequiredErrorType()">{{ label() }} is required</span>
-  </mat-error>
+  @if (controlDir.control?.invalid && controlDir.control?.touched) {
+    <mat-error>
+      @if (isThereAnyRequiredErrorType()) {
+        <span>{{ label() }} is required</span>
+      }
+    </mat-error>
+  }
 </mat-form-field>

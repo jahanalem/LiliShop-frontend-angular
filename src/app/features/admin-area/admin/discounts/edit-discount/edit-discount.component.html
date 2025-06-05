@@ -37,26 +37,29 @@
       <ng-template matStepLabel>Discount Tiers</ng-template>
 
       <div formArrayName="tiers">
-        <div *ngFor="let tier of tiers.controls; let i = index" [formGroupName]="i" class="tier-group">
-
-          <mat-form-field appearance="fill">
-            <mat-label>Amount</mat-label>
-            <input title="amount" matInput type="number" formControlName="amount" required />
-          </mat-form-field>
-          <mat-error *ngIf="tier.hasError('amountTooLow')">
-            Amount must be greater than 0.
-          </mat-error>
-          <mat-error *ngIf="tier.hasError('percentageTooHigh')">
-            Percentage cannot be 100 or more.
-          </mat-error>
-
-          <mat-checkbox formControlName="isPercentage">Is Percentage</mat-checkbox>
-          <mat-checkbox formControlName="isFreeShipping">Free Shipping</mat-checkbox>
-
-          <button type="button" mat-icon-button color="warn" (click)="onRemoveTier(i)" aria-label="Remove tier">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
+        @for (tier of tiers.controls; track tier; let i = $index) {
+          <div [formGroupName]="i" class="tier-group">
+            <mat-form-field appearance="fill">
+              <mat-label>Amount</mat-label>
+              <input title="amount" matInput type="number" formControlName="amount" required />
+            </mat-form-field>
+            @if (tier.hasError('amountTooLow')) {
+              <mat-error>
+                Amount must be greater than 0.
+              </mat-error>
+            }
+            @if (tier.hasError('percentageTooHigh')) {
+              <mat-error>
+                Percentage cannot be 100 or more.
+              </mat-error>
+            }
+            <mat-checkbox formControlName="isPercentage">Is Percentage</mat-checkbox>
+            <mat-checkbox formControlName="isFreeShipping">Free Shipping</mat-checkbox>
+            <button type="button" mat-icon-button color="warn" (click)="onRemoveTier(i)" aria-label="Remove tier">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
       </div>
 
       <button type="button" mat-button (click)="onAddTier()">Add Tier</button>
@@ -74,72 +77,79 @@
       <ng-template matStepLabel>Condition Groups</ng-template>
 
       <div formArrayName="conditionGroups">
-        <div *ngFor="let group of conditionGroups.controls; let i = index" [formGroupName]="i">
-
-          <mat-form-field appearance="fill">
-            <mat-label>Tier</mat-label>
-            <mat-select formControlName="tierIndex">
-              <mat-option *ngFor="let tier of tierOptions()" [value]="tier.value">
-                {{ tier.label }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <div formArrayName="conditions">
-            <div *ngFor="let cond of getConditions(i).controls; let j = index" [formGroupName]="j">
-              <mat-form-field appearance="fill">
-                <mat-label>Target Entity</mat-label>
-                <mat-select formControlName="targetEntity" (selectionChange)="onTargetEntityChange(i, j)">
-                  <mat-option *ngFor="let option of targetEntityOptions" [value]="option.value">
-                    {{ option.label }}
+        @for (group of conditionGroups.controls; track group; let i = $index) {
+          <div [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <mat-label>Tier</mat-label>
+              <mat-select formControlName="tierIndex">
+                @for (tier of tierOptions(); track tier) {
+                  <mat-option [value]="tier.value">
+                    {{ tier.label }}
                   </mat-option>
-                </mat-select>
-              </mat-form-field>
-
-              <mat-form-field appearance="fill">
-                <mat-label>Target Entity ID</mat-label>
-                <mat-select formControlName="targetEntityId">
-                  <mat-option
-                    *ngFor="let option of targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value)"
-                    [value]="option.value">
-                    {{ option.label }}
-                  </mat-option>
-                  <mat-option
-                    *ngIf="!targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value)?.length"
-                    disabled>
-                    No options available
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-
-              <button type="button" mat-icon-button color="warn" (click)="onRemoveCondition(i, j)">
-                <mat-icon>delete</mat-icon>
-              </button>
+                }
+              </mat-select>
+            </mat-form-field>
+            <div formArrayName="conditions">
+              @for (cond of getConditions(i).controls; track cond; let j = $index) {
+                <div [formGroupName]="j">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Target Entity</mat-label>
+                    <mat-select formControlName="targetEntity" (selectionChange)="onTargetEntityChange(i, j)">
+                      @for (option of targetEntityOptions; track option) {
+                        <mat-option [value]="option.value">
+                          {{ option.label }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field appearance="fill">
+                    <mat-label>Target Entity ID</mat-label>
+                    <mat-select formControlName="targetEntityId">
+                      @for (option of targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value); track option) {
+                        <mat-option
+                          [value]="option.value">
+                          {{ option.label }}
+                        </mat-option>
+                      }
+                      @if (!targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value)?.length) {
+                        <mat-option
+                          disabled>
+                          No options available
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <button type="button" mat-icon-button color="warn" (click)="onRemoveCondition(i, j)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              }
+              @if (getConditions(i).errors?.['duplicateTargetEntity']) {
+                <mat-error class="validation-error"
+                  style="margin-top: 8px;">
+                  <mat-icon>error</mat-icon>
+                  Each condition must have a unique target type in this group.
+                </mat-error>
+              }
+              <button type="button" mat-button (click)="onAddCondition(i)">Add Condition</button>
             </div>
-
-            <mat-error *ngIf="getConditions(i).errors?.['duplicateTargetEntity']" class="validation-error"
-              style="margin-top: 8px;">
-              <mat-icon>error</mat-icon>
-              Each condition must have a unique target type in this group.
-            </mat-error>
-
-            <button type="button" mat-button (click)="onAddCondition(i)">Add Condition</button>
-          </div>
-
-          <button type="button" mat-button color="warn" (click)="onRemoveConditionGroup(i)">Remove Condition
+            <button type="button" mat-button color="warn" (click)="onRemoveConditionGroup(i)">Remove Condition
             Group</button>
-          <mat-divider></mat-divider>
-        </div>
+            <mat-divider></mat-divider>
+          </div>
+        }
       </div>
 
       <button type="button" mat-button (click)="onAddConditionGroup()">Add Condition Group</button>
 
-      <mat-error *ngIf="discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair']"
-        class="validation-error">
-        <mat-icon>error</mat-icon>
-        {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].message }} in groups
-        {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].groups.join(' and ') }}
-      </mat-error>
+      @if (discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair']) {
+        <mat-error
+          class="validation-error">
+          <mat-icon>error</mat-icon>
+          {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].message }} in groups
+          {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].groups.join(' and ') }}
+        </mat-error>
+      }
 
       <div class="step-buttons">
         <button type="button" mat-button matStepperPrevious>Back</button>

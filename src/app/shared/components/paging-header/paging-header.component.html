@@ -1,10 +1,14 @@
 <header>
-  <span class="visible-items" *ngIf="hasResults()">
-    Showing
-    <strong>{{getStartItem()}} - {{getEndItem()}}</strong> of
-    <strong>{{totalCount()}}</strong> results
-  </span>
-  <span *ngIf="noResults()">
-    There are <strong>0</strong> results for this filter.
-  </span>
+  @if (hasResults()) {
+    <span class="visible-items">
+      Showing
+      <strong>{{getStartItem()}} - {{getEndItem()}}</strong> of
+      <strong>{{totalCount()}}</strong> results
+    </span>
+  }
+  @if (noResults()) {
+    <span>
+      There are <strong>0</strong> results for this filter.
+    </span>
+  }
 </header>

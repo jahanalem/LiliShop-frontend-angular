@@ -1,4 +1,4 @@
-<ng-container *ngIf="totalCount() > 0">
+@if (totalCount() > 0) {
   <mat-paginator
     [length]="totalCount()"
     [pageSize]="pageSize()"
@@ -7,4 +7,4 @@
     [showFirstLastButtons]="true"
     (page)="onPagerChange($event)">
   </mat-paginator>
-</ng-container>
+}
