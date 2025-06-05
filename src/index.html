@@ -14,20 +14,73 @@
   <meta name="theme-color" content="#ffffff">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
+  <!-- Resource Hints -->
+  <link rel="dns-prefetch" href="https://fonts.bunny.net">
+  <link rel="dns-prefetch" href="https://js.stripe.com">
+  <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
+  <link rel="preconnect" href="https://js.stripe.com" crossorigin>
+
   <!-- Favicon & Web App Manifest -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" href="favicon.ico">
   <link rel="manifest" href="manifest.webmanifest">
 
   <!-- Font Loading with Performance Optimization -->
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link rel="stylesheet" href="https://fonts.bunny.net/css?family=Roboto:300,400,500|Material+Icons&display=swap">
+  <link rel="stylesheet" href="https://fonts.bunny.net/css?family=Roboto:300,400,500|Material+Icons&display=swap&subset=latin" media="print" onload="this.media='all'; this.onload=null;" crossorigin>
   <noscript>
-    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=Roboto:300,400,500|Material+Icons">
+    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=Roboto:300,400,500|Material+Icons&subset=latin">
   </noscript>
 
-  <!-- Inline Critical CSS -->
+  <!-- Inlined Critical CSS -->
   <style>
-    
+    /* Minimal critical CSS for initial render */
+    .app-loading,
+    .cookie-consent {
+      position: fixed;
+      z-index: 10000;
+    }
+
+    .app-loading {
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+
+    .cookie-consent {
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: none;
+      background: #fffffff2;
+      padding: 1.5rem;
+      box-shadow: 0 -2px 15px #0000001a;
+      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
+    }
+
+    .spinner {
+      animation: rotate 1.4s linear infinite;
+      width: 50px;
+      height: 50px;
+    }
+
+    .path {
+      stroke-dasharray: 80,200;
+      stroke-dashoffset: 0;
+      stroke: #2c3e50;
+      animation: dash 1.4s ease-in-out infinite;
+    }
+
+    @keyframes rotate {
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes dash {
+      0% { stroke-dasharray: 1,200; }
+      50% { stroke-dasharray: 100,200; }
+      100% { stroke-dasharray: 100,200; stroke-dashoffset: -120; }
+    }
   </style>
 </head>
 
@@ -49,106 +102,87 @@
   </div>
 
   <app-root>
-    <!-- Angular Loading Splash Screen -->
     <div class="app-loading">
-      <div class="loading-spinner">
-        <svg class="spinner" viewBox="0 0 50 50">
-          <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-        </svg>
-      </div>
+      <svg class="spinner" viewBox="0 0 50 50">
+        <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+      </svg>
     </div>
   </app-root>
 
-  <!-- Stripe Loader with Consent Management -->
+  <!-- Stripe Loader with Consent Management (Deferred) -->
   <script>
-    (function () {
+    // Defer execution until after main content loads
+    window.addEventListener('load', function() {
       'use strict';
 
       const COOKIE_CONSENT_KEY = 'cookie_consent';
       const STRIPE_CONSENT_KEY = 'stripe_consent';
 
       const cookieConsent = {
-        init: function () {
+        init: function() {
           if (!this.getConsent(COOKIE_CONSENT_KEY)) {
             this.showBanner();
-          }
-          if (this.getConsent(STRIPE_CONSENT_KEY)) {
+          } else if (this.getConsent(STRIPE_CONSENT_KEY)) {
             this.loadStripe();
           }
         },
 
-        showBanner: function () {
+        showBanner: function() {
           const banner = document.getElementById('cookie-consent');
-          if (banner) {
-            banner.style.display = 'flex';
-            banner.setAttribute('aria-hidden', 'false');
-          }
+          banner && (banner.style.display = 'flex');
         },
 
-        hideBanner: function () {
-          const banner = document.getElementById('cookie-consent');
-          if (banner) {
-            banner.style.display = 'none';
-            banner.setAttribute('aria-hidden', 'true');
-          }
-        },
-
-        handleAccept: function () {
+        handleAccept: function() {
           this.setConsent(COOKIE_CONSENT_KEY, true);
           this.setConsent(STRIPE_CONSENT_KEY, true);
           this.loadStripe();
           this.hideBanner();
         },
 
-        handleDecline: function () {
-          this.clearConsent();
+        handleDecline: function() {
+          this.setConsent(COOKIE_CONSENT_KEY, false);
           this.hideBanner();
         },
 
-        loadStripe: function () {
+        hideBanner: function() {
+          const banner = document.getElementById('cookie-consent');
+          banner && (banner.style.display = 'none');
+        },
+
+        loadStripe: function() {
           const script = document.createElement('script');
           script.src = 'https://js.stripe.com/v3/';
           script.async = true;
-          script.defer = true;
+          script.crossOrigin = 'anonymous';
           document.body.appendChild(script);
         },
 
-        setConsent: function (key, value, days = 180) {
-          const expiryDate = new Date();
-          expiryDate.setDate(expiryDate.getDate() + days);
-          const consentData = { value, expires: expiryDate.getTime() };
-          localStorage.setItem(key, JSON.stringify(consentData));
+        setConsent: function(key, value, days = 180) {
+          const expiry = new Date();
+          expiry.setDate(expiry.getDate() + days);
+          localStorage.setItem(key, JSON.stringify({
+            value: value,
+            expires: expiry.getTime()
+          }));
         },
 
-        getConsent: function (key) {
-          const storedData = localStorage.getItem(key);
-          if (storedData) {
-            const parsedData = JSON.parse(storedData);
-            if (parsedData.expires && parsedData.expires > new Date().getTime()) {
-              return parsedData.value;
-            } else {
-              localStorage.removeItem(key); // Expired consent, remove it.
-            }
+        getConsent: function(key) {
+          try {
+            const data = JSON.parse(localStorage.getItem(key));
+            return data && data.expires > Date.now() ? data.value : null;
+          } catch {
+            return null;
           }
-          return null;
-        },
-
-        clearConsent: function () {
-          localStorage.removeItem(COOKIE_CONSENT_KEY);
-          localStorage.removeItem(STRIPE_CONSENT_KEY);
         }
       };
 
-      // Initialize when DOM is ready
-      document.addEventListener('DOMContentLoaded', function () {
-        cookieConsent.init();
-      });
+      // Initialize cookie consent
+      cookieConsent.init();
 
-      // Expose functions to global scope
+      // Expose to global scope
       window.handleAccept = () => cookieConsent.handleAccept();
       window.handleDecline = () => cookieConsent.handleDecline();
-    })();
+    });
   </script>
 </body>
-
 </html>
