@@ -1,3 +1,6 @@
-
 <app-nav-bar></app-nav-bar>
-<app-footer></app-footer>
+@defer (on viewport) {
+  <app-footer></app-footer>
+} @placeholder {
+  <div style="height: 100px;"></div>
+}
