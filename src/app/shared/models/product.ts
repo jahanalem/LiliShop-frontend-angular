@@ -11,6 +11,7 @@ export interface IProduct {
   scheduledPrice        ?: number;
   currentDiscountedPrice?: number;
   pictureUrl            :  string;
+  picturePublicId       :  string;
   productType           ?: string;
   productTypeId         :  number;
   productBrand          ?: string;

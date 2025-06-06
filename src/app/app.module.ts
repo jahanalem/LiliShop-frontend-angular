@@ -9,6 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
 import { AppComponent } from './app.component';
+import { CloudinaryModule } from '@cloudinary/ng';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -21,6 +23,8 @@ import { AppComponent } from './app.component';
     BrowserAnimationsModule,
     CoreModule,
     SharedModule,
+    RouterModule,
+    CloudinaryModule,
   ],
   providers: [
     provideZonelessChangeDetection(),

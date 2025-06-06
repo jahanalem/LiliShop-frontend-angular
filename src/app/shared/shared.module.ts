@@ -3,7 +3,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 import { FileUploadModule } from 'ng2-file-upload';
 import { RouterModule } from '@angular/router';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CloudinaryModule } from '@cloudinary/ng';
 
 import { BreadcrumbComponent, BreadcrumbItemDirective, BreadcrumbService } from 'xng-breadcrumb';
 
@@ -31,6 +32,7 @@ import { PagingHeaderComponent } from './components/paging-header/paging-header.
 import { TextTextareaComponent } from './components/text-textarea/text-textarea.component';
 import { OrderTotalsComponent } from './components/order-totals/order-totals.component';
 import { PhotoEditorComponent } from './components/photo-editor/photo-editor.component';
+import { ProductItemComponent } from '../features/user-area/shop/product-item/product-item.component';
 import { TextInputComponent } from './components/text-input/text-input.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { DialogComponent } from './components/dialog/dialog.component';
@@ -55,6 +57,7 @@ const components = [
   DialogComponent,
   PhotoEditorComponent,
   ConfirmationDialogComponent,
+  ProductItemComponent,
 ];
 
 const matModules = [
@@ -96,6 +99,7 @@ const thirdPartyModules = [
     CdkStepperModule,
     RouterModule,
     NgOptimizedImage,
+    CloudinaryModule,
     ...thirdPartyModules,
     ...matModules,
   ],
@@ -106,6 +110,7 @@ const thirdPartyModules = [
     FileUploadModule,
     FormatValuePipe,
     CheckPolicyDirective,
+    CloudinaryModule,
     ...components,
     ...thirdPartyModules,
     ...matModules,
@@ -113,6 +118,7 @@ const thirdPartyModules = [
   providers: [
     BreadcrumbService,
     DatePipe,
-  ]
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SharedModule { }

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal } fro
 import { CloudinaryImage } from '@cloudinary/url-gen';
 
 import { BasketService } from 'src/app/core/services/basket.service';
+import { CloudinaryService } from 'src/app/core/services/cloudinary.service';
 import { IProduct } from 'src/app/shared/models/product';
 
 @Component({
@@ -13,13 +14,26 @@ import { IProduct } from 'src/app/shared/models/product';
 })
 export class ProductItemComponent implements OnInit {
   private basketService = inject(BasketService);
+  private cloudinaryService = inject(CloudinaryService);
+
 
   product = input.required<IProduct>();
 
   publicId = signal<string>('');
-  img      = signal<CloudinaryImage>({} as CloudinaryImage);
+  imageUrl = signal<string>('');
+  cldImage = signal<CloudinaryImage>({} as CloudinaryImage);
 
   ngOnInit() {
+    const publicId = this.product().picturePublicId;
+
+    if (publicId) {
+      this.publicId.set(publicId);
+      const image = this.cloudinaryService.generateImage(publicId, 287, 287);
+      this.cldImage.set(image);
+      this.imageUrl.set(image.toURL());
+    } else {
+      this.imageUrl.set(this.product().pictureUrl);
+    }
   }
 
   addItemToBasket() {
