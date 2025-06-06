@@ -25,6 +25,7 @@ export class ShopComponent implements OnInit {
   sizes      = signal<ISizeClassification[]>([]);
   shopParams = signal<ProductQueryParams>({} as ProductQueryParams);
   totalCount = signal<number>(0);
+  isLoading  = signal<boolean>(false);
 
   cols           = signal<number>(3);
   isMobileScreen = signal<boolean>(false);
@@ -90,6 +91,7 @@ export class ShopComponent implements OnInit {
 
   // getProducts method
   async getProducts(isActive?: boolean): Promise<void> {
+    this.isLoading.set(true);
     try {
       const response = await firstValueFrom(this.productService.getProducts(isActive));
       if (response) {
@@ -98,6 +100,8 @@ export class ShopComponent implements OnInit {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
