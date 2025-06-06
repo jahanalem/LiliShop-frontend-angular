@@ -16,7 +16,6 @@ export class ProductItemComponent implements OnInit {
   private basketService = inject(BasketService);
   private cloudinaryService = inject(CloudinaryService);
 
-
   product = input.required<IProduct>();
 
   publicId = signal<string>('');
@@ -30,7 +29,7 @@ export class ProductItemComponent implements OnInit {
       this.publicId.set(publicId);
       const image = this.cloudinaryService.generateImage(publicId, 287, 287);
       this.cldImage.set(image);
-      this.imageUrl.set(image.toURL());
+      this.imageUrl.set(publicId);
     } else {
       this.imageUrl.set(this.product().pictureUrl);
     }

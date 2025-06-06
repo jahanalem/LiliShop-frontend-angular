@@ -11,6 +11,7 @@ import { CoreModule } from './core/core.module';
 import { AppComponent } from './app.component';
 import { CloudinaryModule } from '@cloudinary/ng';
 import { RouterModule } from '@angular/router';
+import { provideCloudinaryLoader } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { RouterModule } from '@angular/router';
   providers: [
     provideZonelessChangeDetection(),
     provideHttpClient(withInterceptors([jwtInterceptor, loadingInterceptor, errorInterceptor])),
+    provideCloudinaryLoader('https://res.cloudinary.com/rouhi')
   ]
 })
 export class AppModule { }

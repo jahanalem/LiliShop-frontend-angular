@@ -21,6 +21,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   isSubscribed              = signal<boolean>(false);
   currentUserId             = signal<number>(0);
   currentUserEmailConfirmed = signal<boolean>(false);
+  imagePublicId            = signal<string>('');
 
   discountTimeLeft = signal<string>('');
 
@@ -31,7 +32,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   private productService      = inject(ProductService);
   private subscriptionService = inject(SubscriptionService);
   private accountService      = inject(AccountService);
-   private cdRef              = inject(ChangeDetectorRef);
+  private cdRef               = inject(ChangeDetectorRef);
 
   constructor() {
   }
@@ -85,6 +86,9 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (product) => {
         this.product.update(()=>product);
+        if (product.picturePublicId) {
+          this.imagePublicId.set(product.picturePublicId);
+        }
         this.cdRef.detectChanges();
         if (this.discountActiveNow()) {
           this.startDiscountCountdown();
