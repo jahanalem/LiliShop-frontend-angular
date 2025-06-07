@@ -15,6 +15,9 @@
 .product-image {
   width: 100%;
   height: auto;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
   transition: transform 0.3s ease, filter 0.3s ease;
 }
 
