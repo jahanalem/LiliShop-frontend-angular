@@ -1,7 +1,7 @@
 @if(product()) {
 <mat-card class="mat-elevation-z4 product-card">
 
-  @if (discountActiveNow()) {
+  @if (isDiscountActive()) {
   <div class="sale-ribbon">SALE</div>
   }
 
@@ -13,8 +13,8 @@
         height="287"
         class="product-image"
         [alt]="product().name"
-        loading="lazy"
-        priority="false"
+        [priority]="isPriority()"
+        sizes="(max-width: 600px) 45vw, (max-width: 960px) 30vw, 33vw"
       />
     }
   </a>

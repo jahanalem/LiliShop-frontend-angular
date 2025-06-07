@@ -122,14 +122,34 @@
           </div>
 
           @if (!isLoading() && products() && products().length > 0) {
-            <div class="product-grid">
-              @for (item of products(); track item) {
-                <div class="product-item-wrapper">
-                  <app-product-item [product]="item"></app-product-item>
-                </div>
-              }
-            </div>
-          } @else if (!isLoading() && (!products() || products().length === 0)) {
+
+            @defer (on viewport) {
+              <div class="product-grid">
+                @for (item of products(); track item; let i = $index) {
+                  <div class="product-item-wrapper">
+                    <app-product-item [product]="item" [isPriority]="i < 3" />
+                  </div>
+                }
+              </div>
+            } @placeholder (minimum 300ms) {
+              <div class="product-grid-placeholder">
+                 <div class="product-item-skeleton"></div>
+                 <div class="product-item-skeleton"></div>
+                 <div class="product-item-skeleton"></div>
+              </div>
+            } @loading (minimum 500ms) {
+              <div class="loading-spinner-container">
+                <mat-spinner diameter="50"></mat-spinner>
+              </div>
+            } @error {
+              <p>Failed to load products. Please try again.</p>
+            }
+
+            @if (!isLoading() && (!products() || products().length === 0)) {
+              <div class="no-products-message">...</div>
+            }
+          }
+          @else if (!isLoading() && (!products() || products().length === 0)) {
             <div class="no-products-message">
               <mat-icon class="no-products-icon">search_off</mat-icon>
               <p>No products found matching your criteria.</p>

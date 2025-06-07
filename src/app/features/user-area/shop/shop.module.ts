@@ -12,6 +12,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { ProductItemComponent } from './product-item/product-item.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatInputModule,
     MatGridListModule,
     NgOptimizedImage,
+    ProductItemComponent,
   ]
 })
 export class ShopModule { }

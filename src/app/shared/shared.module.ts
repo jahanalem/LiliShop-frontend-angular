@@ -32,7 +32,6 @@ import { PagingHeaderComponent } from './components/paging-header/paging-header.
 import { TextTextareaComponent } from './components/text-textarea/text-textarea.component';
 import { OrderTotalsComponent } from './components/order-totals/order-totals.component';
 import { PhotoEditorComponent } from './components/photo-editor/photo-editor.component';
-import { ProductItemComponent } from '../features/user-area/shop/product-item/product-item.component';
 import { TextInputComponent } from './components/text-input/text-input.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { DialogComponent } from './components/dialog/dialog.component';
@@ -57,7 +56,6 @@ const components = [
   DialogComponent,
   PhotoEditorComponent,
   ConfirmationDialogComponent,
-  ProductItemComponent,
 ];
 
 const matModules = [
