@@ -5,8 +5,8 @@
   <div class="sale-ribbon">SALE</div>
   }
 
-  <a routerLink="/shop/{{product().id}}" class="image-container">
-    @if (publicId()) {
+  <a [routerLink]="['/shop', product().id]" class="image-container">
+    @if (imageUrl()) {
       <img
         [ngSrc]="imageUrl()"
         width="287"

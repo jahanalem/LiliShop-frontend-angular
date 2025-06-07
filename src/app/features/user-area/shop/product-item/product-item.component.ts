@@ -1,14 +1,11 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CloudinaryImage } from '@cloudinary/url-gen';
-
 import { BasketService } from 'src/app/core/services/basket.service';
-import { CloudinaryService } from 'src/app/core/services/cloudinary.service';
 import { IProduct } from 'src/app/shared/models/product';
 
 @Component({
@@ -27,14 +24,11 @@ import { IProduct } from 'src/app/shared/models/product';
         NgOptimizedImage,
     ]
 })
-export class ProductItemComponent implements OnInit {
-  private basketService     = inject(BasketService);
-  private cloudinaryService = inject(CloudinaryService);
+export class ProductItemComponent {
+  private basketService = inject(BasketService);
 
   product    = input.required<IProduct>();
   isPriority = input<boolean>(false);
-
-  publicId = signal<string>('');
 
   readonly imageUrl = computed(() => {
     return this.product().picturePublicId ?? this.product().pictureUrl;
@@ -51,18 +45,6 @@ export class ProductItemComponent implements OnInit {
 
     return now >= start && now <= end;
   });
-
-  cldImage = signal<CloudinaryImage>({} as CloudinaryImage);
-
-  ngOnInit() {
-    const publicId = this.product().picturePublicId;
-
-    if (publicId) {
-      this.publicId.set(publicId);
-      const image = this.cloudinaryService.generateImage(publicId, 287, 287);
-      this.cldImage.set(image);
-    }
-  }
 
   addItemToBasket() {
     this.basketService.addItemToBasket(this.product());
