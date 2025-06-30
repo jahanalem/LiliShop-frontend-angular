@@ -65,7 +65,7 @@ LiliShop is a modern e-commerce platform developed with .NET 9 and Angular 20, d
 * **Background Processing:** **Hangfire** for managing background jobs (e.g., email notifications, discount expiration) 🔄.
 * **Email Service:** **SendGrid** for transactional email delivery 📧.
 * **Cloud Services:** **Cloudinary** for image storage and management ☁️.
-* **Architecture:** Layered Architecture (Model, DataAccess, Service, Web API) 🏗️.
+* **[Architecture](https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0026_Refactoring-LiliShop-with-Clean-Architecture.md):** Clean Architecture (Domain, Application, Infrastructure, API) 🏗️.
 
 ---
 
