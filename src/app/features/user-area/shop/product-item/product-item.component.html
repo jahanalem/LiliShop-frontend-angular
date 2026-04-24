@@ -23,7 +23,17 @@
     <a routerLink="/shop/{{product().id}}" class="product-link">
       <h3 class="mat-h3">{{product().name}}</h3>
     </a>
-    <p class="mat-body-2">{{product().price | currency}}</p>
+    <div class="d-flex align-items-center justify-content-center">
+    <span class="fs-5 fw-bold text-success me-2">
+        {{ product().price | currency }}
+    </span>
+
+    @if (product().previousPrice) {
+      <span class="text-muted text-decoration-line-through">
+          {{ product().previousPrice | currency }}
+      </span>
+    }
+</div>
   </mat-card-content>
 
   <mat-card-actions>

@@ -25,13 +25,7 @@ export class FormatValuePipe implements PipeTransform {
         return value.length > 200 ? `${value.substr(0, 200)}...` : value;
       case 'isDiscountActive':
         const product = context as IProduct;
-        if (product.discount?.isActive && product.scheduledPrice != null) {
-          return 'Scheduled';
-        } else if (product?.discount?.isActive) {
-          return 'Yes';
-        } else {
-          return 'No';
-        }
+        return product?.previousPrice ? 'Yes' : 'No';
       case 'isActive':
         const discount = context as IDiscount;
         return discount?.isActive ? 'Yes' : 'No'

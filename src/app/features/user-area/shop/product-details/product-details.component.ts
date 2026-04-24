@@ -1,7 +1,7 @@
 import { SubscriptionService } from '../../../../core/services/subscription.service';
 import { of, switchMap } from 'rxjs';
 import { IProduct } from 'src/app/shared/models/product';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { ProductService } from 'src/app/core/services/product.service';
@@ -23,9 +23,9 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   currentUserEmailConfirmed = signal<boolean>(false);
   imagePublicId            = signal<string>('');
 
-  discountTimeLeft = signal<string>('');
+  readonly isDiscountActive = computed(() => !!this.product().previousPrice);
 
-  private discountInterval: any;
+  discountTimeLeft = signal<string>('');
 
   private activatedRoute      = inject(ActivatedRoute);
   private basketService       = inject(BasketService);
@@ -51,9 +51,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.discountInterval) {
-      clearInterval(this.discountInterval);
-    }
+
   }
 
   /*
@@ -85,22 +83,18 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       })
     ).subscribe({
       next: (product) => {
-        this.product.update(()=>product);
+        this.product.set(product);
         if (product.picturePublicId) {
           this.imagePublicId.set(product.picturePublicId);
         }
-        this.cdRef.detectChanges();
-        if (this.discountActiveNow()) {
-          this.startDiscountCountdown();
-        }
 
         this.checkSubscriptionStatus();
+        this.cdRef.detectChanges();
       },
       error: (error) => {
         console.error(error);
       }
     });
-    this.cdRef.detectChanges();
   }
 
   incrementQuantity() {
@@ -167,7 +161,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   subscribeToPriceDrop() {
     const subscription: INotificationSubscription = {
       productId: this.product().id,
-      userId: 16,
+      userId: this.currentUserId(),
       alertType: 'PriceDrop',
       isActive: true
     }
@@ -178,71 +172,5 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         alert('There was an error subscribing to notifications.');
       }
     });
-  }
-
-  // === NEW METHODS FOR THE COUNTDOWN ===
-
-  discountActiveNow(): boolean {
-    const prod = this.product();
-    const discount = prod.discount;
-    if (!discount?.isActive || !discount.startDate || !discount.endDate) {
-      return false;
-    }
-    const now   = new Date().getTime();
-    const start = new Date(discount.startDate).getTime();
-    const end   = new Date(discount.endDate).getTime();
-
-    return now >= start && now <= end;
-  }
-
-  private startDiscountCountdown(): void {
-    // Calculate once at startup
-    this.updateDiscountTimeLeft();
-
-    // Recalculate every second
-    this.discountInterval = setInterval(() => {
-      this.updateDiscountTimeLeft();
-    }, 1000);
-  }
-
-  private updateDiscountTimeLeft(): void {
-    const productEndDate = this.product().discount?.endDate;
-    if (!productEndDate) {
-      return;
-    }
-
-    const now = new Date().getTime();
-    const end = new Date(productEndDate).getTime();
-    const distance = end - now;
-
-    if (distance <= 0) {
-      this.discountTimeLeft.set('Offer ended');
-      clearInterval(this.discountInterval);
-
-      const updatedProd = { ...this.product() };
-      updatedProd.discount!.isActive = false;
-      updatedProd.price = this.product().previousPrice ?? this.product().price
-      this.product.set(updatedProd);
-      this.cdRef.detectChanges();
-
-      return;
-    }
-
-    // If discount is still active, compute the days/hours/min/sec left
-    const days    = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours   = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    // Simple display format, e.g. "1d 04:22:11"
-    if (days > 0) {
-      this.discountTimeLeft.set(`${days}d ${hours}h ${minutes}m ${seconds}s`);
-    } else if(hours > 0) {
-      this.discountTimeLeft.set(`${hours}h ${minutes}m ${seconds}s`);
-    } else if(minutes > 0){
-      this.discountTimeLeft.set(`${minutes}m ${seconds}s`);
-    } else if(seconds > 0){
-      this.discountTimeLeft.set(`${seconds}s`);
-    }
   }
 }

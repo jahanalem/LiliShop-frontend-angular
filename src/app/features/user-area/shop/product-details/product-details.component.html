@@ -1,7 +1,6 @@
 <section class="product-details">
   <div class="product-container">
     <div class="product-row">
-      <!-- Product Image -->
       <div class="product-image-section">
         <div class="product-image-container">
           @if (product().pictureUrl) {
@@ -19,38 +18,27 @@
       </div>
 
       @if(product().name){
-        <!-- Product Info -->
         <div class="product-info-section">
           <div class="product-info">
             <h1 class="product-title">{{ product().name }}</h1>
 
-            <!-- price and discount section-->
-            @if (discountActiveNow()) {
+            @if (isDiscountActive()) {
               <div class="price-section">
-                <p class="original-price">
+                <p class="original-price" style="text-decoration: line-through; color: #888;">
                   {{ product().previousPrice | currency }}
                 </p>
-                <p class="price">
+                <p class="price" style="color: #e53935; font-weight: bold;">
                   {{ product().price | currency }}
                 </p>
-                <!-- Countdown display when discount is active -->
-                @if (discountTimeLeft()) {
-                  <div class="discount-timer">
-                    <strong>Offer ends in: {{ discountTimeLeft() }}</strong>
-                  </div>
-                }
-              </div>
+                </div>
             } @else {
               <p class="price">{{ product().price | currency }}</p>
             }
-
-            <!-- Fallback: Normal price if no discount -->
 
             <p class="product-description">
               {{ product().description }}
             </p>
 
-            <!-- Quantity Selector -->
             <div class="quantity-selector">
               <button
                 title="decrement"
@@ -75,7 +63,6 @@
               </button>
             </div>
 
-            <!-- Action Buttons -->
             <div class="action-buttons">
               <button mat-raised-button color="primary" (click)="addItemToBasket()" class="action-button">
                 <mat-icon>shopping_cart</mat-icon>
@@ -101,7 +88,7 @@
             </div>
           </div>
         </div>
-        }@else {
+      }@else {
         <p>Loading product details...</p>
       }
     </div>

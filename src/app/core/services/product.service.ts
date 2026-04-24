@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
 import { IBrand } from 'src/app/shared/models/brand';
 import { PaginationWithData, ProductPagination } from 'src/app/shared/models/pagination';
-import { IProduct } from 'src/app/shared/models/product';
+import { IProduct, IProductAdmin } from 'src/app/shared/models/product';
 import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { IProductType } from 'src/app/shared/models/productType';
@@ -106,11 +106,11 @@ export class ProductService {
       );
   }
 
-  updateProduct(product: IProduct): Observable<IProduct> {
+  updateProduct(product: IProductAdmin): Observable<IProduct> {
     return this.http.put<IProduct>(`${this.baseUrl}products/update/${product.id}`, product);
   }
 
-  createProduct(product: IProduct): Observable<IProduct> {
+  createProduct(product: IProductAdmin): Observable<IProduct> {
     return this.http.post<IProduct>(`${this.baseUrl}products/create/`, product);
   }
 

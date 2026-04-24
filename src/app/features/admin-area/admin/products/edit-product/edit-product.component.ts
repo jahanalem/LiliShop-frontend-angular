@@ -1,7 +1,7 @@
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subject, catchError, firstValueFrom, of, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { IProduct } from './../../../../../shared/models/product';
+import { IProduct, IProductAdmin } from './../../../../../shared/models/product';
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, signal, inject, ChangeDetectorRef } from '@angular/core';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
@@ -26,7 +26,7 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 export class EditProductComponent implements OnInit, OnDestroy {
   productForm!: FormGroup;
 
-  product = signal<IProduct | undefined>(undefined);
+  product = signal<IProductAdmin | undefined>(undefined);
   brands  = signal<IBrand[]>([]);
   types   = signal<IProductType[]>([]);
   sizes   = signal<ISizeClassification[]>([]);
@@ -90,7 +90,15 @@ export class EditProductComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSubmit() {
+  get characteristics(): FormArray {
+    return this.productForm.get('productCharacteristics') as FormArray;
+  }
+
+  getFormGroup(control: AbstractControl): FormGroup {
+    return control as FormGroup;
+  }
+
+ onSubmit() {
     console.log("submitting...");
     if (this.productForm.invalid) {
       this.notificationService.showError('Form Validation Error: Please fill out the form correctly.');
@@ -102,7 +110,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
     const isUpdate        = !!existingProduct && existingProduct.id > 0;
 
     // Combine date and time for discount start and end
-
     if (formValues.isDiscountActive) {
       if (!formValues.discountStartDateDate) {
         formValues.discountStartDateDate = new Date();
@@ -111,12 +118,12 @@ export class EditProductComponent implements OnInit, OnDestroy {
       this.backupEndTime   = formValues.discountEndDateTime;
     }
 
-    // Construct the payload
-    let discount: Partial<ISingleDiscount> | null = null;
-
+    // Construct the discount payload
+    let discountPayload: Partial<ISingleDiscount> | null = null;
     const oldDiscount = this.product()?.discount;
     const hasExistingDiscount = !!oldDiscount;
     const forceSingleDiscount = this.shouldForceSingleDiscount(formValues);
+
     if (forceSingleDiscount) {
       const updatedDiscount: Partial<ISingleDiscount> = {};
 
@@ -125,63 +132,75 @@ export class EditProductComponent implements OnInit, OnDestroy {
       }
 
       updatedDiscount.isActive = formValues.isDiscountActive;
+      updatedDiscount.name = "Single Discount";
+      updatedDiscount.isPercentage = formValues.isPercentage;
+      updatedDiscount.amount = formValues.discountAmount;
 
-      const defaultName = "Single Discount";
-      updatedDiscount.name = defaultName;
-      updatedDiscount.isPercentage = false;
       const newStart = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
       updatedDiscount.startDate = newStart?.toISOString();
       const newEnd = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
       updatedDiscount.endDate = newEnd?.toISOString();
 
-      discount = updatedDiscount;
+      discountPayload = updatedDiscount;
     } else {
-      discount = null;
+      discountPayload = null;
     }
 
-    const productPayload: Partial<IProduct> = {
+    const productPayload: IProductAdmin = {
       id                    : existingProduct?.id || 0,
       name                  : formValues.name,
       description           : formValues.description,
+      // price here is the BASE price edited by the admin
       price                 : formValues.price,
       previousPrice         : formValues.previousPrice,
-      scheduledPrice        : formValues.scheduledPrice,
       pictureUrl            : existingProduct?.pictureUrl || '',
+      picturePublicId       : existingProduct?.picturePublicId || '',
       productType           : existingProduct?.productType,
       productTypeId         : formValues.productTypeId,
       productBrand          : existingProduct?.productBrand,
       productBrandId        : formValues.productBrandId,
       isActive              : formValues.isActive,
       productCharacteristics: formValues.productCharacteristics || [],
-      discount              : discount
+      productPhotos         : existingProduct?.productPhotos || [],
+      discount              : discountPayload // Pass the admin discount data
     };
 
     // Determine the action: update or create
     const productAction = isUpdate
-      ? this.productService.updateProduct(productPayload as IProduct)
-      : this.productService.createProduct(productPayload as IProduct);
+      ? this.productService.updateProduct(productPayload)
+      : this.productService.createProduct(productPayload);
 
     // Execute the action and handle the response
     productAction.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (updatedProduct) => {
-        // Update the product signal with the response
-        this.product.set(updatedProduct as IProduct);
+      next: (returnedProduct: IProduct) => {
 
-        // Patch the form with the updated product data, including productPhotos
+        // The backend returns an IProduct (read model). It does NOT contain discount data.
+        // We re-construct the IProductAdmin state locally combining the server response and our known discount state.
+        const updatedAdminProduct: IProductAdmin = {
+          ...returnedProduct,
+          // If we sent a new discount payload, use it. Otherwise, keep the old one (or null).
+          discount: discountPayload !== null ? discountPayload : (oldDiscount ?? null)
+        };
+
+        // Update the product signal with the full admin state
+        this.product.set(updatedAdminProduct);
+
+        // Patch the form with the updated product data
         this.productForm.patchValue({
-          productPhotos   : updatedProduct.productPhotos,
-          previousPrice   : updatedProduct.previousPrice,
-          scheduledPrice  : updatedProduct.scheduledPrice,
-          price           : updatedProduct.price,
-          isDiscountActive: updatedProduct.discount?.isActive,
+          productPhotos   : returnedProduct.productPhotos,
+          // If the backend background worker already swapped the prices, we ensure the form stays on the base price
+          price           : returnedProduct.previousPrice ?? returnedProduct.price,
+          // Use the local admin state for the discount active toggle
+          isDiscountActive: updatedAdminProduct.discount?.isActive ?? false,
         });
+
         // Mark the form as pristine
         this.productForm.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => this.cdRef.detectChanges());
         this.productForm.markAsPristine();
 
         // Show success message
         const action = isUpdate ? 'updated' : 'created';
-        this.notificationService.showSuccess(`Success: Product ${action} successfully`);
+        this.notificationService.showSuccess(`Success: Product ${action} successfully.`);
 
         // Trigger change detection
         this.cdRef.detectChanges();
@@ -191,7 +210,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
         console.error('Error saving product:', err);
       },
     });
-  }
+}
 
   createProductForm(): void {
     this.productForm = this.formBuilder.group({
@@ -250,7 +269,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
       );
 
       if (prod) {
-        this.product.set(prod);
+        this.product.set(prod as IProductAdmin);
         this.productForm.setControl('productCharacteristics', this.formBuilder.array([]));
       }
     } catch (error) {
@@ -494,10 +513,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   getProductKey(): string {
     return `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
-  }
-
-  getFormGroup(control: AbstractControl) {
-    return control as FormGroup;
   }
 
   removeSize(index: number) {

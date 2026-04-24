@@ -35,15 +35,7 @@ export class ProductItemComponent {
   });
 
   readonly isDiscountActive = computed(() => {
-    const discount = this.product().discount;
-    if (!discount?.isActive || !discount.startDate || !discount.endDate) {
-      return false;
-    }
-    const now = Date.now();
-    const start = new Date(discount.startDate).getTime();
-    const end = new Date(discount.endDate).getTime();
-
-    return now >= start && now <= end;
+    return !!this.product().previousPrice;
   });
 
   addItemToBasket() {

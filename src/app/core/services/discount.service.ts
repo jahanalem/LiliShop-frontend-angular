@@ -1,7 +1,7 @@
 import { IDiscount } from './../../shared/models/discount-system';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { DiscountParams } from 'src/app/shared/models/DiscountParams';
 import { DiscountPagination, PaginationWithData } from 'src/app/shared/models/pagination';
 
@@ -42,13 +42,13 @@ export class DiscountService {
       if (discountParameters.pageSize > 0) {
         params = params.append('pageSize', discountParameters.pageSize.toString());
       }
-      if(discountParameters.search){
+      if (discountParameters.search) {
         params = params.append('search', discountParameters.search.trim())
       }
-      if(discountParameters.sort){
+      if (discountParameters.sort) {
         params = params.append('sort', discountParameters.sort);
       }
-      if(discountParameters.sortDirection){
+      if (discountParameters.sortDirection) {
         params = params.append('sortDirection', discountParameters.sortDirection);
       }
     }
@@ -79,5 +79,12 @@ export class DiscountService {
         console.error(error);
         return throwError(() => error);
       }));
+  }
+
+  getSingleDiscountForProduct(productId: number): Observable<IDiscount | null> {
+    return this.http.get<IDiscount>(`${this.baseUrl}discounts/product/${productId}`).pipe(
+      // If the backend returns 204 No Content, catch it and return null
+      catchError(() => of(null))
+    );
   }
 }

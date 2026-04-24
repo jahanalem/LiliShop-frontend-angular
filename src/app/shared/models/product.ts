@@ -6,10 +6,8 @@ export interface IProduct {
   id                    :  number;
   name                  :  string;
   description           :  string;
-  price                 :  number;
-  previousPrice         ?: number;
-  scheduledPrice        ?: number;
-  currentDiscountedPrice?: number;
+  price                 :  number; // price is now ALWAYS the final, active price (discounted or original)
+  previousPrice         ?: number; // previousPrice is populated ONLY if the item is currently on sale
   pictureUrl            :  string;
   picturePublicId       :  string;
   productType           ?: string;
@@ -17,8 +15,12 @@ export interface IProduct {
   productBrand          ?: string;
   productBrandId        :  number;
   isActive              :  boolean;
-  discount              : Partial<ISingleDiscount> | null;
   productCharacteristics: IProductCharacteristic[];
   productPhotos         : IProductPhoto[];
+}
+
+export interface IProductAdmin extends IProduct {
+  discount       : Partial<ISingleDiscount> | null;
+  scheduledPrice?: number;
 }
 
