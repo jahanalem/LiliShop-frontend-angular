@@ -1,8 +1,8 @@
 @if(product()) {
-<mat-card class="mat-elevation-z4 product-card">
+<mat-card class="product-card mat-elevation-z4">
 
   @if (isDiscountActive()) {
-  <div class="sale-ribbon">SALE</div>
+    <div class="sale-ribbon">SALE</div>
   }
 
   <a [routerLink]="['/shop', product().id]" class="image-container">
@@ -19,25 +19,29 @@
     }
   </a>
 
-  <mat-card-content class="text-center">
+  <mat-card-content class="product-content">
     <a routerLink="/shop/{{product().id}}" class="product-link">
-      <h3 class="mat-h3">{{product().name}}</h3>
+      <h3 class="product-title">{{product().name}}</h3>
     </a>
-    <div class="d-flex align-items-center justify-content-center">
-    <span class="fs-5 fw-bold text-success me-2">
-        {{ product().price | currency }}
-    </span>
 
-    @if (product().previousPrice) {
-      <span class="text-muted text-decoration-line-through">
+    <div class="price-container">
+      @if (product().previousPrice) {
+        <span class="current-price sale-price">
+          {{ product().price | currency }}
+        </span>
+        <span class="old-price">
           {{ product().previousPrice | currency }}
-      </span>
-    }
-</div>
+        </span>
+      } @else {
+        <span class="current-price">
+          {{ product().price | currency }}
+        </span>
+      }
+    </div>
   </mat-card-content>
 
-  <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="addItemToBasket()" class="w-100">
+  <mat-card-actions class="product-actions">
+    <button mat-raised-button color="primary" (click)="addItemToBasket()" class="add-to-cart-btn">
       <mat-icon>shopping_cart</mat-icon> Add to Cart
     </button>
   </mat-card-actions>
