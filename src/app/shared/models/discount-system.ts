@@ -28,6 +28,7 @@ export interface IDiscount {
   discountGroupId?: number;
   discountGroup  ?: IDiscountGroup;
   tiers          ?: IDiscountTier[];
+  amount         ?: number; // For single-tier discounts, this is the discount amount. For multi-tier discounts, this is ignored.
 }
 export interface IDiscountGroup {
   name           : string;

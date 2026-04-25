@@ -166,7 +166,7 @@
   <div class="form-right">
     @if (isProductIdValid) {
       <h3>Upload Photo</h3>
-      <app-photo-editor [product]="product()"></app-photo-editor>
+      <app-photo-editor [product]="adminProduct()"></app-photo-editor>
     } @else {
       <p class="alert-message">
         Please create a product first. Once the product is created, you'll be able to upload images.
