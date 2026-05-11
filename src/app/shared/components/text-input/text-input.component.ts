@@ -18,6 +18,7 @@ export class TextInputComponent implements OnInit, OnDestroy, ControlValueAccess
   type         = input<string>('text');
   label        = input<string>('')
   autocomplete = input<string>('');
+  showPasswordRules = input<boolean>(false);
 
   protected onChange  = (_value: any) => { };
   protected onTouched = () => { };
@@ -29,6 +30,32 @@ export class TextInputComponent implements OnInit, OnDestroy, ControlValueAccess
   constructor(@Self() public controlDir: NgControl) {
     this.controlDir.valueAccessor = this;
   }
+
+// --- Real-time Password Validation Getters ---
+  get passwordValue(): string {
+    return this.controlDir.control?.value || '';
+  }
+
+  get hasMinLength(): boolean {
+    return this.passwordValue.length >= 6;
+  }
+
+  get hasUppercase(): boolean {
+    return /[A-Z]/.test(this.passwordValue);
+  }
+
+  get hasLowercase(): boolean {
+    return /[a-z]/.test(this.passwordValue);
+  }
+
+  get hasNumber(): boolean {
+    return /[0-9]/.test(this.passwordValue);
+  }
+
+  get hasSpecialChar(): boolean {
+    return /[#?!@$%^&*-]/.test(this.passwordValue); // Matches your patterns.ts
+  }
+  // ---------------------------------------------
 
   ngOnInit(): void {
     const control = this.controlDir.control;

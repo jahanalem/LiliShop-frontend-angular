@@ -41,7 +41,7 @@
         Invalid email address
       </mat-error>
     }
-    @if (isPasswordInvalid()) {
+    @if (isPasswordInvalid() && !showPasswordRules()) {
       <mat-error>
         Password must have 1 Uppercase, 1 Lowercase, 1 number, 1 non-alphanumeric, and at least 6 characters
       </mat-error>
@@ -61,3 +61,25 @@
       </mat-hint>
     }
   </mat-form-field>
+  @if (showPasswordRules()) {
+    <div class="password-rules-container">
+      <p class="rules-title">Password requirements:</p>
+      <ul class="rules-list">
+        <li [class.valid]="hasMinLength" [class.invalid]="!hasMinLength">
+          <mat-icon inline>{{ hasMinLength ? 'check_circle' : 'cancel' }}</mat-icon> At least 6 characters
+        </li>
+        <li [class.valid]="hasUppercase" [class.invalid]="!hasUppercase">
+          <mat-icon inline>{{ hasUppercase ? 'check_circle' : 'cancel' }}</mat-icon> 1 Uppercase letter
+        </li>
+        <li [class.valid]="hasLowercase" [class.invalid]="!hasLowercase">
+          <mat-icon inline>{{ hasLowercase ? 'check_circle' : 'cancel' }}</mat-icon> 1 Lowercase letter
+        </li>
+        <li [class.valid]="hasNumber" [class.invalid]="!hasNumber">
+          <mat-icon inline>{{ hasNumber ? 'check_circle' : 'cancel' }}</mat-icon> 1 Number
+        </li>
+        <li [class.valid]="hasSpecialChar" [class.invalid]="!hasSpecialChar">
+          <mat-icon inline>{{ hasSpecialChar ? 'check_circle' : 'cancel' }}</mat-icon> 1 Special character (#?!@$%^&*-)
+        </li>
+      </ul>
+    </div>
+  }
