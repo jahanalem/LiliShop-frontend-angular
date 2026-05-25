@@ -12,7 +12,7 @@ LiliShop is a modern e-commerce platform developed with .NET 9 and Angular 20, d
 
 * **Product Discovery:**
     * Browse and view a comprehensive product catalog 📖.
-    * Filter products by brand, type, and size  फिल्टर.
+    * Filter products by brand, type, and size.
     * Isolate products with active discounts 💰.
     * Search for specific products by name 🔍.
     * Sort products by price (ascending/descending) and alphabetically ⇅.
