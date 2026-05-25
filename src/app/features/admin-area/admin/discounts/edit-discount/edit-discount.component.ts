@@ -1,5 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
-
+import { Component, inject, signal, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, RouterModule } from '@angular/router';
 
@@ -19,6 +18,7 @@ import { DiscountTargetType, IDiscount, ITargetEntityOption, ITierOption } from 
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatDivider } from '@angular/material/divider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTimepickerModule } from '@angular/material/timepicker';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProductType } from 'src/app/shared/models/productType';
 import { ProductService } from 'src/app/core/services/product.service';
@@ -45,12 +45,13 @@ import { NotificationService } from 'src/app/core/services/notification.service'
     MatTooltipModule,
     MatStepperModule,
     MatDivider,
-    MatCheckboxModule
-],
+    MatCheckboxModule,
+    MatTimepickerModule
+  ],
   templateUrl: './edit-discount.component.html',
   styleUrl: './edit-discount.component.scss'
 })
-export class EditDiscountComponent {
+export class EditDiscountComponent implements OnInit, OnDestroy {
   isEditMode = false;
   discountIdFromUrl      : number = 0;                     // 0 means new discount
 
@@ -88,7 +89,7 @@ export class EditDiscountComponent {
 
   async ngOnInit(): Promise<void> {
     this.initForms();
-    this.loadBrands()
+    this.loadBrands();
     this.loadTypes();
     await this.loadDiscount();
   }
@@ -98,16 +99,16 @@ export class EditDiscountComponent {
     const oneWeekLater = new Date(today);
     oneWeekLater.setDate(today.getDate() + 7);
 
-    const defaultName        = `discount - ${this.formatDate(today)}`;
-    const formattedToday     = this.formatDateForInput(today);          // yyyy-MM-dd
-    const formattedWeekLater = this.formatDateForInput(oneWeekLater);   // yyyy-MM-dd
+    const defaultName  = `discount - ${this.formatDate(today)}`;
 
     this.discountInfoForm = this.fb.group({
-      id       : [0],
-      name     : [defaultName, Validators.required],
-      startDate: [formattedToday, Validators.required],
-      endDate  : [formattedWeekLater, Validators.required],
-      isActive : [false]
+      id           : [0],
+      name         : [defaultName, Validators.required],
+      startDateDate: [today, Validators.required],
+      startDateTime: [today, Validators.required],
+      endDateDate  : [oneWeekLater, Validators.required],
+      endDateTime  : [oneWeekLater, Validators.required],
+      isActive     : [false]
     });
 
     this.tiersForm = this.fb.group({
@@ -152,84 +153,89 @@ export class EditDiscountComponent {
       }
     });
   }
-async loadDiscount(): Promise<void> {
-  try {
-    const fetchedDiscount = await firstValueFrom(
-      this.activatedRoute.paramMap.pipe(
-        switchMap((params: ParamMap) => {
-          const id = params.get('id');
-          this.discountIdFromUrl = (id === null ? 0 : +id);
-          if (this.discountIdFromUrl > 0) {
-            return this.discountService.getDiscount(this.discountIdFromUrl);
-          } else {
+  async loadDiscount(): Promise<void> {
+    try {
+      const fetchedDiscount = await firstValueFrom(
+        this.activatedRoute.paramMap.pipe(
+          switchMap((params: ParamMap) => {
+            const id = params.get('id');
+            this.discountIdFromUrl = (id === null ? 0 : +id);
+            if (this.discountIdFromUrl > 0) {
+              return this.discountService.getDiscount(this.discountIdFromUrl);
+            } else {
+              return of(null);
+            }
+          }),
+          catchError((error: any) => {
+            this.handleApiError(error);
             return of(null);
-          }
-        }),
-        catchError((error: any) => {
-          this.handleApiError(error);
-          return of(null);
-        }),
-        takeUntil(this.destroy$)
-      )
-    );
+          }),
+          takeUntil(this.destroy$)
+        )
+      );
 
-    if (fetchedDiscount) {
-      this.discount.set(fetchedDiscount);
-      this.isEditMode = true;
-      // 1. Populate Discount Info Form
-      this.discountInfoForm.patchValue({
-        id: fetchedDiscount.id,
-        name: fetchedDiscount.name,
-        startDate: this.formatDateForInput(new Date(fetchedDiscount.startDate)),
-        endDate: this.formatDateForInput(new Date(fetchedDiscount.endDate)),
-        isActive: fetchedDiscount.isActive
-      });
+      if (fetchedDiscount) {
+        this.discount.set(fetchedDiscount);
+        this.isEditMode = true;
 
-      // 2. Populate Tiers Form Array
-      const tiersArray = this.tiers;
-      tiersArray.clear();
-      fetchedDiscount.tiers?.forEach(tier => {
-        tiersArray.push(this.fb.group({
-          amount: [tier.amount],
-          isPercentage: [tier.isPercentage],
-          isFreeShipping: [tier.isFreeShipping]
-        }, { validators: this.amountValidator() }));
-      });
-      this.updateTierOptions(); // Update signal-based options
+        const start = this.extractDateTime(fetchedDiscount.startDate);
+        const end   = this.extractDateTime(fetchedDiscount.endDate);
 
-      // 3. Populate Condition Groups Form Array
-      const conditionGroupsArray = this.conditionGroups;
-      conditionGroupsArray.clear();
-      fetchedDiscount.discountGroup?.conditionGroups.forEach(group => {
-        const newGroup = this.fb.group({
-          tierIndex: [group.tierIndex, Validators.required],
-          conditions: this.fb.array([], this.uniqueTargetEntityValidator())
+        // 1. Populate Discount Info Form
+        this.discountInfoForm.patchValue({
+          id: fetchedDiscount.id,
+          name: fetchedDiscount.name,
+          startDateDate: start.date,
+          startDateTime: start.time,
+          endDateDate: end.date,
+          endDateTime: end.time,
+          isActive: fetchedDiscount.isActive
         });
 
-        const conditionsArray = newGroup.get('conditions') as FormArray;
-        group.conditions.forEach(condition => {
-          const targetEntity = condition.targetEntity;
-          const targetEntityId = condition.targetEntityId;
+        // 2. Populate Tiers Form Array
+        const tiersArray = this.tiers;
+        tiersArray.clear();
+        fetchedDiscount.tiers?.forEach(tier => {
+          tiersArray.push(this.fb.group({
+            amount: [tier.amount],
+            isPercentage: [tier.isPercentage],
+            isFreeShipping: [tier.isFreeShipping]
+          }, { validators: this.amountValidator() }));
+        });
+        this.updateTierOptions();
 
-          // Initialize options for this target entity type
-          this.updateTargetEntityIdOptions(targetEntity);
+        // 3. Populate Condition Groups Form Array
+        const conditionGroupsArray = this.conditionGroups;
+        conditionGroupsArray.clear();
+        fetchedDiscount.discountGroup?.conditionGroups.forEach(group => {
+          const newGroup = this.fb.group({
+            tierIndex: [group.tierIndex, Validators.required],
+            conditions: this.fb.array([], this.uniqueTargetEntityValidator())
+          });
 
-          conditionsArray.push(this.fb.group({
-            targetEntity: [targetEntity, Validators.required],
-            targetEntityId: [targetEntityId || 0],
-            shouldNotify: [condition.shouldNotify ?? false]
-          }));
+          const conditionsArray = newGroup.get('conditions') as FormArray;
+          group.conditions.forEach(condition => {
+            const targetEntity = condition.targetEntity;
+            const targetEntityId = condition.targetEntityId;
+
+            this.updateTargetEntityIdOptions(targetEntity);
+
+            conditionsArray.push(this.fb.group({
+              targetEntity: [targetEntity, Validators.required],
+              targetEntityId: [targetEntityId || 0],
+              shouldNotify: [condition.shouldNotify ?? false]
+            }));
+          });
+
+          conditionGroupsArray.push(newGroup);
         });
 
-        conditionGroupsArray.push(newGroup);
-      });
-
-      this.tierOptions.set([...this.tierOptions()]);
+        this.tierOptions.set([...this.tierOptions()]);
+      }
+    } catch (error) {
+      console.error("Error loading discount:", error);
     }
-  } catch (error) {
-    console.error("Error loading discount:", error);
   }
-}
 
   onSubmit(): void {
     this.removeUnusedTiers();
@@ -244,11 +250,19 @@ async loadDiscount(): Promise<void> {
       return;
     }
 
+    const formValues = this.discountInfoForm.value;
+    const startDateObj = this.combineDateAndTime(formValues.startDateDate, formValues.startDateTime);
+    const endDateObj   = this.combineDateAndTime(formValues.endDateDate, formValues.endDateTime);
+
     const discount: IDiscount = {
-      ...this.discountInfoForm.value,
+      id: formValues.id,
+      name: formValues.name,
+      startDate: startDateObj ? startDateObj.toISOString() : '',
+      endDate: endDateObj ? endDateObj.toISOString() : '',
+      isActive: formValues.isActive,
       tiers: this.tiersForm.value.tiers,
       discountGroup: {
-        name: this.discountInfoForm.value.name + '_group',
+        name: formValues.name + '_group',
         conditionGroups: this.discountGroupForm.value.conditionGroups
       }
     };
@@ -260,7 +274,8 @@ async loadDiscount(): Promise<void> {
         },
         error: err => {
           this.notificationService.showError('Failed to update discount');
-          console.error('Error updating discount:', err);}
+          console.error('Error updating discount:', err);
+        }
       });
     } else {
       this.discountService.createDiscount(discount).subscribe({
@@ -274,6 +289,30 @@ async loadDiscount(): Promise<void> {
         }
       });
     }
+  }
+
+  private combineDateAndTime(date: any, time: any): Date | null {
+    if (!date || !time) return null;
+
+    const combinedDate = new Date(date);
+    const timeObj = new Date(time);
+
+    if (!isNaN(timeObj.getTime())) {
+       combinedDate.setHours(timeObj.getHours(), timeObj.getMinutes(), 0, 0);
+    }
+    return combinedDate;
+  }
+
+  private extractDateTime(dateStr: string | null | undefined): { date: Date | null; time: Date | null } {
+    if (!dateStr) return { date: null, time: null };
+
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return { date: null, time: null };
+
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const timeOnly = new Date(1970, 0, 1, date.getHours(), date.getMinutes());
+
+    return { date: dateOnly, time: timeOnly };
   }
 
   onAddTier(): void {
@@ -444,12 +483,11 @@ async loadDiscount(): Promise<void> {
     return (control: AbstractControl): ValidationErrors | null => {
       const conditionGroups = control as FormArray;
 
-      // Track coverage in all forms
-      const allBrandsForType   = new Map<number, number>();  // Type -> "All Brands" group
-      const allTypesForBrand   = new Map<number, number>();  // Brand -> "All Types" group
-      const specificBrandTypes = new Map<string, number>();  // "brand-type" -> group
+      const allBrandsForType   = new Map<number, number>();
+      const allTypesForBrand   = new Map<number, number>();
+      const specificBrandTypes = new Map<string, number>();
 
-      let   universalGroupIndex: number | null = null;       // Tracks universal discount group
+      let   universalGroupIndex: number | null = null;
 
       const partialAllGroups = {
         allBrands: new Set<number>(),
@@ -663,18 +701,13 @@ async loadDiscount(): Promise<void> {
 
   private formatDate(date: Date): string {
     const day   = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');  // Months are 0-based
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year  = date.getFullYear();
 
     return `${day}-${month}-${year}`;
   }
-  private formatDateForInput(date: Date): string {
-    const day   = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year  = date.getFullYear();
-    return `${year}-${month}-${day}`; // Format for <input type="date">
- }
- handleApiError(error: any): void {
+
+  handleApiError(error: any): void {
     console.error(error);
- }
+  }
 }
