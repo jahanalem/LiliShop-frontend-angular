@@ -2,16 +2,46 @@
   <div class="register-card">
     <section class="register-content">
       <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onSubmit($event)">
-        <!-- Display Name -->
-        <app-text-input formControlName="displayName" [label]="'Display Name'" class="full-width"></app-text-input>
-        <!-- Email -->
-        <app-text-input formControlName="email" [label]="'Email address'" class="full-width"></app-text-input>
-        <!-- Password -->
-        <app-text-input formControlName="password" [label]="'Password'" [type]="'password'" [showPasswordRules]="true" [autocomplete]="'new-password'" class="full-width"></app-text-input>
-        <!-- Confirm Password -->
-        <app-text-input formControlName="confirmPassword" [label]="'Confirm Password'" [type]="'password'" [autocomplete]="'new-password'" class="full-width"></app-text-input>
-        <!-- Submit button -->
-        <button [disabled]="!isFormValid()" type="submit" mat-raised-button color="primary" class="full-width register-button">
+        <app-text-input
+          data-cy="display-name-container"
+          formControlName="displayName"
+          [label]="'Display Name'"
+          class="full-width">
+        </app-text-input>
+
+        <app-text-input
+          data-cy="email-container"
+          formControlName="email"
+          [label]="'Email address'"
+          class="full-width">
+        </app-text-input>
+
+        <app-text-input
+          data-cy="password-container"
+          formControlName="password"
+          [label]="'Password'"
+          [type]="'password'"
+          [showPasswordRules]="true"
+          [autocomplete]="'new-password'"
+          class="full-width">
+        </app-text-input>
+
+        <app-text-input
+          data-cy="confirm-password-container"
+          formControlName="confirmPassword"
+          [label]="'Confirm Password'"
+          [type]="'password'"
+          [autocomplete]="'new-password'"
+          class="full-width">
+        </app-text-input>
+
+        <button
+          data-cy="submit-button"
+          [disabled]="!isFormValid()"
+          type="submit"
+          mat-raised-button
+          color="primary"
+          class="full-width register-button">
           <mat-icon>person_add</mat-icon> Register
         </button>
 
@@ -24,8 +54,9 @@
         }
       </form>
     </section>
+
     <div class="google-signin-container">
-      <div id="buttonDiv"></div>
+      <div id="buttonDiv" data-cy="google-signin-btn"></div>
     </div>
   </div>
 </section>

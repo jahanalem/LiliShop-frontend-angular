@@ -38,8 +38,8 @@
 
 /// <reference types="cypress" />
 
-Cypress.Commands.add('typeInAppInput', (formControlName: string, text: string) => {
-  cy.get(`app-text-input[formControlName="${formControlName}"]`)
+Cypress.Commands.add('typeInAppInput', (dataCy: string, text: string) => {
+  return cy.get(`[data-cy="${dataCy}"]`)
     .find('input')
     .type(text)
     .blur();

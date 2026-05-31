@@ -4,15 +4,36 @@
     <mat-card-content>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <!-- Email input -->
-        <app-text-input formControlName="email" [label]="'Email address'"></app-text-input>
+        <app-text-input
+          data-cy="email"
+          formControlName="email"
+          [label]="'Email address'">
+        </app-text-input>
+
         <!-- Password input -->
-        <app-text-input formControlName="password" [label]="'Password'" [type]="'password'"></app-text-input>
+        <app-text-input
+          data-cy="password"
+          formControlName="password"
+          [label]="'Password'"
+          [type]="'password'">
+        </app-text-input>
+
         <!-- Submit button -->
-        <button mat-raised-button color="primary" [disabled]="!isFormValid()" type="submit">
+        <button
+          data-cy="submit-button"
+          mat-raised-button
+          color="primary"
+          [disabled]="!isFormValid()"
+          type="submit">
           <mat-icon>login</mat-icon> Sign in
         </button>
+
         <div class="forgot-password">
-          <a routerLink="/account/forgot-password">Forgot password?</a>
+          <a
+            data-cy="forgot-password-link"
+            routerLink="/account/forgot-password">
+            Forgot password?
+          </a>
         </div>
       </form>
     </mat-card-content>

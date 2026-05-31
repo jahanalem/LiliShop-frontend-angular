@@ -22,16 +22,16 @@ declare global {
       /**
        * Custom command to type text into app-text-input component and blur the input field.
        */
-      typeInAppInput(formControlName: string, text: string): Chainable<void>;
+      typeInAppInput(formControlName: string, text: string): Chainable<JQuery<HTMLInputElement>>;
 
       /**
        * Custom command to verify Material Dialog content and click its action button to close it.
        */
-      handleMaterialDialog(expectedTitle: string): Chainable<void>;
+      handleMaterialDialog(expectedTitle: string): Chainable<JQuery<HTMLButtonElement>>;
       /**
        * Fills out the email and password fields, then submits the login form.
        */
-      loginViaUI(email: string, password: string): Chainable<void>;
+      loginViaUI(email: string, password: string): Chainable<JQuery<HTMLButtonElement>>;
     }
   }
 }
