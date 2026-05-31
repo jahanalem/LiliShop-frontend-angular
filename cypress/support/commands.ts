@@ -35,3 +35,26 @@
 //     }
 //   }
 // }
+
+/// <reference types="cypress" />
+
+Cypress.Commands.add('typeInAppInput', (formControlName: string, text: string) => {
+  cy.get(`app-text-input[formControlName="${formControlName}"]`)
+    .find('input')
+    .type(text)
+    .blur();
+});
+
+Cypress.Commands.add('handleMaterialDialog', (expectedTitle: string) => {
+  cy.get('mat-dialog-container', { timeout: 5000 })
+    .should('be.visible')
+    .and('contain.text', expectedTitle);
+
+  cy.get('mat-dialog-container').find('button').click();
+});
+
+Cypress.Commands.add('loginViaUI', (email: string, password: string) => {
+  cy.typeInAppInput('email', email);
+  cy.typeInAppInput('password', password);
+  cy.get('button[type="submit"]').should('not.be.disabled').click();
+});

@@ -13,63 +13,68 @@ describe('Registration Feature', () => {
   });
 
   it('should keep the register button disabled if passwords do not match', () => {
-    cy.get('app-text-input[formControlName="displayName"]').find('input').type('John Doe');
-    cy.get('app-text-input[formControlName="email"]').find('input').type('john.doe@example.com');
-    cy.get('app-text-input[formControlName="password"]').find('input').type('SecurePass123!');
+    cy.fixture('auth-data').then((data) => {
+      const user = data.mismatchedUser;
 
-    // Enter a non-matching password
-    cy.get('app-text-input[formControlName="confirmPassword"]').find('input').type('DifferentPass123!');
+      cy.typeInAppInput('displayName', user.displayName);
+      cy.typeInAppInput('email', user.email);
+      cy.typeInAppInput('password', user.password);
+      cy.typeInAppInput('confirmPassword', user.confirmPassword);
 
-    cy.get('button[type="submit"]').should('be.disabled');
+      cy.get('button[type="submit"]').should('be.disabled');
+    });
   });
 
   it('should enable the register button when all inputs are valid and match', () => {
-    cy.get('app-text-input[formControlName="displayName"]').find('input').type('John Doe');
-    cy.get('app-text-input[formControlName="email"]').find('input').type('john.doe@example.com');
-    cy.get('app-text-input[formControlName="password"]').find('input').type('SecurePass123!');
-    cy.get('app-text-input[formControlName="confirmPassword"]').find('input').type('SecurePass123!');
+    cy.fixture('auth-data').then((data) => {
+      const user = data.matchingFormUser;
 
-    cy.get('button[type="submit"]').should('not.be.disabled');
+      cy.typeInAppInput('displayName', user.displayName);
+      cy.typeInAppInput('email', user.email);
+      cy.typeInAppInput('password', user.password);
+      cy.typeInAppInput('confirmPassword', user.password);
+
+      cy.get('button[type="submit"]').should('not.be.disabled');
+    });
   });
 
   it('should submit registration successfully, handle the confirmation dialog, and redirect to the shop', () => {
-    // 1. Intercept the async email availability check
-    cy.intercept('GET', '/api/account/emailexists*', {
-      statusCode: 200,
-      body: false
-    }).as('emailExistsCheck');
+    cy.fixture('auth-data').then((data) => {
+      const user = data.validUser;
 
-    // 2. Intercept the successful registration endpoint
-    cy.intercept('POST', '/api/account/register', {
-      statusCode: 200,
-      body: {
-        displayName: 'John Doe',
-        email: 'newuser@example.com',
-        token: 'mock-jwt-token'
-      }
-    }).as('registerSuccessRequest');
+      // 1. Intercept the async email availability check
+      cy.intercept('GET', '/api/account/emailexists*', {
+        statusCode: 200,
+        body: false
+      }).as('emailExistsCheck');
 
-    // 3. Fill out the form fields and trigger micro-validations
-    cy.get('app-text-input[formControlName="displayName"]').find('input').type('John Doe').blur();
-    cy.get('app-text-input[formControlName="email"]').find('input').type('newuser@example.com').blur();
-    cy.wait('@emailExistsCheck');
+      // 2. Intercept the successful registration endpoint
+      cy.intercept('POST', '/api/account/register', {
+        statusCode: 200,
+        body: {
+          displayName: user.displayName,
+          email: user.email,
+          token: user.token
+        }
+      }).as('registerSuccessRequest');
 
-    cy.get('app-text-input[formControlName="password"]').find('input').type('SecurePass123!').blur();
-    cy.get('app-text-input[formControlName="confirmPassword"]').find('input').type('SecurePass123!').blur();
+      // 3. Fill out the form fields and trigger validations via custom command
+      cy.typeInAppInput('displayName', user.displayName);
+      cy.typeInAppInput('email', user.email);
+      cy.wait('@emailExistsCheck');
 
-    // 4. Submit the form and wait for the successful network response
-    cy.get('button[type="submit"]').should('not.be.disabled').click();
-    cy.wait('@registerSuccessRequest');
+      cy.typeInAppInput('password', user.password);
+      cy.typeInAppInput('confirmPassword', user.password);
 
-    // 5. Interact with the Angular Material Dialog
-    cy.get('mat-dialog-container', { timeout: 5000 })
-      .should('be.visible')
-      .and('contain.text', 'Email Confirmation Sent');
+      // 4. Submit the form and wait for the network response
+      cy.get('button[type="submit"]').should('not.be.disabled').click();
+      cy.wait('@registerSuccessRequest');
 
-    // Click the confirmation button inside the dialog to close it
-    cy.get('mat-dialog-container').find('button').click();
+      // 5. Interact with the Angular Material Dialog via custom command
+      cy.handleMaterialDialog('Email Confirmation Sent');
 
-    // 6. Assert that the application routes to the shop after the dialog closes
-    cy.location('pathname').should('eq', '/shop');
+      // 6. Assert that the application routes to the shop after closure
+      cy.location('pathname').should('eq', '/shop');
+    });
   });
 });

@@ -1,0 +1,30 @@
+{
+  "validUser": {
+    "displayName": "John Doe",
+    "email": "newuser@example.com",
+    "password": "SecurePass123!",
+    "token": "mock-jwt-token-string"
+  },
+  "invalidUser": {
+    "displayName": "John Doe",
+    "email": "invalid-email",
+    "password": "123",
+    "confirmPassword": "456"
+  },
+  "mismatchedUser": {
+    "displayName": "John Doe",
+    "email": "john.doe@example.com",
+    "password": "SecurePass123!",
+    "confirmPassword": "DifferentPass123!"
+  },
+  "matchingFormUser": {
+    "displayName": "John Doe",
+    "email": "john.doe@example.com",
+    "password": "SecurePass123!"
+  },
+  "loginUser": {
+    "email": "user@example.com",
+    "password": "Password123!",
+    "token": "mock-jwt-token-string"
+  }
+}

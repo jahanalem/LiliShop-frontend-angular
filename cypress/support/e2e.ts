@@ -15,3 +15,24 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      /**
+       * Custom command to type text into app-text-input component and blur the input field.
+       */
+      typeInAppInput(formControlName: string, text: string): Chainable<void>;
+
+      /**
+       * Custom command to verify Material Dialog content and click its action button to close it.
+       */
+      handleMaterialDialog(expectedTitle: string): Chainable<void>;
+      /**
+       * Fills out the email and password fields, then submits the login form.
+       */
+      loginViaUI(email: string, password: string): Chainable<void>;
+    }
+  }
+}
+export {};
