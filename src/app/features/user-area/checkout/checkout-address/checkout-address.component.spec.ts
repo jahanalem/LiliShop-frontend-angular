@@ -1,3 +1,4 @@
+import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators, FormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
@@ -13,75 +14,77 @@ import { TextInputComponent } from 'src/app/shared/components/text-input/text-in
 
 
 describe('CheckoutAddressComponent', () => {
-  let component: CheckoutAddressComponent;
-  let fixture: ComponentFixture<CheckoutAddressComponent>;
-  let mockAccountService: jasmine.SpyObj<AccountService>;
+    let component: CheckoutAddressComponent;
+    let fixture: ComponentFixture<CheckoutAddressComponent>;
+    let mockAccountService: MockedObject<AccountService>;
 
-  beforeEach(async () => {
-    mockAccountService = jasmine.createSpyObj('AccountService', ['updateAddress']);
+    beforeEach(async () => {
+        mockAccountService = {
+            updateAddress: vi.fn().mockName("AccountService.updateAddress")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        AppRoutingModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatFormFieldModule
-      ],
-      declarations: [CheckoutAddressComponent, TextInputComponent],
-      providers: [
-        { provide: AccountService, useValue: mockAccountService }
-      ]
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CheckoutAddressComponent);
-    component = fixture.componentInstance;
-    component.checkoutForm = new FormGroup({
-      addressForm: new FormGroup({
-        firstName: new FormControl('', Validators.required),
-        lastName: new FormControl('', Validators.required),
-        street: new FormControl('', Validators.required),
-        city: new FormControl('', Validators.required),
-        state: new FormControl('', Validators.required),
-        zipCode: new FormControl('', Validators.required)
-      })
+        await TestBed.configureTestingModule({
+            imports: [
+                BrowserModule,
+                BrowserAnimationsModule,
+                AppRoutingModule,
+                FormsModule,
+                ReactiveFormsModule,
+                MatInputModule,
+                MatFormFieldModule
+            ],
+            declarations: [CheckoutAddressComponent, TextInputComponent],
+            providers: [
+                { provide: AccountService, useValue: mockAccountService }
+            ]
+        }).compileComponents();
     });
-    fixture.detectChanges();
-  });
+
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CheckoutAddressComponent);
+        component = fixture.componentInstance;
+        component.checkoutForm = new FormGroup({
+            addressForm: new FormGroup({
+                firstName: new FormControl('', Validators.required),
+                lastName: new FormControl('', Validators.required),
+                street: new FormControl('', Validators.required),
+                city: new FormControl('', Validators.required),
+                state: new FormControl('', Validators.required),
+                zipCode: new FormControl('', Validators.required)
+            })
+        });
+        fixture.detectChanges();
+    });
 
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should save user address on success', () => {
-    const testAddress: IAddress = {
-      firstName: 'John',
-      lastName: 'Doe',
-      street: '123 Main St.',
-      city: 'Anytown',
-      state: 'CA',
-      zipCode: '12345'
-    }; // mock an IAddress object
-    const component = fixture.debugElement.children[0].componentInstance as CheckoutAddressComponent;
-    mockAccountService.updateAddress.and.returnValue(of(testAddress));
+    it('should save user address on success', () => {
+        const testAddress: IAddress = {
+            firstName: 'John',
+            lastName: 'Doe',
+            street: '123 Main St.',
+            city: 'Anytown',
+            state: 'CA',
+            zipCode: '12345'
+        }; // mock an IAddress object
+        const component = fixture.debugElement.children[0].componentInstance as CheckoutAddressComponent;
+        mockAccountService.updateAddress.mockReturnValue(of(testAddress));
 
-    component.saveUserAddress();
+        component.saveUserAddress();
 
-    expect(mockAccountService.updateAddress).toHaveBeenCalled();
-  });
+        expect(mockAccountService.updateAddress).toHaveBeenCalled();
+    });
 
-  it('should show error message on updateAddress error', () => {
-    const testError = { message: 'Error updating address.' };
-    const component = fixture.debugElement.children[0].componentInstance as CheckoutAddressComponent;
-    mockAccountService.updateAddress.and.returnValue(throwError(() => testError));
+    it('should show error message on updateAddress error', () => {
+        const testError = { message: 'Error updating address.' };
+        const component = fixture.debugElement.children[0].componentInstance as CheckoutAddressComponent;
+        mockAccountService.updateAddress.mockReturnValue(throwError(() => testError));
 
-    component.saveUserAddress();
+        component.saveUserAddress();
 
-    expect(mockAccountService.updateAddress).toHaveBeenCalled();
-  });
+        expect(mockAccountService.updateAddress).toHaveBeenCalled();
+    });
 });

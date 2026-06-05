@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -6,6 +6,7 @@ import { Subject, takeUntil } from 'rxjs';
     selector: 'app-unsubscribe-confirmation',
     imports: [],
     templateUrl: './unsubscribe-confirmation.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './unsubscribe-confirmation.component.scss'
 })
 export class UnsubscribeConfirmationComponent {

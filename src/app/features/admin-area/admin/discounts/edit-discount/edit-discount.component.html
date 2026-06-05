@@ -123,13 +123,13 @@
                   <mat-form-field appearance="fill">
                     <mat-label>Target Entity ID</mat-label>
                     <mat-select formControlName="targetEntityId">
-                      @for (option of targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value); track option) {
+                      @for (option of targetEntityIdOptionsMap.get($safeNavigationMigration(getConditions(i).at(j).get('targetEntity')?.value)); track option) {
                         <mat-option
                           [value]="option.value">
                           {{ option.label }}
                         </mat-option>
                       }
-                      @if (!targetEntityIdOptionsMap.get(getConditions(i).at(j).get('targetEntity')?.value)?.length) {
+                      @if (!targetEntityIdOptionsMap.get($safeNavigationMigration(getConditions(i).at(j).get('targetEntity')?.value))?.length) {
                         <mat-option
                           disabled>
                           No options available

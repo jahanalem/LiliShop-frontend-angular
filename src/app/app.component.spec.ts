@@ -1,3 +1,4 @@
+import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { AccountService } from './core/services/account.service';
@@ -7,90 +8,94 @@ import { IBasket } from './shared/models/basket';
 import { IUser } from './shared/models/user';
 
 describe('AppComponent', () => {
-  let component: AppComponent;
-  let fixture: ComponentFixture<AppComponent>;
-  let basketServiceSpy: jasmine.SpyObj<BasketService>;
-  let accountServiceSpy: jasmine.SpyObj<AccountService>;
+    let component: AppComponent;
+    let fixture: ComponentFixture<AppComponent>;
+    let basketServiceSpy: MockedObject<BasketService>;
+    let accountServiceSpy: MockedObject<AccountService>;
 
-  beforeEach(async () => {
-    const basketServiceMock = jasmine.createSpyObj('BasketService', ['getBasket']);
-    const accountServiceMock = jasmine.createSpyObj('AccountService', ['loadCurrentUser']);
+    beforeEach(async () => {
+        const basketServiceMock = {
+            getBasket: vi.fn().mockName("BasketService.getBasket")
+        };
+        const accountServiceMock = {
+            loadCurrentUser: vi.fn().mockName("AccountService.loadCurrentUser")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [AppComponent],
-      providers: [
-        { provide: BasketService, useValue: basketServiceMock },
-        { provide: AccountService, useValue: accountServiceMock },
-      ],
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [AppComponent],
+            providers: [
+                { provide: BasketService, useValue: basketServiceMock },
+                { provide: AccountService, useValue: accountServiceMock },
+            ],
+        }).compileComponents();
 
-    basketServiceSpy = TestBed.inject(BasketService) as jasmine.SpyObj<BasketService>;
-    accountServiceSpy = TestBed.inject(AccountService) as jasmine.SpyObj<AccountService>;
-  });
+        basketServiceSpy = TestBed.inject(BasketService) as MockedObject<BasketService>;
+        accountServiceSpy = TestBed.inject(AccountService) as MockedObject<AccountService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AppComponent);
-    component = fixture.componentInstance;
-    component.isTesting = true;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AppComponent);
+        component = fixture.componentInstance;
+        component.isTesting = true;
+        fixture.detectChanges();
+    });
 
-  it('should create the app', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the app', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should load basket if basket_id exists in local storage', () => {
-    spyOn(localStorage, 'getItem').and.callFake(() => 'test_basket_id');
-    basketServiceSpy.getBasket.and.returnValue(of({ id: 'test_basket_id', items: [] } as IBasket));
+    it('should load basket if basket_id exists in local storage', () => {
+        vi.spyOn(localStorage, 'getItem').mockImplementation(() => 'test_basket_id');
+        basketServiceSpy.getBasket.mockReturnValue(of({ id: 'test_basket_id', items: [] } as IBasket));
 
-    component.loadBasket();
+        component.loadBasket();
 
-    expect(basketServiceSpy.getBasket).toHaveBeenCalledWith('test_basket_id');
-  });
+        expect(basketServiceSpy.getBasket).toHaveBeenCalledWith('test_basket_id');
+    });
 
-  it('should not load basket if basket_id does not exist in local storage', () => {
-    spyOn(localStorage, 'getItem').and.callFake(() => null);
+    it('should not load basket if basket_id does not exist in local storage', () => {
+        vi.spyOn(localStorage, 'getItem').mockImplementation(() => null);
 
-    component.loadBasket();
+        component.loadBasket();
 
-    expect(basketServiceSpy.getBasket).not.toHaveBeenCalled();
-  });
+        expect(basketServiceSpy.getBasket).not.toHaveBeenCalled();
+    });
 
-  it('should load current user if token exists in local storage', () => {
-    spyOn(localStorage, 'getItem').and.callFake(() => 'test_token');
-    accountServiceSpy.loadCurrentUser.and.returnValue(of({ email: 'test@test.com', displayName: 'Test User', role: 'User', token: 'test_token' } as IUser));
+    it('should load current user if token exists in local storage', () => {
+        vi.spyOn(localStorage, 'getItem').mockImplementation(() => 'test_token');
+        accountServiceSpy.loadCurrentUser.mockReturnValue(of({ email: 'test@test.com', displayName: 'Test User', role: 'User', token: 'test_token' } as IUser));
 
-    component.loadCurrentUser();
+        component.loadCurrentUser();
 
-    expect(accountServiceSpy.loadCurrentUser).toHaveBeenCalledWith('test_token');
-  });
+        expect(accountServiceSpy.loadCurrentUser).toHaveBeenCalledWith('test_token');
+    });
 
-  it('should not load current user if token does not exist in local storage', () => {
-    spyOn(localStorage, 'getItem').and.returnValue(null);
-    accountServiceSpy.loadCurrentUser.and.returnValue(of(null));
+    it('should not load current user if token does not exist in local storage', () => {
+        vi.spyOn(localStorage, 'getItem').mockReturnValue(null);
+        accountServiceSpy.loadCurrentUser.mockReturnValue(of(null));
 
-    component.loadCurrentUser();
+        component.loadCurrentUser();
 
-    expect(accountServiceSpy.loadCurrentUser).not.toHaveBeenCalled();
-  });
+        expect(accountServiceSpy.loadCurrentUser).not.toHaveBeenCalled();
+    });
 
-  it('should handle basketService errors gracefully', () => {
-    spyOn(localStorage, 'getItem').and.callFake(() => 'test_basket_id');
-    spyOn(console, 'log');
-    basketServiceSpy.getBasket.and.returnValue(throwError(() => 'Error'));
+    it('should handle basketService errors gracefully', () => {
+        vi.spyOn(localStorage, 'getItem').mockImplementation(() => 'test_basket_id');
+        vi.spyOn(console, 'log').mockReturnValue(undefined);
+        basketServiceSpy.getBasket.mockReturnValue(throwError(() => 'Error'));
 
-    component.loadBasket();
+        component.loadBasket();
 
-    expect(console.log).toHaveBeenCalled();
-  });
+        expect(console.log).toHaveBeenCalled();
+    });
 
-  it('should handle accountService errors gracefully', () => {
-    spyOn(localStorage, 'getItem').and.callFake(() => 'test_token');
-    spyOn(console, 'log');
-    accountServiceSpy.loadCurrentUser.and.returnValue(throwError(() => 'Error'));
+    it('should handle accountService errors gracefully', () => {
+        vi.spyOn(localStorage, 'getItem').mockImplementation(() => 'test_token');
+        vi.spyOn(console, 'log').mockReturnValue(undefined);
+        accountServiceSpy.loadCurrentUser.mockReturnValue(throwError(() => 'Error'));
 
-    component.loadCurrentUser();
+        component.loadCurrentUser();
 
-    expect(console.log).toHaveBeenCalled();
-  });
+        expect(console.log).toHaveBeenCalled();
+    });
 });

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { EMPTY, Subject, switchMap, takeUntil } from 'rxjs';
 import { ContactService } from 'src/app/core/services/contact.service';
@@ -8,6 +8,7 @@ import { IContactUsMessage } from 'src/app/shared/models/contactUsMessage';
   selector: 'app-edit-contact-us-messages',
   standalone: false,
   templateUrl: './edit-contact-us-messages.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './edit-contact-us-messages.component.scss'
 })
 export class EditContactUsMessagesComponent implements OnInit {

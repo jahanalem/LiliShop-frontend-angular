@@ -3,11 +3,11 @@
     <div class="checkout-content">
       <div class="checkout-stepper">
         <mat-stepper [linear]="true" #appStepper>
-          <mat-step [completed]="(checkoutForm.get('addressForm')?.valid)" label="Address">
+          <mat-step [completed]="($safeNavigationMigration(checkoutForm.get('addressForm')?.valid))" label="Address">
             <app-checkout-address [checkoutForm]="checkoutForm"></app-checkout-address>
           </mat-step>
 
-          <mat-step [completed]="(checkoutForm.get('deliveryForm')?.valid)" label="Delivery">
+          <mat-step [completed]="($safeNavigationMigration(checkoutForm.get('deliveryForm')?.valid))" label="Delivery">
             <app-checkout-delivery [checkoutForm]="checkoutForm"></app-checkout-delivery>
           </mat-step>
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-enum HttpMethod {
+export enum HttpMethod {
   GET = 'GET',
   POST = 'POST',
   PUT = 'PUT',

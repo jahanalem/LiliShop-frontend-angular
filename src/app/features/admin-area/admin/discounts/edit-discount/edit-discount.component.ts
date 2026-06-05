@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, signal, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, RouterModule } from '@angular/router';
 
@@ -49,6 +49,7 @@ import { NotificationService } from 'src/app/core/services/notification.service'
     MatTimepickerModule
   ],
   templateUrl: './edit-discount.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './edit-discount.component.scss'
 })
 export class EditDiscountComponent implements OnInit, OnDestroy {

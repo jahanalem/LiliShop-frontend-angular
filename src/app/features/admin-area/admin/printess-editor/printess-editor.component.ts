@@ -1,6 +1,6 @@
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { PrintessSignalRService } from 'src/app/core/services/printess-signal-r.service';
 import { environment } from 'src/environments/environment';
 
@@ -13,6 +13,7 @@ interface TemplateDto {
   selector: 'app-printess-editor',
   templateUrl: './printess-editor.component.html',
   styleUrl: './printess-editor.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [HttpClientModule]
 })
 export class PrintessEditorComponent implements OnInit, OnDestroy {

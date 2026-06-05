@@ -20,7 +20,7 @@
       <button mat-stroked-button color="primary" cdkStepperPrevious>
         <mat-icon>arrow_back</mat-icon> Back to address
       </button>
-      <button mat-raised-button color="accent" [disabled]="checkoutForm.get('deliveryForm')?.invalid" cdkStepperNext>
+      <button mat-raised-button color="accent" [disabled]="$safeNavigationMigration(checkoutForm.get('deliveryForm')?.invalid)" cdkStepperNext>
         Go to review <mat-icon>arrow_forward</mat-icon>
       </button>
     </div>

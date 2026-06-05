@@ -9,89 +9,89 @@ import { IBrand } from 'src/app/shared/models/brand';
 import { Router } from '@angular/router';
 import { BrandParams } from 'src/app/shared/models/BrandParams';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 
 describe('BrandsComponent', () => {
-  let component: BrandsComponent;
-  let fixture: ComponentFixture<BrandsComponent>;
- 
-  const mockPaginator = {
-    page: of({}) // create an Observable for page
-  };
+    let component: BrandsComponent;
+    let fixture: ComponentFixture<BrandsComponent>;
 
-  const mockBrands: IBrand[] = [
-    { id: 1, name: 'name A', isActive: true },
-    { id: 2, name: 'name B', isActive: true },
-    { id: 3, name: 'name C', isActive: true },
-    { id: 4, name: 'name D', isActive: true },
-    { id: 5, name: 'name E', isActive: false },
-    { id: 6, name: 'name F', isActive: false },
-  ];
+    const mockPaginator = {
+        page: of({}) // create an Observable for page
+    };
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-    declarations: [BrandsComponent],
-    imports: [MatDialogModule, MatPaginatorModule, NoopAnimationsModule],
-    providers: [
-        { provide: MatDialogRef, useValue: {} },
-        {
-            provide: BrandService,
-            useValue: {
-                getBrands: jasmine.createSpy('getBrands').and.returnValue(of({ data: mockBrands, count: mockBrands.length })),
-                deleteBrand: jasmine.createSpy('deleteBrand').and.returnValue(of()),
-                getBrandParams: jasmine.createSpy('getBrandParams').and.returnValue(new BrandParams()) // Mock getBrandParams() here
-            }
-        },
-        {
-            provide: Router,
-            useValue: {
-                navigateByUrl: jasmine.createSpy('navigateByUrl')
-            }
-        },
-        {
-            provide: MatDialog,
-            useValue: {
-                open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of(true) })
-            }
-        },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
-    ]
-}).compileComponents();
+    const mockBrands: IBrand[] = [
+        { id: 1, name: 'name A', isActive: true },
+        { id: 2, name: 'name B', isActive: true },
+        { id: 3, name: 'name C', isActive: true },
+        { id: 4, name: 'name D', isActive: true },
+        { id: 5, name: 'name E', isActive: false },
+        { id: 6, name: 'name F', isActive: false },
+    ];
 
-    fixture = TestBed.createComponent(BrandsComponent);
-    component = fixture.componentInstance;
-    component.paginator = mockPaginator as any; // assign the mockPaginator to component's paginator
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [BrandsComponent],
+            imports: [MatDialogModule, MatPaginatorModule, NoopAnimationsModule],
+            providers: [
+                { provide: MatDialogRef, useValue: {} },
+                {
+                    provide: BrandService,
+                    useValue: {
+                        getBrands: vi.fn().mockName('getBrands').mockReturnValue(of({ data: mockBrands, count: mockBrands.length })),
+                        deleteBrand: vi.fn().mockName('deleteBrand').mockReturnValue(of()),
+                        getBrandParams: vi.fn().mockName('getBrandParams').mockReturnValue(new BrandParams()) // Mock getBrandParams() here
+                    }
+                },
+                {
+                    provide: Router,
+                    useValue: {
+                        navigateByUrl: vi.fn().mockName('navigateByUrl')
+                    }
+                },
+                {
+                    provide: MatDialog,
+                    useValue: {
+                        open: vi.fn().mockName('open').mockReturnValue({ afterClosed: () => of(true) })
+                    }
+                },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(BrandsComponent);
+        component = fixture.componentInstance;
+        component.paginator = mockPaginator as any; // assign the mockPaginator to component's paginator
 
-  it('should create', async () => {
-    await fixture.whenStable();
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should load data when initialized', fakeAsync( () => {
-    component.ngAfterViewInit();
+    it('should create', async () => {
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(component).toBeTruthy();
+    });
 
-    fixture.detectChanges();
+    it('should load data when initialized', fakeAsync(() => {
+        component.ngAfterViewInit();
 
-    expect(component.brands.length).toBe(mockBrands.length);
-    expect(component.totalCount).toBe(mockBrands.length);
-  }));
+        fixture.detectChanges();
 
-  it('should delete brand correctly', fakeAsync( () => {
-    const brandId = 1;
-    const initialCount = component.brands.length;
+        expect(component.brands.length).toBe(mockBrands.length);
+        expect(component.totalCount).toBe(mockBrands.length);
+    }));
 
-    component.deleteBrand(brandId);
+    it('should delete brand correctly', fakeAsync(() => {
+        const brandId = 1;
+        const initialCount = component.brands.length;
 
-    fixture.detectChanges();
+        component.deleteBrand(brandId);
 
-    expect(component.brands.length).toBe(initialCount - 1);
-    expect(component.totalCount).toBe(initialCount - 1);
-    expect(TestBed.inject(BrandService).deleteBrand).toHaveBeenCalledWith(brandId);
-  }));
+        fixture.detectChanges();
+
+        expect(component.brands.length).toBe(initialCount - 1);
+        expect(component.totalCount).toBe(initialCount - 1);
+        expect(TestBed.inject(BrandService).deleteBrand).toHaveBeenCalledWith(brandId);
+    }));
 });

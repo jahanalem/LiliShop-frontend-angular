@@ -1,7 +1,7 @@
 import { NgModule, provideZonelessChangeDetection } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
-import { provideHttpClient, withInterceptors } from "@angular/common/http";
+import { provideHttpClient, withInterceptors, withXhr } from "@angular/common/http";
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { BrowserModule } from '@angular/platform-browser';
@@ -29,7 +29,7 @@ import { provideCloudinaryLoader } from '@angular/common';
   ],
   providers: [
     provideZonelessChangeDetection(),
-    provideHttpClient(withInterceptors([jwtInterceptor, loadingInterceptor, errorInterceptor])),
+    provideHttpClient(withXhr(), withInterceptors([jwtInterceptor, loadingInterceptor, errorInterceptor])),
     provideCloudinaryLoader('https://res.cloudinary.com/rouhi')
   ]
 })

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -26,6 +26,7 @@ import { ProductService } from 'src/app/core/services/product.service';
     SharedModule
 ],
   templateUrl: './discounts.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './discounts.component.scss'
 })
 export class DiscountsComponent implements OnInit, AfterViewInit, OnDestroy {

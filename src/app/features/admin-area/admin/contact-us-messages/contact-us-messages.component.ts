@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, viewChild, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnInit, viewChild, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
@@ -15,6 +15,7 @@ import { PolicyNames } from 'src/app/shared/models/policy';
   selector: 'app-contact-us-messages',
   standalone: false,
   templateUrl: './contact-us-messages.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './contact-us-messages.component.scss'
 })
 export class ContactUsMessagesComponent implements OnInit, OnDestroy {
