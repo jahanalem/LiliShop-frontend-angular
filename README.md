@@ -2,7 +2,7 @@ I have single-handedly developed this project from scratch. Welcome to LiliShop!
 
 **Project Name:** LiliShop
 
-**Core Technologies:** .NET 10, Angular 21
+**Core Technologies:** .NET 10, Angular 22
 
 LiliShop is a modern e-commerce platform developed with .NET 9 and Angular 20, designed to provide a seamless shopping experience for users and robust management capabilities for administrators.
 
@@ -57,7 +57,7 @@ LiliShop is a modern e-commerce platform developed with .NET 9 and Angular 20, d
 ## 💻 Technical Details:
 
 * **Backend Framework:** .NET 10
-* **Frontend Framework:** Angular 21
+* **Frontend Framework:** Angular 22
 * **Programming Languages:** C#, TypeScript
 * **Database:** Microsoft SQL Server with Entity Framework Core for data access 💾.
 * **Payment Processing:** **Stripe** for handling online payments 💸.
@@ -71,7 +71,7 @@ LiliShop is a modern e-commerce platform developed with .NET 9 and Angular 20, d
 
 ## 🛠️ Tech Stack Summary:
 
-.NET 10, Angular 21, C#, TypeScript, Entity Framework Core, Microsoft SQL Server, **Stripe**, Redis, Hangfire, SendGrid, Cloudinary.
+.NET 10, Angular 22, C#, TypeScript, Entity Framework Core, Microsoft SQL Server, **Stripe**, Redis, Hangfire, SendGrid, Cloudinary.
 
 ---
 
