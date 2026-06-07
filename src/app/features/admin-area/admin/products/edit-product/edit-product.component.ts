@@ -1,8 +1,8 @@
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, signal, inject, ChangeDetectorRef, effect } from '@angular/core';
+import { form, required, min, max, FormField } from '@angular/forms/signals';
 import { Observable, Subject, catchError, firstValueFrom, of, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, signal, inject, ChangeDetectorRef } from '@angular/core';
-import { ThemePalette } from '@angular/material/core';
+import { MatNativeDateModule, ThemePalette } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { IProduct, IProductAdmin } from './../../../../../shared/models/product';
@@ -17,16 +17,90 @@ import { ProductService } from 'src/app/core/services/product.service';
 import { StorageService } from 'src/app/core/services/storage.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { DiscountService } from 'src/app/core/services/discount.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTimepickerModule } from '@angular/material/timepicker';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+
+interface ProductFormModel {
+  isActive: boolean;
+  name: string;
+  description: string;
+  price: number;
+  productBrandId: number | null;
+  productTypeId: number | null;
+  productCharacteristics: {
+    id: number;
+    productId: number;
+    sizeId: number;
+    quantity: number;
+  }[];
+  isDiscountActive: boolean;
+  discountAmount: number | null;
+  isPercentage: boolean;
+  discountStartDateDate: Date | null;
+  discountStartDateTime: Date | null;
+  discountEndDateDate: Date | null;
+  discountEndDateTime: Date | null;
+}
 
 @Component({
   selector: 'app-edit-product',
   templateUrl: './edit-product.component.html',
   styleUrls: ['./edit-product.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormField,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatIconModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatTooltipModule,
+    MatDatepickerModule,
+    MatTimepickerModule,
+    MatNativeDateModule,
+    SharedModule,
+  ]
 })
 export class EditProductComponent implements OnInit, OnDestroy {
-  productForm!: FormGroup;
+
+  productModel = signal<ProductFormModel>({
+    isActive: false,
+    name: '',
+    description: '',
+    price: 0,
+    productBrandId: null,
+    productTypeId: null,
+    productCharacteristics: [],
+    isDiscountActive: false,
+    discountAmount: null,
+    isPercentage: true,
+    discountStartDateDate: null,
+    discountStartDateTime: null,
+    discountEndDateDate: null,
+    discountEndDateTime: null,
+  });
+
+  productForm = form(this.productModel, (p) => {
+    required(p.name);
+    required(p.description);
+    required(p.price);
+    min(p.price, 1);
+    max(p.price, 10000);
+    required(p.productBrandId);
+    required(p.productTypeId);
+  });
 
   adminProduct = signal<IProductAdmin | undefined>(undefined);
   brands  = signal<IBrand[]>([]);
@@ -36,30 +110,54 @@ export class EditProductComponent implements OnInit, OnDestroy {
   disabledAddSizeButton = signal<boolean>(false);
   dynamicSizeAdded      = signal<boolean>(false);
   dynamicSizeRemoved    = signal<boolean>(false);
+  isFormDirty           = signal<boolean>(false);
 
-  productIdFromUrl      : number = 0;                     // 0 means new product
+  productIdFromUrl      : number = 0;
   productCharacteristics: IProductCharacteristic[] = [];
   validSizeList         : ISizeClassification[] = [];
   colorCheckbox         : ThemePalette;
 
-  private backupStartTime: string | null = null;
-  private backupEndTime: string | null   = null;
-  private backupStartDate: string | null = null;
-  private backupEndDate: string | null   = null;
+  private backupStartTime: Date | null = null;
+  private backupEndTime  : Date | null = null;
+  private backupStartDate: Date | null = null;
+  private backupEndDate  : Date | null = null;
+
+  private isInitialLoad = true;
 
   destroy$ = new Subject<void>();
 
   private cdRef               = inject(ChangeDetectorRef);
   private dialog              = inject(MatDialog);
   private router              = inject(Router);
-  private formBuilder         = inject(FormBuilder);
   private productService      = inject(ProductService);
   private activatedRoute      = inject(ActivatedRoute);
   private storageService      = inject(StorageService);
   private discountService     = inject(DiscountService);
   private notificationService = inject(NotificationService);
 
-  constructor() {}
+  constructor() {
+    effect(() => {
+      this.productModel();
+
+      if (this.isInitialLoad) {
+        this.isInitialLoad = false;
+      } else {
+        this.isFormDirty.set(true);
+      }
+    });
+  }
+
+  get isFormValid(): boolean {
+    const values = this.productModel();
+    return !!(
+      values.name?.trim() &&
+      values.description?.trim() &&
+      values.price >= 1 &&
+      values.price <= 10000 &&
+      values.productBrandId !== null &&
+      values.productTypeId !== null
+    );
+  }
 
   ngOnDestroy(): void {
     this.storageService.delete(this.getProductKey());
@@ -69,9 +167,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     try {
-      this.createProductForm();
-      this.setupDiscountValidation();
-
       await Promise.all([
         this.loadBrands(),
         this.loadTypes(),
@@ -88,36 +183,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error("Error in ngOnInit:", error);
     }
-  }
-
-  get characteristics(): FormArray {
-    return this.productForm.get('productCharacteristics') as FormArray;
-  }
-
-  getFormGroup(control: AbstractControl): FormGroup {
-    return control as FormGroup;
-  }
-
-  createProductForm(): void {
-    this.productForm = this.formBuilder.group({
-      isActive              : [false],
-      name                  : [null, Validators.required],
-      description           : [null, Validators.required],
-      price                 : [null, [Validators.required, Validators.min(1), Validators.max(10000)]],
-      productBrandId        : [null, Validators.required],
-      productTypeId         : [null, Validators.required],
-      productCharacteristics: this.formBuilder.array([]),
-      productPhotos         : [null],
-
-      // Discount controls - No longer dependent on price!
-      isDiscountActive      : [false],
-      discountAmount        : [null],
-      isPercentage          : [true],
-      discountStartDateDate : [{ value: null, disabled: true }],
-      discountStartDateTime : [{ value: null, disabled: true }],
-      discountEndDateDate   : [{ value: null, disabled: true }],
-      discountEndDateTime   : [{ value: null, disabled: true }],
-    });
   }
 
   async loadBrands(): Promise<void>  {
@@ -154,13 +219,13 @@ export class EditProductComponent implements OnInit, OnDestroy {
       );
 
       if (prod) {
-        this.adminProduct.set(prod as IProductAdmin);
-        if(prod.id>0) {
+        const adminProd: IProductAdmin = prod as IProductAdmin;
+        if(prod.id > 0) {
           const discount = await firstValueFrom(this.discountService.getSingleDiscountForProduct(prod.id));
-          this.adminProduct.update(p => ({ ...p!, discount: discount ?? null }));
-          console.log("Loaded product with discount:", this.adminProduct());
+          adminProd.discount = discount ?? null;
         }
-        this.productForm.setControl('productCharacteristics', this.formBuilder.array([]));
+        this.adminProduct.set(adminProd);
+        this.productModel.update(m => ({ ...m, productCharacteristics: [] }));
       }
     } catch (error) {
       console.error("Error loading product:", error);
@@ -168,14 +233,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
 
   async getProductFormValues(): Promise<void> {
-    if (!this.productForm) {
-      console.error('productForm is not initialized');
-      return;
-    }
-
     const currentProduct = this.adminProduct();
-
     if (currentProduct) {
+      this.isInitialLoad = true;
       let start = null;
       let end = null;
       let discount = null;
@@ -186,237 +246,46 @@ export class EditProductComponent implements OnInit, OnDestroy {
          end   = this.extractDateTime(discount.endDate);
       }
 
-      // Base price logic: The admin ALWAYS edits the base price.
       const basePrice = currentProduct.previousPrice ?? currentProduct.price;
 
-      this.productForm.patchValue({
-        isActive             : currentProduct.isActive,
-        name                 : currentProduct.name,
-        description          : currentProduct.description,
-        price                : basePrice,
-        productBrandId       : currentProduct.productBrandId,
-        productTypeId        : currentProduct.productTypeId,
-        productPhotos        : currentProduct.productPhotos,
+      this.productForm.isActive().value.set(currentProduct.isActive);
+      this.productForm.name().value.set(currentProduct.name);
+      this.productForm.description().value.set(currentProduct.description);
+      this.productForm.price().value.set(basePrice);
+      this.productForm.productBrandId().value.set(currentProduct.productBrandId);
+      this.productForm.productTypeId().value.set(currentProduct.productTypeId);
 
-        isDiscountActive     : discount?.isActive ?? false,
-        discountAmount       : discount?.amount ?? null,
-        isPercentage         : discount?.isPercentage,
+      this.productForm.isDiscountActive().value.set(discount?.isActive ?? false);
+      this.productForm.discountAmount().value.set(discount?.amount ?? null);
+      this.productForm.isPercentage().value.set(discount?.isPercentage ?? true);
 
-        discountStartDateDate: start?.date ?? null,
-        discountStartDateTime: start?.time ?? null,
-        discountEndDateDate  : end?.date ?? null,
-        discountEndDateTime  : end?.time ?? null,
-      });
+      this.productForm.discountStartDateDate().value.set(start?.date ?? null);
+      this.productForm.discountStartDateTime().value.set(start?.time ?? null);
+      this.productForm.discountEndDateDate().value.set(end?.date ?? null);
+      this.productForm.discountEndDateTime().value.set(end?.time ?? null);
+
+      setTimeout(() => this.isFormDirty.set(false), 0);
     }
-  }
-
-  async setupDiscountValidation(): Promise<void> {
-    const isDiscountActiveControl      = this.productForm.get('isDiscountActive');
-    const discountStartDateDateControl = this.productForm.get('discountStartDateDate');
-    const discountStartDateTimeControl = this.productForm.get('discountStartDateTime');
-    const discountEndDateDateControl   = this.productForm.get('discountEndDateDate');
-    const discountEndDateTimeControl   = this.productForm.get('discountEndDateTime');
-
-    if (!isDiscountActiveControl || !discountStartDateDateControl || !discountEndDateDateControl) return;
-
-    isDiscountActiveControl.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((isActive: boolean) => {
-      if (isActive) {
-
-        const product = this.adminProduct();
-        const discount = product?.discount;
-
-        // --- Start Date Logic ---
-        if (discount?.startDate) {
-           // If the product already has a discount in the DB, restore it (or use the recent backup if the user just clicked)
-           const startDate = new Date(discount.startDate);
-           discountStartDateDateControl.setValue(this.backupStartDate ?? startDate);
-           discountStartDateTimeControl?.setValue(this.backupStartTime ?? startDate);
-        } else {
-           // If it's a brand new discount, use the backup or default to 'now'
-           const now = new Date();
-           discountStartDateDateControl.setValue(this.backupStartDate ?? now);
-           discountStartDateTimeControl?.setValue(this.backupStartTime ?? now);
-        }
-
-        // --- End Date Logic ---
-        if (discount?.endDate) {
-           // If the product already has an end date in the DB, restore it
-           const endDate = new Date(discount.endDate);
-           discountEndDateDateControl.setValue(this.backupEndDate ?? endDate);
-           discountEndDateTimeControl?.setValue(this.backupEndTime ?? endDate);
-        } else {
-           // If it's a brand new discount, use the backup or default to 'tomorrow'
-           const tomorrow = new Date();
-           tomorrow.setDate(tomorrow.getDate() + 1);
-           discountEndDateDateControl.setValue(this.backupEndDate ?? tomorrow);
-           discountEndDateTimeControl?.setValue(this.backupEndTime ?? tomorrow);
-        }
-
-        // Enable controls so the user can edit them
-        discountStartDateDateControl.enable();
-        discountStartDateTimeControl?.enable();
-        discountEndDateDateControl.enable();
-        discountEndDateTimeControl?.enable();
-
-      } else {
-        // Backup the current values before disabling, in case the user clicked by mistake
-        this.backupStartDate = discountStartDateDateControl.value;
-        this.backupStartTime = discountStartDateTimeControl?.value;
-        this.backupEndDate   = discountEndDateDateControl.value;
-        this.backupEndTime   = discountEndDateTimeControl?.value;
-
-        // Disable controls
-        discountStartDateDateControl.disable();
-        discountStartDateTimeControl?.disable();
-        discountEndDateDateControl.disable();
-        discountEndDateTimeControl?.disable();
-      }
-    });
-  }
-
-  onSubmit() {
-    if (this.productForm.invalid) {
-      this.notificationService.showError('Form Validation Error: Please fill out the form correctly.');
-      return;
-    }
-
-    const formValues      = this.productForm.getRawValue(); // gets values even if disabled
-    const existingProduct = this.adminProduct();
-    const isUpdate        = !!existingProduct && existingProduct.id > 0;
-
-    let discountPayload: Partial<ISingleDiscount> | null = null;
-    const oldDiscount = this.adminProduct()?.discount;
-    const forceSingleDiscount = this.shouldForceSingleDiscount(formValues);
-
-    if (forceSingleDiscount) {
-      const updatedDiscount: Partial<ISingleDiscount> = {};
-
-      if (oldDiscount) updatedDiscount.id = oldDiscount.id;
-
-      updatedDiscount.isActive = formValues.isDiscountActive;
-      updatedDiscount.name = "Single Discount";
-      updatedDiscount.isPercentage = formValues.isPercentage;
-      updatedDiscount.amount = formValues.discountAmount;
-
-      const newStart = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
-      updatedDiscount.startDate = newStart?.toISOString();
-      const newEnd = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
-      updatedDiscount.endDate = newEnd?.toISOString();
-
-      discountPayload = updatedDiscount;
-    }
-
-    const productPayload: IProductAdmin = {
-      id                    : existingProduct?.id || 0,
-      name                  : formValues.name,
-      description           : formValues.description,
-      price                 : formValues.price, // Admin base price
-      previousPrice         : existingProduct?.previousPrice, // Preserve backend state
-      pictureUrl            : existingProduct?.pictureUrl || '',
-      picturePublicId       : existingProduct?.picturePublicId || '',
-      productType           : existingProduct?.productType,
-      productTypeId         : formValues.productTypeId,
-      productBrand          : existingProduct?.productBrand,
-      productBrandId        : formValues.productBrandId,
-      isActive              : formValues.isActive,
-      productCharacteristics: formValues.productCharacteristics || [],
-      productPhotos         : existingProduct?.productPhotos || [],
-      discount              : discountPayload
-    };
-
-    const productAction = isUpdate
-      ? this.productService.updateProduct(productPayload)
-      : this.productService.createProduct(productPayload);
-
-    productAction.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (returnedProduct: IProduct) => {
-        const updatedAdminProduct: IProductAdmin = {
-          ...returnedProduct,
-          discount: discountPayload !== null ? discountPayload : (oldDiscount ?? null)
-        };
-
-        this.adminProduct.set(updatedAdminProduct);
-
-        this.productForm.patchValue({
-          productPhotos   : returnedProduct.productPhotos,
-          price           : returnedProduct.previousPrice ?? returnedProduct.price,
-          isDiscountActive: updatedAdminProduct.discount?.isActive ?? false,
-        });
-
-        this.productForm.markAsPristine();
-        const action = isUpdate ? 'updated' : 'created';
-        this.notificationService.showSuccess(`Success: Product ${action} successfully.`);
-        this.cdRef.detectChanges();
-      },
-      error: (err) => {
-        this.notificationService.showError('Error: An error occurred while saving the product.');
-        console.error('Error saving product:', err);
-      },
-    });
-  }
-
-  private shouldForceSingleDiscount(formValues: any): boolean {
-    const productDiscount = this.adminProduct()?.discount;
-
-    // If the admin checked the box, we send the payload.
-    if (formValues.isDiscountActive) {
-      return true;
-    }
-
-    // If the admin UNCHECKED the box but a discount existed previously,
-    // we must send the payload so the backend knows to deactivate it.
-    if (!formValues.isDiscountActive && productDiscount?.isActive) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private combineDateAndTime(date: any, time: any): Date | null {
-    if (!date || !time) return null;
-
-    const combinedDate = new Date(date);
-    const timeObj = new Date(time);
-
-    if (!isNaN(timeObj.getTime())) {
-       combinedDate.setHours(timeObj.getHours(), timeObj.getMinutes(), 0, 0);
-    }
-    return combinedDate;
-  }
-
-  private extractDateTime(dateStr: string | null | undefined): { date: Date | null; time: Date | null } {
-    if (!dateStr) return { date: null, time: null };
-
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return { date: null, time: null };
-
-    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const timeOnly = new Date(1970, 0, 1, date.getHours(), date.getMinutes());
-
-    return { date: dateOnly, time: timeOnly };
-  }
-
-  get dynamicDropDownSize() {
-    return this.productForm.controls['productCharacteristics'] as FormArray;
-  }
-
-  addDynamicDropDownSize(sizeId: number | string = '', qty: number = 0, id: number, productId: number) {
-    const sizeForm = this.formBuilder.group({
-      id       : [id],
-      productId: [productId],
-      sizeId   : [sizeId],
-      quantity : [qty],
-    });
-    this.dynamicDropDownSize.push(sizeForm);
   }
 
   async loadArrayOfDropDownSize(): Promise<void> {
     const chars = this.adminProduct()?.productCharacteristics;
     if (!chars) return;
 
-    chars.forEach((pc) => {
-      this.addDynamicDropDownSize(pc.sizeId, pc.quantity, pc.id, pc.productId);
-    });
+    this.isInitialLoad = true;
+    const standardCharacteristics = chars.map(pc => ({
+      id: pc.id,
+      productId: pc.productId,
+      sizeId: pc.sizeId,
+      quantity: pc.quantity
+    }));
+
+    this.productModel.update(m => ({
+      ...m,
+      productCharacteristics: standardCharacteristics
+    }));
+
+    setTimeout(() => this.isFormDirty.set(false), 0);
   }
 
   async setProductInLocalStorage(): Promise<void> {
@@ -434,14 +303,157 @@ export class EditProductComponent implements OnInit, OnDestroy {
     console.error(error);
   }
 
-  onIsActiveChange(event: boolean): void {
-    const currentProduct = this.adminProduct();
-    if (!currentProduct) return;
-    this.adminProduct.set({ ...currentProduct, isActive: event });
+  onSubmit() {
+    if (!this.isFormValid) {
+      this.notificationService.showError('Form Validation Error: Please fill out the form correctly.');
+      return;
+    }
+
+    const formValues = this.productModel();
+    const existingProduct = this.adminProduct();
+    const isUpdate        = !!existingProduct && existingProduct.id > 0;
+
+    let discountPayload: Partial<ISingleDiscount> | null = null;
+    const oldDiscount = this.adminProduct()?.discount;
+    const forceSingleDiscount = this.shouldForceSingleDiscount(formValues);
+
+    if (forceSingleDiscount) {
+      const updatedDiscount: Partial<ISingleDiscount> = {};
+
+      if (oldDiscount) updatedDiscount.id = oldDiscount.id;
+
+      updatedDiscount.isActive = formValues.isDiscountActive;
+      updatedDiscount.name = "Single Discount";
+      updatedDiscount.isPercentage = formValues.isPercentage;
+      updatedDiscount.amount = formValues.discountAmount ?? undefined;
+
+      const newStart = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
+      updatedDiscount.startDate = newStart?.toISOString();
+      const newEnd = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
+      updatedDiscount.endDate = newEnd?.toISOString();
+
+      discountPayload = updatedDiscount;
+    }
+
+    const productPayload: IProductAdmin = {
+      id                    : existingProduct?.id || 0,
+      name                  : formValues.name,
+      description           : formValues.description,
+      price                 : formValues.price,
+      previousPrice         : existingProduct?.previousPrice,
+      pictureUrl            : existingProduct?.pictureUrl || '',
+      picturePublicId       : existingProduct?.picturePublicId || '',
+      productType           : existingProduct?.productType,
+      productTypeId         : formValues.productTypeId ?? 0,
+      productBrand          : existingProduct?.productBrand,
+      productBrandId        : formValues.productBrandId ?? 0,
+      isActive              : formValues.isActive,
+      productCharacteristics: (formValues.productCharacteristics || []).map(c => ({
+        id: c.id,
+        productId: c.productId,
+        sizeId: c.sizeId,
+        quantity: c.quantity,
+        sizeName: ''
+      })),
+      productPhotos         : existingProduct?.productPhotos || [],
+      discount              : discountPayload
+    };
+
+    const productAction = isUpdate
+      ? this.productService.updateProduct(productPayload)
+      : this.productService.createProduct(productPayload);
+
+    productAction.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (returnedProduct: IProduct) => {
+        const updatedAdminProduct: IProductAdmin = {
+          ...returnedProduct,
+          discount: discountPayload !== null ? discountPayload : (oldDiscount ?? null)
+        };
+
+        this.adminProduct.set(updatedAdminProduct);
+        this.productForm.price().value.set(returnedProduct.previousPrice ?? returnedProduct.price);
+        this.productForm.isDiscountActive().value.set(updatedAdminProduct.discount?.isActive ?? false);
+
+        this.isFormDirty.set(false);
+        const action = isUpdate ? 'updated' : 'created';
+        this.notificationService.showSuccess(`Success: Product ${action} successfully.`);
+        this.cdRef.detectChanges();
+      },
+      error: (err) => {
+        this.notificationService.showError('Error: An error occurred while saving the product.');
+        console.error('Error saving product:', err);
+      },
+    });
+  }
+
+  onDiscountToggle(isActive: boolean): void {
+    const product = this.adminProduct();
+    const discount = product?.discount;
+
+    if (isActive) {
+      // Apply existing or default start dates
+      if (discount?.startDate) {
+        const startDate = new Date(discount.startDate);
+        this.productForm.discountStartDateDate().value.set(this.backupStartDate ?? startDate);
+        this.productForm.discountStartDateTime().value.set(this.backupStartTime ?? startDate);
+      } else {
+        const now = new Date();
+        this.productForm.discountStartDateDate().value.set(this.backupStartDate ?? now);
+        this.productForm.discountStartDateTime().value.set(this.backupStartTime ?? now);
+      }
+
+      // Apply existing or default end dates
+      if (discount?.endDate) {
+        const endDate = new Date(discount.endDate);
+        this.productForm.discountEndDateDate().value.set(this.backupEndDate ?? endDate);
+        this.productForm.discountEndDateTime().value.set(this.backupEndTime ?? endDate);
+      } else {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        this.productForm.discountEndDateDate().value.set(this.backupEndDate ?? tomorrow);
+        this.productForm.discountEndDateTime().value.set(this.backupEndTime ?? tomorrow);
+      }
+    } else {
+      // Save backups of the current values before clearing/deactivating
+      const formState = this.productModel();
+      this.backupStartDate = formState.discountStartDateDate;
+      this.backupStartTime = formState.discountStartDateTime;
+      this.backupEndDate   = formState.discountEndDateDate;
+      this.backupEndTime   = formState.discountEndDateTime;
+    }
+  }
+
+  private shouldForceSingleDiscount(formValues: any): boolean {
+    const productDiscount = this.adminProduct()?.discount;
+    if (formValues.isDiscountActive) return true;
+    if (!formValues.isDiscountActive && productDiscount?.isActive) return true;
+    return false;
+  }
+
+  private combineDateAndTime(date: any, time: any): Date | null {
+    if (!date || !time) return null;
+    const combinedDate = new Date(date);
+    const timeObj = new Date(time);
+    if (!isNaN(timeObj.getTime())) {
+       combinedDate.setHours(timeObj.getHours(), timeObj.getMinutes(), 0, 0);
+    }
+    return combinedDate;
+  }
+
+  private extractDateTime(dateStr: string | null | undefined): { date: Date | null; time: Date | null } {
+    if (!dateStr) return { date: null, time: null };
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return { date: null, time: null };
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const timeOnly = new Date(1970, 0, 1, date.getHours(), date.getMinutes());
+    return { date: dateOnly, time: timeOnly };
   }
 
   removeSize(index: number) {
-    this.dynamicDropDownSize.removeAt(index);
+    this.productModel.update(m => ({
+      ...m,
+      productCharacteristics: m.productCharacteristics.filter((_, i) => i !== index)
+    }));
     this.disabledAddSizeButton.set(false);
     this.dynamicSizeRemoved.set(true);
   }
@@ -456,29 +468,37 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
     if (this.validSizeList.length > 0) {
       const defaultSizeId = this.validSizeList[0].id;
-      this.addDynamicDropDownSize(defaultSizeId, 1, 0, effectiveProductId);
+
+      this.productModel.update(m => ({
+        ...m,
+        productCharacteristics: [...m.productCharacteristics, {
+          id: 0,
+          productId: effectiveProductId,
+          sizeId: defaultSizeId,
+          quantity: 1
+        }]
+      }));
       this.dynamicSizeAdded.set(true);
     }
 
     this.disabledAddSizeButton.set(this.validSizeList.length <= 1);
   }
 
-  getAvailableSizeList(control: AbstractControl): ISizeClassification[] {
-    const formGroup = control as FormGroup;
-    const currentSizeId = formGroup.controls['sizeId'].value as number;
+  getAvailableSizeList(characteristic: any): ISizeClassification[] {
+    const currentSizeId = characteristic.sizeId;
     this.validSizeList = this.getValidSizeList(currentSizeId);
     return this.validSizeList;
   }
 
   getValidSizeList(ignoreSizeId: number = -1): ISizeClassification[] {
-    const specs: IProductCharacteristic[] = this.dynamicDropDownSize.value as IProductCharacteristic[];
+    const specs = this.productModel().productCharacteristics;
     return this.sizes().filter(size => {
       return !specs.some(spec => size.id === spec.sizeId && size.id !== ignoreSizeId);
     });
   }
 
   navigateBack() {
-    if (this.productForm.dirty) {
+    if (this.isFormDirty()) {
       const dialogData: IDialogData = {
         title: 'Discard change',
         content: 'Would you like to discard your changes?',
@@ -503,8 +523,8 @@ export class EditProductComponent implements OnInit, OnDestroy {
   }
 
   get isSaveDisabled(): boolean {
-    return !(this.productForm.valid &&
-      (this.productForm.dirty || this.dynamicSizeAdded() || this.dynamicSizeRemoved()));
+    return !(this.isFormValid &&
+      (this.isFormDirty() || this.dynamicSizeAdded() || this.dynamicSizeRemoved()));
   }
 
   isDiscountGroup(): boolean{

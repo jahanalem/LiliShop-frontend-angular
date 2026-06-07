@@ -20,8 +20,7 @@ import {MatTimepickerModule} from '@angular/material/timepicker';
 
 @NgModule({
     declarations: [
-        ProductsComponent,
-        EditProductComponent
+        ProductsComponent
     ],
     imports: [
         CommonModule,
@@ -39,7 +38,8 @@ import {MatTimepickerModule} from '@angular/material/timepicker';
         MatTimepickerModule,
         MatNativeDateModule,
         ReactiveFormsModule,
-        SharedModule
+        SharedModule,
+        EditProductComponent
     ]
 })
 export class ProductsModule { }
