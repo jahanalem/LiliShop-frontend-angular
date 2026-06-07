@@ -174,11 +174,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
         this.loadProduct()
       ]);
 
-      await Promise.all([
-        this.getProductFormValues(),
-        this.loadArrayOfDropDownSize(),
-        this.setProductInLocalStorage()
-      ]);
+      await this.loadProduct();
+
+      await this.setProductInLocalStorage();
 
     } catch (error) {
       console.error("Error in ngOnInit:", error);
@@ -197,35 +195,78 @@ export class EditProductComponent implements OnInit, OnDestroy {
     this.fetchData(() => this.productService.getSizes(true), (response) => { this.sizes.set([...response]); });
   }
 
-  async loadProduct(): Promise<void> {
-    try {
-      const prod = await firstValueFrom(
-        this.activatedRoute.paramMap.pipe(
-          switchMap((params: ParamMap) => {
-            const id = params.get('id');
-            this.productIdFromUrl = (id === null ? 0 : +id);
-            if (this.productIdFromUrl > 0) {
-              return this.productService.getProduct(this.productIdFromUrl);
-            } else {
-              return of(null);
-            }
-          }),
-          catchError((error: any) => {
-            this.handleApiError(error);
+ async loadProduct(): Promise<void> {
+  try {
+    const prod = await firstValueFrom(
+      this.activatedRoute.paramMap.pipe(
+        switchMap((params: ParamMap) => {
+          const id = params.get('id');
+          this.productIdFromUrl = (id === null ? 0 : +id);
+          if (this.productIdFromUrl > 0) {
+            return this.productService.getProduct(this.productIdFromUrl);
+          } else {
             return of(null);
-          }),
-          takeUntil(this.destroy$)
-        )
-      );
+          }
+        }),
+        catchError((error: any) => {
+          this.handleApiError(error);
+          return of(null);
+        }),
+        takeUntil(this.destroy$)
+      )
+    );
 
-      if (prod) {
-        const adminProd: IProductAdmin = prod as IProductAdmin;
-        if(prod.id > 0) {
-          const discount = await firstValueFrom(this.discountService.getSingleDiscountForProduct(prod.id));
-          adminProd.discount = discount ?? null;
-        }
-        this.adminProduct.set(adminProd);
-        this.productModel.update(m => ({ ...m, productCharacteristics: [] }));
+    if (prod) {
+      const adminProd: IProductAdmin = prod as IProductAdmin;
+      if (prod.id > 0) {
+        const discount = await firstValueFrom(this.discountService.getSingleDiscountForProduct(prod.id));
+        adminProd.discount = discount ?? null;
+      }
+
+      // Save the raw product data reference
+      this.adminProduct.set(adminProd);
+
+      // Initialize the form state flag
+      this.isInitialLoad = true;
+
+      // Extract discount dates if they exist
+      let start = null;
+      let end = null;
+      const discount = adminProd.discount;
+      if (discount) {
+         start = this.extractDateTime(discount.startDate);
+         end   = this.extractDateTime(discount.endDate);
+      }
+
+      const basePrice = adminProd.previousPrice ?? adminProd.price;
+
+      // Map the real characteristics from the database directly
+      const standardCharacteristics = (adminProd.productCharacteristics || []).map(pc => ({
+        id: pc.id,
+        productId: pc.productId,
+        sizeId: pc.sizeId,
+        quantity: pc.quantity
+      }));
+
+      // Directly assign ALL correct values to the model signal at once
+      this.productModel.set({
+        isActive              : adminProd.isActive,
+        name                  : adminProd.name,
+        description           : adminProd.description,
+        price                 : basePrice,
+        productBrandId        : adminProd.productBrandId,
+        productTypeId         : adminProd.productTypeId,
+        productCharacteristics: standardCharacteristics,          // Real data assigned immediately
+        isDiscountActive      : discount?.isActive ?? false,
+        discountAmount        : discount?.amount ?? null,
+        isPercentage          : discount?.isPercentage ?? true,
+        discountStartDateDate : start?.date ?? null,
+        discountStartDateTime : start?.time ?? null,
+        discountEndDateDate   : end?.date ?? null,
+        discountEndDateTime   : end?.time ?? null,
+      });
+
+        setTimeout(() => this.isFormDirty.set(false), 0);
       }
     } catch (error) {
       console.error("Error loading product:", error);
@@ -270,7 +311,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   async loadArrayOfDropDownSize(): Promise<void> {
     const chars = this.adminProduct()?.productCharacteristics;
-    if (!chars) return;
+    if (!chars) {
+      return;
+    }
 
     this.isInitialLoad = true;
     const standardCharacteristics = chars.map(pc => ({
@@ -460,9 +503,13 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   addSize() {
     const currentProduct = this.adminProduct();
-    const effectiveProductId = currentProduct ? currentProduct.id : (this.productIdFromUrl > 0 ? this.productIdFromUrl : 0);
+    const effectiveProductId = currentProduct
+      ? currentProduct.id
+      : (this.productIdFromUrl > 0 ? this.productIdFromUrl : 0);
 
-    if (effectiveProductId < 0) return;
+    if (effectiveProductId < 0) {
+      return;
+    }
 
     this.validSizeList = this.getValidSizeList();
 
@@ -484,10 +531,17 @@ export class EditProductComponent implements OnInit, OnDestroy {
     this.disabledAddSizeButton.set(this.validSizeList.length <= 1);
   }
 
-  getAvailableSizeList(characteristic: any): ISizeClassification[] {
-    const currentSizeId = characteristic.sizeId;
-    this.validSizeList = this.getValidSizeList(currentSizeId);
-    return this.validSizeList;
+  getAvailableSizeList(currentSizeId: number): ISizeClassification[] {
+    const specs = this.productModel().productCharacteristics;
+
+    return this.sizes().filter(size => {
+      // Always allow the size that is currently selected in this specific row
+      if (size.id === currentSizeId) {
+        return true;
+      }
+      // Exclude the size if it is already selected in any other row
+      return !specs.some(spec => spec.sizeId === size.id);
+    });
   }
 
   getValidSizeList(ignoreSizeId: number = -1): ISizeClassification[] {

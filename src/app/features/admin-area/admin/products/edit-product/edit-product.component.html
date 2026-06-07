@@ -131,7 +131,7 @@
               <mat-form-field appearance="outline" class="input-field size-field">
                 <mat-label>Size</mat-label>
                 <mat-select [formField]="char.sizeId" placeholder="Select a size">
-                  @for (size of sizes(); track size) {
+                  @for (size of getAvailableSizeList(char.sizeId().value()); track size.id) {
                     <mat-option [value]="size.id">
                       {{size.size}}
                     </mat-option>
