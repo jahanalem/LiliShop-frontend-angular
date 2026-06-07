@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, signal, inject, ChangeDetectorRef, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, computed, signal, inject } from '@angular/core';
 import { form, required, min, max, FormField } from '@angular/forms/signals';
-import { Observable, Subject, catchError, firstValueFrom, of, switchMap, takeUntil } from 'rxjs';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { MatNativeDateModule, ThemePalette } from '@angular/material/core';
+import { Observable, Subject, firstValueFrom, takeUntil } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { IProduct, IProductAdmin } from './../../../../../shared/models/product';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProductType } from 'src/app/shared/models/productType';
-import { IProductCharacteristic, ISizeClassification } from 'src/app/shared/models/productCharacteristic';
+import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ISingleDiscount } from 'src/app/shared/models/discount';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 
@@ -29,6 +29,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { CommonModule } from '@angular/common';
 
+interface ProductCharacteristicModel {
+  id: number;
+  productId: number;
+  sizeId: number;
+  quantity: number;
+}
+
 interface ProductFormModel {
   isActive: boolean;
   name: string;
@@ -36,12 +43,7 @@ interface ProductFormModel {
   price: number;
   productBrandId: number | null;
   productTypeId: number | null;
-  productCharacteristics: {
-    id: number;
-    productId: number;
-    sizeId: number;
-    quantity: number;
-  }[];
+  productCharacteristics: ProductCharacteristicModel[];
   isDiscountActive: boolean;
   discountAmount: number | null;
   isPercentage: boolean;
@@ -50,6 +52,23 @@ interface ProductFormModel {
   discountEndDateDate: Date | null;
   discountEndDateTime: Date | null;
 }
+
+const EMPTY_FORM_MODEL: ProductFormModel = {
+  isActive: false,
+  name: '',
+  description: '',
+  price: 0,
+  productBrandId: null,
+  productTypeId: null,
+  productCharacteristics: [],
+  isDiscountActive: false,
+  discountAmount: null,
+  isPercentage: true,
+  discountStartDateDate: null,
+  discountStartDateTime: null,
+  discountEndDateDate: null,
+  discountEndDateTime: null,
+};
 
 @Component({
   selector: 'app-edit-product',
@@ -71,28 +90,39 @@ interface ProductFormModel {
     MatTimepickerModule,
     MatNativeDateModule,
     SharedModule,
-  ]
+  ],
 })
 export class EditProductComponent implements OnInit, OnDestroy {
 
-  productModel = signal<ProductFormModel>({
-    isActive: false,
-    name: '',
-    description: '',
-    price: 0,
-    productBrandId: null,
-    productTypeId: null,
-    productCharacteristics: [],
-    isDiscountActive: false,
-    discountAmount: null,
-    isPercentage: true,
-    discountStartDateDate: null,
-    discountStartDateTime: null,
-    discountEndDateDate: null,
-    discountEndDateTime: null,
-  });
+  private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly productService = inject(ProductService);
+  private readonly storageService = inject(StorageService);
+  private readonly discountService = inject(DiscountService);
+  private readonly notificationService = inject(NotificationService);
 
-  productForm = form(this.productModel, (p) => {
+  private readonly destroy$ = new Subject<void>();
+
+  // Reference data for the dropdowns.
+  readonly brands = signal<IBrand[]>([]);
+  readonly types = signal<IProductType[]>([]);
+  readonly sizes = signal<ISizeClassification[]>([]);
+
+  // The product currently being edited (undefined while creating a new one).
+  readonly adminProduct = signal<IProductAdmin | undefined>(undefined);
+
+  // Backups used to restore discount dates when the user toggles the discount off/on.
+  private backupStartDate: Date | null = null;
+  private backupStartTime: Date | null = null;
+  private backupEndDate: Date | null = null;
+  private backupEndTime: Date | null = null;
+
+  private productIdFromUrl = 0;
+
+  readonly productModel = signal<ProductFormModel>({ ...EMPTY_FORM_MODEL });
+
+  readonly productForm = form(this.productModel, (p) => {
     required(p.name);
     required(p.description);
     required(p.price);
@@ -102,61 +132,41 @@ export class EditProductComponent implements OnInit, OnDestroy {
     required(p.productTypeId);
   });
 
-  adminProduct = signal<IProductAdmin | undefined>(undefined);
-  brands  = signal<IBrand[]>([]);
-  types   = signal<IProductType[]>([]);
-  sizes   = signal<ISizeClassification[]>([]);
+  private readonly pristineSnapshot = signal(this.snapshot(EMPTY_FORM_MODEL));
 
-  disabledAddSizeButton = signal<boolean>(false);
-  dynamicSizeAdded      = signal<boolean>(false);
-  dynamicSizeRemoved    = signal<boolean>(false);
-  isFormDirty           = signal<boolean>(false);
-
-  productIdFromUrl      : number = 0;
-  productCharacteristics: IProductCharacteristic[] = [];
-  validSizeList         : ISizeClassification[] = [];
-  colorCheckbox         : ThemePalette;
-
-  private backupStartTime: Date | null = null;
-  private backupEndTime  : Date | null = null;
-  private backupStartDate: Date | null = null;
-  private backupEndDate  : Date | null = null;
-
-  private isInitialLoad = true;
-
-  destroy$ = new Subject<void>();
-
-  private cdRef               = inject(ChangeDetectorRef);
-  private dialog              = inject(MatDialog);
-  private router              = inject(Router);
-  private productService      = inject(ProductService);
-  private activatedRoute      = inject(ActivatedRoute);
-  private storageService      = inject(StorageService);
-  private discountService     = inject(DiscountService);
-  private notificationService = inject(NotificationService);
-
-  constructor() {
-    effect(() => {
-      this.productModel();
-
-      if (this.isInitialLoad) {
-        this.isInitialLoad = false;
-      } else {
-        this.isFormDirty.set(true);
-      }
-    });
-  }
-
-  get isFormValid(): boolean {
-    const values = this.productModel();
+  readonly isFormValid = computed(() => {
+    const v = this.productModel();
     return !!(
-      values.name?.trim() &&
-      values.description?.trim() &&
-      values.price >= 1 &&
-      values.price <= 10000 &&
-      values.productBrandId !== null &&
-      values.productTypeId !== null
+      v.name?.trim() &&
+      v.description?.trim() &&
+      v.price >= 1 &&
+      v.price <= 10000 &&
+      v.productBrandId !== null &&
+      v.productTypeId !== null
     );
+  });
+
+  readonly isFormDirty = computed(
+    () => this.snapshot(this.productModel()) !== this.pristineSnapshot()
+  );
+
+  readonly isSaveDisabled = computed(() => !(this.isFormValid() && this.isFormDirty()));
+
+  readonly isProductIdValid = computed(() => (this.adminProduct()?.id ?? 0) > 0);
+
+  readonly canAddSize = computed(
+    () => this.productModel().productCharacteristics.length < this.sizes().length
+  );
+
+  async ngOnInit(): Promise<void> {
+    try {
+      await Promise.all([this.loadBrands(), this.loadTypes(), this.loadSizes()]);
+      await this.loadProduct();
+      this.cacheProduct();
+      this.markPristine();
+    } catch (error) {
+      console.error('Failed to initialise the product form:', error);
+    }
   }
 
   ngOnDestroy(): void {
@@ -165,431 +175,299 @@ export class EditProductComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  async ngOnInit(): Promise<void> {
-    try {
-      await Promise.all([
-        this.loadBrands(),
-        this.loadTypes(),
-        this.loadSizes(),
-        this.loadProduct()
-      ]);
+  // --- Data loading -------------------------------------------------------
 
-      await this.loadProduct();
-
-      await this.setProductInLocalStorage();
-
-    } catch (error) {
-      console.error("Error in ngOnInit:", error);
-    }
+  private async loadBrands(): Promise<void> {
+    this.brands.set(await this.fetch(this.productService.getBrands(true)));
   }
 
-  async loadBrands(): Promise<void>  {
-    this.fetchData(() => this.productService.getBrands(true), (response) => { this.brands.set([...response]); });
+  private async loadTypes(): Promise<void> {
+    this.types.set(await this.fetch(this.productService.getTypes(true)));
   }
 
-  async loadTypes(): Promise<void>  {
-    this.fetchData(() => this.productService.getTypes(true), (response) => { this.types.set([...response]); });
+  private async loadSizes(): Promise<void> {
+    this.sizes.set(await this.fetch(this.productService.getSizes(true)));
   }
 
-  async loadSizes(): Promise<void> {
-    this.fetchData(() => this.productService.getSizes(true), (response) => { this.sizes.set([...response]); });
-  }
-
- async loadProduct(): Promise<void> {
-  try {
-    const prod = await firstValueFrom(
-      this.activatedRoute.paramMap.pipe(
-        switchMap((params: ParamMap) => {
-          const id = params.get('id');
-          this.productIdFromUrl = (id === null ? 0 : +id);
-          if (this.productIdFromUrl > 0) {
-            return this.productService.getProduct(this.productIdFromUrl);
-          } else {
-            return of(null);
-          }
-        }),
-        catchError((error: any) => {
-          this.handleApiError(error);
-          return of(null);
-        }),
-        takeUntil(this.destroy$)
-      )
-    );
-
-    if (prod) {
-      const adminProd: IProductAdmin = prod as IProductAdmin;
-      if (prod.id > 0) {
-        const discount = await firstValueFrom(this.discountService.getSingleDiscountForProduct(prod.id));
-        adminProd.discount = discount ?? null;
-      }
-
-      // Save the raw product data reference
-      this.adminProduct.set(adminProd);
-
-      // Initialize the form state flag
-      this.isInitialLoad = true;
-
-      // Extract discount dates if they exist
-      let start = null;
-      let end = null;
-      const discount = adminProd.discount;
-      if (discount) {
-         start = this.extractDateTime(discount.startDate);
-         end   = this.extractDateTime(discount.endDate);
-      }
-
-      const basePrice = adminProd.previousPrice ?? adminProd.price;
-
-      // Map the real characteristics from the database directly
-      const standardCharacteristics = (adminProd.productCharacteristics || []).map(pc => ({
-        id: pc.id,
-        productId: pc.productId,
-        sizeId: pc.sizeId,
-        quantity: pc.quantity
-      }));
-
-      // Directly assign ALL correct values to the model signal at once
-      this.productModel.set({
-        isActive              : adminProd.isActive,
-        name                  : adminProd.name,
-        description           : adminProd.description,
-        price                 : basePrice,
-        productBrandId        : adminProd.productBrandId,
-        productTypeId         : adminProd.productTypeId,
-        productCharacteristics: standardCharacteristics,          // Real data assigned immediately
-        isDiscountActive      : discount?.isActive ?? false,
-        discountAmount        : discount?.amount ?? null,
-        isPercentage          : discount?.isPercentage ?? true,
-        discountStartDateDate : start?.date ?? null,
-        discountStartDateTime : start?.time ?? null,
-        discountEndDateDate   : end?.date ?? null,
-        discountEndDateTime   : end?.time ?? null,
-      });
-
-        setTimeout(() => this.isFormDirty.set(false), 0);
-      }
-    } catch (error) {
-      console.error("Error loading product:", error);
-    }
-  }
-
-  async getProductFormValues(): Promise<void> {
-    const currentProduct = this.adminProduct();
-    if (currentProduct) {
-      this.isInitialLoad = true;
-      let start = null;
-      let end = null;
-      let discount = null;
-
-      if (currentProduct.discount) {
-         discount = currentProduct.discount;
-         start = this.extractDateTime(discount.startDate);
-         end   = this.extractDateTime(discount.endDate);
-      }
-
-      const basePrice = currentProduct.previousPrice ?? currentProduct.price;
-
-      this.productForm.isActive().value.set(currentProduct.isActive);
-      this.productForm.name().value.set(currentProduct.name);
-      this.productForm.description().value.set(currentProduct.description);
-      this.productForm.price().value.set(basePrice);
-      this.productForm.productBrandId().value.set(currentProduct.productBrandId);
-      this.productForm.productTypeId().value.set(currentProduct.productTypeId);
-
-      this.productForm.isDiscountActive().value.set(discount?.isActive ?? false);
-      this.productForm.discountAmount().value.set(discount?.amount ?? null);
-      this.productForm.isPercentage().value.set(discount?.isPercentage ?? true);
-
-      this.productForm.discountStartDateDate().value.set(start?.date ?? null);
-      this.productForm.discountStartDateTime().value.set(start?.time ?? null);
-      this.productForm.discountEndDateDate().value.set(end?.date ?? null);
-      this.productForm.discountEndDateTime().value.set(end?.time ?? null);
-
-      setTimeout(() => this.isFormDirty.set(false), 0);
-    }
-  }
-
-  async loadArrayOfDropDownSize(): Promise<void> {
-    const chars = this.adminProduct()?.productCharacteristics;
-    if (!chars) {
+  private async loadProduct(): Promise<void> {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    this.productIdFromUrl = idParam ? +idParam : 0;
+    if (this.productIdFromUrl <= 0) {
       return;
     }
 
-    this.isInitialLoad = true;
-    const standardCharacteristics = chars.map(pc => ({
-      id: pc.id,
-      productId: pc.productId,
-      sizeId: pc.sizeId,
-      quantity: pc.quantity
-    }));
+    try {
+      const product = await this.fetch(this.productService.getProduct(this.productIdFromUrl));
+      if (!product) {
+        return;
+      }
 
-    this.productModel.update(m => ({
-      ...m,
-      productCharacteristics: standardCharacteristics
-    }));
+      const adminProduct = product as IProductAdmin;
+      if (adminProduct.id > 0) {
+        adminProduct.discount =
+          (await this.fetch(this.discountService.getSingleDiscountForProduct(adminProduct.id))) ?? null;
+      }
 
-    setTimeout(() => this.isFormDirty.set(false), 0);
-  }
-
-  async setProductInLocalStorage(): Promise<void> {
-    if (this.adminProduct()) {
-      const key = this.getProductKey();
-      this.storageService.set(key, JSON.stringify(this.adminProduct()));
+      this.adminProduct.set(adminProduct);
+      this.productModel.set(this.toFormModel(adminProduct));
+    } catch (error) {
+      console.error('Error loading product:', error);
     }
   }
 
-  getProductKey(): string {
-    return `productKey_${this.activatedRoute.snapshot.paramMap.get('id')}`;
+  private cacheProduct(): void {
+    const product = this.adminProduct();
+    if (product) {
+      this.storageService.set(this.getProductKey(), JSON.stringify(product));
+    }
   }
 
-  handleApiError(error: any): void {
-    console.error(error);
+  private getProductKey(): string {
+    return `productKey_${this.route.snapshot.paramMap.get('id')}`;
   }
 
-  onSubmit() {
-    if (!this.isFormValid) {
+  // --- Submit -------------------------------------------------------------
+
+  onSubmit(): void {
+    if (!this.isFormValid()) {
       this.notificationService.showError('Form Validation Error: Please fill out the form correctly.');
       return;
     }
 
-    const formValues = this.productModel();
-    const existingProduct = this.adminProduct();
-    const isUpdate        = !!existingProduct && existingProduct.id > 0;
+    const values = this.productModel();
+    const existing = this.adminProduct();
+    const isUpdate = !!existing && existing.id > 0;
+    const oldDiscount = existing?.discount;
 
-    let discountPayload: Partial<ISingleDiscount> | null = null;
-    const oldDiscount = this.adminProduct()?.discount;
-    const forceSingleDiscount = this.shouldForceSingleDiscount(formValues);
-
-    if (forceSingleDiscount) {
-      const updatedDiscount: Partial<ISingleDiscount> = {};
-
-      if (oldDiscount) updatedDiscount.id = oldDiscount.id;
-
-      updatedDiscount.isActive = formValues.isDiscountActive;
-      updatedDiscount.name = "Single Discount";
-      updatedDiscount.isPercentage = formValues.isPercentage;
-      updatedDiscount.amount = formValues.discountAmount ?? undefined;
-
-      const newStart = this.combineDateAndTime(formValues.discountStartDateDate, formValues.discountStartDateTime);
-      updatedDiscount.startDate = newStart?.toISOString();
-      const newEnd = this.combineDateAndTime(formValues.discountEndDateDate, formValues.discountEndDateTime);
-      updatedDiscount.endDate = newEnd?.toISOString();
-
-      discountPayload = updatedDiscount;
-    }
+    const discountPayload = this.shouldForceSingleDiscount(values)
+      ? this.buildDiscountPayload(values, oldDiscount)
+      : null;
 
     const productPayload: IProductAdmin = {
-      id                    : existingProduct?.id || 0,
-      name                  : formValues.name,
-      description           : formValues.description,
-      price                 : formValues.price,
-      previousPrice         : existingProduct?.previousPrice,
-      pictureUrl            : existingProduct?.pictureUrl || '',
-      picturePublicId       : existingProduct?.picturePublicId || '',
-      productType           : existingProduct?.productType,
-      productTypeId         : formValues.productTypeId ?? 0,
-      productBrand          : existingProduct?.productBrand,
-      productBrandId        : formValues.productBrandId ?? 0,
-      isActive              : formValues.isActive,
-      productCharacteristics: (formValues.productCharacteristics || []).map(c => ({
-        id: c.id,
-        productId: c.productId,
-        sizeId: c.sizeId,
-        quantity: c.quantity,
-        sizeName: ''
-      })),
-      productPhotos         : existingProduct?.productPhotos || [],
-      discount              : discountPayload
+      id                    : existing?.id ?? 0,
+      name                  : values.name,
+      description           : values.description,
+      price                 : values.price,
+      previousPrice         : existing?.previousPrice,
+      pictureUrl            : existing?.pictureUrl ?? '',
+      picturePublicId       : existing?.picturePublicId ?? '',
+      productType           : existing?.productType,
+      productTypeId         : values.productTypeId ?? 0,
+      productBrand          : existing?.productBrand,
+      productBrandId        : values.productBrandId ?? 0,
+      isActive              : values.isActive,
+      productCharacteristics: values.productCharacteristics.map(c => ({ ...c, sizeName: '' })),
+      productPhotos         : existing?.productPhotos ?? [],
+      discount              : discountPayload,
     };
 
-    const productAction = isUpdate
+    const save$ = isUpdate
       ? this.productService.updateProduct(productPayload)
       : this.productService.createProduct(productPayload);
 
-    productAction.pipe(takeUntil(this.destroy$)).subscribe({
+    save$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (returnedProduct: IProduct) => {
-        const updatedAdminProduct: IProductAdmin = {
+        this.adminProduct.set({
           ...returnedProduct,
-          discount: discountPayload !== null ? discountPayload : (oldDiscount ?? null)
-        };
+          discount: discountPayload ?? oldDiscount ?? null,
+        });
 
-        this.adminProduct.set(updatedAdminProduct);
-        this.productForm.price().value.set(returnedProduct.previousPrice ?? returnedProduct.price);
-        this.productForm.isDiscountActive().value.set(updatedAdminProduct.discount?.isActive ?? false);
+        // Re-sync the few server-computed fields, then mark the form as saved.
+        this.productModel.update(m => ({
+          ...m,
+          price: returnedProduct.previousPrice ?? returnedProduct.price,
+          isDiscountActive: discountPayload?.isActive ?? oldDiscount?.isActive ?? false,
+        }));
+        this.markPristine();
 
-        this.isFormDirty.set(false);
         const action = isUpdate ? 'updated' : 'created';
         this.notificationService.showSuccess(`Success: Product ${action} successfully.`);
-        this.cdRef.detectChanges();
       },
-      error: (err) => {
+      error: (error) => {
         this.notificationService.showError('Error: An error occurred while saving the product.');
-        console.error('Error saving product:', err);
+        console.error('Error saving product:', error);
       },
     });
   }
 
+  private buildDiscountPayload(
+    values: ProductFormModel,
+    oldDiscount: Partial<ISingleDiscount> | null | undefined
+  ): Partial<ISingleDiscount> {
+    return {
+      ...(oldDiscount?.id ? { id: oldDiscount.id } : {}),
+      isActive: values.isDiscountActive,
+      name: 'Single Discount',
+      isPercentage: values.isPercentage,
+      amount: values.discountAmount ?? undefined,
+      startDate: this.combineDateAndTime(values.discountStartDateDate, values.discountStartDateTime)?.toISOString(),
+      endDate: this.combineDateAndTime(values.discountEndDateDate, values.discountEndDateTime)?.toISOString(),
+    };
+  }
+
+  private shouldForceSingleDiscount(values: ProductFormModel): boolean {
+    return values.isDiscountActive || !!this.adminProduct()?.discount?.isActive;
+  }
+
+  // --- Discount toggle ----------------------------------------------------
+
   onDiscountToggle(isActive: boolean): void {
-    const product = this.adminProduct();
-    const discount = product?.discount;
-
-    if (isActive) {
-      // Apply existing or default start dates
-      if (discount?.startDate) {
-        const startDate = new Date(discount.startDate);
-        this.productForm.discountStartDateDate().value.set(this.backupStartDate ?? startDate);
-        this.productForm.discountStartDateTime().value.set(this.backupStartTime ?? startDate);
-      } else {
-        const now = new Date();
-        this.productForm.discountStartDateDate().value.set(this.backupStartDate ?? now);
-        this.productForm.discountStartDateTime().value.set(this.backupStartTime ?? now);
-      }
-
-      // Apply existing or default end dates
-      if (discount?.endDate) {
-        const endDate = new Date(discount.endDate);
-        this.productForm.discountEndDateDate().value.set(this.backupEndDate ?? endDate);
-        this.productForm.discountEndDateTime().value.set(this.backupEndTime ?? endDate);
-      } else {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        this.productForm.discountEndDateDate().value.set(this.backupEndDate ?? tomorrow);
-        this.productForm.discountEndDateTime().value.set(this.backupEndTime ?? tomorrow);
-      }
-    } else {
-      // Save backups of the current values before clearing/deactivating
-      const formState = this.productModel();
-      this.backupStartDate = formState.discountStartDateDate;
-      this.backupStartTime = formState.discountStartDateTime;
-      this.backupEndDate   = formState.discountEndDateDate;
-      this.backupEndTime   = formState.discountEndDateTime;
-    }
-  }
-
-  private shouldForceSingleDiscount(formValues: any): boolean {
-    const productDiscount = this.adminProduct()?.discount;
-    if (formValues.isDiscountActive) return true;
-    if (!formValues.isDiscountActive && productDiscount?.isActive) return true;
-    return false;
-  }
-
-  private combineDateAndTime(date: any, time: any): Date | null {
-    if (!date || !time) return null;
-    const combinedDate = new Date(date);
-    const timeObj = new Date(time);
-    if (!isNaN(timeObj.getTime())) {
-       combinedDate.setHours(timeObj.getHours(), timeObj.getMinutes(), 0, 0);
-    }
-    return combinedDate;
-  }
-
-  private extractDateTime(dateStr: string | null | undefined): { date: Date | null; time: Date | null } {
-    if (!dateStr) return { date: null, time: null };
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return { date: null, time: null };
-    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const timeOnly = new Date(1970, 0, 1, date.getHours(), date.getMinutes());
-    return { date: dateOnly, time: timeOnly };
-  }
-
-  removeSize(index: number) {
-    this.productModel.update(m => ({
-      ...m,
-      productCharacteristics: m.productCharacteristics.filter((_, i) => i !== index)
-    }));
-    this.disabledAddSizeButton.set(false);
-    this.dynamicSizeRemoved.set(true);
-  }
-
-  addSize() {
-    const currentProduct = this.adminProduct();
-    const effectiveProductId = currentProduct
-      ? currentProduct.id
-      : (this.productIdFromUrl > 0 ? this.productIdFromUrl : 0);
-
-    if (effectiveProductId < 0) {
+    if (!isActive) {
+      // Back up the current dates so they can be restored if re-enabled.
+      const v = this.productModel();
+      this.backupStartDate = v.discountStartDateDate;
+      this.backupStartTime = v.discountStartDateTime;
+      this.backupEndDate   = v.discountEndDateDate;
+      this.backupEndTime   = v.discountEndDateTime;
       return;
     }
 
-    this.validSizeList = this.getValidSizeList();
+    const discount = this.adminProduct()?.discount;
+    const now = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-    if (this.validSizeList.length > 0) {
-      const defaultSizeId = this.validSizeList[0].id;
+    const start = discount?.startDate ? new Date(discount.startDate) : now;
+    const end = discount?.endDate ? new Date(discount.endDate) : tomorrow;
 
-      this.productModel.update(m => ({
-        ...m,
-        productCharacteristics: [...m.productCharacteristics, {
-          id: 0,
-          productId: effectiveProductId,
-          sizeId: defaultSizeId,
-          quantity: 1
-        }]
-      }));
-      this.dynamicSizeAdded.set(true);
+    this.productModel.update(m => ({
+      ...m,
+      discountStartDateDate: this.backupStartDate ?? start,
+      discountStartDateTime: this.backupStartTime ?? start,
+      discountEndDateDate  : this.backupEndDate ?? end,
+      discountEndDateTime  : this.backupEndTime ?? end,
+    }));
+  }
+
+  // --- Size rows ----------------------------------------------------------
+
+  addSize(): void {
+    const free = this.availableSizes(-1);
+    if (free.length === 0) {
+      return;
     }
 
-    this.disabledAddSizeButton.set(this.validSizeList.length <= 1);
+    const productId = this.adminProduct()?.id ?? this.productIdFromUrl ?? 0;
+    this.productModel.update(m => ({
+      ...m,
+      productCharacteristics: [
+        ...m.productCharacteristics,
+        { id: 0, productId, sizeId: free[0].id, quantity: 1 },
+      ],
+    }));
   }
 
-  getAvailableSizeList(currentSizeId: number): ISizeClassification[] {
-    const specs = this.productModel().productCharacteristics;
-
-    return this.sizes().filter(size => {
-      // Always allow the size that is currently selected in this specific row
-      if (size.id === currentSizeId) {
-        return true;
-      }
-      // Exclude the size if it is already selected in any other row
-      return !specs.some(spec => spec.sizeId === size.id);
-    });
+  removeSize(index: number): void {
+    this.productModel.update(m => ({
+      ...m,
+      productCharacteristics: m.productCharacteristics.filter((_, i) => i !== index),
+    }));
   }
 
-  getValidSizeList(ignoreSizeId: number = -1): ISizeClassification[] {
-    const specs = this.productModel().productCharacteristics;
-    return this.sizes().filter(size => {
-      return !specs.some(spec => size.id === spec.sizeId && size.id !== ignoreSizeId);
-    });
+  /** Sizes selectable in a row: the one already chosen there, plus any not used elsewhere. */
+  availableSizes(currentSizeId: number): ISizeClassification[] {
+    const used = new Set(this.productModel().productCharacteristics.map(c => c.sizeId));
+    return this.sizes().filter(size => size.id === currentSizeId || !used.has(size.id));
   }
 
-  navigateBack() {
-    if (this.isFormDirty()) {
-      const dialogData: IDialogData = {
-        title: 'Discard change',
-        content: 'Would you like to discard your changes?',
-        showConfirmationButtons: true
-      };
-      const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });
+  // --- Navigation ---------------------------------------------------------
 
-      dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe({
-        next: (result?: boolean) => {
-          if (result) this.router.navigateByUrl('/admin/products');
-        },
-        error: (error) => { console.error(error); }
-      });
-    } else {
+  navigateBack(): void {
+    if (!this.isFormDirty()) {
       this.router.navigateByUrl('/admin/products');
+      return;
     }
+
+    const dialogData: IDialogData = {
+      title: 'Discard change',
+      content: 'Would you like to discard your changes?',
+      showConfirmationButtons: true,
+    };
+
+    this.dialog
+      .open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData })
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (confirmed?: boolean) => {
+          if (confirmed) {
+            this.router.navigateByUrl('/admin/products');
+          }
+        },
+        error: (error) => console.error(error),
+      });
   }
 
-  get isProductIdValid(): boolean {
-    const currentProduct = this.adminProduct();
-    return currentProduct ? currentProduct.id > 0 : false;
+  isDiscountGroup(): boolean {
+    const groupId = this.adminProduct()?.discount?.discountGroupId;
+    return !!groupId && groupId > 0;
   }
 
-  get isSaveDisabled(): boolean {
-    return !(this.isFormValid &&
-      (this.isFormDirty() || this.dynamicSizeAdded() || this.dynamicSizeRemoved()));
+  // --- Helpers ------------------------------------------------------------
+
+  private toFormModel(product: IProductAdmin): ProductFormModel {
+    const discount = product.discount;
+    const start = this.extractDateTime(discount?.startDate);
+    const end = this.extractDateTime(discount?.endDate);
+
+    return {
+      isActive              : product.isActive,
+      name                  : product.name,
+      description           : product.description,
+      price                 : product.previousPrice ?? product.price,
+      productBrandId        : product.productBrandId,
+      productTypeId         : product.productTypeId,
+      productCharacteristics: (product.productCharacteristics ?? []).map(pc => ({
+        id       : pc.id,
+        productId: pc.productId,
+        sizeId   : pc.sizeId,
+        quantity : pc.quantity,
+      })),
+      isDiscountActive     : discount?.isActive ?? false,
+      discountAmount       : discount?.amount ?? null,
+      isPercentage         : discount?.isPercentage ?? true,
+      discountStartDateDate: start.date,
+      discountStartDateTime: start.time,
+      discountEndDateDate  : end.date,
+      discountEndDateTime  : end.time,
+    };
   }
 
-  isDiscountGroup(): boolean{
-    const discountGroupId = this.adminProduct()?.discount?.discountGroupId;
-    return !!(discountGroupId && discountGroupId > 0);
+  private combineDateAndTime(date: Date | null, time: Date | null): Date | null {
+    if (!date || !time) {
+      return null;
+    }
+    const combined = new Date(date);
+    const t = new Date(time);
+    if (!isNaN(t.getTime())) {
+      combined.setHours(t.getHours(), t.getMinutes(), 0, 0);
+    }
+    return combined;
   }
 
-  private fetchData<T>(fetchDataFn: () => Observable<T>, updateFn: (data: T) => void): void {
-    fetchDataFn().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (response) => updateFn(response),
-      error: (error: any) => console.log(error),
-    });
+  private extractDateTime(value: string | null | undefined): { date: Date | null; time: Date | null } {
+    if (!value) {
+      return { date: null, time: null };
+    }
+    const d = new Date(value);
+    if (isNaN(d.getTime())) {
+      return { date: null, time: null };
+    }
+    return {
+      date: new Date(d.getFullYear(), d.getMonth(), d.getDate()),
+      time: new Date(1970, 0, 1, d.getHours(), d.getMinutes()),
+    };
+  }
+
+  private snapshot(model: ProductFormModel): string {
+    return JSON.stringify(model);
+  }
+
+  private markPristine(): void {
+    this.pristineSnapshot.set(this.snapshot(this.productModel()));
+  }
+
+  private fetch<T>(source$: Observable<T>): Promise<T> {
+    return firstValueFrom(source$.pipe(takeUntil(this.destroy$)));
   }
 }

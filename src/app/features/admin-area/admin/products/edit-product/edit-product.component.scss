@@ -196,3 +196,23 @@
     }
   }
 }
+
+.discount-amount-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-top: 10px;
+
+  .amount-field {
+    flex: 1;
+  }
+
+  .percentage-checkbox {
+    flex: 1;
+    padding-bottom: 16px;
+  }
+}
+
+.save-button {
+  margin-top: 20px;
+}
