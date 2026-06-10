@@ -1,4 +1,6 @@
-import { SharedModule } from 'src/app/shared/shared.module';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -15,7 +17,7 @@ import { MatChipsModule } from '@angular/material/chips';
     styleUrls: ['./orders.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [SharedModule, CommonModule, RouterModule, MatChipsModule]
+  imports: [CommonModule, RouterModule, MatChipsModule, MatButtonModule, MatTableModule, MatCardModule]
 })
 export class OrdersComponent implements OnInit {
   orders = signal<IOrder[]>([]);

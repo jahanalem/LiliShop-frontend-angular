@@ -1,4 +1,4 @@
-import { SharedModule } from 'src/app/shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
@@ -17,7 +17,7 @@ import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordRes
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SharedModule, CommonModule, RouterModule]
+  imports: [CommonModule, RouterModule, ReactiveFormsModule]
 })
 export class ForgotPasswordComponent {
   forgotPasswordForm!: FormGroup;

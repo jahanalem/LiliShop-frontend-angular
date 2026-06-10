@@ -1,4 +1,8 @@
-import { SharedModule } from 'src/app/shared/shared.module';
+import { OrderTotalsComponent } from 'src/app/shared/components/order-totals/order-totals.component';
+import { BasketSummaryComponent } from 'src/app/shared/components/basket-summary/basket-summary.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
@@ -11,7 +15,7 @@ import { IBasket, IBasketItem, IBasketTotals } from 'src/app/shared/models/baske
     styleUrls: ['./basket.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [SharedModule, CommonModule, RouterModule]
+  imports: [CommonModule, RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatButtonModule, MatIconModule, MatCardModule]
 })
 export class BasketComponent implements OnInit {
   basket = signal<IBasket | null>(null);

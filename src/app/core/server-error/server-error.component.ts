@@ -1,4 +1,3 @@
-import { SharedModule } from 'src/app/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
@@ -10,7 +9,7 @@ import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/cor
     styleUrls: ['./server-error.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [SharedModule, CommonModule, RouterModule]
+  imports: [CommonModule, RouterModule]
 })
 export class ServerErrorComponent implements OnInit {
   error = signal<any>(null);

@@ -1,3 +1,9 @@
+import { FormatValuePipe } from 'src/app/shared/pipes/format-value.pipe';
+import { CheckPolicyDirective } from 'src/app/shared/directives/check-policy.directive';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,18 +19,14 @@ import { IDiscount } from 'src/app/shared/models/discount-system';
 import { DiscountParams } from 'src/app/shared/models/DiscountParams';
 import { PaginationWithData } from 'src/app/shared/models/pagination';
 import { PolicyNames } from 'src/app/shared/models/policy';
-import { SharedModule } from "../../../../shared/shared.module";
 
 import { ProductService } from 'src/app/core/services/product.service';
 
 @Component({
   selector: 'app-discounts',
-  imports: [
-    MatInputModule,
+  imports: [MatInputModule,
     MatFormFieldModule,
-    MatIconModule,
-    SharedModule
-],
+    MatIconModule, FormatValuePipe, CheckPolicyDirective, MatPaginatorModule, MatButtonModule, MatTableModule, MatSortModule],
   templateUrl: './discounts.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './discounts.component.scss'

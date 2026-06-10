@@ -1,4 +1,11 @@
-import { SharedModule } from 'src/app/shared/shared.module';
+import { FormatValuePipe } from 'src/app/shared/pipes/format-value.pipe';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSortModule } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AfterViewInit, ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
@@ -29,7 +36,7 @@ enum ColumnNames {
     styleUrls: ['./users.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [SharedModule, CommonModule, RouterModule]
+  imports: [CommonModule, RouterModule, FormatValuePipe, MatFormFieldModule, MatPaginatorModule, MatButtonModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
 })
 export class UsersComponent implements AfterViewInit, OnInit {
   paginator = viewChild<MatPaginator>(MatPaginator);

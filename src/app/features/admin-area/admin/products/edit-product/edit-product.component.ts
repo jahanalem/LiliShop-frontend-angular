@@ -1,3 +1,5 @@
+import { PhotoEditorComponent } from 'src/app/shared/components/photo-editor/photo-editor.component';
+import { MatButtonModule } from '@angular/material/button';
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, computed, signal, inject } from '@angular/core';
 import { form, required, min, max, FormField } from '@angular/forms/signals';
 import { Observable, Subject, firstValueFrom, takeUntil } from 'rxjs';
@@ -26,7 +28,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { CommonModule } from '@angular/common';
 
 interface ProductCharacteristicModel {
@@ -76,8 +77,7 @@ const EMPTY_FORM_MODEL: ProductFormModel = {
   styleUrls: ['./edit-product.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [
-    CommonModule,
+  imports: [CommonModule,
     FormField,
     MatFormFieldModule,
     MatInputModule,
@@ -88,9 +88,7 @@ const EMPTY_FORM_MODEL: ProductFormModel = {
     MatTooltipModule,
     MatDatepickerModule,
     MatTimepickerModule,
-    MatNativeDateModule,
-    SharedModule,
-  ],
+    MatNativeDateModule, PhotoEditorComponent, MatButtonModule],
 })
 export class EditProductComponent implements OnInit, OnDestroy {
 

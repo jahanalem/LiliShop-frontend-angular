@@ -1,4 +1,12 @@
-import { SharedModule } from 'src/app/shared/shared.module';
+import { FormatValuePipe } from 'src/app/shared/pipes/format-value.pipe';
+import { CheckPolicyDirective } from 'src/app/shared/directives/check-policy.directive';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSortModule } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, inject, signal, OnInit, viewChild, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
@@ -20,7 +28,7 @@ import { PolicyNames } from 'src/app/shared/models/policy';
   templateUrl: './contact-us-messages.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './contact-us-messages.component.scss',
-  imports: [SharedModule, CommonModule, RouterModule]
+  imports: [CommonModule, RouterModule, FormatValuePipe, CheckPolicyDirective, MatFormFieldModule, MatPaginatorModule, MatButtonModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
 })
 export class ContactUsMessagesComponent implements OnInit, OnDestroy {
   paginator = viewChild.required<MatPaginator>(MatPaginator);

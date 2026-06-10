@@ -1,4 +1,4 @@
-import { SharedModule } from 'src/app/shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
@@ -15,7 +15,7 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SharedModule, CommonModule, RouterModule]
+  imports: [CommonModule, RouterModule, ReactiveFormsModule]
 })
 export class ResetPasswordComponent {
   resetPasswordForm!: FormGroup;

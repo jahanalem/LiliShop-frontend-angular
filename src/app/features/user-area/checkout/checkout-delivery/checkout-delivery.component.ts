@@ -1,3 +1,5 @@
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { ChangeDetectionStrategy, Component, inject, input, OnDestroy, OnInit, output, signal } from '@angular/core';
 import { CheckoutService } from 'src/app/core/services/checkout.service';
 import { BasketService } from 'src/app/core/services/basket.service';
@@ -6,7 +8,6 @@ import { Subject } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
 import { Router } from '@angular/router';
 import { MatRadioModule } from '@angular/material/radio';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { type CheckoutForm } from '../checkout.component';
 
@@ -16,7 +17,7 @@ import { type CheckoutForm } from '../checkout.component';
   styleUrls: ['./checkout-delivery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [MatRadioModule, SharedModule, CommonModule]
+  imports: [MatRadioModule,  CommonModule, MatButtonModule, MatIconModule]
 })
 export class CheckoutDeliveryComponent implements OnInit, OnDestroy {
   checkoutForm = input.required<CheckoutForm>();

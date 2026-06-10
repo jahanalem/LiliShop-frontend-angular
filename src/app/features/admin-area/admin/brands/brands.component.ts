@@ -1,4 +1,10 @@
-import { SharedModule } from 'src/app/shared/shared.module';
+import { FormatValuePipe } from 'src/app/shared/pipes/format-value.pipe';
+import { CheckPolicyDirective } from 'src/app/shared/directives/check-policy.directive';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSortModule } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, AfterViewInit, ChangeDetectionStrategy, signal, viewChild, inject } from '@angular/core';
@@ -17,7 +23,7 @@ import { PolicyNames } from 'src/app/shared/models/policy';
     styleUrls: ['./brands.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [SharedModule, CommonModule, RouterModule]
+  imports: [CommonModule, RouterModule, FormatValuePipe, CheckPolicyDirective, MatPaginatorModule, MatButtonModule, MatTableModule, MatIconModule, MatSortModule]
 })
 export class BrandsComponent implements AfterViewInit {
   paginator = viewChild.required<MatPaginator>(MatPaginator);

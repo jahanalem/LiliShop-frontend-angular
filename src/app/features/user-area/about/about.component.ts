@@ -1,4 +1,3 @@
-import { SharedModule } from 'src/app/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
@@ -42,17 +41,14 @@ import { MatDividerModule } from '@angular/material/divider';
   changeDetection: ChangeDetectionStrategy.OnPush,
   // encapsulation: ViewEncapsulation.None, // Use this if ::ng-deep or global styles for Material components are problematic
   standalone: true,
-  imports: [
-    SharedModule,
-    CommonModule,
+  imports: [CommonModule,
     RouterModule,
     MatDividerModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatExpansionModule,
-    MatChipsModule
-  ]
+    MatChipsModule]
 })
 export class AboutComponent implements OnInit {
 

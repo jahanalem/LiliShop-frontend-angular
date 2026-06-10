@@ -1,4 +1,5 @@
-import { SharedModule } from 'src/app/shared/shared.module';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SubscriptionService } from '../../../../core/services/subscription.service';
@@ -19,7 +20,7 @@ import { NgOptimizedImage } from '@angular/common';
     styleUrls: ['./product-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [SharedModule, CommonModule, RouterModule, NgOptimizedImage]
+  imports: [CommonModule, RouterModule, NgOptimizedImage, MatButtonModule, MatIconModule]
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
   product                   = signal<IProduct>({} as IProduct);

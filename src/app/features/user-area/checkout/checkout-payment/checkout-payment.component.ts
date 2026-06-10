@@ -1,3 +1,7 @@
+import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { PaymentIntentResult, Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement } from '@stripe/stripe-js';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, OnDestroy, signal, ViewChild } from '@angular/core';
 import { IBasket } from 'src/app/shared/models/basket';
@@ -9,7 +13,6 @@ import { IOrder, IOrderToCreate } from 'src/app/shared/models/order';
 import { getStripeInstance } from 'src/app/core/helpers/stripe-utils';
 import { environment } from 'src/environments/environment';
 import { NotificationService } from 'src/app/core/services/notification.service';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { type CheckoutForm } from '../checkout.component';
 
 @Component({
@@ -18,7 +21,7 @@ import { type CheckoutForm } from '../checkout.component';
   styleUrls: ['./checkout-payment.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [SharedModule]
+  imports: [TextInputComponent, MatButtonModule, MatIconModule, MatCardModule]
 })
 export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   checkoutForm = input.required<CheckoutForm>();

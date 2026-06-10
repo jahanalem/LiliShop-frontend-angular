@@ -1,3 +1,5 @@
+import { OrderTotalsComponent } from 'src/app/shared/components/order-totals/order-totals.component';
+import { MatCardModule } from '@angular/material/card';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { form, required } from '@angular/forms/signals';
 import { catchError, of, tap } from 'rxjs';
@@ -7,7 +9,6 @@ import { IAddress } from 'src/app/shared/models/address';
 import { IBasketTotals } from 'src/app/shared/models/basket';
 import { IDeliveryMethod } from 'src/app/shared/models/deliveryMethod';
 import { MatStepperModule } from '@angular/material/stepper';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { CheckoutAddressComponent } from './checkout-address/checkout-address.component';
 import { CheckoutDeliveryComponent } from './checkout-delivery/checkout-delivery.component';
@@ -35,15 +36,13 @@ export interface CheckoutData {
   styleUrls: ['./checkout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [
-    MatStepperModule,
-    SharedModule,
+  imports: [MatStepperModule,
+    
     CommonModule,
     CheckoutAddressComponent,
     CheckoutDeliveryComponent,
     CheckoutReviewComponent,
-    CheckoutPaymentComponent
-  ]
+    CheckoutPaymentComponent, OrderTotalsComponent, MatCardModule]
 })
 export class CheckoutComponent implements OnInit {
   basketTotals = signal<IBasketTotals | null>(null);

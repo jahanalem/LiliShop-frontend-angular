@@ -1,4 +1,12 @@
-import { SharedModule } from 'src/app/shared/shared.module';
+import { PagingHeaderComponent } from 'src/app/shared/components/paging-header/paging-header.component';
+import { PagerComponent } from 'src/app/shared/components/pager/pager.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
@@ -19,7 +27,7 @@ import { ProductItemComponent } from './product-item/product-item.component';
   styleUrls: ['./shop.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [SharedModule, CommonModule, RouterModule, MatSelectModule, ProductItemComponent]
+  imports: [CommonModule, RouterModule, MatSelectModule, ProductItemComponent, PagingHeaderComponent, PagerComponent, MatProgressSpinnerModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCardModule, FormsModule]
 })
 export class ShopComponent implements OnInit {
   searchTerm = viewChild.required<ElementRef<HTMLInputElement>>('search');
