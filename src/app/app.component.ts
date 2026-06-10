@@ -1,5 +1,3 @@
-import { SharedModule } from './shared/shared.module';
-import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, AfterViewInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { AccountService } from './core/services/account.service';
@@ -15,7 +13,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [SharedModule, CommonModule, RouterModule]
+  imports: [RouterModule]
 })
 export class AppComponent implements AfterViewInit {
   isTesting = false;
