@@ -1,4 +1,4 @@
-import { SharedModule } from 'src/app/shared/shared.module';
+import { SharedModule } from './shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, AfterViewInit, ChangeDetectionStrategy, inject } from '@angular/core';

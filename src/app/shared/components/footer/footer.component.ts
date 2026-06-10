@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-footer',
@@ -9,7 +9,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
   templateUrl: './footer.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './footer.component.scss',
-  imports: [CommonModule, RouterModule, SharedModule]
+  imports: [CommonModule, RouterModule, MatIconModule]
 })
 export class FooterComponent {
   currentYear: number = new Date().getFullYear();
