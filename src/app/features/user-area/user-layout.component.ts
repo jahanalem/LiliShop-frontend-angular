@@ -18,7 +18,7 @@ export class UserLayoutComponent implements OnInit {
 
   constructor() {
   }
-  
+
   ngOnInit(): void {
     this.renderer2.setStyle(document.body, 'overflow', 'auto');
   }
