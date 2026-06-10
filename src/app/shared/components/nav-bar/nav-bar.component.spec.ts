@@ -23,12 +23,12 @@ describe('NavBarComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [NavBarComponent],
-            providers: [
-                { provide: BasketService, useValue: basketServiceMock },
-                { provide: AccountService, useValue: accountServiceMock }
-            ]
-        })
+    imports: [NavBarComponent],
+    providers: [
+        { provide: BasketService, useValue: basketServiceMock },
+        { provide: AccountService, useValue: accountServiceMock }
+    ]
+})
             .compileComponents();
 
         basketServiceSpy = TestBed.inject(BasketService) as MockedObject<BasketService>;

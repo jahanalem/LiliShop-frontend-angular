@@ -17,11 +17,11 @@ describe('ProductItemComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [ProductItemComponent],
-            providers: [
-                { provide: BasketService, useValue: basketServiceMock }
-            ]
-        })
+    imports: [ProductItemComponent],
+    providers: [
+        { provide: BasketService, useValue: basketServiceMock }
+    ]
+})
             .compileComponents();
 
         basketServiceSpy = TestBed.inject(BasketService) as MockedObject<BasketService>;

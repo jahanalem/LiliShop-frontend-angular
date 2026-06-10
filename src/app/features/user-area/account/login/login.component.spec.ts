@@ -33,15 +33,14 @@ describe('LoginComponent', () => {
             }
         };
         await TestBed.configureTestingModule({
-            declarations: [LoginComponent, TextInputComponent],
-            schemas: [CUSTOM_ELEMENTS_SCHEMA],
-            imports: [ReactiveFormsModule,
-                RouterTestingModule],
-            providers: [FormBuilder,
-                { provide: AccountService, useValue: accountServiceMock },
-                { provide: Router, useValue: routerMock },
-                { provide: ActivatedRoute, useValue: activatedRouteMock }, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-        }).compileComponents();
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [ReactiveFormsModule,
+        RouterTestingModule, LoginComponent, TextInputComponent],
+    providers: [FormBuilder,
+        { provide: AccountService, useValue: accountServiceMock },
+        { provide: Router, useValue: routerMock },
+        { provide: ActivatedRoute, useValue: activatedRouteMock }, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+}).compileComponents();
     });
 
     beforeEach(() => {

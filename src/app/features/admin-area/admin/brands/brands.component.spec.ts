@@ -31,34 +31,33 @@ describe('BrandsComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [BrandsComponent],
-            imports: [MatDialogModule, MatPaginatorModule, NoopAnimationsModule],
-            providers: [
-                { provide: MatDialogRef, useValue: {} },
-                {
-                    provide: BrandService,
-                    useValue: {
-                        getBrands: vi.fn().mockName('getBrands').mockReturnValue(of({ data: mockBrands, count: mockBrands.length })),
-                        deleteBrand: vi.fn().mockName('deleteBrand').mockReturnValue(of()),
-                        getBrandParams: vi.fn().mockName('getBrandParams').mockReturnValue(new BrandParams()) // Mock getBrandParams() here
-                    }
-                },
-                {
-                    provide: Router,
-                    useValue: {
-                        navigateByUrl: vi.fn().mockName('navigateByUrl')
-                    }
-                },
-                {
-                    provide: MatDialog,
-                    useValue: {
-                        open: vi.fn().mockName('open').mockReturnValue({ afterClosed: () => of(true) })
-                    }
-                },
-                provideHttpClient(withXhr(), withInterceptorsFromDi()),
-                provideHttpClientTesting()
-            ]
-        }).compileComponents();
+    imports: [MatDialogModule, MatPaginatorModule, NoopAnimationsModule, BrandsComponent],
+    providers: [
+        { provide: MatDialogRef, useValue: {} },
+        {
+            provide: BrandService,
+            useValue: {
+                getBrands: vi.fn().mockName('getBrands').mockReturnValue(of({ data: mockBrands, count: mockBrands.length })),
+                deleteBrand: vi.fn().mockName('deleteBrand').mockReturnValue(of()),
+                getBrandParams: vi.fn().mockName('getBrandParams').mockReturnValue(new BrandParams()) // Mock getBrandParams() here
+            }
+        },
+        {
+            provide: Router,
+            useValue: {
+                navigateByUrl: vi.fn().mockName('navigateByUrl')
+            }
+        },
+        {
+            provide: MatDialog,
+            useValue: {
+                open: vi.fn().mockName('open').mockReturnValue({ afterClosed: () => of(true) })
+            }
+        },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+}).compileComponents();
 
         fixture = TestBed.createComponent(BrandsComponent);
         component = fixture.componentInstance;

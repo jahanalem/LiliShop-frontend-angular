@@ -15,10 +15,9 @@ describe('ShopComponent', () => {
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            declarations: [ShopComponent],
-            imports: [],
-            providers: [ShopService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-        }).compileComponents();
+    imports: [ShopComponent],
+    providers: [ShopService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+}).compileComponents();
 
         shopService = TestBed.inject(ShopService);
     }));

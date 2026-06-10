@@ -22,12 +22,12 @@ describe('AppComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [AppComponent],
-            providers: [
-                { provide: BasketService, useValue: basketServiceMock },
-                { provide: AccountService, useValue: accountServiceMock },
-            ],
-        }).compileComponents();
+    imports: [AppComponent],
+    providers: [
+        { provide: BasketService, useValue: basketServiceMock },
+        { provide: AccountService, useValue: accountServiceMock },
+    ],
+}).compileComponents();
 
         basketServiceSpy = TestBed.inject(BasketService) as MockedObject<BasketService>;
         accountServiceSpy = TestBed.inject(AccountService) as MockedObject<AccountService>;

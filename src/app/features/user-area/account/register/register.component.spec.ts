@@ -26,13 +26,12 @@ describe('RegisterComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [RegisterComponent, TextInputComponent],
-            imports: [FormsModule, ReactiveFormsModule],
-            providers: [
-                { provide: AccountService, useValue: accountServiceSpy },
-                { provide: Router, useValue: routerSpy },
-            ],
-        }).compileComponents();
+    imports: [FormsModule, ReactiveFormsModule, RegisterComponent, TextInputComponent],
+    providers: [
+        { provide: AccountService, useValue: accountServiceSpy },
+        { provide: Router, useValue: routerSpy },
+    ],
+}).compileComponents();
     });
 
     beforeEach(() => {
