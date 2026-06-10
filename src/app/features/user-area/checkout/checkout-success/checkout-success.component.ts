@@ -1,16 +1,19 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Navigation, Router } from '@angular/router';
+import { Navigation, Router, RouterModule } from '@angular/router';
 import { IOrder } from 'src/app/shared/models/order';
 import { Observable, of } from 'rxjs';
 import { IUser } from 'src/app/shared/models/user';
 import { AccountService } from 'src/app/core/services/account.service';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-checkout-success',
     templateUrl: './checkout-success.component.html',
     styleUrls: ['./checkout-success.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+    imports: [SharedModule, CommonModule, RouterModule]
 })
 export class CheckoutSuccessComponent {
   protected currentUser$: Observable<IUser | null> = of(null);

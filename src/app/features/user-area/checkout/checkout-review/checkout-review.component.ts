@@ -6,6 +6,7 @@ import { Subject, take, takeUntil } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 import { IBasket } from 'src/app/shared/models/basket';
 import { IUser } from 'src/app/shared/models/user';
@@ -15,7 +16,8 @@ import { IUser } from 'src/app/shared/models/user';
     templateUrl: './checkout-review.component.html',
     styleUrls: ['./checkout-review.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+    imports: [SharedModule]
 })
 export class CheckoutReviewComponent implements OnInit, OnDestroy {
   appStepper = input.required<CdkStepper>();

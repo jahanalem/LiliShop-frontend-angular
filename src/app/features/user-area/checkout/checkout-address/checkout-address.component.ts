@@ -1,59 +1,58 @@
-import { FormGroup } from '@angular/forms';
 import { ChangeDetectionStrategy, Component, inject, input, OnDestroy } from '@angular/core';
+import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
 import { IAddress } from 'src/app/shared/models/address';
 import { AccountService } from 'src/app/core/services/account.service';
-import { Subject, catchError, of, takeUntil, tap } from 'rxjs';
 import { NotificationService } from 'src/app/core/services/notification.service';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { type CheckoutForm } from '../checkout.component';
 
 @Component({
-    selector: 'app-checkout-address',
-    templateUrl: './checkout-address.component.html',
-    styleUrls: ['./checkout-address.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-checkout-address',
+  templateUrl: './checkout-address.component.html',
+  styleUrls: ['./checkout-address.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [SharedModule, RouterModule, CommonModule]
 })
 export class CheckoutAddressComponent implements OnDestroy {
-  checkoutForm = input.required<FormGroup>();
+  // The whole checkout form node, passed down from the parent.
+  checkoutForm = input.required<CheckoutForm>();
 
   destroy$ = new Subject<void>();
 
-  private accountService      = inject(AccountService);
+  private accountService = inject(AccountService);
   private notificationService = inject(NotificationService);
-
-  constructor() {
-
-  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  saveUserAddress() {
-    const addressForm = this.checkoutForm()?.get('addressForm');
-    if (addressForm) {
-      this.accountService.updateAddress(addressForm.value)
-        .pipe(
-          takeUntil(this.destroy$),
-          tap((address: IAddress) => {
-            this.notificationService.showSuccess('Address saved.');
-            this.checkoutForm()?.get('addressForm')?.reset(address);
-          }),
-          catchError((error: any) => {
-            this.notificationService.showError(error.message);
-            console.error(error);
-            return of();
-          })
-        )
-        .subscribe();
-    }
-    else {
-      console.warn('Address form group is missing!');
-    }
+  saveUserAddress(): void {
+    const address = this.checkoutForm().address().value() as IAddress;
+
+    this.accountService
+      .updateAddress(address)
+      .pipe(
+        takeUntil(this.destroy$),
+        tap(() => this.notificationService.showSuccess('Address saved.')),
+        catchError((error: any) => {
+          this.notificationService.showError(error.message);
+          console.error(error);
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
-  isActivatedGoToDeliveryButton() {
-    const result = this.checkoutForm().get('addressForm')?.invalid;
-    return result;
+  isActivatedGoToDeliveryButton(): boolean {
+    return this.checkoutForm().address().invalid();
+  }
+
+  isSaveDisabled(): boolean {
+    const address = this.checkoutForm().address();
+    return !address.valid() || !address.dirty();
   }
 }

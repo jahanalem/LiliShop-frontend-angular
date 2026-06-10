@@ -1,54 +1,55 @@
 <section class="register-container">
   <div class="register-card">
     <section class="register-content">
-      <form class="register-form" [formGroup]="registerForm" (ngSubmit)="onSubmit($event)">
+      <form class="register-form" (ngSubmit)="onSubmit()">
         <app-text-input
           data-cy="display-name-container"
-          formControlName="displayName"
+          [field]="registerForm.displayName"
           [label]="'Display Name'"
-          class="full-width">
-        </app-text-input>
+          class="full-width"
+        />
 
         <app-text-input
           data-cy="email-container"
-          formControlName="email"
+          [field]="registerForm.email"
           [label]="'Email address'"
-          class="full-width">
-        </app-text-input>
+          class="full-width"
+        />
 
         <app-text-input
           data-cy="password-container"
-          formControlName="password"
+          [field]="registerForm.password"
           [label]="'Password'"
           [type]="'password'"
           [showPasswordRules]="true"
           [autocomplete]="'new-password'"
-          class="full-width">
-        </app-text-input>
+          class="full-width"
+        />
 
         <app-text-input
           data-cy="confirm-password-container"
-          formControlName="confirmPassword"
+          [field]="registerForm.confirmPassword"
           [label]="'Confirm Password'"
           [type]="'password'"
           [autocomplete]="'new-password'"
-          class="full-width">
-        </app-text-input>
+          class="full-width"
+        />
 
         <button
           data-cy="submit-button"
-          [disabled]="!isFormValid()"
+          [disabled]="registerForm().invalid()"
           type="submit"
           mat-raised-button
           color="primary"
-          class="full-width register-button">
+          class="full-width register-button"
+        >
           <mat-icon>person_add</mat-icon> Register
         </button>
 
-        @if (errors()) {
+        @if (errors().length) {
           <ul class="error-list">
-            @for(error of errors(); track error){
-              <li>{{error}}</li>
+            @for (error of errors(); track error) {
+              <li>{{ error }}</li>
             }
           </ul>
         }

@@ -2,18 +2,18 @@
   <mat-card>
     <mat-card-title>Login</mat-card-title>
     <mat-card-content>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <form (ngSubmit)="onSubmit()">
         <!-- Email input -->
         <app-text-input
           data-cy="email"
-          formControlName="email"
+          [field]="loginForm.email"
           [label]="'Email address'">
         </app-text-input>
 
         <!-- Password input -->
         <app-text-input
           data-cy="password"
-          formControlName="password"
+          [field]="loginForm.password"
           [label]="'Password'"
           [type]="'password'">
         </app-text-input>
@@ -23,7 +23,7 @@
           data-cy="submit-button"
           mat-raised-button
           color="primary"
-          [disabled]="!isFormValid()"
+          [disabled]="loginForm().invalid()"
           type="submit">
           <mat-icon>login</mat-icon> Sign in
         </button>

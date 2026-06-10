@@ -1,132 +1,56 @@
-
-import { Component, OnInit, ChangeDetectionStrategy, viewChild, Self, input, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
-import { errorType } from '../../constants/error-types';
-import { ElementRef } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from '@angular/core';
+import { FormField, type Field } from '@angular/forms/signals';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
-    selector: 'app-text-input',
-    templateUrl: './text-input.component.html',
-    styleUrls: ['./text-input.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-text-input',
+  templateUrl: './text-input.component.html',
+  styleUrls: ['./text-input.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    FormField,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+  ],
 })
-export class TextInputComponent implements OnInit, OnDestroy, ControlValueAccessor {
-  input = viewChild.required<ElementRef>('input');
+export class TextInputComponent {
+  /** The signal-forms field this input is bound to. */
+  field = input.required<Field<string>>();
 
-  type         = input<string>('text');
-  label        = input<string>('')
-  autocomplete = input<string>('');
+  label             = input<string>('');
+  type              = input<string>('text');
+  autocomplete      = input<string>('');
   showPasswordRules = input<boolean>(false);
 
-  protected onChange  = (_value: any) => { };
-  protected onTouched = () => { };
+  // --- Live field state, read straight from the Field signal ---
+  protected readonly state   = computed(() => this.field()());
+  protected readonly value   = computed(() => this.state().value());
+  protected readonly errors  = computed(() => this.state().errors());
+  protected readonly valid   = computed(() => this.state().valid());
+  protected readonly touched = computed(() => this.state().touched());
+  protected readonly pending = computed(() => this.state().pending());
 
-  private destroy$ = new Subject<void>();
+  // --- Real-time password rule checks (purely derived from the value) ---
+  protected readonly hasMinLength   = computed(() => this.value().length >= 6);
+  protected readonly hasUppercase   = computed(() => /[A-Z]/.test(this.value()));
+  protected readonly hasLowercase   = computed(() => /[a-z]/.test(this.value()));
+  protected readonly hasNumber      = computed(() => /[0-9]/.test(this.value()));
+  protected readonly hasSpecialChar = computed(() =>
+    /[#?!@$%^&*-]/.test(this.value()),
+  );
 
-  cdr = inject(ChangeDetectorRef);
-
-  constructor(@Self() public controlDir: NgControl) {
-    this.controlDir.valueAccessor = this;
-  }
-
-// --- Real-time Password Validation Getters ---
-  get passwordValue(): string {
-    return this.controlDir.control?.value || '';
-  }
-
-  get hasMinLength(): boolean {
-    return this.passwordValue.length >= 6;
-  }
-
-  get hasUppercase(): boolean {
-    return /[A-Z]/.test(this.passwordValue);
-  }
-
-  get hasLowercase(): boolean {
-    return /[a-z]/.test(this.passwordValue);
-  }
-
-  get hasNumber(): boolean {
-    return /[0-9]/.test(this.passwordValue);
-  }
-
-  get hasSpecialChar(): boolean {
-    return /[#?!@$%^&*-]/.test(this.passwordValue); // Matches your patterns.ts
-  }
-  // ---------------------------------------------
-
-  ngOnInit(): void {
-    const control = this.controlDir.control;
-    if (control) {
-      control.statusChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-        this.cdr.markForCheck();
-      });
-      control.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
-        this.cdr.markForCheck();
-      });
-      control.setValidators(control.validator ? [control.validator] : []);
-      control.setAsyncValidators(control.asyncValidator ? [control.asyncValidator] : []);
-      control.updateValueAndValidity();
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-  get formControl(): FormControl {
-    return this.controlDir.control as FormControl;
-  }
-  writeValue(obj: any): void {
-    if (this.input().nativeElement.value !== obj) {
-      this.input().nativeElement.value = obj || '';
-    }
-  }
-
-  onInputChange(value: any): void {
-    this.onChange(value);
-    this.cdr.detectChanges();
-  }
-
-  onInputBlur(): void {
-    this.controlDir.control?.markAsTouched();
-    this.onTouched();
-    this.cdr.detectChanges();
-  }
-  handleFocusOut(): void {
-    // Trigger validation when user leaves the input field (using Tab, click, etc.)
-    this.controlDir.control?.updateValueAndValidity();
-    this.cdr.detectChanges();
-  }
-
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-
-  isThereAnyRequiredErrorType(): boolean | null {
-    this.cdr.markForCheck();
-    return this.controlDir.control?.errors ? this.controlDir.control.errors['required'] ? true : false : null;
-  }
-
-  isEmailAddressInvalid(): boolean | null {
-    return this.controlDir.control?.errors ? (this.controlDir.name === 'email' && this.controlDir.control.errors['pattern']) ? true : false : null;
-  }
-
-  isEmailAlreadyTaken(): boolean | null {
-    return this.controlDir.control?.errors ? this.controlDir.control.errors[errorType.EMAIL_EXISTS] ? true : false : null;
-  }
-
-  isThereMatchEmailErrorType(): boolean | null {
-    return this.controlDir.control?.errors ? this.controlDir.control.errors[errorType.MATCHING] ? true : false : null;
-  }
-
-  isPasswordInvalid(): boolean | null {
-    return this.controlDir.control?.errors ? (this.controlDir.name === 'password' && this.controlDir.control.errors['pattern']) ? true : false : null;
+  /** True only when there's a `kind` error of the given type after the field was touched. */
+  protected hasError(kind: string): boolean {
+    return this.touched() && this.errors().some((e) => e.kind === kind);
   }
 }

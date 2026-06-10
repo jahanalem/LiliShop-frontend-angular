@@ -35,9 +35,9 @@ describe('CheckoutDeliveryComponent', () => {
                 BrowserModule,
                 BrowserAnimationsModule,
                 AppRoutingModule,
-                ReactiveFormsModule
+                ReactiveFormsModule,
+                CheckoutDeliveryComponent
             ],
-            declarations: [CheckoutDeliveryComponent],
             providers: [
                 { provide: CheckoutService, useValue: mockCheckoutService },
                 { provide: BasketService, useValue: mockBasketService }

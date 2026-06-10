@@ -3,12 +3,15 @@
     <div class="checkout-content">
       <div class="checkout-stepper">
         <mat-stepper [linear]="true" #appStepper>
-          <mat-step [completed]="($safeNavigationMigration(checkoutForm.get('addressForm')?.valid))" label="Address">
+          <mat-step [completed]="checkoutForm.address().valid()" label="Address">
             <app-checkout-address [checkoutForm]="checkoutForm"></app-checkout-address>
           </mat-step>
 
-          <mat-step [completed]="($safeNavigationMigration(checkoutForm.get('deliveryForm')?.valid))" label="Delivery">
-            <app-checkout-delivery [checkoutForm]="checkoutForm"></app-checkout-delivery>
+          <mat-step [completed]="checkoutForm.delivery().valid()" label="Delivery">
+            <app-checkout-delivery
+              [checkoutForm]="checkoutForm"
+              (deliveryMethodSelected)="onDeliveryMethodSelected($event)">
+            </app-checkout-delivery>
           </mat-step>
 
           <mat-step label="Review">
@@ -23,7 +26,7 @@
 
       <div class="checkout-summary">
         <mat-card>
-          @if(basketTotals(); as basketTotals) {
+          @if (basketTotals(); as basketTotals) {
             <app-order-totals
               [shippingPrice]="basketTotals.shipping"
               [subtotal]="basketTotals.subtotal"

@@ -1,86 +1,132 @@
-
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { form, required } from '@angular/forms/signals';
 import { catchError, of, tap } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { IAddress } from 'src/app/shared/models/address';
 import { IBasketTotals } from 'src/app/shared/models/basket';
+import { IDeliveryMethod } from 'src/app/shared/models/deliveryMethod';
+import { MatStepperModule } from '@angular/material/stepper';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { CheckoutAddressComponent } from './checkout-address/checkout-address.component';
+import { CheckoutDeliveryComponent } from './checkout-delivery/checkout-delivery.component';
+import { CheckoutReviewComponent } from './checkout-review/checkout-review.component';
+import { CheckoutPaymentComponent } from './checkout-payment/checkout-payment.component';
+
+export interface CheckoutAddress {
+  firstName: string;
+  lastName: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+}
+
+export interface CheckoutData {
+  address: CheckoutAddress;
+  delivery: { deliveryMethod: number | null };
+  payment: { nameOnCard: string };
+}
 
 @Component({
-    selector: 'app-checkout',
-    templateUrl: './checkout.component.html',
-    styleUrls: ['./checkout.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-checkout',
+  templateUrl: './checkout.component.html',
+  styleUrls: ['./checkout.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    MatStepperModule,
+    SharedModule,
+    CommonModule,
+    CheckoutAddressComponent,
+    CheckoutDeliveryComponent,
+    CheckoutReviewComponent,
+    CheckoutPaymentComponent
+  ]
 })
 export class CheckoutComponent implements OnInit {
-  checkoutForm!: FormGroup;
   basketTotals = signal<IBasketTotals | null>(null);
 
-  private fb             = inject(FormBuilder);
   private accountService = inject(AccountService);
-  private basketService  = inject(BasketService);
+  private basketService = inject(BasketService);
 
-  constructor() {
+  // The whole checkout is one signal model; its shape is the form's shape.
+  readonly checkoutModel = signal<CheckoutData>({
+    address: { firstName: '', lastName: '', street: '', city: '', state: '', zipCode: '' },
+    delivery: { deliveryMethod: null },
+    payment: { nameOnCard: '' },
+  });
 
-  }
+  readonly checkoutForm = form(this.checkoutModel, (path) => {
+    required(path.address.firstName, { message: 'First name is required' });
+    required(path.address.lastName, { message: 'Last name is required' });
+    required(path.address.street, { message: 'Street is required' });
+    required(path.address.city, { message: 'City is required' });
+    required(path.address.state, { message: 'State is required' });
+    required(path.address.zipCode, { message: 'Zip code is required' });
+
+    required(path.delivery.deliveryMethod, { message: 'Please choose a delivery method' });
+
+    required(path.payment.nameOnCard, { message: 'Name on card is required' });
+  });
 
   ngOnInit(): void {
-    this.createCheckoutForm();
-    this.getAddressFormValues();
-    this.getDeliveryMethodValue();
-    this.basketService.basketTotal$.subscribe(totals => {
-      this.basketTotals.set(totals);
-    });
+    this.loadUserAddress();
+    this.loadDeliveryMethodValue();
+    this.basketService.basketTotal$.subscribe((totals) => this.basketTotals.set(totals));
   }
 
-  createCheckoutForm() {
-    this.checkoutForm = this.fb.group({
-      addressForm: this.fb.group({
-        firstName: [null, Validators.required],
-        lastName : [null, Validators.required],
-        street   : [null, Validators.required],
-        city     : [null, Validators.required],
-        state    : [null, Validators.required],
-        zipCode  : [null, Validators.required],
-      }),
-      deliveryForm: this.fb.group({
-        deliveryMethod: [null, Validators.required]
-      }),
-      paymentForm: this.fb.group({
-        nameOnCard: [null, Validators.required]
-      })
-    });
+  private loadUserAddress(): void {
+    this.accountService
+      .getUserAddress()
+      .pipe(
+        tap((address: IAddress) => {
+          if (address) {
+            // Map explicit fields only, so unknown server keys don't leak into the model.
+            this.checkoutModel.update((m) => ({
+              ...m,
+              address: {
+                firstName: address.firstName ?? '',
+                lastName: address.lastName ?? '',
+                street: address.street ?? '',
+                city: address.city ?? '',
+                state: address.state ?? '',
+                zipCode: address.zipCode ?? '',
+              },
+            }));
+          }
+        }),
+        catchError((error: any) => {
+          console.error(error);
+          return of();
+        }),
+      )
+      .subscribe();
   }
 
-  getAddressFormValues() {
-    const addressForm = this.checkoutForm.get('addressForm');
-    if (!addressForm) {
-      console.warn('Address form group is missing!');
-      return;
-    }
-
-    this.accountService.getUserAddress().pipe(
-      tap((address: IAddress) => {
-        if (address) {
-          addressForm.patchValue(address);
-          this.checkoutForm?.get('addressForm')?.markAsDirty
-          addressForm.updateValueAndValidity();
-        }
-      }),
-      catchError((error: any) => {
-        console.error(error);
-        return of(); // This will ensure the observable stream is not broken due to an error.(Swallow the error and continue the observable stream)
-      })
-    ).subscribe();
-  }
-
-  getDeliveryMethodValue() {
+  private loadDeliveryMethodValue(): void {
     const basket = this.basketService.getCurrentBasketValue();
-    if (basket?.deliveryMethodId !== null) {
-      this.checkoutForm.get('deliveryForm')?.get('deliveryMethod')?.patchValue(basket?.deliveryMethodId?.toString());
+    if (basket?.deliveryMethodId != null) {
+      this.checkoutModel.update((m) => ({
+        ...m,
+        delivery: { deliveryMethod: basket.deliveryMethodId! },
+      }));
     }
   }
 
+  /** Called by the delivery child; the parent owns the model and writes the choice. */
+  onDeliveryMethodSelected(method: IDeliveryMethod): void {
+    this.checkoutModel.update((m) => ({
+      ...m,
+      delivery: { deliveryMethod: method.id },
+    }));
+  }
 }
+
+/**
+ * The exact type of the checkout form tree, inferred from `form()` above.
+ * Children take this so that `checkoutForm().address.firstName` navigation
+ * type-checks — a hand-written `Field<CheckoutData>` does not expose child fields.
+ */
+export type CheckoutForm = CheckoutComponent['checkoutForm'];

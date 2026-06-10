@@ -1,32 +1,29 @@
-<div [formGroup]="checkoutForm()">
-  <div class="checkout-section" [formGroup]="checkoutForm()">
+<div>
+  <div class="checkout-section">
     <div class="header-container">
       <h4>Shipping address</h4>
-      <button mat-button (click)="saveUserAddress()"
-              [disabled]="!checkoutForm().get('addressForm')?.valid || !checkoutForm().get('addressForm')?.dirty"
-              color="primary">
+      <button mat-button (click)="saveUserAddress()" [disabled]="isSaveDisabled()" color="primary">
         Save as default address
       </button>
     </div>
-    <div formGroupName="addressForm">
-      <div class="form-field">
-        <app-text-input [label]="'First name'" formControlName="firstName"></app-text-input>
-      </div>
-      <div class="form-field">
-        <app-text-input [label]="'Last name'" formControlName="lastName"></app-text-input>
-      </div>
-      <div class="form-field">
-        <app-text-input [label]="'Street'" formControlName="street"></app-text-input>
-      </div>
-      <div class="form-field">
-        <app-text-input [label]="'City'" formControlName="city"></app-text-input>
-      </div>
-      <div class="form-field">
-        <app-text-input [label]="'State'" formControlName="state"></app-text-input>
-      </div>
-      <div class="form-field">
-        <app-text-input [label]="'Zip code'" formControlName="zipCode"></app-text-input>
-      </div>
+
+    <div class="form-field">
+      <app-text-input [label]="'First name'" [field]="checkoutForm().address.firstName"></app-text-input>
+    </div>
+    <div class="form-field">
+      <app-text-input [label]="'Last name'" [field]="checkoutForm().address.lastName"></app-text-input>
+    </div>
+    <div class="form-field">
+      <app-text-input [label]="'Street'" [field]="checkoutForm().address.street"></app-text-input>
+    </div>
+    <div class="form-field">
+      <app-text-input [label]="'City'" [field]="checkoutForm().address.city"></app-text-input>
+    </div>
+    <div class="form-field">
+      <app-text-input [label]="'State'" [field]="checkoutForm().address.state"></app-text-input>
+    </div>
+    <div class="form-field">
+      <app-text-input [label]="'Zip code'" [field]="checkoutForm().address.zipCode"></app-text-input>
     </div>
   </div>
 

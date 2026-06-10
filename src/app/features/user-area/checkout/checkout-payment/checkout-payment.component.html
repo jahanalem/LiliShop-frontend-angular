@@ -1,22 +1,20 @@
-<div [formGroup]="checkoutForm()">
-  <div formGroupName="paymentForm">
-    <app-text-input [label]="'Name on card'" formControlName="nameOnCard"></app-text-input>
+<div>
+  <app-text-input [label]="'Name on card'" [field]="checkoutForm().payment.nameOnCard"></app-text-input>
 
-    <div class="payment-fields">
-      <div class="stripe-element-container full-width">
-        <div #cardNumber class="stripe-element"></div>
-        @if (cardErrors) {
-          <span class="error-message">{{cardErrors}}</span>
-        }
-      </div>
+  <div class="payment-fields">
+    <div class="stripe-element-container full-width">
+      <div #cardNumber class="stripe-element"></div>
+      @if (cardErrors) {
+        <span class="error-message">{{ cardErrors }}</span>
+      }
+    </div>
 
-      <div class="stripe-element-container half-width">
-        <div #cardExpiry class="stripe-element"></div>
-      </div>
+    <div class="stripe-element-container half-width">
+      <div #cardExpiry class="stripe-element"></div>
+    </div>
 
-      <div class="stripe-element-container half-width">
-        <div #cardCvc class="stripe-element"></div>
-      </div>
+    <div class="stripe-element-container half-width">
+      <div #cardCvc class="stripe-element"></div>
     </div>
   </div>
 </div>
@@ -28,8 +26,7 @@
   <button mat-raised-button color="primary" [disabled]="isActivatedSubmitButton()" (click)="submitOrder()">
     Submit order
     <mat-icon>arrow_forward</mat-icon>
-    @if(loading())
-      {
+    @if (loading()) {
       <mat-icon class="loading-spinner">autorenew</mat-icon>
     }
   </button>
@@ -37,11 +34,11 @@
 
 <mat-card class="alert-card">
   <mat-card-content>
-    For testing the payment, you can use the following information:<br>
-    Name on card: whatever!<br>
-    card No.: 4242 4242 4242 4242<br>
-    Date: 12/25<br>
-    CVC: 123<br><br>
+    For testing the payment, you can use the following information:<br />
+    Name on card: whatever!<br />
+    card No.: 4242 4242 4242 4242<br />
+    Date: 12/25<br />
+    CVC: 123<br /><br />
     For more test cards, visit
     <a href="https://stripe.com/docs/terminal/references/testing" target="_blank" rel="noopener">this link</a>.
   </mat-card-content>

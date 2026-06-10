@@ -8,25 +8,20 @@ import { CheckoutDeliveryComponent } from './checkout-delivery/checkout-delivery
 import { CheckoutReviewComponent } from './checkout-review/checkout-review.component';
 import { CheckoutPaymentComponent } from './checkout-payment/checkout-payment.component';
 import { CheckoutSuccessComponent } from './checkout-success/checkout-success.component';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatStepperModule } from '@angular/material/stepper';
 
 
 @NgModule({
-  declarations: [
+  declarations: [],
+  imports: [
+    CommonModule,
+    CheckoutRoutingModule,
+    SharedModule,
     CheckoutComponent,
     CheckoutAddressComponent,
     CheckoutDeliveryComponent,
     CheckoutReviewComponent,
     CheckoutPaymentComponent,
     CheckoutSuccessComponent
-  ],
-  imports: [
-    CommonModule,
-    CheckoutRoutingModule,
-    SharedModule,
-    MatRadioModule,
-    MatStepperModule
   ]
 })
 export class CheckoutModule { }

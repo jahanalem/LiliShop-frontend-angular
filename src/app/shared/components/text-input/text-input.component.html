@@ -3,83 +3,66 @@
   <input
     matInput
     [type]="type()"
-    (input)="onInputChange($any($event.target).value)"
-    (blur)="onInputBlur()"
-    (focusout)="handleFocusOut()"
-    id="{{ label() }}"
-    #input
-    placeholder="{{ label() }}"
+    [formField]="field()"
+    [id]="label()"
+    [placeholder]="label()"
     [attr.autocomplete]="autocomplete()"
-    [formControl]="formControl"
     class="custom-input"
-    >
+  />
 
-    <!-- Valid Icon -->
-    @if (controlDir.control?.valid) {
-      <mat-icon matSuffix color="primary" class="valid-icon">
-        check_circle
-      </mat-icon>
-    }
-
-    <!-- Loader -->
-    @if (controlDir.control?.status === 'PENDING') {
-      <mat-progress-spinner
-        mode="indeterminate"
-        diameter="20"
-        class="loader"
-      ></mat-progress-spinner>
-    }
-
-    <!-- Error Messages -->
-    @if (controlDir.control?.hasError('required') && controlDir.control?.touched) {
-      <mat-error>
-        {{ label() }} is required
-      </mat-error>
-    }
-    @if (controlDir.control?.hasError('email') && controlDir.control?.touched) {
-      <mat-error>
-        Invalid email address
-      </mat-error>
-    }
-    @if (isPasswordInvalid() && !showPasswordRules()) {
-      <mat-error>
-        Password must have 1 Uppercase, 1 Lowercase, 1 number, 1 non-alphanumeric, and at least 6 characters
-      </mat-error>
-    }
-    @if (isThereMatchEmailErrorType()) {
-      <mat-error>
-        Confirm Password does not match
-      </mat-error>
-    }
-
-    <!-- Hint -->
-    @if (!controlDir.control?.valid && controlDir.control?.dirty) {
-      <mat-hint>
-        @if (isEmailAlreadyTaken()) {
-          <span>Email address is in use</span>
-        }
-      </mat-hint>
-    }
-  </mat-form-field>
-  @if (showPasswordRules()) {
-    <div class="password-rules-container">
-      <p class="rules-title">Password requirements:</p>
-      <ul class="rules-list">
-        <li [class.valid]="hasMinLength" [class.invalid]="!hasMinLength">
-          <mat-icon inline>{{ hasMinLength ? 'check_circle' : 'cancel' }}</mat-icon> At least 6 characters
-        </li>
-        <li [class.valid]="hasUppercase" [class.invalid]="!hasUppercase">
-          <mat-icon inline>{{ hasUppercase ? 'check_circle' : 'cancel' }}</mat-icon> 1 Uppercase letter
-        </li>
-        <li [class.valid]="hasLowercase" [class.invalid]="!hasLowercase">
-          <mat-icon inline>{{ hasLowercase ? 'check_circle' : 'cancel' }}</mat-icon> 1 Lowercase letter
-        </li>
-        <li [class.valid]="hasNumber" [class.invalid]="!hasNumber">
-          <mat-icon inline>{{ hasNumber ? 'check_circle' : 'cancel' }}</mat-icon> 1 Number
-        </li>
-        <li [class.valid]="hasSpecialChar" [class.invalid]="!hasSpecialChar">
-          <mat-icon inline>{{ hasSpecialChar ? 'check_circle' : 'cancel' }}</mat-icon> 1 Special character (#?!@$%^&*-)
-        </li>
-      </ul>
-    </div>
+  <!-- Valid Icon -->
+  @if (valid()) {
+    <mat-icon matSuffix color="primary" class="valid-icon"> check_circle </mat-icon>
   }
+
+  <!-- Loader (async validation in progress) -->
+  @if (pending()) {
+    <mat-progress-spinner
+      mode="indeterminate"
+      diameter="20"
+      class="loader"
+    ></mat-progress-spinner>
+  }
+
+  <!-- Error Messages: driven entirely by the field's own error kinds -->
+  @if (touched()) {
+    @for (error of errors(); track error.kind) {
+      @if (!showPasswordRules() || error.kind !== 'pattern') {
+        <mat-error>{{ error.message }}</mat-error>
+      }
+    }
+  }
+
+  <!-- Hint -->
+  @if (hasError('emailExists')) {
+    <mat-hint><span>Email address is in use</span></mat-hint>
+  }
+</mat-form-field>
+
+@if (showPasswordRules()) {
+  <div class="password-rules-container">
+    <p class="rules-title">Password requirements:</p>
+    <ul class="rules-list">
+      <li [class.valid]="hasMinLength()" [class.invalid]="!hasMinLength()">
+        <mat-icon inline>{{ hasMinLength() ? 'check_circle' : 'cancel' }}</mat-icon>
+        At least 6 characters
+      </li>
+      <li [class.valid]="hasUppercase()" [class.invalid]="!hasUppercase()">
+        <mat-icon inline>{{ hasUppercase() ? 'check_circle' : 'cancel' }}</mat-icon>
+        1 Uppercase letter
+      </li>
+      <li [class.valid]="hasLowercase()" [class.invalid]="!hasLowercase()">
+        <mat-icon inline>{{ hasLowercase() ? 'check_circle' : 'cancel' }}</mat-icon>
+        1 Lowercase letter
+      </li>
+      <li [class.valid]="hasNumber()" [class.invalid]="!hasNumber()">
+        <mat-icon inline>{{ hasNumber() ? 'check_circle' : 'cancel' }}</mat-icon>
+        1 Number
+      </li>
+      <li [class.valid]="hasSpecialChar()" [class.invalid]="!hasSpecialChar()">
+        <mat-icon inline>{{ hasSpecialChar() ? 'check_circle' : 'cancel' }}</mat-icon>
+        1 Special character (#?!&#64;$%^&amp;*-)
+      </li>
+    </ul>
+  </div>
+}

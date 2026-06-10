@@ -21,7 +21,7 @@ describe('CheckoutReviewComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-            declarations: [CheckoutReviewComponent],
+            imports: [CheckoutReviewComponent],
             providers: [
                 { provide: BasketService, useValue: mockBasketService },
             ]

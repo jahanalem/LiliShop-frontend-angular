@@ -31,9 +31,9 @@ describe('CheckoutAddressComponent', () => {
                 FormsModule,
                 ReactiveFormsModule,
                 MatInputModule,
-                MatFormFieldModule
+                MatFormFieldModule,
+                CheckoutAddressComponent
             ],
-            declarations: [CheckoutAddressComponent, TextInputComponent],
             providers: [
                 { provide: AccountService, useValue: mockAccountService }
             ]

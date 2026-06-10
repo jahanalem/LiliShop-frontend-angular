@@ -15,9 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 
 
 @NgModule({
-  declarations: [
-    ContactComponent
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     ContactRoutingModule,
@@ -31,6 +29,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatIconModule,
     MatCheckboxModule,
     MatMenuModule,
+    ContactComponent
   ]
 })
 export class ContactModule { }

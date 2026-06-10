@@ -43,6 +43,7 @@ import { FormatValuePipe } from './pipes/format-value.pipe';
 
 import { MatSortModule } from '@angular/material/sort';
 
+// NgModule-declared (non-standalone) components
 const components = [
   NavBarComponent,
   FooterComponent,
@@ -50,12 +51,16 @@ const components = [
   PagingHeaderComponent,
   PagerComponent,
   OrderTotalsComponent,
-  TextInputComponent,
   BasketSummaryComponent,
   TextTextareaComponent,
   DialogComponent,
   PhotoEditorComponent,
   ConfirmationDialogComponent,
+];
+
+// Standalone components owned by this module — imported, then re-exported
+const standaloneComponents = [
+  TextInputComponent,
 ];
 
 const matModules = [
@@ -100,6 +105,7 @@ const thirdPartyModules = [
     CloudinaryModule,
     ...thirdPartyModules,
     ...matModules,
+    ...standaloneComponents,
   ],
   exports: [
     ReactiveFormsModule,
@@ -110,6 +116,7 @@ const thirdPartyModules = [
     CheckPolicyDirective,
     CloudinaryModule,
     ...components,
+    ...standaloneComponents,
     ...thirdPartyModules,
     ...matModules,
   ],

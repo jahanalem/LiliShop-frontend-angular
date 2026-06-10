@@ -22,7 +22,7 @@ describe('CheckoutSuccessComponent', () => {
         };
 
         TestBed.configureTestingModule({
-            declarations: [CheckoutSuccessComponent],
+            imports: [CheckoutSuccessComponent],
             providers: [
                 { provide: AccountService, useValue: mockAccountService },
                 { provide: Router, useValue: mockRouter }

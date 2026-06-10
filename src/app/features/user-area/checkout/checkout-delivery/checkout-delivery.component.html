@@ -1,27 +1,22 @@
-@if(checkoutForm(); as checkoutForm)
-  {
-  <div class="delivery-section" [formGroup]="checkoutForm">
-    <h4>Choose your delivery method</h4>
-    <div formGroupName="deliveryForm">
-      <mat-radio-group formControlName="deliveryMethod">
-        @for (dMethod of deliveryMethods(); track dMethod) {
-          <mat-radio-button (click)="setShippingPrice(dMethod)"
-            [value]="dMethod.id" class="delivery-option">
-            <strong>{{dMethod.shortName}} - {{dMethod.price | currency}}</strong>
-            <br>
-              <span class="label-description">{{dMethod.description}}</span>
-            </mat-radio-button>
-          }
-        </mat-radio-group>
-      </div>
-    </div>
+<div class="delivery-section">
+  <h4>Choose your delivery method</h4>
 
-    <div class="action-buttons">
-      <button mat-stroked-button color="primary" cdkStepperPrevious>
-        <mat-icon>arrow_back</mat-icon> Back to address
-      </button>
-      <button mat-raised-button color="accent" [disabled]="$safeNavigationMigration(checkoutForm.get('deliveryForm')?.invalid)" cdkStepperNext>
-        Go to review <mat-icon>arrow_forward</mat-icon>
-      </button>
-    </div>
-  }
+  <mat-radio-group [value]="checkoutForm().delivery.deliveryMethod().value()">
+    @for (dMethod of deliveryMethods(); track dMethod.id) {
+      <mat-radio-button (click)="onDeliveryMethodChange(dMethod)" [value]="dMethod.id" class="delivery-option">
+        <strong>{{ dMethod.shortName }} - {{ dMethod.price | currency }}</strong>
+        <br />
+        <span class="label-description">{{ dMethod.description }}</span>
+      </mat-radio-button>
+    }
+  </mat-radio-group>
+</div>
+
+<div class="action-buttons">
+  <button mat-stroked-button color="primary" cdkStepperPrevious>
+    <mat-icon>arrow_back</mat-icon> Back to address
+  </button>
+  <button mat-raised-button color="accent" [disabled]="checkoutForm().delivery().invalid()" cdkStepperNext>
+    Go to review <mat-icon>arrow_forward</mat-icon>
+  </button>
+</div>
