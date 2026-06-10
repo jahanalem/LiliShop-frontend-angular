@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { IBrand } from 'src/app/shared/models/brand';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -9,12 +12,15 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
+import { MatCheckboxModule } from '@angular/material/checkbox';
+
 @Component({
     selector: 'app-edit-brand',
     templateUrl: './edit-brand.component.html',
     styleUrls: ['./edit-brand.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+  imports: [SharedModule, CommonModule, RouterModule, MatCheckboxModule]
 })
 export class EditBrandComponent implements OnInit {
   brandForm!: FormGroup;

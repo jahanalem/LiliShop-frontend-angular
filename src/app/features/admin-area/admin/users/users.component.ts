@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { AfterViewInit, ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
@@ -25,7 +28,8 @@ enum ColumnNames {
     templateUrl: './users.component.html',
     styleUrls: ['./users.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+  imports: [SharedModule, CommonModule, RouterModule]
 })
 export class UsersComponent implements AfterViewInit, OnInit {
   paginator = viewChild<MatPaginator>(MatPaginator);

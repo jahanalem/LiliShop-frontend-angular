@@ -1,17 +1,35 @@
 import { AccountService } from 'src/app/core/services/account.service';
 import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, AfterViewInit, OnInit } from '@angular/core';
-import { MatSidenav } from '@angular/material/sidenav';
-import { NavigationEnd, Router } from '@angular/router';
+import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { delay, filter, Subject, takeUntil } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { BusyService } from 'src/app/core/services/busy.service';
+import { MatToolbar } from "@angular/material/toolbar";
+import { MatIcon } from "@angular/material/icon";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatProgressBar } from "@angular/material/progress-bar";
+import { MatDivider } from "@angular/material/divider";
+import { MatNavList } from "@angular/material/list";
 
 @Component({
     selector: 'app-admin',
     templateUrl: './admin.component.html',
     styleUrls: ['./admin.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+    imports: [
+      MatToolbar,
+      MatIcon,
+      MatMenuModule,
+      MatProgressBar,
+      MatSidenavContainer,
+      MatSidenav,
+      MatDivider,
+      MatNavList,
+      MatSidenavContent,
+      RouterModule
+    ]
 })
 export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit {
   sidenav = viewChild.required<MatSidenav>(MatSidenav);

@@ -16,8 +16,7 @@ import { ProductItemComponent } from './product-item/product-item.component';
 
 @NgModule({
   declarations: [
-    ShopComponent,
-    ProductDetailsComponent
+    
   ],
   imports: [
     CommonModule,
@@ -33,6 +32,8 @@ import { ProductItemComponent } from './product-item/product-item.component';
     MatGridListModule,
     NgOptimizedImage,
     ProductItemComponent,
+    ShopComponent,
+    ProductDetailsComponent
   ]
 })
 export class ShopModule { }

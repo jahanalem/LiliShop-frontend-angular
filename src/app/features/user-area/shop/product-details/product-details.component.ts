@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { SubscriptionService } from '../../../../core/services/subscription.service';
 import { of, switchMap } from 'rxjs';
 import { IProduct } from 'src/app/shared/models/product';
@@ -8,12 +11,15 @@ import { ProductService } from 'src/app/core/services/product.service';
 import { INotificationSubscription } from 'src/app/shared/models/notificationSubscription';
 import { AccountService } from 'src/app/core/services/account.service';
 
+import { NgOptimizedImage } from '@angular/common';
+
 @Component({
     selector: 'app-product-details',
     templateUrl: './product-details.component.html',
     styleUrls: ['./product-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+  imports: [SharedModule, CommonModule, RouterModule, NgOptimizedImage]
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
   product                   = signal<IProduct>({} as IProduct);

@@ -5,10 +5,14 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { ServerErrorComponent } from './server-error/server-error.component';
 
 @NgModule({
-  declarations: [NotFoundComponent, ServerErrorComponent],
+  declarations: [
+    
+  ],
   imports: [
     CommonModule,
     RouterModule,
+    NotFoundComponent,
+    ServerErrorComponent
   ],
 })
 export class CoreModule {

@@ -16,8 +16,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
-    BrandsComponent,
-    EditBrandComponent
+    
   ],
   imports: [
     CommonModule,
@@ -32,6 +31,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatSelectModule,
     MatCheckboxModule,
     ReactiveFormsModule,
+    BrandsComponent,
+    EditBrandComponent
   ]
 })
 export class BrandsModule { }

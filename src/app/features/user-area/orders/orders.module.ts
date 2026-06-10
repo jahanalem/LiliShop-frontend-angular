@@ -11,8 +11,7 @@ import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
   declarations: [
-    OrdersComponent,
-    OrderDetailedComponent,
+    
   ],
   imports: [
     CommonModule,
@@ -22,6 +21,8 @@ import { MatChipsModule } from '@angular/material/chips';
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
+    OrdersComponent,
+    OrderDetailedComponent
   ],
   exports: [OrdersComponent, OrderDetailedComponent]
 })

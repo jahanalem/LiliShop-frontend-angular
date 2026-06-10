@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
@@ -7,12 +10,15 @@ import { RoleService } from 'src/app/core/services/role.service';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
 import { IRole } from 'src/app/shared/models/role';
 
+import { MatSelectModule } from '@angular/material/select';
+
 @Component({
     selector: 'app-edit-user',
     templateUrl: './edit-user.component.html',
     styleUrls: ['./edit-user.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+  imports: [SharedModule, CommonModule, RouterModule, MatSelectModule]
 })
 export class EditUserComponent implements OnInit, OnDestroy {
   adminUserForm!: FormGroup;
@@ -31,7 +37,7 @@ export class EditUserComponent implements OnInit, OnDestroy {
   private formBuilder    = inject(FormBuilder);
 
   constructor() {
-    
+
   }
 
   ngOnInit(): void {

@@ -6,7 +6,7 @@ import { PolicyNames } from '../models/policy';
 
 @Directive({
     selector: '[appCheckPolicy]',
-    standalone: false
+    standalone: true
 })
 export class CheckPolicyDirective implements OnInit, OnDestroy {
   @Input() appCheckPolicy!: PolicyNames;

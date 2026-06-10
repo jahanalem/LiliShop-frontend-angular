@@ -16,9 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
 
 @NgModule({
-  declarations: [
-    AdminComponent,
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     AdminRoutingModule,
@@ -34,6 +32,7 @@ import { MatListModule } from '@angular/material/list';
     MatListModule,
     OverlayModule,
     SharedModule,
+    AdminComponent
   ]
 })
 export class AdminModule { }

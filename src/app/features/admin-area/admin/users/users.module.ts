@@ -17,8 +17,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [
-    UsersComponent,
-    EditUserComponent
+    
   ],
   imports: [
     CommonModule,
@@ -31,7 +30,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
     MatIconModule,
     MatSelectModule,
     MatCheckboxModule,
-    SharedModule
+    SharedModule,
+    UsersComponent,
+    EditUserComponent
   ]
 })
 export class UsersModule { }

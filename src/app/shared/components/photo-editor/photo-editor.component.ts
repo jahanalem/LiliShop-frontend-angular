@@ -1,3 +1,22 @@
+
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { AccountService } from './../../../core/services/account.service';
 import { environment } from './../../../../environments/environment';
 import { FileItem, FileUploader } from 'ng2-file-upload';
@@ -8,6 +27,7 @@ import { take } from 'rxjs';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IProductPhoto } from '../../models/productPhoto';
 import { ProductService } from 'src/app/core/services/product.service';
+import { FileUploadModule } from 'ng2-file-upload';
 
 @Component({
     selector: 'app-photo-editor',
@@ -19,7 +39,28 @@ import { ProductService } from 'src/app/core/services/product.service';
             useExisting: PhotoEditorComponent
         }],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+  imports: [
+    CommonModule, RouterModule,
+    MatDialogModule,
+    MatIconModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatDividerModule,
+    MatMenuModule,
+    MatListModule,
+    MatSidenavModule,
+    MatBadgeModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatPaginatorModule,
+    MatCardModule,
+    MatTableModule,
+    FileUploadModule
+  ]
+
 })
 export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
   product             = input.required<IProduct | undefined>();

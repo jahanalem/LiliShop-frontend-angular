@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { AfterViewInit, ChangeDetectionStrategy, Component, signal, viewChild, inject } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -14,7 +17,8 @@ import { ProductTypeParams } from 'src/app/shared/models/productTypeParams';
     templateUrl: './product-types.component.html',
     styleUrls: ['./product-types.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+  imports: [SharedModule, CommonModule, RouterModule]
 })
 export class ProductTypesComponent implements AfterViewInit {
   paginator = viewChild.required<MatPaginator>(MatPaginator);

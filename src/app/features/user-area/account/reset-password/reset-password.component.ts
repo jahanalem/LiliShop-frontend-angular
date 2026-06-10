@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -8,10 +11,11 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 
 @Component({
   selector: 'app-reset-password',
-  standalone: false,
+  standalone: true,
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SharedModule, CommonModule, RouterModule]
 })
 export class ResetPasswordComponent {
   resetPasswordForm!: FormGroup;

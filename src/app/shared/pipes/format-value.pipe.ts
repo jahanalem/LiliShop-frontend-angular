@@ -5,7 +5,7 @@ import { IDiscount } from '../models/discount-system';
 
 @Pipe({
   name: 'formatValue',
-  standalone: false
+  standalone: true
 })
 export class FormatValuePipe implements PipeTransform {
 

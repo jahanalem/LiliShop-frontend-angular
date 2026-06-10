@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Component, inject, signal, OnInit, viewChild, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -13,10 +16,11 @@ import { PolicyNames } from 'src/app/shared/models/policy';
 
 @Component({
   selector: 'app-contact-us-messages',
-  standalone: false,
+  standalone: true,
   templateUrl: './contact-us-messages.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './contact-us-messages.component.scss'
+  styleUrl: './contact-us-messages.component.scss',
+  imports: [SharedModule, CommonModule, RouterModule]
 })
 export class ContactUsMessagesComponent implements OnInit, OnDestroy {
   paginator = viewChild.required<MatPaginator>(MatPaginator);

@@ -17,8 +17,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
-    ProductTypesComponent,
-    EditProductTypeComponent
+    
   ],
   imports: [
     CommonModule,
@@ -33,6 +32,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MatSelectModule,
     MatCheckboxModule,
     ReactiveFormsModule,
+    ProductTypesComponent,
+    EditProductTypeComponent
   ]
 })
 export class ProductTypesModule { }

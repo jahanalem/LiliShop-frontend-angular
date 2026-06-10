@@ -90,11 +90,7 @@ const thirdPartyModules = [
 ]
 
 @NgModule({
-  declarations: [
-    ...components,
-    FormatValuePipe,
-    CheckPolicyDirective,
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -105,7 +101,12 @@ const thirdPartyModules = [
     CloudinaryModule,
     ...thirdPartyModules,
     ...matModules,
+    ...components,
     ...standaloneComponents,
+    FormatValuePipe,
+    CheckPolicyDirective,
+    FormatValuePipe,
+    CheckPolicyDirective,
   ],
   exports: [
     ReactiveFormsModule,

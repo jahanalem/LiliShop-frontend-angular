@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
@@ -7,12 +10,16 @@ import { ISizeClassification } from 'src/app/shared/models/productCharacteristic
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { IProductType } from 'src/app/shared/models/productType';
 
+import { MatSelectModule } from '@angular/material/select';
+import { ProductItemComponent } from './product-item/product-item.component';
+
 @Component({
   selector: 'app-shop',
   templateUrl: './shop.component.html',
   styleUrls: ['./shop.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  standalone: true,
+  imports: [SharedModule, CommonModule, RouterModule, MatSelectModule, ProductItemComponent]
 })
 export class ShopComponent implements OnInit {
   searchTerm = viewChild.required<ElementRef<HTMLInputElement>>('search');

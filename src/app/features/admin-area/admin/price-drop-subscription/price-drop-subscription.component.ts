@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { SubscriptionService } from '../../../../core/services/subscription.service';
 import { Component, OnInit, AfterViewInit, ChangeDetectionStrategy, OnDestroy, inject, viewChild, signal } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -13,8 +16,9 @@ import { PriceDropSubscriptionPagination } from 'src/app/shared/models/paginatio
   selector: 'app-price-drop-subscription',
   templateUrl: './price-drop-subscription.component.html',
   styleUrls: ['./price-drop-subscription.component.scss'],
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SharedModule, CommonModule, RouterModule]
 })
 export class PriceDropSubscriptionComponent implements OnInit, AfterViewInit, OnDestroy {
   paginator = viewChild.required<MatPaginator>(MatPaginator);

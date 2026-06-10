@@ -18,7 +18,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 
 
 @NgModule({
-  declarations: [ContactUsMessagesComponent, EditContactUsMessagesComponent],
+  declarations: [
+    
+  ],
   imports: [
     CommonModule,
         ContactUsMessagesRoutingModule,
@@ -33,7 +35,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
         ReactiveFormsModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        SharedModule
+        SharedModule,
+    ContactUsMessagesComponent,
+    EditContactUsMessagesComponent
   ]
 })
 export class ContactUsMessagesModule { }

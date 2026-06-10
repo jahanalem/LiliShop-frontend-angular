@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Component, AfterViewInit, ChangeDetectionStrategy, signal, viewChild, inject } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
@@ -13,7 +16,8 @@ import { PolicyNames } from 'src/app/shared/models/policy';
     templateUrl: './brands.component.html',
     styleUrls: ['./brands.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+  imports: [SharedModule, CommonModule, RouterModule]
 })
 export class BrandsComponent implements AfterViewInit {
   paginator = viewChild.required<MatPaginator>(MatPaginator);

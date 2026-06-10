@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { ActivatedRoute } from '@angular/router';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
@@ -9,7 +12,8 @@ import { OrdersService } from 'src/app/core/services/orders.service';
     templateUrl: './order-detailed.component.html',
     styleUrls: ['./order-detailed.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+  imports: [SharedModule, CommonModule, RouterModule]
 })
 export class OrderDetailedComponent implements OnInit {
   order = signal<IOrder | undefined>(undefined);

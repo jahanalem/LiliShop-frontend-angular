@@ -1,15 +1,22 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { EMPTY, Subject, switchMap, takeUntil } from 'rxjs';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { IContactUsMessage } from 'src/app/shared/models/contactUsMessage';
 
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 @Component({
   selector: 'app-edit-contact-us-messages',
-  standalone: false,
+  standalone: true,
   templateUrl: './edit-contact-us-messages.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './edit-contact-us-messages.component.scss'
+  styleUrl: './edit-contact-us-messages.component.scss',
+  imports: [SharedModule, CommonModule, RouterModule, MatDatepickerModule, MatNativeDateModule]
 })
 export class EditContactUsMessagesComponent implements OnInit {
   contactUsMessage = signal<IContactUsMessage>({} as IContactUsMessage);

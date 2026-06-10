@@ -6,12 +6,15 @@ import { PriceDropSubscriptionRoutingModule } from './price-drop-subscription-ro
 import { RouterModule } from '@angular/router';
 
 @NgModule({
-  declarations: [PriceDropSubscriptionComponent],
+  declarations: [
+    
+  ],
   imports: [
     CommonModule,
     SharedModule,
     PriceDropSubscriptionRoutingModule,
-    RouterModule
+    RouterModule,
+    PriceDropSubscriptionComponent
   ]
 })
 export class PriceDropSubscriptionModule { }

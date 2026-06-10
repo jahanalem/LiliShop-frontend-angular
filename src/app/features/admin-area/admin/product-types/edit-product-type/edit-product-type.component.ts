@@ -1,3 +1,6 @@
+import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, signal, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
@@ -9,12 +12,15 @@ import { DialogComponent } from 'src/app/shared/components/dialog/dialog.compone
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { IProductType } from 'src/app/shared/models/productType';
 
+import { MatCheckboxModule } from '@angular/material/checkbox';
+
 @Component({
     selector: 'app-edit-product-type',
     templateUrl: './edit-product-type.component.html',
     styleUrls: ['./edit-product-type.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: true,
+  imports: [SharedModule, CommonModule, RouterModule, MatCheckboxModule]
 })
 export class EditProductTypeComponent implements OnDestroy {
   typeForm!: FormGroup;

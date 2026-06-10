@@ -12,7 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
   declarations: [
-    AboutComponent
+    
   ],
   imports: [
     CommonModule,
@@ -24,7 +24,8 @@ import { MatDividerModule } from '@angular/material/divider';
     MatButtonModule,
     MatIconModule,
     MatExpansionModule,
-    MatChipsModule
+    MatChipsModule,
+    AboutComponent
   ]
 })
 export class AboutModule { }

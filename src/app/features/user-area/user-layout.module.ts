@@ -8,12 +8,13 @@ import { UserLayoutRoutingModule } from './user-layout-routing.module';
 
 @NgModule({
   declarations: [
-    UserLayoutComponent
+    
   ],
   imports: [
     CommonModule,
     SharedModule,
-    UserLayoutRoutingModule
+    UserLayoutRoutingModule,
+    UserLayoutComponent
   ],
 })
 export class UserLayoutModule { }
