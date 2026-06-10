@@ -5,8 +5,7 @@ import { of, throwError } from 'rxjs';
 import { IAddress } from 'src/app/shared/models/address';
 import { AccountService } from 'src/app/core/services/account.service';
 import { CheckoutAddressComponent } from './checkout-address.component';
-import { BrowserModule } from '@angular/platform-browser';
-import { AppRoutingModule } from 'src/app/app-routing.module';
+import { provideRouter } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,9 +24,7 @@ describe('CheckoutAddressComponent', () => {
 
         await TestBed.configureTestingModule({
             imports: [
-                BrowserModule,
                 BrowserAnimationsModule,
-                AppRoutingModule,
                 FormsModule,
                 ReactiveFormsModule,
                 MatInputModule,
@@ -35,6 +32,7 @@ describe('CheckoutAddressComponent', () => {
                 CheckoutAddressComponent
             ],
             providers: [
+                provideRouter([]),
                 { provide: AccountService, useValue: mockAccountService }
             ]
         }).compileComponents();

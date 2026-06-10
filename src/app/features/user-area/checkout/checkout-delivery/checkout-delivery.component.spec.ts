@@ -1,9 +1,8 @@
 import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AppRoutingModule } from 'src/app/app-routing.module';
 import { CheckoutDeliveryComponent } from './checkout-delivery.component';
 import { CheckoutService } from 'src/app/core/services/checkout.service';
 import { BasketService } from 'src/app/core/services/basket.service';
@@ -32,13 +31,12 @@ describe('CheckoutDeliveryComponent', () => {
 
         await TestBed.configureTestingModule({
             imports: [
-                BrowserModule,
                 BrowserAnimationsModule,
-                AppRoutingModule,
                 ReactiveFormsModule,
                 CheckoutDeliveryComponent
             ],
             providers: [
+                provideRouter([]),
                 { provide: CheckoutService, useValue: mockCheckoutService },
                 { provide: BasketService, useValue: mockBasketService }
             ]

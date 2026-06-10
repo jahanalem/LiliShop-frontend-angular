@@ -72,7 +72,9 @@
               "scripts": [
                 "node_modules/choices.js/public/assets/scripts/choices.js"
               ],
-              "polyfills": "src/polyfills.ts"
+              "polyfills": [
+                "src/polyfills.ts"
+              ]
             }
           },
           "defaultConfiguration": "production"
