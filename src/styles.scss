@@ -127,6 +127,42 @@ img {
 }
 
 // --------------------------------------------------------------------------
+// Material Icons ligature class.
+// The fonts.bunny.net stylesheet only provides the @font-face — unlike
+// Google Fonts it does NOT ship this helper class. Without it every
+// <mat-icon> falls back to the text font and renders its ligature name
+// ("shopping_cart") instead of the glyph. Do not remove.
+// --------------------------------------------------------------------------
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Disabled-state helpers applied at runtime by CheckPolicyDirective.
+.button-disabled {
+  color: var(--ls-text-faint) !important;
+  background-color: var(--ls-surface-2) !important;
+  border-color: var(--ls-border) !important;
+}
+
+.icon-disabled {
+  color: var(--ls-text-faint) !important;
+}
+
+// --------------------------------------------------------------------------
 // 4. Accessibility
 // --------------------------------------------------------------------------
 :focus-visible {
@@ -199,4 +235,86 @@ label.xng-breadcrumb-trail {
 .xng-breadcrumb-separator {
   padding: 0 var(--ls-space-1);
   color: var(--ls-text-faint);
+}
+
+// --------------------------------------------------------------------------
+// 6. Snackbar overlay styles
+//    Applied by NotificationService via panelClass; snackbars render in the
+//    CDK overlay container, so these must live in global styles.
+// --------------------------------------------------------------------------
+.global-snackbar {
+  font-family: var(--ls-font);
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: var(--ls-radius-md);
+  padding: 16px 24px;
+  box-shadow: var(--ls-shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeInUp 0.3s ease-out;
+  color: #fff;
+
+  // Action button on colored (success/error) panels stays white. Scoped here
+  // so default Material snackbars keep their theme-correct action color.
+  .mat-mdc-snack-bar-action {
+    color: #fff !important;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+}
+
+.success-snackbar {
+  background: linear-gradient(135deg, #4caf50, #43a047);
+  color: #fff !important;
+
+  .mdc-snackbar__surface {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .mat-mdc-snack-bar-label {
+    background: transparent !important;
+    color: #fff !important;
+  }
+
+  .mat-mdc-button-ripple {
+    background-color: transparent !important;
+  }
+}
+
+.error-snackbar {
+  background: linear-gradient(135deg, #f44336, #e53935) !important;
+  color: #fff !important;
+
+  .mdc-snackbar__surface {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .mat-mdc-snack-bar-label {
+    background: transparent !important;
+    color: #fff !important;
+  }
+
+  .mat-mdc-button-ripple {
+    background-color: transparent !important;
+  }
+}
+
+.long-duration {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(-20%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
