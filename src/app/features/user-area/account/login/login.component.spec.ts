@@ -3,6 +3,7 @@ import type { Mock } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { AccountService } from 'src/app/core/services/account.service';
+import { AuthorizationService } from 'src/app/core/services/authorization.service';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -26,6 +27,9 @@ describe('LoginComponent', () => {
         const routerMock = {
             navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
         };
+        const authorizationServiceMock = {
+            isCurrentUserAuthorized: vi.fn().mockName("AuthorizationService.isCurrentUserAuthorized").mockReturnValue(of(false))
+        };
         const activatedRouteMock = {
             snapshot: {
                 queryParams: {
@@ -39,6 +43,7 @@ describe('LoginComponent', () => {
                 RouterTestingModule, LoginComponent, TextInputComponent],
             providers: [FormBuilder,
                 { provide: AccountService, useValue: accountServiceMock },
+                { provide: AuthorizationService, useValue: authorizationServiceMock },
                 { provide: Router, useValue: routerMock },
                 { provide: ActivatedRoute, useValue: activatedRouteMock }, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
         }).compileComponents();

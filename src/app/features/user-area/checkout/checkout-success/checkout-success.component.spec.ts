@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MockedObject } from "vitest";
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
 import { IUser } from 'src/app/shared/models/user';
@@ -14,7 +14,7 @@ describe('CheckoutSuccessComponent', () => {
     let mockAccountService: MockedObject<AccountService>;
     let mockRouter: MockedObject<Router>;
 
-    beforeEach(waitForAsync(() => {
+    beforeEach(async () => {
         mockAccountService = {
             currentUser$: of<IUser | null>(null)
         } as unknown as MockedObject<AccountService>;
@@ -22,14 +22,14 @@ describe('CheckoutSuccessComponent', () => {
             getCurrentNavigation: vi.fn().mockName("Router.getCurrentNavigation")
         } as unknown as MockedObject<Router>;
 
-        TestBed.configureTestingModule({
+        await TestBed.configureTestingModule({
             imports: [CheckoutSuccessComponent],
             providers: [
-                { provide: AccountService, useValue: mockAccountService },
-                { provide: Router, useValue: mockRouter }
+                provideRouter([]),
+                { provide: AccountService, useValue: mockAccountService }
             ]
         }).compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(CheckoutSuccessComponent);

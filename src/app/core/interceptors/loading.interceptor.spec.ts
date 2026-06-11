@@ -1,17 +1,18 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TestBed } from '@angular/core/testing';
 
 import { loadingInterceptor } from './loading.interceptor';
+import { BusyService } from '../services/busy.service';
 
 describe('LoadingInterceptor', () => {
     beforeEach(() => TestBed.configureTestingModule({
         providers: [
-            loadingInterceptor
+            { provide: BusyService, useValue: { busy: vi.fn(), idle: vi.fn() } }
         ]
     }));
 
     it('should be created', () => {
-        const interceptor = TestBed.inject(loadingInterceptor);
+        const interceptor = TestBed.runInInjectionContext(() => loadingInterceptor);
         expect(interceptor).toBeTruthy();
     });
 });

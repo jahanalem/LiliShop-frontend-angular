@@ -5,7 +5,9 @@ import { CdkStepper } from '@angular/cdk/stepper';
 import { of, throwError } from 'rxjs';
 import { CheckoutReviewComponent } from './checkout-review.component';
 import { BasketService } from 'src/app/core/services/basket.service';
+import { AccountService } from 'src/app/core/services/account.service';
 import { IBasket } from 'src/app/shared/models/basket';
+import { IUser } from 'src/app/shared/models/user';
 
 describe('CheckoutReviewComponent', () => {
     let component: CheckoutReviewComponent;
@@ -22,10 +24,23 @@ describe('CheckoutReviewComponent', () => {
             next: vi.fn().mockName("CdkStepper.next")
         } as unknown as MockedObject<CdkStepper>;
 
+        const confirmedUser: IUser = {
+            email: 'test@example.com',
+            displayName: 'Test User',
+            role: 'user',
+            token: 'test-token',
+            emailConfirmed: true
+        };
+        const mockAccountService = {
+            getCurrentUser: vi.fn().mockName("AccountService.getCurrentUser").mockReturnValue(of(confirmedUser)),
+            currentUser$: of<IUser | null>(confirmedUser)
+        };
+
         await TestBed.configureTestingModule({
             imports: [CheckoutReviewComponent],
             providers: [
                 { provide: BasketService, useValue: mockBasketService },
+                { provide: AccountService, useValue: mockAccountService },
             ]
         }).compileComponents();
     });

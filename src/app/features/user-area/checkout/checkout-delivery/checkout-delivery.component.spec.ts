@@ -10,6 +10,7 @@ import { CheckoutDeliveryComponent } from './checkout-delivery.component';
 import { CheckoutData } from '../checkout.component';
 import { CheckoutService } from 'src/app/core/services/checkout.service';
 import { BasketService } from 'src/app/core/services/basket.service';
+import { AccountService } from 'src/app/core/services/account.service';
 import { IDeliveryMethod } from 'src/app/shared/models/deliveryMethod';
 import { of } from 'rxjs';
 
@@ -26,6 +27,9 @@ describe('CheckoutDeliveryComponent', () => {
         mockBasketService = {
             setShippingPrice: vi.fn().mockName("BasketService.setShippingPrice")
         } as unknown as MockedObject<BasketService>;
+        const mockAccountService = {
+            isLoggedIn: vi.fn().mockName("AccountService.isLoggedIn").mockReturnValue(true)
+        };
 
         const testDeliveryMethods: IDeliveryMethod[] = [
             { id: 1, shortName: 'Standard', deliveryTime: '3-5 Days', description: 'Standard Delivery', price: 5 },
@@ -42,7 +46,8 @@ describe('CheckoutDeliveryComponent', () => {
             providers: [
                 provideRouter([]),
                 { provide: CheckoutService, useValue: mockCheckoutService },
-                { provide: BasketService, useValue: mockBasketService }
+                { provide: BasketService, useValue: mockBasketService },
+                { provide: AccountService, useValue: mockAccountService }
             ]
         }).compileComponents();
     });
@@ -72,17 +77,15 @@ describe('CheckoutDeliveryComponent', () => {
         ];
         mockCheckoutService.getDeliveryMethods.mockReturnValue(of(testDeliveryMethods));
 
-        const component = fixture.debugElement.children[0].componentInstance as CheckoutDeliveryComponent;
         component.ngOnInit();
 
         expect(mockCheckoutService.getDeliveryMethods).toHaveBeenCalled();
-        expect(component.deliveryMethods).toEqual(testDeliveryMethods);
+        expect(component.deliveryMethods()).toEqual(testDeliveryMethods);
     });
 
     it('should set shipping price', () => {
         const testDeliveryMethod: IDeliveryMethod = { id: 1, shortName: 'Standard', deliveryTime: '3-5 Days', description: 'Standard Delivery', price: 5 };
 
-        const component = fixture.debugElement.children[0].componentInstance as CheckoutDeliveryComponent;
         component.setShippingPrice(testDeliveryMethod);
 
         expect(mockBasketService.setShippingPrice).toHaveBeenCalledWith(testDeliveryMethod);

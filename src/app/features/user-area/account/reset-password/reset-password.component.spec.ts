@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { ResetPasswordComponent } from './reset-password.component';
 
@@ -9,7 +10,8 @@ describe('ResetPasswordComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [ResetPasswordComponent]
+            imports: [ResetPasswordComponent],
+            providers: [provideRouter([])]
         })
             .compileComponents();
 

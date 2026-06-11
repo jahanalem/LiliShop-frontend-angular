@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ShopComponent } from './shop.component';
 import { ProductService } from 'src/app/core/services/product.service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ElementRef, signal } from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { of } from 'rxjs';
 import { ProductPagination } from 'src/app/shared/models/pagination';
@@ -14,14 +15,14 @@ describe('ShopComponent', () => {
     let fixture: ComponentFixture<ShopComponent>;
     let productService: ProductService;
 
-    beforeEach(waitForAsync(() => {
-        TestBed.configureTestingModule({
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
             imports: [ShopComponent],
-            providers: [ProductService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+            providers: [ProductService, provideRouter([]), provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
         }).compileComponents();
 
         productService = TestBed.inject(ProductService);
-    }));
+    });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(ShopComponent);
@@ -39,9 +40,10 @@ describe('ShopComponent', () => {
         expect(component.getProducts).toHaveBeenCalled();
     });
 
-    it('should call getFilters() on init', () => {
+    it('should call getFilters() on init', async () => {
+        vi.spyOn(component, 'getProducts').mockResolvedValue(undefined);
         vi.spyOn(component, 'getFilters').mockResolvedValue(undefined);
-        component.ngOnInit();
+        await component.ngOnInit();
         expect(component.getFilters).toHaveBeenCalled();
     });
 

@@ -3,11 +3,11 @@ import type { Mock, MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { of, throwError } from 'rxjs';
 
 import { RegisterComponent } from './register.component';
 import { AccountService } from 'src/app/core/services/account.service';
-import { IUser } from 'src/app/shared/models/user';
 import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
 
 
@@ -20,10 +20,13 @@ describe('RegisterComponent', () => {
     beforeEach(async () => {
         const accountServiceSpy = {
             register: vi.fn().mockName("AccountService.register"),
-            checkEmailExists: vi.fn().mockName("AccountService.checkEmailExists")
+            checkEmailExists: vi.fn().mockName("AccountService.checkEmailExists").mockReturnValue(of(false))
         };
         const routerSpy = {
             navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
+        };
+        const dialogSpy = {
+            open: vi.fn().mockName("MatDialog.open").mockReturnValue({ afterClosed: () => of(true) })
         };
 
         await TestBed.configureTestingModule({
@@ -31,6 +34,7 @@ describe('RegisterComponent', () => {
             providers: [
                 { provide: AccountService, useValue: accountServiceSpy },
                 { provide: Router, useValue: routerSpy },
+                { provide: MatDialog, useValue: dialogSpy },
             ],
         }).compileComponents();
     });
@@ -54,56 +58,47 @@ describe('RegisterComponent', () => {
         expect(component.registerForm()).toBeTruthy();
     });
 
+    const validFormData = {
+        displayName: 'John Doe',
+        email: 'john.doe@example.com',
+        password: 'Password123!',
+        confirmPassword: 'Password123!'
+    };
+
     it('should call accountService.register() and navigate to /shop on successful registration', async () => {
-        component.ngOnInit();
-        const formData = {
-            displayName: 'John Doe',
-            email: 'john.doe@example.com',
-            password: 'Password123!',
-            confirmPassword: 'Password123!'
-        };
+        vi.useFakeTimers();
+        try {
+            component.registerModel.set(validFormData);
 
-        component.registerModel.set(formData);
+            // The HTTP response shape the component reads (response?.headers.get(...)).
+            (accountService.register as Mock).mockReturnValue(of({ headers: { get: () => null } }));
 
-        const dummyUser: IUser = {
-            email: 'john.doe@example.com',
-            displayName: 'John Doe',
-            role: 'user',
-            token: 'dummy-token',
-            emailConfirmed: false,
-        };
+            component.onSubmit();
+            // Flush the 500ms debounced async email validator and the submit pipeline.
+            await vi.runAllTimersAsync();
 
-        (accountService.register as Mock).mockReturnValue(of(dummyUser));
-
-        component.onSubmit();
-
-        accountService.register(formData).subscribe(() => {
-            expect(accountService.register).toHaveBeenCalledWith(formData);
+            expect(accountService.register).toHaveBeenCalled();
             expect(router.navigateByUrl).toHaveBeenCalledWith('/shop');
-            ;
-        });
+        } finally {
+            vi.useRealTimers();
+        }
     });
 
     it('should display error messages on failed registration', async () => {
-        component.ngOnInit();
-        const formData = {
-            displayName: 'John Doe',
-            email: 'john.doe@example.com',
-            password: 'Password123!',
-            confirmPassword: 'Password123!'
-        };
+        vi.useFakeTimers();
+        try {
+            component.registerModel.set(validFormData);
+            const errorResponse = { errors: ['Error 1', 'Error 2'] };
 
-        component.registerModel.set(formData);
-        const errorResponse = { errors: ['Error 1', 'Error 2'] };
+            (accountService.register as Mock).mockReturnValue(throwError(() => errorResponse));
 
-        (accountService.register as Mock).mockReturnValue(throwError(errorResponse));
+            component.onSubmit();
+            await vi.runAllTimersAsync();
 
-        component.onSubmit();
-
-        accountService.register(formData).subscribe(() => { }, (_error) => {
-            expect(accountService.register).toHaveBeenCalledWith(formData);
-            expect(component.errors).toEqual(errorResponse.errors);
-            ;
-        });
+            expect(accountService.register).toHaveBeenCalled();
+            expect(component.errors()).toEqual(errorResponse.errors);
+        } finally {
+            vi.useRealTimers();
+        }
     });
 });

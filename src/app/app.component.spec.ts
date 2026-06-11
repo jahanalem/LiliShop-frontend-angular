@@ -46,7 +46,7 @@ describe('AppComponent', () => {
     });
 
     it('should load basket if basket_id exists in local storage', () => {
-        vi.spyOn(localStorage, 'getItem').mockImplementation(() => 'test_basket_id');
+        vi.spyOn(localStorage, 'getItem').mockImplementation(() => JSON.stringify('test_basket_id'));
         basketServiceSpy.getBasket.mockReturnValue(of({ id: 'test_basket_id', items: [] } as IBasket));
 
         component.loadBasket();
@@ -63,7 +63,7 @@ describe('AppComponent', () => {
     });
 
     it('should load current user if token exists in local storage', () => {
-        vi.spyOn(localStorage, 'getItem').mockImplementation(() => 'test_token');
+        vi.spyOn(localStorage, 'getItem').mockImplementation(() => JSON.stringify('test_token'));
         accountServiceSpy.loadCurrentUser.mockReturnValue(of({ email: 'test@test.com', displayName: 'Test User', role: 'User', token: 'test_token' } as IUser));
 
         component.loadCurrentUser();
@@ -80,23 +80,23 @@ describe('AppComponent', () => {
         expect(accountServiceSpy.loadCurrentUser).not.toHaveBeenCalled();
     });
 
-    it('should handle basketService errors gracefully', () => {
-        vi.spyOn(localStorage, 'getItem').mockImplementation(() => 'test_basket_id');
-        vi.spyOn(console, 'log').mockReturnValue(undefined);
+    it('should handle basketService errors gracefully', async () => {
+        vi.spyOn(localStorage, 'getItem').mockImplementation(() => JSON.stringify('test_basket_id'));
+        const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
         basketServiceSpy.getBasket.mockReturnValue(throwError(() => 'Error'));
 
-        component.loadBasket();
+        await component.loadBasket();
 
-        expect(console.log).toHaveBeenCalled();
+        expect(consoleSpy).toHaveBeenCalled();
     });
 
-    it('should handle accountService errors gracefully', () => {
-        vi.spyOn(localStorage, 'getItem').mockImplementation(() => 'test_token');
-        vi.spyOn(console, 'log').mockReturnValue(undefined);
+    it('should handle accountService errors gracefully', async () => {
+        vi.spyOn(localStorage, 'getItem').mockImplementation(() => JSON.stringify('test_token'));
+        const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
         accountServiceSpy.loadCurrentUser.mockReturnValue(throwError(() => 'Error'));
 
-        component.loadCurrentUser();
+        await component.loadCurrentUser();
 
-        expect(console.log).toHaveBeenCalled();
+        expect(consoleSpy).toHaveBeenCalled();
     });
 });

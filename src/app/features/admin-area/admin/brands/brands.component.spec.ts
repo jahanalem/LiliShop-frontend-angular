@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { BrandsComponent } from './brands.component';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -31,6 +32,9 @@ describe('BrandsComponent', () => {
     ];
 
     beforeEach(async () => {
+        // Stateful brand list so deleteBrand + reload reflects the removal.
+        const workingBrands: IBrand[] = [...mockBrands];
+
         await TestBed.configureTestingModule({
             imports: [MatDialogModule, MatPaginatorModule, NoopAnimationsModule, BrandsComponent],
             providers: [
@@ -38,8 +42,14 @@ describe('BrandsComponent', () => {
                 {
                     provide: BrandService,
                     useValue: {
-                        getBrands: vi.fn().mockName('getBrands').mockReturnValue(of({ data: mockBrands, count: mockBrands.length })),
-                        deleteBrand: vi.fn().mockName('deleteBrand').mockReturnValue(of()),
+                        getBrands: vi.fn().mockName('getBrands').mockImplementation(() => of({ data: workingBrands, count: workingBrands.length })),
+                        deleteBrand: vi.fn().mockName('deleteBrand').mockImplementation((id: number) => {
+                            const index = workingBrands.findIndex(b => b.id === id);
+                            if (index >= 0) {
+                                workingBrands.splice(index, 1);
+                            }
+                            return of(undefined);
+                        }),
                         getBrandParams: vi.fn().mockName('getBrandParams').mockReturnValue(new BrandParams()) // Mock getBrandParams() here
                     }
                 },
@@ -62,7 +72,8 @@ describe('BrandsComponent', () => {
 
         fixture = TestBed.createComponent(BrandsComponent);
         component = fixture.componentInstance;
-        component.paginator = mockPaginator as any; // assign the mockPaginator to component's paginator
+        // paginator is a required viewChild signal; override it with a signal returning the mock
+        Object.defineProperty(component, 'paginator', { value: signal(mockPaginator as any) });
 
         fixture.detectChanges();
     });
@@ -73,25 +84,27 @@ describe('BrandsComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should load data when initialized', fakeAsync(() => {
+    it('should load data when initialized', async () => {
         component.ngAfterViewInit();
 
+        await fixture.whenStable();
         fixture.detectChanges();
 
-        expect(component.brands.length).toBe(mockBrands.length);
-        expect(component.totalCount).toBe(mockBrands.length);
-    }));
+        expect(component.brands().length).toBe(mockBrands.length);
+        expect(component.totalCount()).toBe(mockBrands.length);
+    });
 
-    it('should delete brand correctly', fakeAsync(() => {
+    it('should delete brand correctly', async () => {
         const brandId = 1;
-        const initialCount = component.brands.length;
+        const initialCount = component.brands().length;
 
         component.deleteBrand(brandId);
 
+        await fixture.whenStable();
         fixture.detectChanges();
 
-        expect(component.brands.length).toBe(initialCount - 1);
-        expect(component.totalCount).toBe(initialCount - 1);
+        expect(component.brands().length).toBe(initialCount - 1);
+        expect(component.totalCount()).toBe(initialCount - 1);
         expect(TestBed.inject(BrandService).deleteBrand).toHaveBeenCalledWith(brandId);
-    }));
+    });
 });

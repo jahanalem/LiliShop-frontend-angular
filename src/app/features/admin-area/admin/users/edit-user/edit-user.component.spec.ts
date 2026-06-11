@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { EditUserComponent } from './edit-user.component';
 
@@ -9,7 +10,8 @@ describe('EditUserComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [EditUserComponent]
+            imports: [EditUserComponent],
+            providers: [provideRouter([])]
         })
             .compileComponents();
 
