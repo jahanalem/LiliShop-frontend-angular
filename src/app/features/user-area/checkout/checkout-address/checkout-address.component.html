@@ -31,7 +31,7 @@
     <button mat-stroked-button routerLink="/basket" color="primary">
       <mat-icon>arrow_back</mat-icon> Back to basket
     </button>
-    <button mat-raised-button color="accent" [disabled]="isActivatedGoToDeliveryButton()" cdkStepperNext>
+    <button mat-raised-button color="accent" [disabled]="checkoutForm().address().invalid()" cdkStepperNext>
       Go to delivery <mat-icon>arrow_forward</mat-icon>
     </button>
   </div>

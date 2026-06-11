@@ -9,6 +9,7 @@ import { AccountService } from 'src/app/core/services/account.service';
 import { Router } from '@angular/router';
 import { MatRadioModule } from '@angular/material/radio';
 import { CommonModule } from '@angular/common';
+import { CdkStepperModule } from '@angular/cdk/stepper';
 import { type CheckoutForm } from '../checkout.component';
 
 @Component({
@@ -17,7 +18,7 @@ import { type CheckoutForm } from '../checkout.component';
   styleUrls: ['./checkout-delivery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [MatRadioModule,  CommonModule, MatButtonModule, MatIconModule]
+  imports: [MatRadioModule,  CommonModule, MatButtonModule, MatIconModule, CdkStepperModule]
 })
 export class CheckoutDeliveryComponent implements OnInit, OnDestroy {
   checkoutForm = input.required<CheckoutForm>();

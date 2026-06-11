@@ -7,6 +7,7 @@ import { IAddress } from 'src/app/shared/models/address';
 import { AccountService } from 'src/app/core/services/account.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { RouterModule } from '@angular/router';
+import { CdkStepperModule } from '@angular/cdk/stepper';
 
 import { type CheckoutForm } from '../checkout.component';
 
@@ -16,7 +17,7 @@ import { type CheckoutForm } from '../checkout.component';
   styleUrls: ['./checkout-address.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterModule, TextInputComponent, MatButtonModule, MatIconModule]
+  imports: [RouterModule, TextInputComponent, MatButtonModule, MatIconModule, CdkStepperModule]
 })
 export class CheckoutAddressComponent implements OnDestroy {
   // The whole checkout form node, passed down from the parent.
@@ -47,10 +48,6 @@ export class CheckoutAddressComponent implements OnDestroy {
         }),
       )
       .subscribe();
-  }
-
-  isActivatedGoToDeliveryButton(): boolean {
-    return this.checkoutForm().address().invalid();
   }
 
   isSaveDisabled(): boolean {
