@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ShopComponent } from './shop.component';
 import { ProductService } from 'src/app/core/services/product.service';
