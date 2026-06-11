@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CdkStepper } from '@angular/cdk/stepper';
@@ -14,11 +15,12 @@ describe('CheckoutReviewComponent', () => {
 
     beforeEach(async () => {
         mockBasketService = {
-            createPaymentIntent: vi.fn().mockName("BasketService.createPaymentIntent")
-        };
+            createPaymentIntent: vi.fn().mockName("BasketService.createPaymentIntent"),
+            basket$: of(null)
+        } as unknown as MockedObject<BasketService>;
         stepper = {
             next: vi.fn().mockName("CdkStepper.next")
-        };
+        } as unknown as MockedObject<CdkStepper>;
 
         await TestBed.configureTestingModule({
             imports: [CheckoutReviewComponent],
@@ -31,7 +33,7 @@ describe('CheckoutReviewComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CheckoutReviewComponent);
         component = fixture.componentInstance;
-        component.appStepper = stepper;
+        fixture.componentRef.setInput('appStepper', stepper);
         fixture.detectChanges();
     });
 
@@ -39,9 +41,9 @@ describe('CheckoutReviewComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should initialize basket$ on ngOnInit', () => {
+    it('should initialize basket on ngOnInit', () => {
         component.ngOnInit();
-        expect(component.basket$).toBe(mockBasketService.basket$);
+        expect(component.basket()).toBeNull();
     });
 
     it('should call createPaymentIntent and stepper.next() on success', () => {
@@ -72,7 +74,7 @@ describe('CheckoutReviewComponent', () => {
     });
 
     it('should handle error in createPaymentIntent', () => {
-        const consoleSpy = vi.spyOn(console, 'log').mockReturnValue(undefined);
+        const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
         const error = { message: 'Error creating payment intent.' };
         mockBasketService.createPaymentIntent.mockReturnValue(throwError(() => error));
 

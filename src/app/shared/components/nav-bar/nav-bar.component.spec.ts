@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NavBarComponent } from './nav-bar.component';
@@ -23,12 +24,12 @@ describe('NavBarComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-    imports: [NavBarComponent],
-    providers: [
-        { provide: BasketService, useValue: basketServiceMock },
-        { provide: AccountService, useValue: accountServiceMock }
-    ]
-})
+            imports: [NavBarComponent],
+            providers: [
+                { provide: BasketService, useValue: basketServiceMock },
+                { provide: AccountService, useValue: accountServiceMock }
+            ]
+        })
             .compileComponents();
 
         basketServiceSpy = TestBed.inject(BasketService) as MockedObject<BasketService>;
@@ -46,12 +47,12 @@ describe('NavBarComponent', () => {
     });
 
     it('should toggle isCollapsed on toggleCollapse()', () => {
-        component.isCollapsed = true;
+        component.isCollapsed.set(true);
         component.toggleCollapse();
-        expect(component.isCollapsed).toBe(false);
+        expect(component.isCollapsed()).toBe(false);
 
         component.toggleCollapse();
-        expect(component.isCollapsed).toBe(true);
+        expect(component.isCollapsed()).toBe(true);
     });
 
     it('should call accountService.logout() on logout()', () => {
@@ -77,7 +78,8 @@ describe('NavBarComponent', () => {
             email: 'test@example.com',
             displayName: 'Test User',
             role: 'admin',
-            token: 'test-token'
+            token: 'test-token',
+            emailConfirmed: true
         };
 
         component.ngOnInit();

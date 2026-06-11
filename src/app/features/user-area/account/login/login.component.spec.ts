@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Mock } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
@@ -33,14 +34,14 @@ describe('LoginComponent', () => {
             }
         };
         await TestBed.configureTestingModule({
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [ReactiveFormsModule,
-        RouterTestingModule, LoginComponent, TextInputComponent],
-    providers: [FormBuilder,
-        { provide: AccountService, useValue: accountServiceMock },
-        { provide: Router, useValue: routerMock },
-        { provide: ActivatedRoute, useValue: activatedRouteMock }, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            imports: [ReactiveFormsModule,
+                RouterTestingModule, LoginComponent, TextInputComponent],
+            providers: [FormBuilder,
+                { provide: AccountService, useValue: accountServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: activatedRouteMock }, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
     });
 
     beforeEach(() => {
@@ -60,43 +61,43 @@ describe('LoginComponent', () => {
 
     it('should create login form', () => {
         expect(component.loginForm).toBeTruthy();
-        expect(component.loginForm.controls['email']).toBeTruthy();
-        expect(component.loginForm.controls['password']).toBeTruthy();
+        expect(component.loginForm.email).toBeTruthy();
+        expect(component.loginForm.password).toBeTruthy();
     });
 
     it('should have invalid form on init', () => {
-        expect(component.loginForm.invalid).toBe(true);
+        expect(component.loginForm().invalid()).toBe(true);
     });
 
     it('should call onSubmit and navigate to returnUrl when login is successful', () => {
         (accountService.login as Mock).mockReturnValue(of({} as IUser));
         const navigateSpy = (component['router'].navigateByUrl as Mock);
 
-        component.loginForm.controls['email'].setValue('test@example.com');
-        component.loginForm.controls['password'].setValue('password');
+        component.loginForm.email().value.set('test@example.com');
+        component.loginForm.password().value.set('password');
         component.onSubmit();
 
         expect(accountService.login).toHaveBeenCalled();
-        expect(navigateSpy).toHaveBeenCalledWith(component.returnUrl);
+        expect(navigateSpy).toHaveBeenCalledWith(component.returnUrl());
     });
 
     it('should call onSubmit and log an error when login fails', () => {
         (accountService.login as Mock).mockReturnValue(throwError(() => 'Login failed'));
-        const consoleSpy = vi.spyOn(console, 'log').mockReturnValue(undefined);
+        const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
 
-        component.loginForm.controls['email'].setValue('test@example.com');
-        component.loginForm.controls['password'].setValue('password');
+        component.loginForm.email().value.set('test@example.com');
+        component.loginForm.password().value.set('password');
         component.onSubmit();
 
         expect(accountService.login).toHaveBeenCalled();
-        expect(consoleSpy).toHaveBeenCalledWith('Submit failed!');
+        expect(consoleSpy).toHaveBeenCalledWith('Submit failed!', 'Login failed');
     });
 
     it('should not call onSubmit when form is invalid', () => {
         (accountService.login as Mock).mockReturnValue(of({} as IUser));
 
         // Set email to an empty string to make the form invalid
-        component.loginForm.controls['email'].setValue('');
+        component.loginForm.email().value.set('');
 
         component.onSubmit();
 
@@ -104,31 +105,31 @@ describe('LoginComponent', () => {
     });
 
     it('should have invalid email field initially', () => {
-        const emailControl = component.loginForm.controls['email'];
-        expect(emailControl.valid).toBe(false);
+        const emailControl = component.loginForm.email;
+        expect(emailControl().valid()).toBe(false);
     });
 
     it('should have valid email field after providing valid email', () => {
-        const emailControl = component.loginForm.controls['email'];
-        emailControl.setValue('test@example.com');
-        expect(emailControl.valid).toBe(true);
+        const emailControl = component.loginForm.email;
+        emailControl().value.set('test@example.com');
+        expect(emailControl().valid()).toBe(true);
     });
 
     it('should have invalid email field after providing invalid email', () => {
-        const emailControl = component.loginForm.controls['email'];
-        emailControl.setValue('invalid_email');
-        expect(emailControl.valid).toBe(false);
+        const emailControl = component.loginForm.email;
+        emailControl().value.set('invalid_email');
+        expect(emailControl().valid()).toBe(false);
     });
 
     it('should have invalid password field initially', () => {
-        const passwordControl = component.loginForm.controls['password'];
-        expect(passwordControl.valid).toBe(false);
+        const passwordControl = component.loginForm.password;
+        expect(passwordControl().valid()).toBe(false);
     });
 
     it('should have valid password field after providing password', () => {
-        const passwordControl = component.loginForm.controls['password'];
-        passwordControl.setValue('password');
-        expect(passwordControl.valid).toBe(true);
+        const passwordControl = component.loginForm.password;
+        passwordControl().value.set('password');
+        expect(passwordControl().valid()).toBe(true);
     });
 
 });

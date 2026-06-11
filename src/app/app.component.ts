@@ -47,7 +47,7 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
-  private async loadCurrentUser(): Promise<void> {
+  async loadCurrentUser(): Promise<void> {
     const token = this.storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
     if (!token) {
       return;

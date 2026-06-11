@@ -1,23 +1,24 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { UserPriceDropSubscriptionsComponent } from './user-price-drop-subscriptions.component';
 
 describe('UserPriceDropSubscriptionsComponent', () => {
-  let component: UserPriceDropSubscriptionsComponent;
-  let fixture: ComponentFixture<UserPriceDropSubscriptionsComponent>;
+    let component: UserPriceDropSubscriptionsComponent;
+    let fixture: ComponentFixture<UserPriceDropSubscriptionsComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [UserPriceDropSubscriptionsComponent]
-    })
-    .compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [UserPriceDropSubscriptionsComponent]
+        })
+            .compileComponents();
 
-    fixture = TestBed.createComponent(UserPriceDropSubscriptionsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(UserPriceDropSubscriptionsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

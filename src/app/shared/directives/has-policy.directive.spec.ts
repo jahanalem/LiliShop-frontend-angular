@@ -1,8 +1,10 @@
-import { HasPolicyDirective } from './check-policy.directive';
+import { describe, expect, it } from "vitest";
+import { TestBed } from '@angular/core/testing';
+import { CheckPolicyDirective } from './check-policy.directive';
 
-describe('HasPolicyDirective', () => {
-  it('should create an instance', () => {
-    const directive = new HasPolicyDirective();
-    expect(directive).toBeTruthy();
-  });
+describe('CheckPolicyDirective', () => {
+    it('should create an instance', () => {
+        const directive = TestBed.runInInjectionContext(() => new CheckPolicyDirective());
+        expect(directive).toBeTruthy();
+    });
 });

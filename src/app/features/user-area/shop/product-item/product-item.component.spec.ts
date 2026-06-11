@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProductItemComponent } from './product-item.component';
@@ -17,11 +18,11 @@ describe('ProductItemComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-    imports: [ProductItemComponent],
-    providers: [
-        { provide: BasketService, useValue: basketServiceMock }
-    ]
-})
+            imports: [ProductItemComponent],
+            providers: [
+                { provide: BasketService, useValue: basketServiceMock }
+            ]
+        })
             .compileComponents();
 
         basketServiceSpy = TestBed.inject(BasketService) as MockedObject<BasketService>;
@@ -44,13 +45,16 @@ describe('ProductItemComponent', () => {
             price: 10,
             description: 'Test Description',
             pictureUrl: 'Test Picture Url',
+            picturePublicId: 'Test Picture Public Id',
             productType: 'Test Product Type',
+            productTypeId: 1,
             productBrand: 'Test Product Brand',
+            productBrandId: 1,
             isActive: true,
             productCharacteristics: [],
             productPhotos: []
         };
-        component.product = product;
+        fixture.componentRef.setInput('product', product);
         fixture.detectChanges();
         const productTitleElement: DebugElement = fixture.debugElement.query(By.css('.text-uppercase'));
         const textContent = productTitleElement.nativeElement.textContent;
@@ -64,13 +68,16 @@ describe('ProductItemComponent', () => {
             price: 10,
             description: 'Test Description',
             pictureUrl: 'Test Picture Url',
+            picturePublicId: 'Test Picture Public Id',
             productType: 'Test Product Type',
+            productTypeId: 1,
             productBrand: 'Test Product Brand',
+            productBrandId: 1,
             isActive: true,
             productCharacteristics: [],
             productPhotos: []
         };
-        component.product = product;
+        fixture.componentRef.setInput('product', product);
         fixture.detectChanges();
         const addButton: DebugElement = fixture.debugElement.query(By.css('.fa-shopping-cart'));
         addButton.nativeElement.click();

@@ -1,23 +1,24 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProductTypesComponent } from './product-types.component';
 
 describe('ProductTypesComponent', () => {
-  let component: ProductTypesComponent;
-  let fixture: ComponentFixture<ProductTypesComponent>;
+    let component: ProductTypesComponent;
+    let fixture: ComponentFixture<ProductTypesComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-    imports: [ProductTypesComponent]
-})
-    .compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [ProductTypesComponent]
+        })
+            .compileComponents();
 
-    fixture = TestBed.createComponent(ProductTypesComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(ProductTypesComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

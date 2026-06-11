@@ -1,15 +1,18 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { signal } from '@angular/core';
+import { form } from '@angular/forms/signals';
 import { of, throwError } from 'rxjs';
 import { IAddress } from 'src/app/shared/models/address';
 import { AccountService } from 'src/app/core/services/account.service';
 import { CheckoutAddressComponent } from './checkout-address.component';
+import { CheckoutData } from '../checkout.component';
 import { provideRouter } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
 
 
 describe('CheckoutAddressComponent', () => {
@@ -20,7 +23,7 @@ describe('CheckoutAddressComponent', () => {
     beforeEach(async () => {
         mockAccountService = {
             updateAddress: vi.fn().mockName("AccountService.updateAddress")
-        };
+        } as unknown as MockedObject<AccountService>;
 
         await TestBed.configureTestingModule({
             imports: [
@@ -41,16 +44,14 @@ describe('CheckoutAddressComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CheckoutAddressComponent);
         component = fixture.componentInstance;
-        component.checkoutForm = new FormGroup({
-            addressForm: new FormGroup({
-                firstName: new FormControl('', Validators.required),
-                lastName: new FormControl('', Validators.required),
-                street: new FormControl('', Validators.required),
-                city: new FormControl('', Validators.required),
-                state: new FormControl('', Validators.required),
-                zipCode: new FormControl('', Validators.required)
-            })
+
+        const checkoutModel = signal<CheckoutData>({
+            address: { firstName: '', lastName: '', street: '', city: '', state: '', zipCode: '' },
+            delivery: { deliveryMethod: null },
+            payment: { nameOnCard: '' },
         });
+        const checkoutForm = TestBed.runInInjectionContext(() => form(checkoutModel));
+        fixture.componentRef.setInput('checkoutForm', checkoutForm);
         fixture.detectChanges();
     });
 

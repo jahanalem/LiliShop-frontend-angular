@@ -1,6 +1,7 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import type { Mock, MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, FormGroup, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
@@ -26,12 +27,12 @@ describe('RegisterComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-    imports: [FormsModule, ReactiveFormsModule, RegisterComponent, TextInputComponent],
-    providers: [
-        { provide: AccountService, useValue: accountServiceSpy },
-        { provide: Router, useValue: routerSpy },
-    ],
-}).compileComponents();
+            imports: [FormsModule, ReactiveFormsModule, RegisterComponent, TextInputComponent],
+            providers: [
+                { provide: AccountService, useValue: accountServiceSpy },
+                { provide: Router, useValue: routerSpy },
+            ],
+        }).compileComponents();
     });
 
     beforeEach(() => {
@@ -50,7 +51,7 @@ describe('RegisterComponent', () => {
     it('should initialize the registerForm', () => {
         component.ngOnInit();
         expect(component.registerForm).toBeDefined();
-        expect(component.registerForm instanceof FormGroup).toBeTruthy();
+        expect(component.registerForm()).toBeTruthy();
     });
 
     it('should call accountService.register() and navigate to /shop on successful registration', async () => {
@@ -62,13 +63,14 @@ describe('RegisterComponent', () => {
             confirmPassword: 'Password123!'
         };
 
-        component.registerForm.setValue(formData);
+        component.registerModel.set(formData);
 
         const dummyUser: IUser = {
             email: 'john.doe@example.com',
             displayName: 'John Doe',
             role: 'user',
             token: 'dummy-token',
+            emailConfirmed: false,
         };
 
         (accountService.register as Mock).mockReturnValue(of(dummyUser));
@@ -91,7 +93,7 @@ describe('RegisterComponent', () => {
             confirmPassword: 'Password123!'
         };
 
-        component.registerForm.setValue(formData);
+        component.registerModel.set(formData);
         const errorResponse = { errors: ['Error 1', 'Error 2'] };
 
         (accountService.register as Mock).mockReturnValue(throwError(errorResponse));

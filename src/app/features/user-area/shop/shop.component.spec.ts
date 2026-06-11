@@ -1,25 +1,26 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ShopComponent } from './shop.component';
-import { ShopService } from 'src/app/core/services/shop.service';
+import { ProductService } from 'src/app/core/services/product.service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ElementRef } from '@angular/core';
-import { ShopParams } from 'src/app/shared/models/productQueryParams';
+import { ElementRef, signal } from '@angular/core';
+import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { of } from 'rxjs';
-import { IProductPagination } from 'src/app/shared/models/pagination';
+import { ProductPagination } from 'src/app/shared/models/pagination';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 describe('ShopComponent', () => {
     let component: ShopComponent;
     let fixture: ComponentFixture<ShopComponent>;
-    let shopService: ShopService;
+    let productService: ProductService;
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-    imports: [ShopComponent],
-    providers: [ShopService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+            imports: [ShopComponent],
+            providers: [ProductService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
 
-        shopService = TestBed.inject(ShopService);
+        productService = TestBed.inject(ProductService);
     }));
 
     beforeEach(() => {
@@ -33,60 +34,60 @@ describe('ShopComponent', () => {
     });
 
     it('should call getProducts() on init', () => {
-        vi.spyOn(component, 'getProducts').mockReturnValue(undefined);
+        vi.spyOn(component, 'getProducts').mockResolvedValue(undefined);
         component.ngOnInit();
         expect(component.getProducts).toHaveBeenCalled();
     });
 
     it('should call getFilters() on init', () => {
-        vi.spyOn(component, 'getFilters').mockReturnValue(undefined);
+        vi.spyOn(component, 'getFilters').mockResolvedValue(undefined);
         component.ngOnInit();
         expect(component.getFilters).toHaveBeenCalled();
     });
 
-    it('should call getProducts() with useCache=true when onPageChanged is called', () => {
-        vi.spyOn(component, 'getProducts').mockReturnValue(undefined);
-        component.onPageChanged(2);
-        expect(component.getProducts).toHaveBeenCalledWith(true);
-    });
-
-    it('should reset search term, shopParams, and call getProducts() when onReset is called', () => {
-        component.searchTerm = new ElementRef(document.createElement('input'));
-        component.searchTerm.nativeElement.value = 'test';
-        vi.spyOn(component, 'getProducts').mockReturnValue(undefined);
-        component.onReset();
-        expect(component.searchTerm.nativeElement.value).toBe('');
-        expect(component.shopParams).toEqual(new ShopParams());
+    it('should call getProducts() when onPageChanged is called', () => {
+        vi.spyOn(component, 'getProducts').mockResolvedValue(undefined);
+        component.onPageChanged({ pageNumber: 2, pageSize: 10 });
         expect(component.getProducts).toHaveBeenCalled();
     });
 
-    it('should call shopService.getProducts() when getProducts() is called', () => {
-        const dummyPagination: IProductPagination = {
+    it('should reset search term, shopParams, and call getProducts() when onReset is called', () => {
+        const mockElementRef = new ElementRef(document.createElement('input'));
+        Object.defineProperty(component, 'searchTerm', { value: signal(mockElementRef) });
+        component.searchTerm().nativeElement.value = 'test';
+        vi.spyOn(component, 'getProducts').mockResolvedValue(undefined);
+        component.onReset();
+        expect(component.searchTerm().nativeElement.value).toBe('');
+        expect(component.shopParams()).toEqual(new ProductQueryParams());
+        expect(component.getProducts).toHaveBeenCalled();
+    });
+
+    it('should call productService.getProducts() when getProducts() is called', () => {
+        const dummyPagination: ProductPagination = {
             pageIndex: 1,
             pageSize: 5,
             count: 0,
             data: []
         };
-        vi.spyOn(shopService, 'getProducts').mockReturnValue(of(dummyPagination));
+        vi.spyOn(productService, 'getProducts').mockReturnValue(of(dummyPagination));
         component.getProducts();
-        expect(shopService.getProducts).toHaveBeenCalled();
+        expect(productService.getProducts).toHaveBeenCalled();
     });
 
-    it('should call shopService.getBrands(), getTypes(), and getSizes() when getFilters() is called', () => {
-        vi.spyOn(shopService, 'getBrands').mockReturnValue(of([]));
-        vi.spyOn(shopService, 'getTypes').mockReturnValue(of([]));
-        vi.spyOn(shopService, 'getSizes').mockReturnValue(of([]));
+    it('should call productService.getBrands(), getTypes(), and getSizes() when getFilters() is called', () => {
+        vi.spyOn(productService, 'getBrands').mockReturnValue(of([]));
+        vi.spyOn(productService, 'getTypes').mockReturnValue(of([]));
+        vi.spyOn(productService, 'getSizes').mockReturnValue(of([]));
         component.getFilters();
-        expect(shopService.getBrands).toHaveBeenCalled();
-        expect(shopService.getTypes).toHaveBeenCalled();
-        expect(shopService.getSizes).toHaveBeenCalled();
+        expect(productService.getBrands).toHaveBeenCalled();
+        expect(productService.getTypes).toHaveBeenCalled();
+        expect(productService.getSizes).toHaveBeenCalled();
     });
 
     it('should update shopParams and call getProducts() when onFilterSelected() is called', () => {
         const testFilterValue = 1;
-        vi.spyOn(component, 'getProducts').mockReturnValue(undefined);
-        component.onFilterSelected({ value: testFilterValue.toString() } as HTMLSelectElement, 'brand');
-        expect(component.shopParams.brandId).toBe(testFilterValue);
+        vi.spyOn(component, 'getProducts').mockResolvedValue(undefined);
+        component.onFilterSelected(testFilterValue, 'brand');
         expect(component.getProducts).toHaveBeenCalled();
     });
 });

@@ -1,9 +1,13 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { signal } from '@angular/core';
+import { form } from '@angular/forms/signals';
 import { provideRouter } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CheckoutDeliveryComponent } from './checkout-delivery.component';
+import { CheckoutData } from '../checkout.component';
 import { CheckoutService } from 'src/app/core/services/checkout.service';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { IDeliveryMethod } from 'src/app/shared/models/deliveryMethod';
@@ -18,10 +22,10 @@ describe('CheckoutDeliveryComponent', () => {
     beforeEach(async () => {
         mockCheckoutService = {
             getDeliveryMethods: vi.fn().mockName("CheckoutService.getDeliveryMethods")
-        };
+        } as unknown as MockedObject<CheckoutService>;
         mockBasketService = {
             setShippingPrice: vi.fn().mockName("BasketService.setShippingPrice")
-        };
+        } as unknown as MockedObject<BasketService>;
 
         const testDeliveryMethods: IDeliveryMethod[] = [
             { id: 1, shortName: 'Standard', deliveryTime: '3-5 Days', description: 'Standard Delivery', price: 5 },
@@ -46,11 +50,14 @@ describe('CheckoutDeliveryComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(CheckoutDeliveryComponent);
         component = fixture.componentInstance;
-        component.checkoutForm = new FormGroup({
-            deliveryForm: new FormGroup({
-                deliveryMethod: new FormControl('', Validators.required)
-            })
+
+        const checkoutModel = signal<CheckoutData>({
+            address: { firstName: '', lastName: '', street: '', city: '', state: '', zipCode: '' },
+            delivery: { deliveryMethod: null },
+            payment: { nameOnCard: '' },
         });
+        const checkoutForm = TestBed.runInInjectionContext(() => form(checkoutModel));
+        fixture.componentRef.setInput('checkoutForm', checkoutForm);
         fixture.detectChanges();
     });
 

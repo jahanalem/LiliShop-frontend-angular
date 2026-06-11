@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
@@ -16,10 +17,10 @@ describe('CheckoutSuccessComponent', () => {
     beforeEach(waitForAsync(() => {
         mockAccountService = {
             currentUser$: of<IUser | null>(null)
-        };
+        } as unknown as MockedObject<AccountService>;
         mockRouter = {
             getCurrentNavigation: vi.fn().mockName("Router.getCurrentNavigation")
-        };
+        } as unknown as MockedObject<Router>;
 
         TestBed.configureTestingModule({
             imports: [CheckoutSuccessComponent],
@@ -66,6 +67,6 @@ describe('CheckoutSuccessComponent', () => {
         } as any);
 
         component.initializeOrderFromNavigationState(mockRouter.getCurrentNavigation());
-        expect(component.order).toEqual(testOrder);
+        expect(component.order()).toEqual(testOrder);
     });
 });

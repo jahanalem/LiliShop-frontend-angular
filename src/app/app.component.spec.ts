@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import type { MockedObject } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
@@ -22,12 +23,12 @@ describe('AppComponent', () => {
         };
 
         await TestBed.configureTestingModule({
-    imports: [AppComponent],
-    providers: [
-        { provide: BasketService, useValue: basketServiceMock },
-        { provide: AccountService, useValue: accountServiceMock },
-    ],
-}).compileComponents();
+            imports: [AppComponent],
+            providers: [
+                { provide: BasketService, useValue: basketServiceMock },
+                { provide: AccountService, useValue: accountServiceMock },
+            ],
+        }).compileComponents();
 
         basketServiceSpy = TestBed.inject(BasketService) as MockedObject<BasketService>;
         accountServiceSpy = TestBed.inject(AccountService) as MockedObject<AccountService>;
