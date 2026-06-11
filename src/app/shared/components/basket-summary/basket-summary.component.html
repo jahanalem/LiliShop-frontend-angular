@@ -1,5 +1,5 @@
 <section class="cart-container">
-  @for (item of items(); track item) {
+  @for (item of items(); track item.id ?? item.productId) {
     <div class="cart-item">
       <div class="product-info">
         <img [src]="item.pictureUrl" [alt]="item.productName" class="product-image" title="product image">
