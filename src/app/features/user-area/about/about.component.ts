@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
@@ -41,14 +41,7 @@ import { MatDividerModule } from '@angular/material/divider';
   changeDetection: ChangeDetectionStrategy.OnPush,
   // encapsulation: ViewEncapsulation.None, // Use this if ::ng-deep or global styles for Material components are problematic
   standalone: true,
-  imports: [CommonModule,
-    RouterModule,
-    MatDividerModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatExpansionModule,
-    MatChipsModule]
+  imports: [RouterModule, MatDividerModule, MatCardModule, MatButtonModule, MatIconModule, MatExpansionModule, MatChipsModule]
 })
 export class AboutComponent implements OnInit {
 

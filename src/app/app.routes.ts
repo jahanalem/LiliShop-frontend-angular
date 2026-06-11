@@ -13,5 +13,5 @@ export const routes: Routes = [
   { path: 'unsubscribe-confirmation', component: UnsubscribeConfirmationComponent },
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
   { path: 'admin', loadChildren: () => import('./features/admin-area/admin/admin.routes').then(m => m.ADMIN_ROUTES) },
-  { path: '**', redirectTo: 'not-found', pathMatch: 'full' },
+  { path: '**', redirectTo: 'not-found' },
 ];

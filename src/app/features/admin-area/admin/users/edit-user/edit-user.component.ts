@@ -4,7 +4,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -23,7 +23,7 @@ import { MatSelectModule } from '@angular/material/select';
     styleUrls: ['./edit-user.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [CommonModule, RouterModule, MatSelectModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCheckboxModule, ReactiveFormsModule]
+  imports: [RouterModule, MatSelectModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCheckboxModule, ReactiveFormsModule]
 })
 export class EditUserComponent implements OnInit, OnDestroy {
   adminUserForm!: FormGroup;

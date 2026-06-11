@@ -28,7 +28,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CommonModule } from '@angular/common';
+
 
 interface ProductCharacteristicModel {
   id: number;
@@ -77,18 +77,7 @@ const EMPTY_FORM_MODEL: ProductFormModel = {
   styleUrls: ['./edit-product.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule,
-    FormField,
-    MatFormFieldModule,
-    MatInputModule,
-    MatTableModule,
-    MatIconModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatTooltipModule,
-    MatDatepickerModule,
-    MatTimepickerModule,
-    MatNativeDateModule, PhotoEditorComponent, MatButtonModule],
+  imports: [FormField, MatFormFieldModule, MatInputModule, MatTableModule, MatIconModule, MatSelectModule, MatCheckboxModule, MatTooltipModule, MatDatepickerModule, MatTimepickerModule, MatNativeDateModule, PhotoEditorComponent, MatButtonModule],
 })
 export class EditProductComponent implements OnInit, OnDestroy {
 

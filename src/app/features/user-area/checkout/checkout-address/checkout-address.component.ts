@@ -7,7 +7,7 @@ import { IAddress } from 'src/app/shared/models/address';
 import { AccountService } from 'src/app/core/services/account.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { type CheckoutForm } from '../checkout.component';
 
 @Component({
@@ -16,7 +16,7 @@ import { type CheckoutForm } from '../checkout.component';
   styleUrls: ['./checkout-address.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterModule, CommonModule, TextInputComponent, MatButtonModule, MatIconModule]
+  imports: [RouterModule, TextInputComponent, MatButtonModule, MatIconModule]
 })
 export class CheckoutAddressComponent implements OnDestroy {
   // The whole checkout form node, passed down from the parent.

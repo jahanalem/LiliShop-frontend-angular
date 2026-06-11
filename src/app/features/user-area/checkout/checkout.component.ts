@@ -9,7 +9,7 @@ import { IAddress } from 'src/app/shared/models/address';
 import { IBasketTotals } from 'src/app/shared/models/basket';
 import { IDeliveryMethod } from 'src/app/shared/models/deliveryMethod';
 import { MatStepperModule } from '@angular/material/stepper';
-import { CommonModule } from '@angular/common';
+
 import { CheckoutAddressComponent } from './checkout-address/checkout-address.component';
 import { CheckoutDeliveryComponent } from './checkout-delivery/checkout-delivery.component';
 import { CheckoutReviewComponent } from './checkout-review/checkout-review.component';
@@ -36,13 +36,7 @@ export interface CheckoutData {
   styleUrls: ['./checkout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [MatStepperModule,
-    
-    CommonModule,
-    CheckoutAddressComponent,
-    CheckoutDeliveryComponent,
-    CheckoutReviewComponent,
-    CheckoutPaymentComponent, OrderTotalsComponent, MatCardModule]
+  imports: [MatStepperModule, CheckoutAddressComponent, CheckoutDeliveryComponent, CheckoutReviewComponent, CheckoutPaymentComponent, OrderTotalsComponent, MatCardModule]
 })
 export class CheckoutComponent implements OnInit {
   basketTotals = signal<IBasketTotals | null>(null);

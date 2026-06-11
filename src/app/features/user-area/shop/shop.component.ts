@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
@@ -27,7 +27,7 @@ import { ProductItemComponent } from './product-item/product-item.component';
   styleUrls: ['./shop.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, RouterModule, MatSelectModule, ProductItemComponent, PagingHeaderComponent, PagerComponent, MatProgressSpinnerModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCardModule, FormsModule]
+  imports: [RouterModule, MatSelectModule, ProductItemComponent, PagingHeaderComponent, PagerComponent, MatProgressSpinnerModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCardModule, FormsModule]
 })
 export class ShopComponent implements OnInit {
   searchTerm = viewChild.required<ElementRef<HTMLInputElement>>('search');

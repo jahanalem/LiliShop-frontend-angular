@@ -15,7 +15,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, input, OnInit, output } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
@@ -27,7 +27,7 @@ import { PageEvent } from '@angular/material/paginator';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
   imports: [
-    CommonModule, RouterModule,
+    RouterModule,
     MatDialogModule,
     MatIconModule,
     MatToolbarModule,
@@ -44,7 +44,7 @@ import { PageEvent } from '@angular/material/paginator';
     MatPaginatorModule,
     MatCardModule,
     MatTableModule
-  ]
+]
 
 })
 export class PagerComponent implements OnInit {

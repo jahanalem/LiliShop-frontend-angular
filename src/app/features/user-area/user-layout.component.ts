@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, inject, OnInit, Renderer2 } from '@angular/core';
 import { NavBarComponent } from 'src/app/shared/components/nav-bar/nav-bar.component';
@@ -10,7 +10,7 @@ import { FooterComponent } from 'src/app/shared/components/footer/footer.compone
   styleUrls: ['./user-layout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [NavBarComponent, FooterComponent, CommonModule, RouterModule]
+  imports: [NavBarComponent, FooterComponent, RouterModule]
 })
 export class UserLayoutComponent implements OnInit {
 

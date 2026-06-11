@@ -1,5 +1,5 @@
 import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -17,7 +17,7 @@ import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordRes
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule]
+  imports: [RouterModule, ReactiveFormsModule]
 })
 export class ForgotPasswordComponent {
   forgotPasswordForm!: FormGroup;

@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { IBrand } from 'src/app/shared/models/brand';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
@@ -24,7 +24,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     styleUrls: ['./edit-brand.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [CommonModule, RouterModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, ReactiveFormsModule]
+  imports: [RouterModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, ReactiveFormsModule]
 })
 export class EditBrandComponent implements OnInit {
   brandForm!: FormGroup;

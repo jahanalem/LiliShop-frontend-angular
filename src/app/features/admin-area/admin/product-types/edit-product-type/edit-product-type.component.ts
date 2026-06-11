@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, signal, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -24,7 +24,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     styleUrls: ['./edit-product-type.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [CommonModule, RouterModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, ReactiveFormsModule]
+  imports: [RouterModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, ReactiveFormsModule]
 })
 export class EditProductTypeComponent implements OnDestroy {
   typeForm!: FormGroup;

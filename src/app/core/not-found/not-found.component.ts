@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
     styleUrls: ['./not-found.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [CommonModule, RouterModule]
+  imports: [RouterModule]
 })
 export class NotFoundComponent implements OnInit {
 

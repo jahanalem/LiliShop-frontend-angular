@@ -1,7 +1,7 @@
 import { OrderTotalsComponent } from 'src/app/shared/components/order-totals/order-totals.component';
 import { BasketSummaryComponent } from 'src/app/shared/components/basket-summary/basket-summary.component';
 import { MatCardModule } from '@angular/material/card';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { ActivatedRoute } from '@angular/router';
@@ -15,7 +15,7 @@ import { OrdersService } from 'src/app/core/services/orders.service';
     styleUrls: ['./order-detailed.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [CommonModule, RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatCardModule]
+  imports: [RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatCardModule]
 })
 export class OrderDetailedComponent implements OnInit {
   order = signal<IOrder | undefined>(undefined);
