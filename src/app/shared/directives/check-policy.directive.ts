@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostBinding, inject, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, HostBinding, inject, OnDestroy, OnInit, Renderer2, input } from '@angular/core';
 import { AuthorizationService } from 'src/app/core/services/authorization.service';
 import { Subject, takeUntil, tap } from 'rxjs';
 import { AccountService } from 'src/app/core/services/account.service';
@@ -9,7 +9,7 @@ import { PolicyNames } from '../models/policy';
     standalone: true
 })
 export class CheckPolicyDirective implements OnInit, OnDestroy {
-  @Input() appCheckPolicy!: PolicyNames;
+  readonly appCheckPolicy = input.required<PolicyNames>();
   @HostBinding('attr.disabled') isDisabled: boolean | null = null;
 
   private destroy$ = new Subject<void>();
@@ -26,7 +26,7 @@ export class CheckPolicyDirective implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         tap(user => {
-          if (user && this.appCheckPolicy) {
+          if (user && this.appCheckPolicy()) {
             this.updateVisibility(user.role);
           }
         })
@@ -35,7 +35,7 @@ export class CheckPolicyDirective implements OnInit, OnDestroy {
   }
 
   private updateVisibility(role: string): void {
-    this.authorizationService.isCurrentUserAuthorized(this.appCheckPolicy, role)
+    this.authorizationService.isCurrentUserAuthorized(this.appCheckPolicy(), role)
       .pipe(takeUntil(this.destroy$))
       .subscribe(isAllowed => {
         const icon = this.el.nativeElement.querySelector('mat-icon');
