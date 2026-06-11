@@ -6,7 +6,7 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: white;
+  background-color: var(--ls-surface);
   max-width: 600px;
   margin: auto;
   margin-top: 50px;
@@ -14,27 +14,27 @@
 }
 
 h1 {
-  color: #333;
+  color: var(--ls-text);
   margin-bottom: 20px;
 }
 
 .success-message, .error-message {
   padding: 15px;
   border-radius: 5px;
-  color: #fff;
+  color: var(--ls-text-inverse);
 }
 
 .success-message {
-  background-color: #4CAF50; /* Green for success */
+  background-color: var(--ls-success); /* Green for success */
 }
 
 .error-message {
-  background-color: #f44336; /* Red for error */
+  background-color: var(--ls-danger); /* Red for error */
 }
 
 .highlight {
   font-weight: bold;
-  color: #0d6efd; /* Bootstrap primary blue */
+  color: var(--ls-brand-text); /* Bootstrap primary blue */
 }
 
 .home-button {
@@ -42,13 +42,13 @@ h1 {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
-  background-color: #0d6efd; /* Bootstrap primary blue */
-  color: white;
+  background-color: var(--ls-brand); /* Bootstrap primary blue */
+  color: var(--ls-on-brand);
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
 }
 
 .home-button:hover {
-  background-color: #0b5ed7; /* A slightly darker blue */
+  background-color: var(--ls-brand-strong); /* A slightly darker blue */
 }

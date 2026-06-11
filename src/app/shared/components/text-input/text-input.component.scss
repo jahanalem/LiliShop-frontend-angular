@@ -25,7 +25,7 @@
 
 .mat-error {
   font-weight: bold;
-  color: #d32f2f; /* Material's default error color */
+  color: var(--ls-danger); /* Material's default error color */
 }
 
 .mat-form-field-wrapper {
@@ -37,17 +37,17 @@
 }
 
 .mat-form-field-appearance-fill .mat-form-field-flex {
-  background-color: #f9f9f9;
+  background-color: var(--ls-surface-2);
   border-radius: 4px;
   padding: 10px;
 }
 
 .mat-form-field-appearance-fill.mat-form-field-invalid .mat-form-field-flex {
-  background-color: #ffebee; /* Light red background on error */
+  background-color: light-dark(#ffebee, #3c2326); /* Light red background on error */
 }
 
 .mat-form-field-appearance-fill.mat-form-field-valid .mat-form-field-flex {
-  background-color: #e8f5e9; /* Light green background when valid */
+  background-color: light-dark(#e8f5e9, #1d3324); /* Light green background when valid */
 }
 
 
@@ -55,7 +55,7 @@
 .password-rules-container {
   margin-top: -10px; /* Pulls it up slightly towards the input */
   margin-bottom: 20px;
-  background-color: #f8f9fa;
+  background-color: var(--ls-surface-2);
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 12px;
@@ -64,7 +64,7 @@
   .rules-title {
     margin: 0 0 8px 0;
     font-weight: 600;
-    color: #424242;
+    color: var(--ls-text);
   }
 
   .rules-list {
@@ -88,11 +88,11 @@
       }
 
       &.invalid {
-        color: #d32f2f; /* Red */
+        color: var(--ls-danger); /* Red */
       }
 
       &.valid {
-        color: #2e7d32; /* Green */
+        color: var(--ls-success); /* Green */
       }
     }
   }

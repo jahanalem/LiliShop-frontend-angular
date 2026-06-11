@@ -1,5 +1,4 @@
-
-import { MatDialogModule } from '@angular/material/dialog';
+import { AsyncPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,15 +6,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
-import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { Observable, of, startWith, Subject, switchMap, takeUntil } from 'rxjs';
@@ -32,16 +23,17 @@ import { LOCAL_STORAGE_KEYS } from '../../constants/auth';
 import { StorageService } from 'src/app/core/services/storage.service';
 import { Router } from '@angular/router';
 import { BusyService } from 'src/app/core/services/busy.service';
+import { ThemeService } from 'src/app/core/services/theme.service';
 
 @Component({
-    selector: 'app-nav-bar',
-    templateUrl: './nav-bar.component.html',
-    styleUrls: ['./nav-bar.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
+  selector: 'app-nav-bar',
+  templateUrl: './nav-bar.component.html',
+  styleUrls: ['./nav-bar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
   imports: [
-    CommonModule, RouterModule,
-    MatDialogModule,
+    AsyncPipe,
+    RouterModule,
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
@@ -49,23 +41,14 @@ import { BusyService } from 'src/app/core/services/busy.service';
     MatMenuModule,
     MatListModule,
     MatSidenavModule,
-    MatBadgeModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    MatProgressBarModule,
-    MatPaginatorModule,
-    MatCardModule,
-    MatTableModule
+    MatProgressBarModule
   ]
-
 })
 export class NavBarComponent implements OnInit, OnDestroy {
   basket$     : Observable<IBasket | null>;
   currentUser$: Observable<IUser | null>;
   readonly sidenav = viewChild.required<MatSidenav>('sidenav');
   hasAccessToAdminPanel = signal<boolean>(false);
-  isCollapsed           = signal<boolean>(true);
 
   destroy$: Subject<void> = new Subject<void>();
 
@@ -76,6 +59,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
   private snackBar             = inject(MatSnackBar);
   private router               = inject(Router);
   protected busyService        = inject(BusyService);
+  protected themeService       = inject(ThemeService);
 
   constructor() {
     this.basket$      = this.basketService.basket$;
@@ -105,11 +89,6 @@ export class NavBarComponent implements OnInit, OnDestroy {
         this.hasAccessToAdminPanel.set(isAdmin);
     });
   }
-
-  toggleCollapse() {
-    this.isCollapsed.set(!this.isCollapsed());
-  }
-
 
   toggleSidenav() {
     this.sidenav().toggle();

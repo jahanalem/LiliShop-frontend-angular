@@ -3,8 +3,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
+  background-color: var(--ls-bg);
+  color: var(--ls-text);
   line-height: 1.6;
 }
 
@@ -18,18 +18,18 @@ footer {
 
 header h1 {
   text-align: center;
-  color: #444;
+  color: var(--ls-text);
   margin-bottom: 10px;
 }
 
 h2,
 h3 {
   margin-top: 30px;
-  color: #333;
+  color: var(--ls-text);
 }
 
 section {
-  background-color: #fff;
+  background-color: var(--ls-surface);
   padding: 20px;
   margin-bottom: 20px;
   border-radius: 5px;
@@ -53,8 +53,8 @@ ul {
 .home-button {
   display: inline-block;
   padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--ls-brand);
+  color: var(--ls-on-brand);
   border-radius: 4px;
   text-decoration: none;
   font-size: 16px;
@@ -62,12 +62,12 @@ ul {
 }
 
 .home-button:hover {
-  background-color: #0056b3;
+  background-color: var(--ls-brand-strong);
 }
 
 footer {
   text-align: center;
   font-size: 0.9em;
-  color: #777;
+  color: var(--ls-text-faint);
   margin-bottom: 20px;
 }

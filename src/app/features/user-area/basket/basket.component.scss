@@ -14,10 +14,11 @@
   width: 100%;
   max-width: 1200px;
   margin-bottom: 16px;
-  background-color: #fff;
-  border-radius: 8px;
+  background-color: var(--ls-surface);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius-sm);
   padding: 16px;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--ls-shadow-sm);
 }
 
 .checkout-button {

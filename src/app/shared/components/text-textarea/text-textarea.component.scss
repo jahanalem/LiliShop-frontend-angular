@@ -19,7 +19,7 @@
 
 .mat-error {
   font-weight: bold;
-  color: #d32f2f; /* Material's default error color */
+  color: var(--ls-danger); /* Material's default error color */
 }
 
 .mat-form-field-wrapper {
@@ -31,15 +31,15 @@
 }
 
 .mat-form-field-appearance-fill .mat-form-field-flex {
-  background-color: #f9f9f9;
+  background-color: var(--ls-surface-2);
   border-radius: 4px;
   padding: 10px;
 }
 
 .mat-form-field-appearance-fill.mat-form-field-invalid .mat-form-field-flex {
-  background-color: #ffebee; /* Light red background on error */
+  background-color: light-dark(#ffebee, #3c2326); /* Light red background on error */
 }
 
 .mat-form-field-appearance-fill.mat-form-field-valid .mat-form-field-flex {
-  background-color: #e8f5e9; /* Light green background when valid */
+  background-color: light-dark(#e8f5e9, #1d3324); /* Light green background when valid */
 }

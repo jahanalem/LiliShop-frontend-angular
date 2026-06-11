@@ -4,6 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NavBarComponent } from './nav-bar.component';
 import { BasketService } from '../../../core/services/basket.service';
 import { AccountService } from '../../../core/services/account.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { provideRouter } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { IUser } from 'src/app/shared/models/user';
@@ -48,13 +49,15 @@ describe('NavBarComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should toggle isCollapsed on toggleCollapse()', () => {
-        component.isCollapsed.set(true);
-        component.toggleCollapse();
-        expect(component.isCollapsed()).toBe(false);
+    it('should toggle the theme and reflect it on the document element', async () => {
+        const themeService = TestBed.inject(ThemeService);
+        const wasDark = themeService.isDark();
 
-        component.toggleCollapse();
-        expect(component.isCollapsed()).toBe(true);
+        themeService.toggleTheme();
+        await fixture.whenStable();
+
+        expect(themeService.isDark()).toBe(!wasDark);
+        expect(document.documentElement.getAttribute('data-theme')).toBe(wasDark ? 'light' : 'dark');
     });
 
     it('should call accountService.logout() on logout()', () => {

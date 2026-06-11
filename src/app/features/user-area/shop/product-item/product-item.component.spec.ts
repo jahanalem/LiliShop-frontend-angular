@@ -75,7 +75,7 @@ describe('ProductItemComponent', () => {
         };
         fixture.componentRef.setInput('product', product);
         fixture.detectChanges();
-        const productTitleElement: DebugElement = fixture.debugElement.query(By.css('.product-title'));
+        const productTitleElement: DebugElement = fixture.debugElement.query(By.css('.product-card__title'));
         const textContent = productTitleElement.nativeElement.textContent;
         expect(textContent).toContain(product.name);
     });
@@ -98,7 +98,7 @@ describe('ProductItemComponent', () => {
         };
         fixture.componentRef.setInput('product', product);
         fixture.detectChanges();
-        const addButton: DebugElement = fixture.debugElement.query(By.css('.add-to-cart-btn'));
+        const addButton: DebugElement = fixture.debugElement.query(By.css('.product-card__cta'));
         addButton.nativeElement.click();
         expect(basketServiceSpy.addItemToBasket).toHaveBeenCalledWith(product);
     });

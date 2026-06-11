@@ -1,19 +1,19 @@
 .dialog-title {
   display: flex;
   align-items: center;
-  color: #333;
+  color: var(--ls-text);
   font-weight: 500;
 }
 
 .dialog-icon {
   margin-right: 8px;
-  color: #007bff;
+  color: var(--ls-brand-text);
 }
 
 .dialog-content {
   padding: 16px;
   line-height: 1.5;
-  color: #555;
+  color: var(--ls-text-soft);
   font-size: 16px;
 }
 
@@ -35,18 +35,18 @@
 }
 
 .yes-button {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--ls-brand);
+  color: var(--ls-on-brand);
 }
 
 
 .no-button {
-  background-color: #f5f5f5;
-  color: #333;
+  background-color: var(--ls-surface-2);
+  color: var(--ls-text);
 }
 
 .close-button {
-  color: #333;
+  color: var(--ls-text);
 }
 
 .dialog-actions button:hover {

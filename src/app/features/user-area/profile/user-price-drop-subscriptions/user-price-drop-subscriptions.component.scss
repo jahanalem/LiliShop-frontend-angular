@@ -26,12 +26,12 @@ mat-card-title {
 .no-subscriptions {
   display: flex;
   align-items: center;
-  color: #555;
+  color: var(--ls-text-soft);
   margin: 16px 0;
 
   mat-icon {
     margin-right: 8px;
-    color: #757575; /* Optional: etwas dezenterer Farbton */
+    color: var(--ls-text-faint); /* Optional: etwas dezenterer Farbton */
   }
 
   p {

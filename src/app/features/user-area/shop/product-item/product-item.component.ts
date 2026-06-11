@@ -1,10 +1,8 @@
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { IProduct } from 'src/app/shared/models/product';
 
@@ -15,11 +13,9 @@ import { IProduct } from 'src/app/shared/models/product';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
     imports: [
-        CommonModule,
+        CurrencyPipe,
         MatIconModule,
         MatButtonModule,
-        MatTooltipModule,
-        MatCardModule,
         RouterModule,
         NgOptimizedImage,
     ]

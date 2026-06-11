@@ -3,6 +3,7 @@ import { Component, AfterViewInit, ChangeDetectionStrategy, inject } from '@angu
 import { AccountService } from './core/services/account.service';
 import { BasketService } from './core/services/basket.service';
 import { StorageService } from './core/services/storage.service';
+import { IconService } from './core/services/icon.service';
 import { LOCAL_STORAGE_KEYS } from './shared/constants/auth';
 import { firstValueFrom } from 'rxjs';
 
@@ -21,9 +22,10 @@ export class AppComponent implements AfterViewInit {
   private basketService  = inject(BasketService);
   private accountService = inject(AccountService);
   private storageService = inject(StorageService);
+  private iconService    = inject(IconService);
 
   constructor() {
-
+    this.iconService.registerBrandIcons();
   }
 
   async ngAfterViewInit(): Promise<void> {

@@ -1,15 +1,15 @@
 .order-summary-container {
   margin: 0 auto;
   padding: 16px;
-  background-color: #f5f5f5;
-  border-radius: 8px;
+  background-color: var(--ls-surface-2);
+  border-radius: var(--ls-radius-sm);
 }
 
 .order-summary-header {
   padding: 16px;
-  background-color: #3f51b5;
-  color: white;
-  border-radius: 8px;
+  background-color: var(--ls-brand);
+  color: var(--ls-on-brand);
+  border-radius: var(--ls-radius-sm);
   text-align: center;
 }
 
@@ -27,17 +27,17 @@
   display: flex;
   justify-content: space-between;
   padding: 12px 0;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--ls-border);
 }
 
 .order-summary-item span {
   font-size: 16px;
-  color: #757575;
+  color: var(--ls-text-soft);
 }
 
 .order-summary-item strong {
   font-size: 16px;
-  color: #000;
+  color: var(--ls-text);
 }
 
 .order-total {
@@ -45,6 +45,6 @@
 }
 
 .total-price {
-  color: #3f51b5;
+  color: var(--ls-brand-text);
   font-size: 18px;
 }

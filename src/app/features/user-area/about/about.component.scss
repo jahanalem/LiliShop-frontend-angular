@@ -1,328 +1,254 @@
+@use 'styles/mixins' as mx;
+
 :host {
-  --app-primary-color: #3f51b5; /* Indigo */
-  --app-accent-color: #ff4081;  /* Pink */
-  --app-warn-color: #f44336;    /* Red */
-  --app-background-color: #fafafa;
-  --app-surface-color: #ffffff;
-  --app-text-color: #333333;
-  --app-secondary-text-color: #666666;
-  --app-divider-color: #e0e0e0;
-  --app-header-color: #2c3e50; /* A darker blue for headers */
-  --app-link-color: var(--app-primary-color);
-  --app-link-hover-color: var(--app-accent-color);
-
   display: block;
-  background-color: var(--app-background-color);
-  color: var(--app-text-color);
-  padding-bottom: 3rem; /* Space at the bottom */
+  background: var(--ls-bg);
 }
 
-.about-page-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem 2rem;
-}
-
-.page-main-header {
+// ------------------------------------------------------------------ hero ----
+.about-hero {
+  // Brand navy in both themes; only the depth shifts.
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 10%, rgba(233, 69, 96, 0.25), transparent),
+    radial-gradient(ellipse 50% 70% at 15% 90%, rgba(187, 197, 235, 0.16), transparent),
+    light-dark(#16213e, #111831);
+  color: #eef0f8;
+  padding: var(--ls-space-16) var(--ls-space-4) var(--ls-space-12);
   text-align: center;
-  padding: 2rem 0;
+
+  &__inner {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  &__photo {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.25);
+    box-shadow: var(--ls-shadow-lg);
+  }
+
+  &__name {
+    margin: var(--ls-space-5) 0 var(--ls-space-1);
+    font-size: var(--ls-fs-display);
+    color: #ffffff;
+  }
+
+  &__subtitle {
+    margin: 0 0 var(--ls-space-5);
+    font-size: var(--ls-fs-md);
+    color: #c6cde4;
+    font-weight: 400;
+  }
+
+  &__social {
+    display: flex;
+    justify-content: center;
+    gap: var(--ls-space-2);
+
+    a {
+      color: #eef0f8;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition:
+        background-color var(--ls-dur-fast) var(--ls-ease),
+        transform var(--ls-dur-fast) var(--ls-ease);
+
+      &:hover {
+        background: var(--ls-accent-strong);
+        transform: translateY(-3px);
+      }
+
+      &:focus-visible {
+        outline-color: #ffffff;
+      }
+    }
+  }
 }
 
-.page-main-header h1 {
-  font-size: 2.8rem;
-  font-weight: 600;
-  color: var(--app-header-color);
-  margin-bottom: 0.5rem;
+// --------------------------------------------------------------- content ----
+.about-content {
+  @include mx.container(1080px);
+  padding-block: var(--ls-space-10) var(--ls-space-16);
 }
 
-.page-main-header .subtitle {
-  font-size: 1.4rem;
-  color: var(--app-secondary-text-color);
-  font-weight: 300;
+.about-section {
+  margin-bottom: var(--ls-space-12);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &__title {
+    position: relative;
+    font-size: var(--ls-fs-2xl);
+    margin-bottom: var(--ls-space-6);
+    padding-bottom: var(--ls-space-3);
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 56px;
+      height: 4px;
+      border-radius: var(--ls-radius-pill);
+      background: linear-gradient(90deg, var(--ls-accent), var(--ls-brand));
+    }
+  }
+
+  &__meta {
+    color: var(--ls-text-soft);
+    font-size: var(--ls-fs-sm);
+    margin: calc(-1 * var(--ls-space-4)) 0 var(--ls-space-5);
+  }
 }
 
-mat-divider {
-  margin: 2rem 0;
-  border-top-color: var(--app-divider-color);
+.about-card {
+  @include mx.card;
+  padding: var(--ls-space-6);
+  margin-bottom: var(--ls-space-5);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &__title {
+    font-size: var(--ls-fs-md);
+    margin-bottom: var(--ls-space-4);
+  }
+
+  &__link-row {
+    margin: 0;
+    word-break: break-word;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
 }
 
-/* About Me Personal Section */
-.about-me-personal-section {
-  padding: 1.5rem 0;
+.about-bio p {
+  font-size: var(--ls-fs-md);
+  line-height: 1.75;
+  color: var(--ls-text-soft);
+  margin: 0;
 }
 
-.personal-info-wrapper {
-  display: flex;
-  align-items: flex-start; /* Align items to the top */
-  gap: 2.5rem;
-}
+// ------------------------------------------------------------- accordion ----
+.about-accordion {
+  display: block;
+  margin-bottom: var(--ls-space-5);
 
-.profile-photo-main {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-  border: 4px solid var(--app-surface-color); /* Optional: for a nicer cutout effect */
-}
+  .mat-expansion-panel {
+    background: var(--ls-surface);
+    border: 1px solid var(--ls-border);
+    border-radius: var(--ls-radius-md) !important;
+    box-shadow: none;
 
-.personal-bio {
-  flex: 1;
-}
+    + .mat-expansion-panel {
+      margin-top: var(--ls-space-3);
+    }
+  }
 
-.personal-bio h2 {
-  font-size: 1.8rem;
-  color: var(--app-header-color);
-  margin-bottom: 1rem;
-  border-bottom: 2px solid var(--app-primary-color);
-  padding-bottom: 0.5rem;
-  display: inline-block;
-}
-
-.personal-bio p {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  color: var(--app-secondary-text-color);
-  margin-bottom: 1.5rem;
-}
-
-.social-links-main {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.social-links-main a.mat-icon-button {
-  color: var(--app-secondary-text-color);
-  background-color: rgba(0,0,0,0.05);
-}
-.social-links-main a.mat-icon-button:hover {
-  color: var(--app-primary-color);
-  background-color: rgba(0,0,0,0.08);
-}
-.social-links-main a.mat-icon-button mat-icon {
-  font-size: 28px; /* Ensure icons are large enough */
-  width: 28px;
-  height: 28px;
-  line-height: 28px; /* Center custom SVG icons */
-}
-
-
-/* Project Showcase Section */
-.project-showcase-section {
-  padding: 1.5rem 0;
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.section-header h2 {
-  font-size: 2.2rem;
-  color: var(--app-header-color);
-  margin-bottom: 0.5rem;
-}
-.section-header .project-meta {
-  font-size: 1rem;
-  color: var(--app-secondary-text-color);
-}
-.section-header .project-meta a {
-  color: var(--app-link-color);
-  text-decoration: none;
-  font-weight: 500;
-}
-.section-header .project-meta a:hover {
-  color: var(--app-link-hover-color);
-  text-decoration: underline;
-}
-
-
-.lilishop-card {
-  margin-bottom: 1.5rem;
-  background-color: var(--app-surface-color);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08) !important; /* Override default mat-card shadow if needed */
-}
-
-.lilishop-card .mat-card-header { /* mat-card-header needs ::ng-deep or ViewEncapsulation.None for direct styling */
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--app-divider-color);
-  margin-bottom: 1rem;
-}
-
-.lilishop-card .mat-card-title {
-  font-size: 1.4rem;
-  font-weight: 500;
-  color: var(--app-primary-color);
-}
-
-.lilishop-card mat-card-content p,
-.lilishop-panel ul {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--app-secondary-text-color);
-}
-.lilishop-card mat-card-content p strong,
-.lilishop-panel ul strong {
-  color: var(--app-text-color);
-  font-weight: 500;
-}
-.lilishop-card mat-card-content a {
-  color: var(--app-link-color);
-  text-decoration: none;
-}
-.lilishop-card mat-card-content a:hover {
-  color: var(--app-link-hover-color);
-  text-decoration: underline;
-}
-
-
-.lilishop-panel {
-  margin-bottom: 1rem;
-  background-color: var(--app-surface-color);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
-}
-
-.lilishop-panel .mat-expansion-panel-header { /* mat-expansion-panel-header might need ::ng-deep */
-  background-color: rgba(63, 81, 181, 0.05); /* Light primary color tint */
-}
-.lilishop-panel .mat-panel-title {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--app-primary-color);
+  .mat-expansion-panel-header {
+    font-weight: 600;
+  }
 }
 
 .feature-category {
-  margin-bottom: 1.5rem;
-}
-.feature-category:last-child {
-  margin-bottom: 0;
-}
-.feature-category h4 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--app-text-color);
-  margin-bottom: 0.75rem;
-}
-.feature-category ul, .lilishop-panel ul {
-  list-style: none;
-  padding-left: 0;
-}
-.feature-category ul li, .lilishop-panel ul li {
-  padding: 0.3rem 0;
-  position: relative;
-  padding-left: 1.5rem; /* Space for custom bullet */
-}
-.feature-category ul li::before, .lilishop-panel ul li::before {
-  content: "▹"; /* Or use a mat-icon */
-  position: absolute;
-  left: 0;
-  color: var(--app-primary-color);
-  font-size: 1.2rem;
+  margin-bottom: var(--ls-space-5);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h4 {
+    margin-bottom: var(--ls-space-2);
+    color: var(--ls-brand-text);
+  }
 }
 
-.tech-summary-card mat-chip-listbox {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+.feature-category ul,
+.tech-details-list {
+  margin: 0;
+  padding-left: var(--ls-space-5);
+  color: var(--ls-text-soft);
+
+  li {
+    margin-bottom: var(--ls-space-2);
+    line-height: 1.65;
+
+    &::marker {
+      color: var(--ls-accent);
+    }
+  }
 }
 
-.tech-summary-card .mat-mdc-chip { /* Adjust if class name differs in your Angular Material version */
-  font-size: 0.9rem;
+// ----------------------------------------------------------------- chips ----
+.about-chips {
+  .mat-mdc-chip {
+    background: var(--ls-brand-soft);
+
+    .mdc-evolution-chip__text-label {
+      color: var(--ls-brand-text);
+      font-weight: 500;
+    }
+  }
 }
 
-/* Personal Tech Stack Section */
-.personal-tech-stack-section {
-  padding: 1.5rem 0;
-}
-
-.tech-cards-container {
+// ------------------------------------------------------------ tech stack ----
+.about-stack-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-}
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--ls-space-5);
 
-.tech-card-personal {
-  background-color: var(--app-surface-color);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08) !important;
-}
-.tech-card-personal .mat-card-title {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--app-primary-color);
-}
-.tech-card-personal ul {
-  list-style: none;
-  padding-left: 0;
-  font-size: 1rem;
-  color: var(--app-secondary-text-color);
-}
-.tech-card-personal ul li {
-  padding: 0.4rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem; /* Space between emoji/icon and text */
-}
+  .stack-card {
+    margin-bottom: 0;
+    transition: transform var(--ls-dur) var(--ls-ease), box-shadow var(--ls-dur) var(--ls-ease);
 
-/* Responsive Adjustments */
-@media (max-width: 992px) {
-  .personal-info-wrapper {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .profile-photo-main {
-    width: 180px;
-    height: 180px;
-    margin-bottom: 1.5rem;
-  }
-  .personal-bio h2 {
-    display: block; /* Allow it to center */
-    border-bottom: none;
-    padding-bottom: 0;
-    margin-bottom: 1rem;
-  }
-  .social-links-main {
-    justify-content: center;
+    @media (hover: hover) {
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--ls-shadow-md);
+      }
+    }
+
+    ul {
+      margin: 0;
+      padding-left: var(--ls-space-5);
+      color: var(--ls-text-soft);
+
+      li {
+        margin-bottom: var(--ls-space-2);
+        line-height: 1.6;
+
+        &::marker {
+          color: var(--ls-accent);
+        }
+      }
+    }
   }
 }
 
-@media (max-width: 768px) {
-  .about-page-container {
-    padding: 1rem;
-  }
-  .page-main-header h1 {
-    font-size: 2.2rem;
-  }
-  .page-main-header .subtitle {
-    font-size: 1.2rem;
-  }
-  .profile-photo-main {
-    width: 150px;
-    height: 150px;
-  }
-  .personal-bio p {
-    font-size: 1rem;
-  }
-  .section-header h2 {
-    font-size: 1.8rem;
-  }
-  .tech-cards-container {
-    grid-template-columns: 1fr; /* Stack cards */
-  }
-}
+// ------------------------------------------------------------ responsive ----
+@include mx.down(mx.$bp-md) {
+  .about-hero {
+    padding: var(--ls-space-10) var(--ls-space-4) var(--ls-space-8);
 
-@media (max-width: 480px) {
-  .page-main-header h1 {
-    font-size: 1.8rem;
+    &__photo {
+      width: 120px;
+      height: 120px;
+    }
   }
-  .page-main-header .subtitle {
-    font-size: 1rem;
+
+  .about-content {
+    padding-block: var(--ls-space-8) var(--ls-space-10);
   }
-  .social-links-main a.mat-icon-button mat-icon {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
-    line-height: 24px;
+
+  .about-card {
+    padding: var(--ls-space-5);
   }
 }

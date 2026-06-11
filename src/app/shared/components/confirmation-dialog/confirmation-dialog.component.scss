@@ -4,7 +4,7 @@
 }
 
 .icon {
-  color: #f44336;
+  color: var(--ls-danger);
   margin-right: 10px;
 }
 
@@ -13,10 +13,10 @@
 }
 
 .confirm-button {
-  color: #ffffff;
-  background-color: #f44336;
+  color: var(--mat-sys-on-error);
+  background-color: var(--mat-sys-error);
 }
 
 .cancel-button {
-  color: #3f51b5;
+  color: var(--ls-brand-text);
 }

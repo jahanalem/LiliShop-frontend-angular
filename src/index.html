@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
@@ -7,7 +7,21 @@
   <base href="/">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fb">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e1321">
+
+  <!-- Apply the persisted theme before first paint to avoid a flash of the wrong scheme.
+       Kept in sync with ThemeService (localStorage key "ls-theme", JSON-encoded). -->
+  <script>
+    (function () {
+      try {
+        var stored = (localStorage.getItem('ls-theme') || '').replace(/"/g, '');
+        if (stored === 'light' || stored === 'dark') {
+          document.documentElement.setAttribute('data-theme', stored);
+        }
+      } catch (e) { /* storage unavailable: fall back to system preference */ }
+    })();
+  </script>
 
   <!-- SEO & Social Meta Tags -->
   <meta name="description" content="LiliShop – Your online store for modern fashion and accessories. Discover now!">
@@ -28,14 +42,17 @@
   <!-- <link rel="manifest" href="manifest.webmanifest"> -->
 
   <!-- Font Loading with Performance Optimization -->
-  <link rel="stylesheet" href="https://fonts.bunny.net/css?family=Roboto:300,400,500|Material+Icons&display=swap&subset=latin" media="print" onload="this.media='all'; this.onload=null;" crossorigin>
+  <link rel="stylesheet" href="https://fonts.bunny.net/css?family=Inter:400,500,600,700,800|Material+Icons&display=swap&subset=latin" media="print" onload="this.media='all'; this.onload=null;" crossorigin>
   <noscript>
-    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=Roboto:300,400,500|Material+Icons&subset=latin">
+    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=Inter:400,500,600,700,800|Material+Icons&subset=latin">
   </noscript>
 
-  <!-- Inlined Critical CSS -->
+  <!-- Inlined Critical CSS (theme-aware: follows color-scheme before the app loads) -->
   <style>
-    /* Minimal critical CSS for initial render */
+    :root { color-scheme: light dark; }
+    :root[data-theme='light'] { color-scheme: light; }
+    :root[data-theme='dark'] { color-scheme: dark; }
+
     .app-loading,
     .cookie-consent {
       position: fixed;
@@ -47,7 +64,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #fff;
+      background: light-dark(#f6f7fb, #0e1321);
     }
 
     .cookie-consent {
@@ -55,11 +72,62 @@
       left: 0;
       right: 0;
       display: none;
-      background: #fffffff2;
+      background: light-dark(rgba(255, 255, 255, 0.95), rgba(22, 28, 46, 0.95));
+      color: light-dark(#181c2a, #e9ecf8);
       padding: 1.5rem;
-      box-shadow: 0 -2px 15px #0000001a;
+      box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1);
+      border-top: 1px solid light-dark(#e3e6f0, #2b3349);
       -webkit-backdrop-filter: blur(5px);
       backdrop-filter: blur(5px);
+    }
+
+    .cookie-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .cookie-heading {
+      margin: 0 0 0.25rem;
+      font-size: 1.1rem;
+    }
+
+    .cookie-text {
+      margin: 0;
+      color: light-dark(#545a6f, #a7afc6);
+    }
+
+    .cookie-link {
+      color: light-dark(#1d2b50, #c4cdf0);
+    }
+
+    .cookie-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .cookie-button {
+      padding: 0.55rem 1.4rem;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .cookie-button.primary {
+      background: light-dark(#16213e, #bbc5eb);
+      color: light-dark(#ffffff, #252f4d);
+    }
+
+    .cookie-button.secondary {
+      background: transparent;
+      color: light-dark(#181c2a, #e9ecf8);
+      border-color: light-dark(#c7ccdf, #3d4763);
     }
 
     .spinner {
@@ -71,7 +139,7 @@
     .path {
       stroke-dasharray: 80,200;
       stroke-dashoffset: 0;
-      stroke: #2c3e50;
+      stroke: light-dark(#16213e, #bbc5eb);
       animation: dash 1.4s ease-in-out infinite;
     }
 

@@ -1,0 +1,86 @@
+// ============================================================================
+// LiliShop shared mixins & breakpoints
+// Usage:  @use 'src/styles/mixins' as mx;   (path relative to the component)
+// ============================================================================
+
+// Breakpoints (min-width strategy; matches Material's handset/tablet ranges).
+$bp-sm: 600px;
+$bp-md: 768px;
+$bp-lg: 992px;
+$bp-xl: 1280px;
+
+@mixin up($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}
+
+@mixin down($bp) {
+  @media (max-width: ($bp - 0.02px)) {
+    @content;
+  }
+}
+
+// Centered page container with fluid gutters.
+@mixin container($max: var(--ls-container)) {
+  width: 100%;
+  max-width: $max;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 32px);
+}
+
+// Standard elevated surface (cards, panels).
+@mixin card {
+  background: var(--ls-surface);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius-md);
+  box-shadow: var(--ls-shadow-sm);
+}
+
+// Accessible keyboard focus indicator.
+@mixin focus-ring {
+  outline: 2px solid var(--ls-focus-ring);
+  outline-offset: 2px;
+}
+
+// Clamp text to $lines lines with ellipsis.
+@mixin line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+  overflow: hidden;
+}
+
+// Discreet scrollbar for internal panels.
+@mixin thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ls-border-strong) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--ls-border-strong);
+    border-radius: var(--ls-radius-pill);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+// Visually hidden but available to assistive technology.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

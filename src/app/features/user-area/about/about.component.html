@@ -1,216 +1,213 @@
-<main class="about-page-container">
-  <header class="page-main-header">
-    <h1>Said Roohullah Allem</h1>
-    <p class="subtitle">Web Application Developer & Project Showcase</p>
+<main class="about-page">
+
+  <!-- ============================================================ hero -->
+  <header class="about-hero">
+    <div class="about-hero__inner">
+      <img src="assets/img/roohi.jpg" alt="Portrait of Said Roohullah Allem" class="about-hero__photo"
+        width="160" height="160" />
+      <h1 class="about-hero__name">Said Roohullah Allem</h1>
+      <p class="about-hero__subtitle">Web Application Developer &amp; Project Showcase</p>
+
+      <div class="about-hero__social">
+        <a href="mailto:s.r.alem@gmail.com" mat-icon-button title="Email" aria-label="Email">
+          <mat-icon>email</mat-icon>
+        </a>
+        <a href="https://www.linkedin.com/in/said-roohullah-allem" target="_blank" rel="noopener" mat-icon-button
+          title="LinkedIn" aria-label="LinkedIn">
+          <mat-icon svgIcon="linkedin"></mat-icon>
+        </a>
+        <a href="https://www.xing.com/profile/SaidRoohullah_Allem/cv" target="_blank" rel="noopener" mat-icon-button
+          title="Xing" aria-label="Xing">
+          <mat-icon svgIcon="xing"></mat-icon>
+        </a>
+        <a href="https://github.com/jahanalem" target="_blank" rel="noopener" mat-icon-button title="GitHub"
+          aria-label="GitHub">
+          <mat-icon svgIcon="github"></mat-icon>
+        </a>
+        <a href="https://www.facebook.com/roohiX19/" target="_blank" rel="noopener" mat-icon-button title="Facebook"
+          aria-label="Facebook">
+          <mat-icon svgIcon="facebook"></mat-icon>
+        </a>
+      </div>
+    </div>
   </header>
 
-  <mat-divider></mat-divider>
+  <div class="about-content">
 
-  <section class="about-me-personal-section">
-    <div class="personal-info-wrapper">
-      <img src="../../assets/img/roohi.jpg" alt="Roohi's Photo" class="profile-photo-main" />
-      <div class="personal-bio">
-        <h2>About Me</h2>
+    <!-- ======================================================== about me -->
+    <section class="about-section" aria-labelledby="about-me-title">
+      <h2 id="about-me-title" class="about-section__title">About Me</h2>
+      <div class="about-card about-bio">
         <p>
           I am a Web Application Developer with experience in both front-end and back-end application construction.
           Keeping up with emerging technologies is one of my most significant interests. My primary areas of expertise
           include C#.NET and ASP.NET Core, Typescript, and Angular. However, I am eager to explore and work with a
           wide variety of other technologies. Besides programming, I enjoy chess and table tennis.
         </p>
-        <div class="social-links-main">
-          <a href="mailto:s.r.alem@gmail.com" mat-icon-button title="Email" aria-label="Email">
-            <mat-icon>email</mat-icon>
-          </a>
-          <a href="https://www.linkedin.com/in/said-roohullah-allem" target="_blank" rel="noopener" mat-icon-button title="LinkedIn" aria-label="LinkedIn">
-            <mat-icon svgIcon="linkedin"></mat-icon> </a>
-          <a href="https://www.xing.com/profile/SaidRoohullah_Allem/cv" target="_blank" rel="noopener"  mat-icon-button title="Xing" aria-label="Xing">
-             <mat-icon svgIcon="xing"></mat-icon> </a>
-          <a href="https://github.com/jahanalem" target="_blank" rel="noopener" mat-icon-button title="GitHub" aria-label="GitHub">
-            <mat-icon svgIcon="github"></mat-icon> </a>
-          <a href="https://www.facebook.com/roohiX19/" target="_blank" rel="noopener" mat-icon-button title="Facebook" aria-label="Facebook">
-            <mat-icon svgIcon="facebook"></mat-icon> </a>
-        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <mat-divider></mat-divider>
-
-  <section class="project-showcase-section">
-    <header class="section-header">
-      <h2>Project Showcase: 🛍️ LiliShop</h2>
-      <p class="project-meta">Developed By: Said Roohullah Allem | GitHub:
-        <a href="https://github.com/jahanalem" target="_blank" rel="noopener">jahanalem</a> | Date: January 2026
+    <!-- ================================================ project showcase -->
+    <section class="about-section" aria-labelledby="project-title">
+      <h2 id="project-title" class="about-section__title">Project Showcase: 🛍️ LiliShop</h2>
+      <p class="about-section__meta">
+        Developed by Said Roohullah Allem &middot; GitHub:
+        <a href="https://github.com/jahanalem" target="_blank" rel="noopener">jahanalem</a>
+        &middot; January 2026
       </p>
-    </header>
 
-    <mat-card class="lilishop-card">
-      <mat-card-header>
-        <mat-card-title>Project Overview & Core Technologies</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
+      <div class="about-card">
+        <h3 class="about-card__title">Project Overview &amp; Core Technologies</h3>
         <p>
-          LiliShop is a modern e-commerce platform developed with <strong>.NET 10</strong> and <strong>Angular 22</strong>,
-          designed to provide a seamless shopping experience for users and robust management capabilities for administrators.
+          LiliShop is a modern e-commerce platform developed with <strong>.NET 10</strong> and
+          <strong>Angular 22</strong>, designed to provide a seamless shopping experience for users and robust
+          management capabilities for administrators.
         </p>
-        <p>
-          <strong>Website URL:</strong>
-          <a href="https://lilishop-bwdfb5azanh0cfa8.germanywestcentral-01.azurewebsites.net/shop" target="_blank" rel="noopener">
+        <p class="about-card__link-row">
+          <strong>Website:</strong>
+          <a href="https://lilishop-bwdfb5azanh0cfa8.germanywestcentral-01.azurewebsites.net/shop" target="_blank"
+            rel="noopener">
             lilishop-bwdfb5azanh0cfa8.germanywestcentral-01.azurewebsites.net/shop
           </a>
         </p>
-      </mat-card-content>
-    </mat-card>
+      </div>
 
-    <mat-accordion multi="true">
-      <mat-expansion-panel class="lilishop-panel">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            User Features
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-          <div class="feature-category">
-            <h4>🔎 Product Discovery</h4>
-            <ul>
-              <li>Browse and view a comprehensive product catalog.</li>
-              <li>Filter products by brand, type, and size.</li>
-              <li>Isolate products with active discounts.</li>
-              <li>Search for specific products by name.</li>
-              <li>Sort products by price (ascending/descending) and alphabetically.</li>
-            </ul>
-          </div>
-          <div class="feature-category">
-            <h4>🛒 Purchasing & Account Management</h4>
-            <ul>
-              <li>Securely purchase products using Stripe (supporting payment methods like Mastercard).</li>
-              <li>Access a detailed history of completed orders.</li>
-              <li>Register for an account using a traditional username/password combination or via Google social login.</li>
-              <li>Confirm registration through an email verification link.</li>
-              <li>Utilize a password recovery feature for forgotten passwords.</li>
-              <li>Log out from all active sessions on different devices for enhanced security.</li>
-            </ul>
-          </div>
-          <div class="feature-category">
-            <h4>🔔 Notifications & Communication</h4>
-            <ul>
-              <li>Subscribe to products to receive email notifications when their price drops.</li>
-              <li>Manage product subscriptions on a dedicated page with an easy unsubscribe option.</li>
-              <li>Contact the website administrators directly through a 'Contact Us' page.</li>
-            </ul>
-          </div>
-          <div class="feature-category">
-            <h4>📜 Compliance</h4>
-            <ul>
-              <li>View the website's Cookie Policy and choose to accept or reject cookies.</li>
-            </ul>
-          </div>
-        </ng-template>
-      </mat-expansion-panel>
+      <mat-accordion multi="true" class="about-accordion">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>User Features</mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <div class="feature-category">
+              <h4>🔎 Product Discovery</h4>
+              <ul>
+                <li>Browse and view a comprehensive product catalog.</li>
+                <li>Filter products by brand, type, and size.</li>
+                <li>Isolate products with active discounts.</li>
+                <li>Search for specific products by name.</li>
+                <li>Sort products by price (ascending/descending) and alphabetically.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🛒 Purchasing &amp; Account Management</h4>
+              <ul>
+                <li>Securely purchase products using Stripe (supporting payment methods like Mastercard).</li>
+                <li>Access a detailed history of completed orders.</li>
+                <li>Register for an account using a traditional username/password combination or via Google social login.</li>
+                <li>Confirm registration through an email verification link.</li>
+                <li>Utilize a password recovery feature for forgotten passwords.</li>
+                <li>Log out from all active sessions on different devices for enhanced security.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🔔 Notifications &amp; Communication</h4>
+              <ul>
+                <li>Subscribe to products to receive email notifications when their price drops.</li>
+                <li>Manage product subscriptions on a dedicated page with an easy unsubscribe option.</li>
+                <li>Contact the website administrators directly through a 'Contact Us' page.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>📜 Compliance</h4>
+              <ul>
+                <li>View the website's Cookie Policy and choose to accept or reject cookies.</li>
+              </ul>
+            </div>
+          </ng-template>
+        </mat-expansion-panel>
 
-      <mat-expansion-panel class="lilishop-panel">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Admin Features
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-          <div class="feature-category">
-            <h4>🗂️ Product & Catalog Management</h4>
-            <ul>
-              <li>Full CRUD (Create, Read, Update, Delete) capabilities for products.</li>
-              <li>View, search (by name), and sort the product list using various data columns.</li>
-              <li>Assign one or more images to each product, with images hosted on Cloudinary.</li>
-              <li>Manage product brands and types with full CRUD functionality.</li>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Admin Features</mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <div class="feature-category">
+              <h4>🗂️ Product &amp; Catalog Management</h4>
+              <ul>
+                <li>Full CRUD (Create, Read, Update, Delete) capabilities for products.</li>
+                <li>View, search (by name), and sort the product list using various data columns.</li>
+                <li>Assign one or more images to each product, with images hosted on Cloudinary.</li>
+                <li>Manage product brands and types with full CRUD functionality.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>👥 User &amp; Access Management</h4>
+              <ul>
+                <li>View a list of all registered users, with search (by name) and sort functionalities.</li>
+                <li>View a list of users subscribed to product price drop notifications.</li>
+                <li>Grant varying access permissions to users, including the ability to create other administrators with full or limited privileges.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>💸 Discount System</h4>
+              <ul>
+                <li><strong>Single Product Discounts:</strong> Apply time-limited discounts to individual products. The discounted price is automatically displayed during the promotional period and reverts to the original price upon expiration.</li>
+                <li><strong>Group Discounts:</strong> A sophisticated system for defining discounts applicable to specific product brands or product types within defined timeframes. These are managed via an intuitive admin interface.</li>
+                <li><em>Priority Note:</em> Single-product discounts take precedence over group discounts.</li>
+                <li><em>Future Enhancements:</em> Size-based and per-product conditions within group discounts, along with a unified single and group discount system, are planned for future development.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>📝 Content &amp; Communication Management</h4>
+              <ul>
+                <li>Integrate the Printess Editor within the admin panel, allowing for the export of designs as PDF or image files.</li>
+                <li>View and manage messages received from users via the 'Contact Us' page.</li>
+              </ul>
+            </div>
+          </ng-template>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>LiliShop: Technical Details</mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <ul class="tech-details-list">
+              <li><strong>Backend Framework:</strong> .NET 10</li>
+              <li><strong>Frontend Framework:</strong> Angular 22</li>
+              <li><strong>Programming Languages:</strong> C#, TypeScript</li>
+              <li><strong>Database:</strong> Microsoft SQL Server with Entity Framework Core for data access.</li>
+              <li><strong>Payment Processing:</strong> Stripe for handling online payments.</li>
+              <li><strong>Caching:</strong> Hybrid caching strategy utilizing Redis for performance optimization.</li>
+              <li><strong>Background Processing:</strong> Hangfire for managing background jobs (e.g., email notifications, discount expiration).</li>
+              <li><strong>Email Service:</strong> SendGrid for transactional email delivery.</li>
+              <li><strong>Cloud Services:</strong> Cloudinary for image storage and management.</li>
+              <li>
+                <strong>
+                  <a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0026_Refactoring-LiliShop-with-Clean-Architecture.md"
+                    target="_blank" rel="noopener">Architecture</a>:
+                </strong>
+                Clean Architecture (Domain, Application, Infrastructure, API).
+              </li>
             </ul>
-          </div>
-          <div class="feature-category">
-            <h4>👥 User & Access Management</h4>
-            <ul>
-              <li>View a list of all registered users, with search (by name) and sort functionalities.</li>
-              <li>View a list of users subscribed to product price drop notifications.</li>
-              <li>Grant varying access permissions to users, including the ability to create other administrators with full or limited privileges.</li>
-            </ul>
-          </div>
-           <div class="feature-category">
-            <h4>💸 Discount System</h4>
-            <ul>
-              <li><strong>Single Product Discounts:</strong> Apply time-limited discounts to individual products. The discounted price is automatically displayed during the promotional period and reverts to the original price upon expiration.</li>
-              <li><strong>Group Discounts:</strong> A sophisticated system for defining discounts applicable to specific product brands or product types within defined timeframes. These are managed via an intuitive admin interface.</li>
-              <li><em>Priority Note:</em> Single-product discounts take precedence over group discounts.</li>
-              <li><em>Future Enhancements:</em> Size-based and per-product conditions within group discounts, along with a unified single and group discount system, are planned for future development.</li>
-            </ul>
-          </div>
-          <div class="feature-category">
-            <h4>📝 Content & Communication Management</h4>
-            <ul>
-              <li>Integrate the Printess Editor within the admin panel, allowing for the export of designs as PDF or image files.</li>
-              <li>View and manage messages received from users via the 'Contact Us' page.</li>
-            </ul>
-          </div>
-        </ng-template>
-      </mat-expansion-panel>
+          </ng-template>
+        </mat-expansion-panel>
+      </mat-accordion>
 
-      <mat-expansion-panel class="lilishop-panel">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            LiliShop: Technical Details
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-          <ul>
-            <li><strong>Backend Framework:</strong> .NET 10</li>
-            <li><strong>Frontend Framework:</strong> Angular 22</li>
-            <li><strong>Programming Languages:</strong> C#, TypeScript</li>
-            <li><strong>Database:</strong> Microsoft SQL Server with Entity Framework Core for data access.</li>
-            <li><strong>Payment Processing:</strong> Stripe for handling online payments.</li>
-            <li><strong>Caching:</strong> Hybrid caching strategy utilizing Redis for performance optimization.</li>
-            <li><strong>Background Processing:</strong> Hangfire for managing background jobs (e.g., email notifications, discount expiration).</li>
-            <li><strong>Email Service:</strong> SendGrid for transactional email delivery.</li>
-            <li><strong>Cloud Services:</strong> Cloudinary for image storage and management.</li>
-            <li><strong><a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0026_Refactoring-LiliShop-with-Clean-Architecture.md" target="_blank" rel="noopener">Architecture</a>:</strong> Clean Architecture (Domain, Application, Infrastructure, API).</li>
-          </ul>
-        </ng-template>
-      </mat-expansion-panel>
-    </mat-accordion>
+      <div class="about-card">
+        <h3 class="about-card__title">LiliShop: Tech Stack Summary</h3>
+        <mat-chip-set class="about-chips" aria-label="LiliShop Tech Stack">
+          <mat-chip>NET 10</mat-chip>
+          <mat-chip>Angular 22</mat-chip>
+          <mat-chip>C#</mat-chip>
+          <mat-chip>TypeScript</mat-chip>
+          <mat-chip>Entity Framework Core</mat-chip>
+          <mat-chip>MS SQL Server</mat-chip>
+          <mat-chip>Stripe</mat-chip>
+          <mat-chip>Redis</mat-chip>
+          <mat-chip>Hangfire</mat-chip>
+          <mat-chip>SendGrid</mat-chip>
+          <mat-chip>Cloudinary</mat-chip>
+        </mat-chip-set>
+      </div>
+    </section>
 
-    <mat-card class="lilishop-card tech-summary-card">
-      <mat-card-header>
-        <mat-card-title>LiliShop: Tech Stack Summary</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-chip-listbox aria-label="LiliShop Tech Stack">
-          <mat-chip-option color="primary" selected disabled>NET 10</mat-chip-option>
-          <mat-chip-option color="accent" selected disabled>Angular 22</mat-chip-option>
-          <mat-chip-option selected disabled>C#</mat-chip-option>
-          <mat-chip-option selected disabled>TypeScript</mat-chip-option>
-          <mat-chip-option selected disabled>Entity Framework Core</mat-chip-option>
-          <mat-chip-option selected disabled>MS SQL Server</mat-chip-option>
-          <mat-chip-option color="primary" selected disabled>Stripe</mat-chip-option>
-          <mat-chip-option color="accent" selected disabled>Redis</mat-chip-option>
-          <mat-chip-option selected disabled>Hangfire</mat-chip-option>
-          <mat-chip-option selected disabled>SendGrid</mat-chip-option>
-          <mat-chip-option color="primary" selected disabled>Cloudinary</mat-chip-option>
-        </mat-chip-listbox>
-      </mat-card-content>
-    </mat-card>
-
-  </section>
-
-  <mat-divider></mat-divider>
-
-  <section class="personal-tech-stack-section">
-    <header class="section-header">
-      <h2>My Personal Tech Stack</h2>
-    </header>
-    <div class="tech-cards-container">
-      <mat-card class="tech-card-personal">
-        <mat-card-header>
-          <mat-card-title>
-            🖥️🔧 Frontend
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
+    <!-- ============================================= personal tech stack -->
+    <section class="about-section" aria-labelledby="stack-title">
+      <h2 id="stack-title" class="about-section__title">My Personal Tech Stack</h2>
+      <div class="about-stack-grid">
+        <div class="about-card stack-card">
+          <h3 class="about-card__title">🖥️🔧 Frontend</h3>
           <ul>
             <li>🅰️ Angular</li>
             <li>🟦 Typescript</li>
@@ -218,16 +215,10 @@
             <li>RxJS</li>
             <li>Angular Material</li>
           </ul>
-        </mat-card-content>
-      </mat-card>
+        </div>
 
-      <mat-card class="tech-card-personal">
-        <mat-card-header>
-          <mat-card-title>
-            🛠️🔙 Backend
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
+        <div class="about-card stack-card">
+          <h3 class="about-card__title">🛠️🔙 Backend</h3>
           <ul>
             <li>🌐 .NET (Core / .NET 10)</li>
             <li>#️⃣ C#</li>
@@ -235,16 +226,10 @@
             <li>ASP.NET Core (Web API, MVC)</li>
             <li>🚀 RESTful APIs</li>
           </ul>
-        </mat-card-content>
-      </mat-card>
+        </div>
 
-       <mat-card class="tech-card-personal">
-        <mat-card-header>
-          <mat-card-title>
-            💾 Databases & Others
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
+        <div class="about-card stack-card">
+          <h3 class="about-card__title">💾 Databases &amp; Others</h3>
           <ul>
             <li>MS SQL Server</li>
             <li>🛑 Redis</li>
@@ -252,9 +237,9 @@
             <li>Azure (basics)</li>
             <li>Docker (basics)</li>
           </ul>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  </section>
+        </div>
+      </div>
+    </section>
 
+  </div>
 </main>

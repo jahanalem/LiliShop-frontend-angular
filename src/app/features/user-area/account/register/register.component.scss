@@ -6,7 +6,8 @@
 }
 
 .register-card {
-  background-color: white;
+  background-color: var(--ls-surface);
+  border: 1px solid var(--ls-border);
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -32,7 +33,7 @@
 }
 
 .error-list {
-  color: #f44336;
+  color: var(--ls-danger);
   list-style: none;
   padding-left: 0;
   margin-top: 8px;
@@ -44,7 +45,7 @@
   align-items: center;
   margin-top: 20px;
   padding: 10px;
-  background-color: #f9f9f9;
+  background-color: var(--ls-surface-2);
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s, box-shadow 0.3s;

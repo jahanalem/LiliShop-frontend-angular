@@ -1,7 +1,6 @@
 .product-details {
-  font-family: 'Roboto', sans-serif;
   padding: 2rem;
-  background-color: #f9f9f9;
+  background-color: var(--ls-bg);
 }
 
 .product-container {
@@ -25,9 +24,10 @@
 .product-image-container {
   max-width: 500px;
   padding: 1rem;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: var(--ls-surface);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius-md);
+  box-shadow: var(--ls-shadow-sm);
 }
 
 .product-image {
@@ -43,9 +43,10 @@
 
 .product-info {
   padding: 2rem;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: var(--ls-surface);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius-md);
+  box-shadow: var(--ls-shadow-sm);
 }
 
 .product-title {
@@ -62,13 +63,13 @@
 }
 
 .price {
-  color: #28a745;
+  color: var(--ls-success);
   font-size: 1.8rem;
   font-weight: bold;
 }
 
 .original-price {
-  color: #6c757d;
+  color: var(--ls-text-soft);
   text-decoration: line-through;
   font-size: 1.5rem;
 }
@@ -76,15 +77,15 @@
 .discount-timer {
   margin-left: auto;
   font-size: 0.9rem;
-  background-color: #fffae6;
+  background-color: var(--ls-accent-soft);
   padding: 0.5rem 1rem;
-  border-radius: 4px;
-  color: #dc3545;
+  border-radius: var(--ls-radius-sm);
+  color: var(--ls-accent-text);
   font-weight: 600;
 }
 
 .product-description {
-  color: #6c757d;
+  color: var(--ls-text-soft);
   margin-bottom: 1.5rem;
   font-size: 1rem;
 }

@@ -1,124 +1,146 @@
-<mat-toolbar color="primary" class="app-toolbar">
-  <button mat-icon-button (click)="toggleSidenav()" class="menu-button" aria-label="Toggle Sidenav">
-    <mat-icon>menu</mat-icon>
-  </button>
-
-  <div class="logo-container" routerLink="/">
-    <img src="assets/img/logo.png" class="logo" alt="Lili Shop Logo"> </div>
-
-    <nav class="nav-links" aria-label="Main navigation">
-      <a mat-button routerLink="/shop" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">Shop</a>
-      <a mat-button routerLink="/contact" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: false}">Contact</a>
-      <a mat-button routerLink="/about" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">About</a>
-    </nav>
-
-    <span class="toolbar-spacer"></span> <div class="toolbar-actions">
-    <button mat-icon-button routerLink="/basket" class="action-icon cart-button" aria-label="View Shopping Cart">
-      <mat-icon>shopping_cart</mat-icon>
-      @if ((basket$ | async)?.items?.length) {
-        <span class="cart-badge">
-          {{ (basket$ | async)?.items?.length }}
-        </span>
-      }
-    </button>
-
-    @if (!(currentUser$ | async)) {
-      <a mat-stroked-button routerLink="/account/login" class="auth-button login-button">Login</a>
-      <a mat-flat-button color="accent" routerLink="/account/register" class="auth-button signup-button">Sign up</a>
-    } @else {
-      <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-trigger" aria-label="User Menu">
-        <mat-icon class="user-avatar-icon">account_circle</mat-icon>
-        <span class="user-display-name">Hi, {{ $safeNavigationMigration((currentUser$ | async)?.displayName) | slice:0:10 }}{{(currentUser$ | async)?.displayName && (currentUser$ | async)!.displayName!.length > 10 ? '...' : '' }}</span>
-        <mat-icon class="user-menu-arrow">expand_more</mat-icon>
+<header class="ls-header">
+  <mat-toolbar class="ls-header__bar">
+    <div class="ls-header__inner">
+      <button mat-icon-button type="button" class="ls-header__menu-btn" (click)="toggleSidenav()"
+        aria-label="Open navigation menu">
+        <mat-icon>menu</mat-icon>
       </button>
-      <mat-menu #userMenu="matMenu" class="user-dropdown-menu">
-        @if (hasAccessToAdminPanel()) {
-          <button mat-menu-item routerLink="/admin">
-            <mat-icon>admin_panel_settings</mat-icon>
-            <span>Admin Panel</span>
-          </button>
-        }
-        <button mat-menu-item routerLink="/basket">
+
+      <a routerLink="/" class="ls-header__brand" aria-label="LiliShop home">
+        <img src="assets/img/logo.png" class="ls-header__logo" alt="LiliShop logo">
+      </a>
+
+      <nav class="ls-header__nav" aria-label="Main navigation">
+        <a routerLink="/shop" routerLinkActive="is-active" ariaCurrentWhenActive="page"
+          [routerLinkActiveOptions]="{exact: true}">Shop</a>
+        <a routerLink="/contact" routerLinkActive="is-active" ariaCurrentWhenActive="page">Contact</a>
+        <a routerLink="/about" routerLinkActive="is-active" ariaCurrentWhenActive="page"
+          [routerLinkActiveOptions]="{exact: true}">About</a>
+      </nav>
+
+      <div class="ls-header__actions">
+        <button mat-icon-button type="button" class="ls-header__action" (click)="themeService.toggleTheme()"
+          [attr.aria-label]="themeService.isDark() ? 'Switch to light theme' : 'Switch to dark theme'"
+          [title]="themeService.isDark() ? 'Switch to light theme' : 'Switch to dark theme'">
+          <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+
+        <a mat-icon-button routerLink="/basket" class="ls-header__action ls-header__cart"
+          aria-label="View shopping cart">
           <mat-icon>shopping_cart</mat-icon>
-          <span>My Cart</span>
-        </button>
-        <button mat-menu-item routerLink="/orders">
-          <mat-icon>receipt_long</mat-icon> <span>My Orders</span>
-        </button>
-        <button mat-menu-item routerLink="/price-drop-subscriptions">
-          <mat-icon>price_check</mat-icon> <span>Price Alerts</span>
-        </button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span>Logout</span>
-        </button>
-        <button mat-menu-item (click)="logoutFromAllDevices()">
-          <mat-icon>phonelink_erase</mat-icon> <span>Logout All Devices</span>
-        </button>
-      </mat-menu>
-    }
+          @if ((basket$ | async)?.items?.length; as itemCount) {
+            <span class="ls-header__cart-badge" aria-hidden="true">{{ itemCount }}</span>
+          }
+        </a>
 
-  </div>
-</mat-toolbar>
+        @if (currentUser$ | async; as user) {
+          <button mat-button type="button" [matMenuTriggerFor]="userMenu" class="ls-header__user"
+            aria-label="Account menu">
+            <mat-icon class="ls-header__user-avatar">account_circle</mat-icon>
+            <span class="ls-header__user-name">{{ user.displayName || 'Account' }}</span>
+            <mat-icon class="ls-header__user-caret">expand_more</mat-icon>
+          </button>
+          <mat-menu #userMenu="matMenu" xPosition="before">
+            @if (hasAccessToAdminPanel()) {
+              <button mat-menu-item type="button" routerLink="/admin">
+                <mat-icon>admin_panel_settings</mat-icon>
+                <span>Admin Panel</span>
+              </button>
+            }
+            <button mat-menu-item type="button" routerLink="/basket">
+              <mat-icon>shopping_cart</mat-icon>
+              <span>My Cart</span>
+            </button>
+            <button mat-menu-item type="button" routerLink="/orders">
+              <mat-icon>receipt_long</mat-icon>
+              <span>My Orders</span>
+            </button>
+            <button mat-menu-item type="button" routerLink="/price-drop-subscriptions">
+              <mat-icon>price_check</mat-icon>
+              <span>Price Alerts</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item type="button" (click)="logout()">
+              <mat-icon>logout</mat-icon>
+              <span>Logout</span>
+            </button>
+            <button mat-menu-item type="button" (click)="logoutFromAllDevices()">
+              <mat-icon>phonelink_erase</mat-icon>
+              <span>Logout All Devices</span>
+            </button>
+          </mat-menu>
+        } @else {
+          <a mat-button routerLink="/account/login" class="ls-header__login">Login</a>
+          <a mat-flat-button routerLink="/account/register" class="ls-header__signup">Sign up</a>
+        }
+      </div>
+    </div>
+  </mat-toolbar>
 
-<div class="progress-bar-container">
   @if (busyService.loading()) {
-    <mat-progress-bar
-      mode="indeterminate"
-      color="accent">
-    </mat-progress-bar>
+    <mat-progress-bar class="ls-header__progress" mode="indeterminate"></mat-progress-bar>
   }
-</div>
+</header>
 
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav mode="over" class="app-sidenav" (closedStart)="closeSidenav()" [autoFocus]="false">
-    <div class="sidenav-header">
-      <img src="assets/img/logo.png" class="sidenav-logo-img" alt="Lili Shop Logo"> <button mat-icon-button (click)="closeSidenav()" class="sidenav-close-button" aria-label="Close Sidenav">
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-  <mat-nav-list class="sidenav-nav-list">
-    <a mat-list-item routerLink="/shop" routerLinkActive="active-sidenav-link" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidenav()">
-      <mat-icon matListItemIcon>storefront</mat-icon>
-      <span matListItemTitle>Shop</span>
-    </a>
-    <a mat-list-item routerLink="/contact" routerLinkActive="active-sidenav-link" (click)="closeSidenav()">
-      <mat-icon matListItemIcon>email</mat-icon>
-      <span matListItemTitle>Contact</span>
-    </a>
-    <a mat-list-item routerLink="/about" routerLinkActive="active-sidenav-link" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidenav()">
-      <mat-icon matListItemIcon>info</mat-icon>
-      <span matListItemTitle>About Us</span>
-    </a>
-    @if ((currentUser$ | async)) {
-      <mat-divider></mat-divider>
-    }
-    @if ((currentUser$ | async)) {
-      <a mat-list-item routerLink="/orders" (click)="closeSidenav()">
-        <mat-icon matListItemIcon>receipt_long</mat-icon>
-        <span matListItemTitle>My Orders</span>
-      </a>
-      <a mat-list-item (click)="logout(); closeSidenav();">
-        <mat-icon matListItemIcon>logout</mat-icon>
-        <span matListItemTitle>Logout</span>
-      </a>
-    }
-    @if (!(currentUser$ | async)) {
-      <mat-divider></mat-divider>
-      <a mat-list-item routerLink="/account/login" (click)="closeSidenav()">
-        <mat-icon matListItemIcon>login</mat-icon>
-        <span matListItemTitle>Login</span>
-      </a>
-      <a mat-list-item routerLink="/account/register" (click)="closeSidenav()">
-        <mat-icon matListItemIcon>person_add</mat-icon>
-        <span matListItemTitle>Sign Up</span>
-      </a>
-    }
-  </mat-nav-list>
-</mat-sidenav>
+<mat-sidenav-container class="ls-shell">
+  <mat-sidenav #sidenav mode="over" class="ls-drawer" [autoFocus]="false" aria-label="Mobile navigation">
+    <div class="ls-drawer__header">
+      <img src="assets/img/logo.png" class="ls-drawer__logo" alt="LiliShop logo">
+      <button mat-icon-button type="button" (click)="closeSidenav()" aria-label="Close navigation menu">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
 
-<mat-sidenav-content class="main-content">
-  <router-outlet></router-outlet>
-</mat-sidenav-content>
+    <mat-nav-list class="ls-drawer__list">
+      <a mat-list-item routerLink="/shop" routerLinkActive="is-active" ariaCurrentWhenActive="page"
+        [routerLinkActiveOptions]="{exact: true}" (click)="closeSidenav()">
+        <mat-icon matListItemIcon>storefront</mat-icon>
+        <span matListItemTitle>Shop</span>
+      </a>
+      <a mat-list-item routerLink="/contact" routerLinkActive="is-active" ariaCurrentWhenActive="page"
+        (click)="closeSidenav()">
+        <mat-icon matListItemIcon>email</mat-icon>
+        <span matListItemTitle>Contact</span>
+      </a>
+      <a mat-list-item routerLink="/about" routerLinkActive="is-active" ariaCurrentWhenActive="page"
+        [routerLinkActiveOptions]="{exact: true}" (click)="closeSidenav()">
+        <mat-icon matListItemIcon>info</mat-icon>
+        <span matListItemTitle>About Us</span>
+      </a>
+
+      @if (currentUser$ | async; as user) {
+        <mat-divider></mat-divider>
+        <a mat-list-item routerLink="/orders" (click)="closeSidenav()">
+          <mat-icon matListItemIcon>receipt_long</mat-icon>
+          <span matListItemTitle>My Orders</span>
+        </a>
+        <a mat-list-item (click)="logout(); closeSidenav();">
+          <mat-icon matListItemIcon>logout</mat-icon>
+          <span matListItemTitle>Logout</span>
+        </a>
+      } @else {
+        <mat-divider></mat-divider>
+        <a mat-list-item routerLink="/account/login" (click)="closeSidenav()">
+          <mat-icon matListItemIcon>login</mat-icon>
+          <span matListItemTitle>Login</span>
+        </a>
+        <a mat-list-item routerLink="/account/register" (click)="closeSidenav()">
+          <mat-icon matListItemIcon>person_add</mat-icon>
+          <span matListItemTitle>Sign Up</span>
+        </a>
+      }
+    </mat-nav-list>
+
+    <div class="ls-drawer__footer">
+      <mat-divider></mat-divider>
+      <button mat-button type="button" class="ls-drawer__theme-btn" (click)="themeService.toggleTheme()">
+        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        {{ themeService.isDark() ? 'Light theme' : 'Dark theme' }}
+      </button>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="ls-shell__content">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
 </mat-sidenav-container>

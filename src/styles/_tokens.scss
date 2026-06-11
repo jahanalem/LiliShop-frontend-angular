@@ -1,0 +1,102 @@
+// ============================================================================
+// LiliShop Design Tokens
+// ----------------------------------------------------------------------------
+// Single source of truth for color, type, spacing, radius, elevation, motion.
+// Every color uses light-dark(); the active scheme is controlled by the
+// `color-scheme` property set on <html> (see styles.scss + ThemeService).
+// Contrast notes refer to WCAG AA against the token's intended background.
+// ============================================================================
+
+:root {
+  // -------------------------------------------------------------- brand ----
+  // Midnight navy — primary actions, emphasis, logo.
+  --ls-brand:        light-dark(#16213e, #bbc5eb); // fills: 15.9:1 / 11.6:1 with on-brand
+  --ls-on-brand:     light-dark(#ffffff, #252f4d);
+  --ls-brand-strong: light-dark(#0c1430, #d3dbfa); // hover/active state of brand fills
+  --ls-brand-soft:   light-dark(#e9edfa, #283250); // tinted chips, selected states
+  --ls-brand-text:   light-dark(#1d2b50, #c4cdf0); // brand-colored text, ≥ 7:1 on surface
+
+  // Coral — secondary accent, sale messaging, highlights.
+  --ls-accent:        light-dark(#e94560, #ff8793); // decorative only (≥ 3:1, large text/graphics)
+  --ls-accent-strong: light-dark(#c81e3f, #ff5c77); // CTA fills: 5.6:1 / 5.8:1 with on-accent
+  --ls-on-accent:     light-dark(#ffffff, #40000e);
+  --ls-accent-text:   light-dark(#b8173a, #ff9aa5); // accent-colored text, ≥ 4.5:1 on surface
+  --ls-accent-soft:   light-dark(#fdebee, #3c1d26); // sale chip / badge backgrounds
+
+  // ----------------------------------------------------------- surfaces ----
+  --ls-bg:            light-dark(#f6f7fb, #0e1321); // page background
+  --ls-surface:       light-dark(#ffffff, #161c2e); // cards, panels, navbar
+  --ls-surface-2:     light-dark(#eff1f8, #1e2539); // alt surface, skeletons, wells
+  --ls-border:        light-dark(#e3e6f0, #2b3349);
+  --ls-border-strong: light-dark(#c7ccdf, #3d4763);
+
+  // --------------------------------------------------------------- text ----
+  --ls-text:       light-dark(#181c2a, #e9ecf8); // ~15:1 on surface
+  --ls-text-soft:  light-dark(#545a6f, #a7afc6); // ≥ 6:1 on surface
+  --ls-text-faint: light-dark(#676e85, #8a92ab); // ≥ 4.5:1 on surface — smallest readable
+  --ls-text-inverse: light-dark(#ffffff, #181c2a);
+
+  // ------------------------------------------------------------- states ----
+  --ls-hover:      light-dark(rgba(22, 33, 62, 0.05), rgba(187, 197, 235, 0.08));
+  --ls-active:     light-dark(rgba(22, 33, 62, 0.1), rgba(187, 197, 235, 0.14));
+  --ls-focus-ring: light-dark(#42507e, #9fb0e8);
+  --ls-success:    light-dark(#197046, #7ed8a8);
+  --ls-danger:     light-dark(#ba1a1a, #ffb4ab);
+
+  // ------------------------------------------------------------ spacing ----
+  // 4px base scale.
+  --ls-space-1: 4px;
+  --ls-space-2: 8px;
+  --ls-space-3: 12px;
+  --ls-space-4: 16px;
+  --ls-space-5: 20px;
+  --ls-space-6: 24px;
+  --ls-space-8: 32px;
+  --ls-space-10: 40px;
+  --ls-space-12: 48px;
+  --ls-space-16: 64px;
+
+  // ------------------------------------------------------------- radius ----
+  --ls-radius-sm: 8px;
+  --ls-radius-md: 12px;
+  --ls-radius-lg: 16px;
+  --ls-radius-pill: 999px;
+
+  // ---------------------------------------------------------- elevation ----
+  // Navy-tinted in light mode; deeper/darker in dark mode where shadows
+  // need more strength to read against dark surfaces.
+  --ls-shadow-sm:
+    0 1px 2px light-dark(rgba(15, 20, 40, 0.06), rgba(0, 0, 0, 0.45)),
+    0 1px 3px light-dark(rgba(15, 20, 40, 0.08), rgba(0, 0, 0, 0.35));
+  --ls-shadow-md:
+    0 2px 4px light-dark(rgba(15, 20, 40, 0.05), rgba(0, 0, 0, 0.4)),
+    0 6px 16px light-dark(rgba(15, 20, 40, 0.09), rgba(0, 0, 0, 0.45));
+  --ls-shadow-lg:
+    0 4px 8px light-dark(rgba(15, 20, 40, 0.06), rgba(0, 0, 0, 0.45)),
+    0 14px 36px light-dark(rgba(15, 20, 40, 0.14), rgba(0, 0, 0, 0.55));
+
+  // --------------------------------------------------------- typography ----
+  --ls-font: "Inter", Roboto, "Helvetica Neue", system-ui, sans-serif;
+  --ls-fs-xs: 0.75rem;
+  --ls-fs-sm: 0.875rem;
+  --ls-fs-base: 1rem;
+  --ls-fs-md: 1.125rem;
+  --ls-fs-lg: 1.25rem;
+  --ls-fs-xl: 1.5rem;
+  --ls-fs-2xl: 1.875rem;
+  --ls-fs-3xl: 2.25rem;
+  --ls-fs-display: clamp(2rem, 1.4rem + 2.5vw, 3rem);
+
+  // ------------------------------------------------------------- motion ----
+  --ls-ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --ls-dur-fast: 150ms;
+  --ls-dur: 220ms;
+
+  // ------------------------------------------------------------- layout ----
+  --ls-container: 1280px;
+  --ls-navbar-h: 64px;
+  --ls-navbar-h-mobile: 56px;
+  --ls-z-navbar: 1000;
+  --ls-z-backdrop: 1040;
+  --ls-z-drawer: 1050;
+}
