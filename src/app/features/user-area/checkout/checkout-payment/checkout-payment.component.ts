@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { PaymentIntentResult, Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement } from '@stripe/stripe-js';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, OnDestroy, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
 import { IBasket } from 'src/app/shared/models/basket';
 import { NavigationExtras, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
@@ -26,9 +26,9 @@ import { type CheckoutForm } from '../checkout.component';
 export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   checkoutForm = input.required<CheckoutForm>();
 
-  @ViewChild('cardNumber', { static: true }) cardNumberElement!: ElementRef;
-  @ViewChild('cardExpiry', { static: true }) cardExpiryElement!: ElementRef;
-  @ViewChild('cardCvc', { static: true }) cardCvcElement!: ElementRef;
+  readonly cardNumberElement = viewChild.required<ElementRef>('cardNumber');
+  readonly cardExpiryElement = viewChild.required<ElementRef>('cardExpiry');
+  readonly cardCvcElement = viewChild.required<ElementRef>('cardCvc');
 
   stripe!: Stripe;
   cardNumber!: StripeCardNumberElement;
@@ -69,15 +69,15 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
     const elements = this.stripe.elements();
 
     this.cardNumber = elements.create('cardNumber');
-    this.cardNumber.mount(this.cardNumberElement.nativeElement);
+    this.cardNumber.mount(this.cardNumberElement().nativeElement);
     this.cardNumber.on('change', this.cardHandler);
 
     this.cardExpiry = elements.create('cardExpiry');
-    this.cardExpiry.mount(this.cardExpiryElement.nativeElement);
+    this.cardExpiry.mount(this.cardExpiryElement().nativeElement);
     this.cardExpiry.on('change', this.cardHandler);
 
     this.cardCvc = elements.create('cardCvc');
-    this.cardCvc.mount(this.cardCvcElement.nativeElement);
+    this.cardCvc.mount(this.cardCvcElement().nativeElement);
     this.cardCvc.on('change', this.cardHandler);
   }
 

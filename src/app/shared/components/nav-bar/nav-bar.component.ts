@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { Observable, of, startWith, Subject, switchMap, takeUntil } from 'rxjs';
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { BasketService } from '../../../core/services/basket.service';
 import { AccountService } from '../../../core/services/account.service';
 import { AuthorizationService } from '../../../core/services/authorization.service';
@@ -63,7 +63,7 @@ import { BusyService } from 'src/app/core/services/busy.service';
 export class NavBarComponent implements OnInit, OnDestroy {
   basket$     : Observable<IBasket | null>;
   currentUser$: Observable<IUser | null>;
-  @ViewChild('sidenav') sidenav!: MatSidenav;
+  readonly sidenav = viewChild.required<MatSidenav>('sidenav');
   hasAccessToAdminPanel = signal<boolean>(false);
   isCollapsed           = signal<boolean>(true);
 
@@ -112,11 +112,11 @@ export class NavBarComponent implements OnInit, OnDestroy {
 
 
   toggleSidenav() {
-    this.sidenav.toggle();
+    this.sidenav().toggle();
   }
 
   closeSidenav() {
-    this.sidenav.close();
+    this.sidenav().close();
   }
 
   logout() {
