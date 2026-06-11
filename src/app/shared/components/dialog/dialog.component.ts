@@ -17,7 +17,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 
 import { RouterModule } from '@angular/router';
-import { ChangeDetectionStrategy, Component, Inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IDialogData } from '../../models/dialog-data.interface';
 
@@ -49,9 +49,9 @@ import { IDialogData } from '../../models/dialog-data.interface';
 
 })
 export class DialogComponent implements OnInit {
-  data = signal<IDialogData>(this.dialogData);
+  private dialogData = inject<IDialogData>(MAT_DIALOG_DATA);
 
-  constructor(@Inject(MAT_DIALOG_DATA) private dialogData: IDialogData) { }
+  data = signal<IDialogData>(this.dialogData);
 
   ngOnInit(): void {
   }

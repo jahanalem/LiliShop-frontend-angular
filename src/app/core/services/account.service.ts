@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { of, Observable, ReplaySubject, tap, map, catchError, throwError } from 'rxjs';
 import { IAddress } from 'src/app/shared/models/address';
@@ -16,13 +16,15 @@ import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordRes
   providedIn: 'root'
 })
 export class AccountService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private storageService = inject(StorageService);
+
   private readonly baseUrl = environment.apiUrl;
   private currentUserSource = new ReplaySubject<IUser | null>(1);
   public currentUser$ = this.currentUserSource.asObservable();
   userQueryParams: UserQueryParams = new UserQueryParams();
   pagination = new PaginationWithData<IAdminAreaUser>();
-
-  constructor(private http: HttpClient, private router: Router, private storageService: StorageService) { }
 
   setUserQueryParams(params: UserQueryParams): void {
     this.userQueryParams = params;

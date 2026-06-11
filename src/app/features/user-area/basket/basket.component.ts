@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 
 import { RouterModule } from '@angular/router';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { IBasket, IBasketItem, IBasketTotals } from 'src/app/shared/models/basket';
 
@@ -18,10 +18,10 @@ import { IBasket, IBasketItem, IBasketTotals } from 'src/app/shared/models/baske
   imports: [RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatButtonModule, MatIconModule, MatCardModule]
 })
 export class BasketComponent implements OnInit {
+  private basketService = inject(BasketService);
+
   basket = signal<IBasket | null>(null);
   basketTotals = signal<IBasketTotals | null>(null);
-
-  constructor(private basketService: BasketService) { }
 
   ngOnInit(): void {
     this.basketService.basket$.subscribe(basket => this.basket.set(basket));

@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
 import { PaginationWithData, ProductTypePagination } from 'src/app/shared/models/pagination';
 import { IProductType } from 'src/app/shared/models/productType';
@@ -10,11 +10,11 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ProductTypeService {
+  private http = inject(HttpClient);
+
   readonly baseUrl: string = environment.apiUrl;
   pagination: ProductTypePagination = new PaginationWithData<IProductType>();
   typeParams: ProductTypeParams = new ProductTypeParams();
-
-  constructor(private http: HttpClient) { }
 
   gettypes(typeParameters: ProductTypeParams, isActive: boolean | null = null): Observable<ProductTypePagination> {
     let params = new HttpParams();

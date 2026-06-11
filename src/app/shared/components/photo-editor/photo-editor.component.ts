@@ -63,6 +63,9 @@ import { FileUploadModule } from 'ng2-file-upload';
 
 })
 export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
+  private accountService = inject(AccountService);
+  private productService = inject(ProductService);
+
   product             = input.required<IProduct | undefined>();
 
   uploader            = signal<FileUploader | undefined>(undefined);
@@ -78,7 +81,7 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
 
   private cdr = inject(ChangeDetectorRef);
 
-  constructor(private accountService: AccountService, private productService: ProductService) {
+  constructor() {
     this.accountService.currentUser$.pipe(take(1)).subscribe({
       next: user => {
         if (user) {

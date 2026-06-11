@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
 import { BrandParams } from 'src/app/shared/models/BrandParams';
 import { IBrand } from 'src/app/shared/models/brand';
@@ -10,11 +10,11 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class BrandService {
+  private http = inject(HttpClient);
+
   readonly baseUrl: string = environment.apiUrl;
   pagination: BrandPagination = new PaginationWithData<IBrand>();
   brandParams: BrandParams = new BrandParams();
-
-  constructor(private http: HttpClient) { }
 
   getBrands(brandParameters: BrandParams, isActive: boolean | null = null): Observable<BrandPagination> {
     let params = new HttpParams();

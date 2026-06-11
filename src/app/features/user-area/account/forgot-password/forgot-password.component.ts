@@ -1,7 +1,7 @@
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { RouterModule } from '@angular/router';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -20,13 +20,15 @@ import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordRes
   imports: [RouterModule, ReactiveFormsModule]
 })
 export class ForgotPasswordComponent {
+  private fb = inject(FormBuilder);
+  private accountService = inject(AccountService);
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
+
   forgotPasswordForm!: FormGroup;
   isSubmitting = signal<boolean>(false);
 
-  constructor(private fb: FormBuilder,
-    private accountService: AccountService,
-    private dialog: MatDialog,
-    private router: Router) {
+  constructor() {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });

@@ -1,6 +1,6 @@
 import { Basket, IBasketItem } from './../../shared/models/basket';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 import { IBasket, IBasketTotals } from 'src/app/shared/models/basket';
 import { IDeliveryMethod } from 'src/app/shared/models/deliveryMethod';
@@ -13,6 +13,9 @@ import { StorageService } from './storage.service';
   providedIn: 'root'
 })
 export class BasketService {
+  private http = inject(HttpClient);
+  private storageService = inject(StorageService);
+
   baseUrl = environment.apiUrl;
 
   /*
@@ -25,7 +28,7 @@ export class BasketService {
   basketTotal$ = this.basketTotalSource.asObservable();
   shipping = 0;
 
-  constructor(private http: HttpClient, private storageService: StorageService) {
+  constructor() {
     this.basketSource.asObservable()
   }
 

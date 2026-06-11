@@ -1,6 +1,6 @@
 
 import { RouterModule } from '@angular/router';
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -44,11 +44,11 @@ import { MatDividerModule } from '@angular/material/divider';
   imports: [RouterModule, MatDividerModule, MatCardModule, MatButtonModule, MatIconModule, MatExpansionModule, MatChipsModule]
 })
 export class AboutComponent implements OnInit {
+  private matIconRegistry = inject(MatIconRegistry);
+  private domSanitizer = inject(DomSanitizer);
 
-  constructor(
-    private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
-  ) {
+
+  constructor() {
     this.matIconRegistry.addSvgIconLiteral('linkedin', this.domSanitizer.bypassSecurityTrustHtml(LINKEDIN_ICON));
     this.matIconRegistry.addSvgIconLiteral('github', this.domSanitizer.bypassSecurityTrustHtml(GITHUB_ICON));
     this.matIconRegistry.addSvgIconLiteral('xing', this.domSanitizer.bypassSecurityTrustHtml(XING_ICON));

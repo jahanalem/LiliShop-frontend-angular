@@ -1,6 +1,6 @@
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IOrder } from 'src/app/shared/models/order';
 import { environment } from 'src/environments/environment';
@@ -9,9 +9,9 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class OrdersService {
-  baseUrl = environment.apiUrl;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) { }
+  baseUrl = environment.apiUrl;
 
   getOrdersForUser(): Observable<IOrder[]> {
     return this.http.get<IOrder[]>(this.baseUrl + 'orders');

@@ -17,7 +17,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 
 import { RouterModule } from '@angular/router';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -47,6 +47,6 @@ import { MatDialogRef } from '@angular/material/dialog';
 ]
 
 })
-export class ConfirmationDialogComponent {
-  constructor(public dialogRef: MatDialogRef<ConfirmationDialogComponent>) {}
+export class ConfirmationDialogComponent {  dialogRef = inject<MatDialogRef<ConfirmationDialogComponent>>(MatDialogRef);
+
 }

@@ -12,10 +12,10 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class CheckoutService {
+  private http = inject(HttpClient);
+
   private readonly baseUrl: string = environment.apiUrl;
   private router = inject(Router);
-
-  constructor(private http: HttpClient) { }
 
   /**
    * Fetches available delivery methods from the server.

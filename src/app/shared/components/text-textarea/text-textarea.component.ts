@@ -18,7 +18,7 @@ import { MatTableModule } from '@angular/material/table';
 
 import { RouterModule } from '@angular/router';
 import { ControlValueAccessor, FormControl, NgControl, ReactiveFormsModule } from '@angular/forms';
-import { Component, OnInit, ElementRef, Self, viewChild, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ElementRef, viewChild, input, ChangeDetectionStrategy, inject } from '@angular/core';
 
 @Component({
     selector: 'app-text-textarea',
@@ -49,6 +49,8 @@ import { Component, OnInit, ElementRef, Self, viewChild, input, ChangeDetectionS
 
 })
 export class TextTextareaComponent implements OnInit, ControlValueAccessor {
+  controlDir = inject(NgControl, { self: true });
+
   textarea = viewChild.required<ElementRef>('textarea');
 
   label = input<string>('');
@@ -57,7 +59,7 @@ export class TextTextareaComponent implements OnInit, ControlValueAccessor {
   protected onChanged!: Function;
   protected onTouched!: Function;
 
-  constructor(@Self() public controlDir: NgControl) {
+  constructor() {
     this.controlDir.valueAccessor = this;
   }
 

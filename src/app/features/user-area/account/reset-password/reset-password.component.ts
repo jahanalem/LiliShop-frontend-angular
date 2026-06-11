@@ -1,7 +1,7 @@
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { RouterModule } from '@angular/router';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,17 +18,18 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
   imports: [RouterModule, ReactiveFormsModule]
 })
 export class ResetPasswordComponent {
+  private fb = inject(FormBuilder);
+  private accountService = inject(AccountService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private dialog = inject(MatDialog);
+
   resetPasswordForm!: FormGroup;
   token = signal<string>('');
   email = signal<string>('');
   date = signal<string>('');
 
-  constructor(
-    private fb: FormBuilder,
-    private accountService: AccountService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private dialog: MatDialog) {
+  constructor() {
 
     this.resetPasswordForm = this.fb.group(
       {

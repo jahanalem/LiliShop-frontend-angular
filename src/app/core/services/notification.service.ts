@@ -1,15 +1,15 @@
 // notification.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatSnackBar, MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
+  private snackBar = inject(MatSnackBar);
+
   private readonly defaultDuration = 5000; // 5 seconds
   private readonly horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   private readonly verticalPosition: MatSnackBarVerticalPosition = 'top';
   private readonly actionLabel = 'Dismiss';
-
-  constructor(private snackBar: MatSnackBar) { }
 
   private getConfig(panelClass: string | string[], duration?: number): MatSnackBarConfig {
     const classes = Array.isArray(panelClass) ? panelClass : [panelClass];

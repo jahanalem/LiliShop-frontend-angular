@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { BaseEntityKeys } from 'src/app/shared/models/baseEntity';
 import { IContactUsMessage } from 'src/app/shared/models/contactUsMessage';
@@ -11,12 +11,12 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ContactService {
+  private http = inject(HttpClient);
+
   private readonly baseUrl: string = environment.apiUrl + 'contactusmessage';
 
   messageParams: ContactUsMessageQueryParams = new ContactUsMessageQueryParams();
   pagination = new PaginationWithData<IContactUsMessage>();
-
-  constructor(private http: HttpClient) { }
 
   setMessageParams(params: ContactUsMessageQueryParams): void {
     this.messageParams = params;

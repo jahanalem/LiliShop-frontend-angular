@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
@@ -17,14 +17,12 @@ export enum Action {
   providedIn: 'root'
 })
 export class AuthorizationService {
+  private http = inject(HttpClient);
+  private accountService = inject(AccountService);
+  private notificationService = inject(NotificationService);
+
   private readonly baseUrl = environment.apiUrl;
   private policies$ = new BehaviorSubject<IPolicyDictionary | null>(null);
-
-  constructor(
-    private http: HttpClient,
-    private accountService: AccountService,
-    private notificationService: NotificationService
-  ) { }
 
   getPolicies(): Observable<IPolicyDictionary> {
     const url = `${this.baseUrl}authorization/policies/`;

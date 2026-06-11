@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
 import { IBrand } from 'src/app/shared/models/brand';
 import { PaginationWithData, ProductPagination } from 'src/app/shared/models/pagination';
@@ -13,6 +13,8 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ProductService {
+  private http = inject(HttpClient);
+
   baseUrl: string = environment.apiUrl;
 
   brands: IBrand[]              = [];
@@ -23,8 +25,6 @@ export class ProductService {
 
   shopParams: ProductQueryParams           = new ProductQueryParams();
   pagination: PaginationWithData<IProduct> = new PaginationWithData<IProduct>();
-
-  constructor(private http: HttpClient) { }
 
   setShopParams(params: ProductQueryParams): void {
     this.shopParams = params;

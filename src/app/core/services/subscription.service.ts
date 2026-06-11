@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { INotificationSubscription } from 'src/app/shared/models/notificationSubscription';
 import { PriceDropSubscriptionPagination } from 'src/app/shared/models/pagination';
@@ -11,9 +11,9 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class SubscriptionService {
-  baseUrl: string = environment.apiUrl;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) { }
+  baseUrl: string = environment.apiUrl;
 
 
   addSubscription(subscription: INotificationSubscription): Observable<INotificationSubscription> {

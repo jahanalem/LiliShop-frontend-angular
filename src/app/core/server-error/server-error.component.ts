@@ -1,7 +1,7 @@
 
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 
 @Component({
     selector: 'app-server-error',
@@ -12,9 +12,11 @@ import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/cor
   imports: [RouterModule]
 })
 export class ServerErrorComponent implements OnInit {
+  private router = inject(Router);
+
   error = signal<any>(null);
 
-  constructor(private router: Router) {
+  constructor() {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras?.state ?? null;
     if (state && state['error']) {
