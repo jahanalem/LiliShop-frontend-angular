@@ -5,6 +5,7 @@ import { StorageService } from '../services/storage.service';
 import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
 import { AccountService } from '../services/account.service';
 import { TokenService } from '../services/token.service';
+import { environment } from 'src/environments/environment';
 
 
 export const jwtInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
@@ -12,9 +13,13 @@ export const jwtInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>,
   const storageService = inject(StorageService);
   const tokenService = inject(TokenService);
 
+  // Only attach credentials to requests aimed at our own API. Without this
+  // check the bearer token would be sent to any host reached via HttpClient.
+  const isApiRequest = request.url.startsWith(environment.apiUrl);
+
   const token = storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
 
-  if (token) {
+  if (token && isApiRequest) {
     request = request.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
@@ -24,7 +29,7 @@ export const jwtInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>,
 
   return next(request).pipe(
     catchError((error: any) => {
-      if (error.status === 401) {
+      if (error.status === 401 && isApiRequest) {
         if (tokenService.isRefreshing()) {
           return tokenService.getRefreshTokenSubject().pipe(
             switchMap((newToken) => {

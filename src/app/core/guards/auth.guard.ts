@@ -18,19 +18,22 @@ export const authGuard: CanMatchFn = (route: Route, segments: UrlSegment[]): Obs
 
   const policyName = route.data?.['policy'] as string | undefined;
 
-  if (!policyName) {
-    // If no policy is specified, allow access
-    return of(true);
-  }
+  // Authentication is always required on guarded routes; a policy only adds
+  // a role check on top. Without this, routes guarded but missing a policy
+  // (e.g. checkout, orders) would be reachable anonymously.
+  return accountService.currentUser$.pipe(
+    switchMap((authenticatedUser: IUser | null) => {
+      if (!authenticatedUser) {
+        redirectToLoginPage(router, segments);
+        return of(false);
+      }
 
-  return authorizationService.getPolicy(policyName).pipe(
-    switchMap(requiredRoles => {
-      return accountService.currentUser$.pipe(
-        map((authenticatedUser: IUser | null) => {
-          if (!authenticatedUser) {
-            redirectToLoginPage(router, segments);
-            return false;
-          }
+      if (!policyName) {
+        return of(true);
+      }
+
+      return authorizationService.getPolicy(policyName).pipe(
+        map(requiredRoles => {
           if (hasPermission(requiredRoles, authenticatedUser)) {
             return true;
           }

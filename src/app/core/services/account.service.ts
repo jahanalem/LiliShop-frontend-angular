@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { of, Observable, ReplaySubject, tap, map, catchError, throwError } from 'rxjs';
+import { of, Observable, ReplaySubject, tap, map, catchError, throwError, finalize } from 'rxjs';
 import { IAddress } from 'src/app/shared/models/address';
 import { IUser } from 'src/app/shared/models/user';
 import { environment } from 'src/environments/environment';
@@ -177,11 +177,19 @@ export class AccountService {
    * current user state to null, and navigates to the home page.
    */
   logout(): void {
-    this.http.post(`${this.baseUrl}account/logout`, {}).subscribe(() => {
-      this.storageService.delete(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
-      this.resetCurrentUserState();
-      this.router.navigateByUrl('/account/login');
-    });
+    // Revoke the server-side session first (the request still needs the
+    // token), but always clear local credentials — even if the call fails,
+    // the token must not survive in this browser.
+    this.http.post(`${this.baseUrl}account/logout`, {}).pipe(
+      catchError(error => {
+        console.error('Server-side logout failed', error);
+        return of(null);
+      }),
+      finalize(() => {
+        this.resetCurrentUserState();
+        this.router.navigateByUrl('/account/login');
+      })
+    ).subscribe();
   }
 
   logoutFromAllDevices(): Observable<any> {
@@ -211,8 +219,8 @@ export class AccountService {
  * @returns {Observable<boolean>} An Observable indicating whether the email exists.
  */
   checkEmailExists(email: string): Observable<boolean> {
-    const url = `${this.baseUrl}account/emailexists?email=${email}`;
-    return this.http.get<boolean>(url);
+    const params = new HttpParams().set('email', email);
+    return this.http.get<boolean>(`${this.baseUrl}account/emailexists`, { params });
   }
 
   /**

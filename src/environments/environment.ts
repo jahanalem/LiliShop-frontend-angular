@@ -6,7 +6,9 @@ export const environment = {
   production     : false,
   apiUrl         : 'http://localhost:6001/api/', // 'https://0b8c-185-5-9-101.ngrok-free.app/api/'
   useCache       : false,
-  google_clientId: '797123597277-up577hukrvbuo0qoig4ivpeaj7ssi129.apps.googleusercontent.com'
+  google_clientId: '797123597277-up577hukrvbuo0qoig4ivpeaj7ssi129.apps.googleusercontent.com',
+  // Publishable key (safe to expose by design) — secret keys live only on the backend.
+  stripePublishableKey: 'pk_test_51Lz52AF9mJP0HDJlxywtwHnNN6oYxUatlItmQhmUMJLwTHPIMJPVgWzz6ijcK6T8Cu1p6peNKGMmqXuVs8bh2K2K00ln2GWH1N'
 };
 
 /*

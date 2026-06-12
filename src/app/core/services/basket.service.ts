@@ -1,5 +1,5 @@
 import { Basket, IBasketItem } from './../../shared/models/basket';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
 import { IBasket, IBasketTotals } from 'src/app/shared/models/basket';
@@ -111,11 +111,12 @@ export class BasketService {
   * @returns {Observable<IBasket>} An Observable that emits the retrieved basket.
   */
   getBasket(id: string): Observable<IBasket> {
-    // Construct the URL for the GET request.
-    const getBasketUrl = `${this.baseUrl}basket?id=${id}`;
+    // HttpParams URL-encodes the id, so a tampered value stored in
+    // localStorage cannot inject extra query parameters.
+    const params = new HttpParams().set('id', id);
 
     // Execute the GET request and perform updates upon success.
-    return this.http.get<IBasket>(getBasketUrl).pipe(
+    return this.http.get<IBasket>(`${this.baseUrl}basket`, { params }).pipe(
       tap((retrievedBasket: IBasket) => {
         // Update the local basket state with the retrieved basket.
         this.basketSource.next(retrievedBasket);

@@ -64,13 +64,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    if (environment.production) {
-      this.stripe = getStripeInstance('pk_test_51PrMdJDZqcE4cmELulf8TivRzyPX0Zh2AAm8E6Cz69vKovu0lOrFn0C9RMZzbG08bFp6f10aRtIH72QYdxtJKhhh00IT5f53Yb');
-      console.log('Running stripe in production mode');
-    } else {
-      this.stripe = getStripeInstance('pk_test_51Lz52AF9mJP0HDJlxywtwHnNN6oYxUatlItmQhmUMJLwTHPIMJPVgWzz6ijcK6T8Cu1p6peNKGMmqXuVs8bh2K2K00ln2GWH1N');
-      console.log('Running stripe in development mode');
-    }
+    this.stripe = getStripeInstance(environment.stripePublishableKey);
     const elements = this.stripe.elements();
     const style = this.buildStripeElementStyle();
 
