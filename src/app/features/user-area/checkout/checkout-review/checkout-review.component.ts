@@ -2,7 +2,7 @@ import { BasketSummaryComponent } from 'src/app/shared/components/basket-summary
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { IDialogData } from './../../../../shared/models/dialog-data.interface';
-import { CdkStepper } from '@angular/cdk/stepper';
+import { CdkStepper, CdkStepperModule } from '@angular/cdk/stepper';
 import { ChangeDetectionStrategy, Component, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subject, take, takeUntil } from 'rxjs';
@@ -19,7 +19,7 @@ import { IUser } from 'src/app/shared/models/user';
     styleUrls: ['./checkout-review.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [BasketSummaryComponent, MatButtonModule, MatIconModule]
+    imports: [BasketSummaryComponent, MatButtonModule, MatIconModule, CdkStepperModule]
 })
 export class CheckoutReviewComponent implements OnInit, OnDestroy {
   appStepper = input.required<CdkStepper>();

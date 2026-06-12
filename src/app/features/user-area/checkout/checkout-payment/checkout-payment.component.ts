@@ -15,6 +15,7 @@ import { environment } from 'src/environments/environment';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { ThemeService } from 'src/app/core/services/theme.service';
 import { type CheckoutForm } from '../checkout.component';
+import { CdkStepperModule } from '@angular/cdk/stepper';
 
 @Component({
   selector: 'app-checkout-payment',
@@ -22,7 +23,7 @@ import { type CheckoutForm } from '../checkout.component';
   styleUrls: ['./checkout-payment.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [TextInputComponent, MatButtonModule, MatIconModule, MatCardModule]
+  imports: [TextInputComponent, MatButtonModule, MatIconModule, MatCardModule, CdkStepperModule]
 })
 export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   checkoutForm = input.required<CheckoutForm>();
