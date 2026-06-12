@@ -41,6 +41,8 @@ describe('CheckoutReviewComponent', () => {
             providers: [
                 { provide: BasketService, useValue: mockBasketService },
                 { provide: AccountService, useValue: mockAccountService },
+                // Template uses cdkStepperNext/Previous, which inject CdkStepper from DI.
+                { provide: CdkStepper, useValue: stepper },
             ]
         }).compileComponents();
     });

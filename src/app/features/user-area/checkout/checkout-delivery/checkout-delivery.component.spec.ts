@@ -6,6 +6,7 @@ import { signal } from '@angular/core';
 import { form } from '@angular/forms/signals';
 import { provideRouter } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CdkStepper } from '@angular/cdk/stepper';
 import { CheckoutDeliveryComponent } from './checkout-delivery.component';
 import { CheckoutData } from '../checkout.component';
 import { CheckoutService } from 'src/app/core/services/checkout.service';
@@ -47,7 +48,9 @@ describe('CheckoutDeliveryComponent', () => {
                 provideRouter([]),
                 { provide: CheckoutService, useValue: mockCheckoutService },
                 { provide: BasketService, useValue: mockBasketService },
-                { provide: AccountService, useValue: mockAccountService }
+                { provide: AccountService, useValue: mockAccountService },
+                // Template uses cdkStepperNext/Previous, which inject CdkStepper from DI.
+                { provide: CdkStepper, useValue: { next: vi.fn(), previous: vi.fn() } }
             ]
         }).compileComponents();
     });

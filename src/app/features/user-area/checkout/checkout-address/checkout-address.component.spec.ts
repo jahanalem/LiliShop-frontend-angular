@@ -13,6 +13,7 @@ import { provideRouter } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { CdkStepper } from '@angular/cdk/stepper';
 
 
 describe('CheckoutAddressComponent', () => {
@@ -36,7 +37,9 @@ describe('CheckoutAddressComponent', () => {
             ],
             providers: [
                 provideRouter([]),
-                { provide: AccountService, useValue: mockAccountService }
+                { provide: AccountService, useValue: mockAccountService },
+                // Template uses cdkStepperNext/Previous, which inject CdkStepper from DI.
+                { provide: CdkStepper, useValue: { next: vi.fn(), previous: vi.fn() } }
             ]
         }).compileComponents();
     });
