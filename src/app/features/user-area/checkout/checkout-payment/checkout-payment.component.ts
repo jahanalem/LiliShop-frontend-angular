@@ -2,8 +2,8 @@ import { TextInputComponent } from 'src/app/shared/components/text-input/text-in
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { PaymentIntentResult, Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement } from '@stripe/stripe-js';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, input, OnDestroy, signal, viewChild } from '@angular/core';
+import { PaymentIntentResult, Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement, StripeElementStyle } from '@stripe/stripe-js';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DOCUMENT, effect, ElementRef, inject, Injector, input, OnDestroy, signal, viewChild } from '@angular/core';
 import { IBasket } from 'src/app/shared/models/basket';
 import { NavigationExtras, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
@@ -13,6 +13,7 @@ import { IOrder, IOrderToCreate } from 'src/app/shared/models/order';
 import { getStripeInstance } from 'src/app/core/helpers/stripe-utils';
 import { environment } from 'src/environments/environment';
 import { NotificationService } from 'src/app/core/services/notification.service';
+import { ThemeService } from 'src/app/core/services/theme.service';
 import { type CheckoutForm } from '../checkout.component';
 
 @Component({
@@ -47,6 +48,9 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   private checkoutService = inject(CheckoutService);
   public notificationService = inject(NotificationService);
   private router = inject(Router);
+  private themeService = inject(ThemeService);
+  private injector = inject(Injector);
+  private document = inject(DOCUMENT);
 
   ngOnDestroy(): void {
     try {
@@ -67,18 +71,69 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
       console.log('Running stripe in development mode');
     }
     const elements = this.stripe.elements();
+    const style = this.buildStripeElementStyle();
 
-    this.cardNumber = elements.create('cardNumber');
+    this.cardNumber = elements.create('cardNumber', { style });
     this.cardNumber.mount(this.cardNumberElement().nativeElement);
     this.cardNumber.on('change', this.cardHandler);
 
-    this.cardExpiry = elements.create('cardExpiry');
+    this.cardExpiry = elements.create('cardExpiry', { style });
     this.cardExpiry.mount(this.cardExpiryElement().nativeElement);
     this.cardExpiry.on('change', this.cardHandler);
 
-    this.cardCvc = elements.create('cardCvc');
+    this.cardCvc = elements.create('cardCvc', { style });
     this.cardCvc.mount(this.cardCvcElement().nativeElement);
     this.cardCvc.on('change', this.cardHandler);
+
+    // Stripe Elements render inside a cross-origin iframe and can't read our
+    // --ls-* CSS variables, so without an explicit color the card text keeps
+    // Stripe's default near-black — invisible on the dark-mode surface. Push
+    // resolved theme colors in again whenever the theme is toggled.
+    effect(() => {
+      this.themeService.theme();
+      const nextStyle = this.buildStripeElementStyle();
+      this.cardNumber?.update({ style: nextStyle });
+      this.cardExpiry?.update({ style: nextStyle });
+      this.cardCvc?.update({ style: nextStyle });
+    }, { injector: this.injector });
+  }
+
+  /**
+   * Builds a Stripe Elements style object from the active theme. Stripe's
+   * iframe can't see our design tokens, and reading a custom property via
+   * getComputedStyle returns the literal light-dark(...) expression, so each
+   * color is resolved to a concrete value through a hidden probe element.
+   */
+  private buildStripeElementStyle(): StripeElementStyle {
+    const text = this.resolveThemeColor('--ls-text', '#181c2a');
+    const placeholder = this.resolveThemeColor('--ls-text-faint', '#676e85');
+    const danger = this.resolveThemeColor('--ls-danger', '#ba1a1a');
+
+    return {
+      base: {
+        color: text,
+        iconColor: text,
+        fontFamily: '"Inter", Roboto, "Helvetica Neue", system-ui, sans-serif',
+        fontSize: '16px',
+        '::placeholder': { color: placeholder },
+      },
+      invalid: {
+        color: danger,
+        iconColor: danger,
+      },
+    };
+  }
+
+  private resolveThemeColor(variable: string, fallback: string): string {
+    const probe = this.document.createElement('span');
+    probe.style.color = `var(${variable})`;
+    probe.style.position = 'absolute';
+    probe.style.opacity = '0';
+    probe.style.pointerEvents = 'none';
+    this.document.body.appendChild(probe);
+    const resolved = getComputedStyle(probe).color;
+    probe.remove();
+    return resolved || fallback;
   }
 
   async submitOrder(): Promise<void> {
