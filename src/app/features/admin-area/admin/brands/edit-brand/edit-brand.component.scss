@@ -1,0 +1,16 @@
+@use 'styles/admin' as admin;
+
+@include admin.scaffold;
+@include admin.form;
+
+.entity-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ls-space-4);
+  max-width: 560px;
+}
+
+.save-button {
+  margin-top: var(--ls-space-2);
+}

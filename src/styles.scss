@@ -238,7 +238,35 @@ label.xng-breadcrumb-trail {
 }
 
 // --------------------------------------------------------------------------
-// 6. Snackbar overlay styles
+// 6. Admin shell overlay menu
+//    The profile menu renders in the CDK overlay container, outside the
+//    AdminComponent's style encapsulation, so it is themed here. The class
+//    is forwarded to the panel via <mat-menu class="modern-menu">.
+// --------------------------------------------------------------------------
+.modern-menu.mat-mdc-menu-panel {
+  border-radius: var(--ls-radius-md);
+  border: 1px solid var(--ls-border);
+  box-shadow: var(--ls-shadow-md);
+
+  .mat-mdc-menu-item .mat-icon {
+    color: var(--ls-text-soft);
+  }
+
+  .mat-mdc-menu-item:hover:not([disabled]) .mat-icon {
+    color: var(--ls-brand-text);
+  }
+
+  .logout-item:hover:not([disabled]) {
+    color: var(--ls-danger);
+
+    .mat-icon {
+      color: var(--ls-danger);
+    }
+  }
+}
+
+// --------------------------------------------------------------------------
+// 7. Snackbar overlay styles
 //    Applied by NotificationService via panelClass; snackbars render in the
 //    CDK overlay container, so these must live in global styles.
 // --------------------------------------------------------------------------

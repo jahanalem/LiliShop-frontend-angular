@@ -1,10 +1,9 @@
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 
-import { RouterModule } from '@angular/router';
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { EMPTY, Subject, switchMap, takeUntil } from 'rxjs';
@@ -20,7 +19,7 @@ import { MatNativeDateModule } from '@angular/material/core';
   templateUrl: './edit-contact-us-messages.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './edit-contact-us-messages.component.scss',
-  imports: [RouterModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatCardModule, FormsModule]
+  imports: [MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, MatButtonModule, MatIconModule, MatInputModule, FormsModule]
 })
 export class EditContactUsMessagesComponent implements OnInit {
   contactUsMessage = signal<IContactUsMessage>({} as IContactUsMessage);

@@ -1,54 +1,28 @@
-// Global resets and modern defaults
-html {
-  scrollbar-gutter: stable both-edges;
-}
+// ============================================================================
+// Admin shell: toolbar, sidenav, content canvas.
+// All colors come from the --ls-* token system (light-dark() pairs), so the
+// shell follows the active color scheme with no extra rules.
+// NOTE: styles for the profile mat-menu live in styles.scss (.modern-menu) —
+// the menu renders in the CDK overlay, outside this component's encapsulation.
+// ============================================================================
 
-body {
-  margin: 0;
-  font-family: 'Inter', 'Roboto', sans-serif;
-  color: var(--app-text-main);
-  background-color: var(--app-content-bg);
-}
-
-:root {
-  // Brand & Accent Colors
-  --app-primary-color: #4f46e5;       // Modern Indigo
-  --app-primary-hover: #4338ca;
-  --app-accent-color: #06b6d4;        // Cyan accent
-
-  // Neutral Colors (Light Theme Base)
-  --app-toolbar-bg: #ffffff;
-  --app-sidenav-bg: #f8fafc;          // Ultra-light slate
-  --app-content-bg: #f1f5f9;          // Soft light gray for main canvas
-
-  // Text & Borders
-  --app-text-main: #0f172a;           // Deep slate dark text
-  --app-text-muted: #64748b;          // Slate gray muted text
-  --app-border-color: #e2e8f0;        // Soft layout borders
-
-  // Interactive States
-  --app-hover-bg: #f1f5f9;
-  --app-active-bg: #eef2ff;           // Light indigo tint for active item
-}
-
-// Toolbar Redesign (Clean white with subtle line separation instead of heavy shadow)
 .app-toolbar {
-  background-color: var(--app-toolbar-bg);
-  color: var(--app-text-main);
   position: sticky;
   top: 0;
-  z-index: 1000;
-  height: 64px;
-  border-bottom: 1px solid var(--app-border-color);
+  z-index: var(--ls-z-navbar);
+  height: var(--ls-navbar-h);
+  padding: 0 var(--ls-space-6);
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  background: var(--ls-surface);
+  color: var(--ls-text);
+  border-bottom: 1px solid var(--ls-border);
 }
 
 .brand-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--ls-space-3);
   cursor: pointer;
 }
 
@@ -62,7 +36,7 @@ body {
   font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: -0.025em;
-  color: var(--app-text-main);
+  color: var(--ls-text);
 }
 
 .toolbar-spacer {
@@ -70,141 +44,104 @@ body {
 }
 
 .profile-button {
-  color: var(--app-text-muted);
+  color: var(--ls-text-soft);
+
   &:hover {
-    color: var(--app-primary-color);
+    color: var(--ls-brand-text);
   }
 }
 
-// Modern Customizations for MatMenu
-.modern-menu {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
-  border: 1px solid var(--app-border-color);
-
-  .mat-mdc-menu-item {
-    font-size: 0.9rem;
-    color: var(--app-text-muted);
-
-    .mat-icon {
-      color: var(--app-text-muted);
-      margin-right: 8px;
-    }
-
-    &:hover {
-      background-color: var(--app-hover-bg);
-      color: var(--app-text-main);
-
-      .mat-icon {
-        color: var(--app-primary-color);
-      }
-    }
-  }
-
-  .logout-item:hover {
-    color: #ef4444;
-    .mat-icon {
-      color: #ef4444;
-    }
-  }
-}
-
-// Fixed Progress Bar
+// Fixed progress bar just under the toolbar.
 .app-progress-bar {
   position: fixed;
-  top: 64px;
+  top: var(--ls-navbar-h);
   left: 0;
   right: 0;
-  z-index: 1001;
+  z-index: calc(var(--ls-z-navbar) + 1);
   height: 3px;
-  --mat-progress-bar-active-indicator-color: var(--app-primary-color);
+  --mat-progress-bar-active-indicator-color: var(--ls-brand);
 }
 
-// Sidenav Layout Structure
+// Layout structure.
 .app-sidenav-container {
-  height: calc(100vh - 64px);
-  background-color: var(--app-content-bg);
+  height: calc(100vh - var(--ls-navbar-h));
+  background: var(--ls-bg);
 }
 
 .app-sidenav {
   width: 260px;
-  background-color: var(--app-sidenav-bg);
-  border-right: 1px solid var(--app-border-color);
-  box-shadow: none !important; // Removed harsh standard shadows
+  background: var(--ls-surface);
+  border-right: 1px solid var(--ls-border);
+  box-shadow: none !important;
 }
 
 .sidenav-header {
-  padding: 24px 16px 12px 24px;
+  padding: var(--ls-space-6) var(--ls-space-4) var(--ls-space-3) var(--ls-space-6);
 
   .sidenav-app-title {
     margin: 0;
-    font-size: 0.75rem;
+    font-size: var(--ls-fs-xs);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 700;
-    color: var(--app-text-muted);
+    color: var(--ls-text-soft);
   }
 }
 
-// Modernized Navigation Links (Pill Style Layout)
+// Navigation links (pill style).
 .nav-list {
-  padding: 0 12px;
+  padding: 0 var(--ls-space-3);
 
   .nav-item.mat-mdc-list-item {
     height: 44px;
-    margin: 4px 0;
-    border-radius: 8px;
-    color: var(--app-text-muted);
-    transition: all 0.2s ease;
+    margin: var(--ls-space-1) 0;
+    border-radius: var(--ls-radius-sm);
+    color: var(--ls-text-soft);
+    transition:
+      background-color var(--ls-dur-fast) var(--ls-ease),
+      color var(--ls-dur-fast) var(--ls-ease);
 
     .nav-icon {
-      color: var(--app-text-muted);
-      margin-right: 12px;
-      transition: color 0.2s ease;
+      color: var(--ls-text-soft);
+      transition: color var(--ls-dur-fast) var(--ls-ease);
     }
 
     .nav-item-name {
-      font-size: 0.9rem;
+      font-size: var(--ls-fs-sm);
       font-weight: 500;
     }
 
     &:hover {
-      background-color: var(--app-hover-bg);
-      color: var(--app-text-main);
+      background-color: var(--ls-hover);
+      color: var(--ls-text);
 
       .nav-icon {
-        color: var(--app-text-main);
+        color: var(--ls-text);
       }
     }
 
-    // Modern active item styling (Pill design with subtle tint)
     &.active-nav-item {
-      background-color: var(--app-active-bg);
-      color: var(--app-primary-color);
+      background-color: var(--ls-brand-soft);
+      color: var(--ls-brand-text);
 
       .nav-icon {
-        color: var(--app-primary-color);
+        color: var(--ls-brand-text);
       }
 
       .nav-item-name {
         font-weight: 600;
       }
-
-      // Removed the outdated heavy left border block completely
-      &::before {
-        display: none;
-      }
     }
   }
 }
 
-// Sidenav Main Content Area
+// Main content canvas.
 .app-sidenav-content {
-  background-color: var(--app-content-bg);
+  background: var(--ls-bg);
 }
 
 .content-wrapper {
-  padding: 32px;
+  padding: var(--ls-space-8);
   box-sizing: border-box;
   max-width: 1600px;
   margin: 0 auto;

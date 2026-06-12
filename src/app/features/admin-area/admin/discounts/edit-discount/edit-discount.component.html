@@ -1,180 +1,207 @@
-<mat-horizontal-stepper [linear]="true" #stepper>
-  <!-- Step 1: Discount Info -->
-  <mat-step [stepControl]="discountInfoForm">
-    <form [formGroup]="discountInfoForm">
-      <ng-template matStepLabel>Discount Info</ng-template>
+<div class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <h1 class="admin-page-title">{{ isEditMode ? 'Edit Discount' : 'New Discount' }}</h1>
+      <p class="admin-page-subtitle">Campaign info, tiers and conditions.</p>
+    </div>
+  </header>
 
-      <mat-form-field appearance="outline" class="full-width" style="margin-top: 1rem;">
-        <mat-label>Discount Name</mat-label>
-        <input title="name" matInput formControlName="name" />
-      </mat-form-field>
+  <div class="admin-form-card stepper-card">
+    <mat-horizontal-stepper [linear]="true" #stepper>
+      <!-- Step 1: Discount Info -->
+      <mat-step [stepControl]="discountInfoForm">
+        <form [formGroup]="discountInfoForm" class="step-form">
+          <ng-template matStepLabel>Discount Info</ng-template>
 
-      <div class="discount-row" style="display: flex; gap: 16px; margin-bottom: 1rem;">
-        <mat-form-field appearance="outline" style="flex: 1;">
-          <mat-label>Start Date</mat-label>
-          <input matInput [matDatepicker]="startPicker" formControlName="startDateDate" placeholder="Select start date">
-          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-          <mat-datepicker #startPicker></mat-datepicker>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Discount Name</mat-label>
+            <input title="name" matInput formControlName="name" />
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" style="flex: 1;">
-          <mat-label>Start Time</mat-label>
-          <input matInput [matTimepicker]="startTimePicker" formControlName="startDateTime" placeholder="Select start time">
-          <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
-          <mat-timepicker #startTimePicker></mat-timepicker>
-        </mat-form-field>
-      </div>
-
-      <div class="discount-row" style="display: flex; gap: 16px; margin-bottom: 1rem;">
-        <mat-form-field appearance="outline" style="flex: 1;">
-          <mat-label>End Date</mat-label>
-          <input matInput [matDatepicker]="endPicker" formControlName="endDateDate" placeholder="Select end date">
-          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-          <mat-datepicker #endPicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" style="flex: 1;">
-          <mat-label>End Time</mat-label>
-          <input matInput [matTimepicker]="endTimePicker" formControlName="endDateTime" placeholder="Select end time">
-          <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
-          <mat-timepicker #endTimePicker></mat-timepicker>
-        </mat-form-field>
-      </div>
-
-      <mat-checkbox formControlName="isActive">Is Active</mat-checkbox>
-
-      <div class="step-buttons">
-        <button type="button" mat-button matStepperNext>Next</button>
-      </div>
-    </form>
-  </mat-step>
-
-  <!-- Step 2: Tiers -->
-  <mat-step [stepControl]="tiersForm">
-    <form [formGroup]="tiersForm">
-      <ng-template matStepLabel>Discount Tiers</ng-template>
-
-      <div formArrayName="tiers">
-        @for (tier of tiers.controls; track tier; let i = $index) {
-          <div [formGroupName]="i" class="tier-group">
-            <mat-form-field appearance="fill">
-              <mat-label>Amount</mat-label>
-              <input title="amount" matInput type="number" formControlName="amount" required />
+          <div class="admin-form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Start Date</mat-label>
+              <input matInput [matDatepicker]="startPicker" formControlName="startDateDate"
+                placeholder="Select start date">
+              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
             </mat-form-field>
-            @if (tier.hasError('amountTooLow')) {
-              <mat-error>
-                Amount must be greater than 0.
-              </mat-error>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Start Time</mat-label>
+              <input matInput [matTimepicker]="startTimePicker" formControlName="startDateTime"
+                placeholder="Select start time">
+              <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
+              <mat-timepicker #startTimePicker></mat-timepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="admin-form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>End Date</mat-label>
+              <input matInput [matDatepicker]="endPicker" formControlName="endDateDate" placeholder="Select end date">
+              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+              <mat-datepicker #endPicker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>End Time</mat-label>
+              <input matInput [matTimepicker]="endTimePicker" formControlName="endDateTime"
+                placeholder="Select end time">
+              <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
+              <mat-timepicker #endTimePicker></mat-timepicker>
+            </mat-form-field>
+          </div>
+
+          <mat-checkbox formControlName="isActive">Is Active</mat-checkbox>
+
+          <div class="step-buttons">
+            <span class="step-buttons-spacer"></span>
+            <button type="button" mat-flat-button matStepperNext>Next</button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Step 2: Tiers -->
+      <mat-step [stepControl]="tiersForm">
+        <form [formGroup]="tiersForm" class="step-form">
+          <ng-template matStepLabel>Discount Tiers</ng-template>
+
+          <div formArrayName="tiers">
+            @for (tier of tiers.controls; track tier; let i = $index) {
+              <div [formGroupName]="i" class="tier-group">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>Amount</mat-label>
+                  <input title="amount" matInput type="number" formControlName="amount" required />
+                </mat-form-field>
+                @if (tier.hasError('amountTooLow')) {
+                  <mat-error class="validation-error">
+                    Amount must be greater than 0.
+                  </mat-error>
+                }
+                @if (tier.hasError('percentageTooHigh')) {
+                  <mat-error class="validation-error">
+                    Percentage cannot be 100 or more.
+                  </mat-error>
+                }
+                <mat-checkbox formControlName="isPercentage">Is Percentage</mat-checkbox>
+                <mat-checkbox formControlName="isFreeShipping">Free Shipping</mat-checkbox>
+                <button type="button" mat-icon-button (click)="onRemoveTier(i)" aria-label="Remove tier">
+                  <mat-icon class="delete-icon">delete</mat-icon>
+                </button>
+              </div>
             }
-            @if (tier.hasError('percentageTooHigh')) {
-              <mat-error>
-                Percentage cannot be 100 or more.
-              </mat-error>
-            }
-            <mat-checkbox formControlName="isPercentage">Is Percentage</mat-checkbox>
-            <mat-checkbox formControlName="isFreeShipping">Free Shipping</mat-checkbox>
-            <button type="button" mat-icon-button color="warn" (click)="onRemoveTier(i)" aria-label="Remove tier">
-              <mat-icon>delete</mat-icon>
+          </div>
+
+          <div>
+            <button type="button" mat-stroked-button (click)="onAddTier()">
+              <mat-icon>add</mat-icon>
+              Add Tier
             </button>
           </div>
-        }
-      </div>
 
-      <button type="button" mat-button (click)="onAddTier()">Add Tier</button>
+          <div class="step-buttons">
+            <button type="button" mat-stroked-button matStepperPrevious>Back</button>
+            <button type="button" mat-flat-button matStepperNext (click)="onBeforeNextStepFromTiersForm()">Next</button>
+          </div>
+        </form>
+      </mat-step>
 
-      <div class="step-buttons">
-        <button type="button" mat-button matStepperPrevious>Back</button>
-        <button type="button" mat-button matStepperNext (click)="onBeforeNextStepFromTiersForm()">Next</button>
-      </div>
-    </form>
-  </mat-step>
+      <!-- Step 3: Conditions -->
+      <mat-step [stepControl]="discountGroupForm">
+        <form [formGroup]="discountGroupForm" class="step-form">
+          <ng-template matStepLabel>Condition Groups</ng-template>
 
-  <!-- Step 3: Conditions -->
-  <mat-step [stepControl]="discountGroupForm">
-    <form [formGroup]="discountGroupForm">
-      <ng-template matStepLabel>Condition Groups</ng-template>
-
-      <div formArrayName="conditionGroups">
-        @for (group of conditionGroups.controls; track group; let i = $index) {
-          <div [formGroupName]="i">
-            <mat-form-field appearance="fill">
-              <mat-label>Tier</mat-label>
-              <mat-select formControlName="tierIndex">
-                @for (tier of tierOptions(); track tier) {
-                  <mat-option [value]="tier.value">
-                    {{ tier.label }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <div formArrayName="conditions">
-              @for (cond of getConditions(i).controls; track cond; let j = $index) {
-                <div [formGroupName]="j">
-                  <mat-form-field appearance="fill">
-                    <mat-label>Target Entity</mat-label>
-                    <mat-select formControlName="targetEntity" (selectionChange)="onTargetEntityChange(i, j)">
-                      @for (option of targetEntityOptions; track option) {
-                        <mat-option [value]="option.value">
-                          {{ option.label }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                  <mat-form-field appearance="fill">
-                    <mat-label>Target Entity ID</mat-label>
-                    <mat-select formControlName="targetEntityId">
-                      @for (option of targetEntityIdOptionsMap.get($safeNavigationMigration(getConditions(i).at(j).get('targetEntity')?.value)); track option) {
-                        <mat-option
-                          [value]="option.value">
-                          {{ option.label }}
-                        </mat-option>
-                      }
-                      @if (!targetEntityIdOptionsMap.get($safeNavigationMigration(getConditions(i).at(j).get('targetEntity')?.value))?.length) {
-                        <mat-option
-                          disabled>
-                          No options available
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                  <button type="button" mat-icon-button color="warn" (click)="onRemoveCondition(i, j)">
-                    <mat-icon>delete</mat-icon>
+          <div formArrayName="conditionGroups">
+            @for (group of conditionGroups.controls; track group; let i = $index) {
+              <div [formGroupName]="i" class="condition-group">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="condition-field">
+                  <mat-label>Tier</mat-label>
+                  <mat-select formControlName="tierIndex">
+                    @for (tier of tierOptions(); track tier) {
+                      <mat-option [value]="tier.value">
+                        {{ tier.label }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <div formArrayName="conditions">
+                  @for (cond of getConditions(i).controls; track cond; let j = $index) {
+                    <div [formGroupName]="j" class="condition-row">
+                      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="condition-field">
+                        <mat-label>Target Entity</mat-label>
+                        <mat-select formControlName="targetEntity" (selectionChange)="onTargetEntityChange(i, j)">
+                          @for (option of targetEntityOptions; track option) {
+                            <mat-option [value]="option.value">
+                              {{ option.label }}
+                            </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="condition-field">
+                        <mat-label>Target Entity ID</mat-label>
+                        <mat-select formControlName="targetEntityId">
+                          @for (option of targetEntityIdOptionsMap.get($safeNavigationMigration(getConditions(i).at(j).get('targetEntity')?.value)); track option) {
+                            <mat-option
+                              [value]="option.value">
+                              {{ option.label }}
+                            </mat-option>
+                          }
+                          @if (!targetEntityIdOptionsMap.get($safeNavigationMigration(getConditions(i).at(j).get('targetEntity')?.value))?.length) {
+                            <mat-option
+                              disabled>
+                              No options available
+                            </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                      <button type="button" mat-icon-button aria-label="Remove condition"
+                        (click)="onRemoveCondition(i, j)">
+                        <mat-icon class="delete-icon">delete</mat-icon>
+                      </button>
+                    </div>
+                  }
+                  @if (getConditions(i).errors?.['duplicateTargetEntity']) {
+                    <mat-error class="validation-error">
+                      <mat-icon>error</mat-icon>
+                      Each condition must have a unique target type in this group.
+                    </mat-error>
+                  }
+                  <button type="button" mat-stroked-button (click)="onAddCondition(i)">
+                    <mat-icon>add</mat-icon>
+                    Add Condition
                   </button>
                 </div>
-              }
-              @if (getConditions(i).errors?.['duplicateTargetEntity']) {
-                <mat-error class="validation-error"
-                  style="margin-top: 8px;">
-                  <mat-icon>error</mat-icon>
-                  Each condition must have a unique target type in this group.
-                </mat-error>
-              }
-              <button type="button" mat-button (click)="onAddCondition(i)">Add Condition</button>
-            </div>
-            <button type="button" mat-button color="warn" (click)="onRemoveConditionGroup(i)">Remove Condition
-            Group</button>
-            <mat-divider></mat-divider>
+                <button type="button" mat-button class="remove-group-button" (click)="onRemoveConditionGroup(i)">
+                  Remove Condition Group
+                </button>
+              </div>
+            }
           </div>
-        }
-      </div>
 
-      <button type="button" mat-button (click)="onAddConditionGroup()">Add Condition Group</button>
+          <div>
+            <button type="button" mat-stroked-button (click)="onAddConditionGroup()">
+              <mat-icon>add</mat-icon>
+              Add Condition Group
+            </button>
+          </div>
 
-      @if (discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair']) {
-        <mat-error
-          class="validation-error">
-          <mat-icon>error</mat-icon>
-          {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].message }} in groups
-          {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].groups.join(' and ') }}
-        </mat-error>
-      }
+          @if (discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair']) {
+            <mat-error class="validation-error">
+              <mat-icon>error</mat-icon>
+              {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].message }} in groups
+              {{ discountGroupForm.get('conditionGroups')?.errors?.['duplicateBrandTypePair'].groups.join(' and ') }}
+            </mat-error>
+          }
 
-      <div class="step-buttons">
-        <button type="button" mat-button matStepperPrevious>Back</button>
-        <button type="submit" mat-button color="primary" (click)="onSubmit()">
-          {{ isEditMode ? 'Update Discount' : 'Create Discount' }}
-        </button>
-      </div>
-    </form>
-  </mat-step>
-</mat-horizontal-stepper>
+          <div class="step-buttons">
+            <button type="button" mat-stroked-button matStepperPrevious>Back</button>
+            <button type="submit" mat-flat-button (click)="onSubmit()">
+              {{ isEditMode ? 'Update Discount' : 'Create Discount' }}
+            </button>
+          </div>
+        </form>
+      </mat-step>
+    </mat-horizontal-stepper>
+  </div>
+</div>

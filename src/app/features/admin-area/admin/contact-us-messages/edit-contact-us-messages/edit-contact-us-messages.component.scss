@@ -1,22 +1,29 @@
-.contact-us-card {
-  max-width: 600px;
+@use 'styles/admin' as admin;
+@use 'styles/mixins' as mx;
 
-  padding: 20px;
-  border-radius: 8px;
-}
+@include admin.scaffold;
+@include admin.form;
 
-.full-width {
-  width: 100%;
+.message-card {
+  max-width: 640px;
 }
 
 .date-fields {
   display: flex;
-  justify-content: space-between;
+  gap: var(--ls-space-3);
 
   mat-form-field {
     flex: 1;
-    &:first-child {
-      margin-right: 10px;
-    }
   }
+
+  @include mx.down(mx.$bp-sm) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ls-space-3);
 }

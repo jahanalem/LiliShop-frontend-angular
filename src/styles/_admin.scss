@@ -1,0 +1,233 @@
+// ============================================================================
+// LiliShop Admin design language
+// ----------------------------------------------------------------------------
+// Shared building blocks for every admin screen so list pages, edit forms and
+// tools render with one look in both color schemes. Component stylesheets do:
+//
+//   @use 'styles/admin' as admin;
+//   @include admin.scaffold;   // page wrapper, header, filter field, buttons
+//   @include admin.table;      // table card, rows, status pills, row actions
+//   @include admin.form;       // form card, rows, banners
+//
+// Everything is expressed in --ls-* tokens (light-dark() pairs), so dark mode
+// needs no extra rules here.
+// ============================================================================
+
+@use './mixins' as mx;
+
+// ---------------------------------------------------------------------------
+// Page scaffold: vertical rhythm, header row (title + primary action) and the
+// standard search/filter field.
+// ---------------------------------------------------------------------------
+@mixin scaffold {
+  .admin-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ls-space-4);
+  }
+
+  .admin-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ls-space-4);
+    flex-wrap: wrap;
+  }
+
+  .admin-page-title {
+    margin: 0;
+    font-size: var(--ls-fs-xl);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--ls-text);
+  }
+
+  .admin-page-subtitle {
+    margin: var(--ls-space-1) 0 0;
+    font-size: var(--ls-fs-sm);
+    color: var(--ls-text-soft);
+  }
+
+  // Search field above tables; pairs with subscriptSizing="dynamic" so it
+  // reserves no hint space.
+  .admin-filter-field {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  // Semantic icon colors for action buttons (tables and forms).
+  .details-icon { color: var(--ls-brand-text); }
+  .edit-icon    { color: var(--ls-warning); }
+  .delete-icon  { color: var(--ls-danger); }
+}
+
+// ---------------------------------------------------------------------------
+// Data table card: themed header row, hover states, paginator, empty state,
+// row action icons and status pills. Selectors target the MDC-based classes
+// Material actually renders (the legacy .mat-row/.mat-icon-button ones are
+// long gone).
+// ---------------------------------------------------------------------------
+@mixin table {
+  .admin-table-card {
+    @include mx.card;
+    overflow: hidden;
+  }
+
+  .admin-table-scroll {
+    overflow-x: auto;
+    @include mx.thin-scrollbar;
+  }
+
+  .admin-table-card .mat-mdc-table {
+    width: 100%;
+    background: transparent;
+  }
+
+  .admin-table-card th.mat-mdc-header-cell {
+    background: var(--ls-surface-2);
+    color: var(--ls-text-soft);
+    font-size: var(--ls-fs-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--ls-border);
+  }
+
+  .admin-table-card td.mat-mdc-cell {
+    color: var(--ls-text);
+    font-size: var(--ls-fs-sm);
+    border-bottom-color: var(--ls-border);
+  }
+
+  .admin-table-card tr.mat-mdc-row {
+    transition: background-color var(--ls-dur-fast) var(--ls-ease);
+
+    &:hover {
+      background: var(--ls-hover);
+    }
+
+    &:last-child td.mat-mdc-cell {
+      border-bottom: none;
+    }
+  }
+
+  .admin-empty-cell {
+    padding: var(--ls-space-10) var(--ls-space-4);
+    text-align: center;
+    color: var(--ls-text-faint);
+  }
+
+  .admin-table-card .mat-mdc-paginator {
+    background: transparent;
+    border-top: 1px solid var(--ls-border);
+  }
+
+  // Status pills (e.g. sale state on products).
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: var(--ls-radius-pill);
+    font-size: var(--ls-fs-xs);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .sale-yes {
+    color: var(--ls-success);
+    background: var(--ls-success-soft);
+  }
+
+  .sale-no {
+    color: var(--ls-danger);
+    background: var(--ls-danger-soft);
+  }
+
+  .sale-scheduled {
+    color: var(--ls-warning);
+    background: var(--ls-warning-soft);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Forms: card surface, responsive field rows and status banners.
+// ---------------------------------------------------------------------------
+@mixin form {
+  .admin-form-card {
+    @include mx.card;
+    padding: var(--ls-space-6);
+  }
+
+  .admin-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ls-space-4);
+
+    > * {
+      flex: 1 1 200px;
+      min-width: 0;
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .admin-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ls-space-3);
+    padding: var(--ls-space-4);
+    border-radius: var(--ls-radius-md);
+    border-left: 4px solid var(--ls-brand);
+    background: var(--ls-brand-soft);
+    font-size: var(--ls-fs-sm);
+    color: var(--ls-text);
+
+    > .mat-icon {
+      flex-shrink: 0;
+      color: var(--ls-brand-text);
+    }
+
+    h4 {
+      margin: 0 0 var(--ls-space-1);
+      font-size: var(--ls-fs-base);
+    }
+
+    p {
+      margin: 0;
+      color: var(--ls-text-soft);
+    }
+
+    &.is-success {
+      background: var(--ls-success-soft);
+      border-left-color: var(--ls-success);
+
+      > .mat-icon { color: var(--ls-success); }
+    }
+
+    &.is-warning {
+      background: var(--ls-warning-soft);
+      border-left-color: var(--ls-warning);
+
+      > .mat-icon { color: var(--ls-warning); }
+    }
+
+    &.is-danger {
+      background: var(--ls-danger-soft);
+      border-left-color: var(--ls-danger);
+
+      > .mat-icon { color: var(--ls-danger); }
+    }
+  }
+
+  .validation-error {
+    display: flex;
+    align-items: center;
+    gap: var(--ls-space-2);
+    margin: var(--ls-space-3) 0;
+    color: var(--ls-danger);
+  }
+}

@@ -1,27 +1,10 @@
-.subscription-management {
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 16px;
-}
+@use 'styles/admin' as admin;
 
-.filter-field {
-  width: 100%;
-  max-width: 300px;
-  margin-bottom: 16px;
-}
+@include admin.scaffold;
+@include admin.table;
 
-.table-container {
-  overflow-x: auto;
-  border-radius: 8px;
-  margin-bottom: 16px;
-}
-
-.full-width-table {
-  width: 100%;
-}
-
-mat-paginator {
-  margin-top: 1px;
-  display: flex;
-  justify-content: center;
+// Product links inside the table.
+.admin-table-card a {
+  color: var(--ls-brand-text);
+  font-weight: 500;
 }

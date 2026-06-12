@@ -1,61 +1,72 @@
-<div class="product-management">
-  <mat-form-field appearance="outline" class="filter-field">
-    <mat-label>Filter</mat-label>
+<div class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <h1 class="admin-page-title">Products</h1>
+      <p class="admin-page-subtitle">Manage catalog items, prices and stock.</p>
+    </div>
+    <button type="button" mat-flat-button [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole"
+      (click)="createProduct()">
+      <mat-icon>add</mat-icon>
+      New Product
+    </button>
+  </header>
+
+  <mat-form-field appearance="outline" class="admin-filter-field" subscriptSizing="dynamic">
+    <mat-label>Search</mat-label>
     <input matInput (input)="applyFilter($event)" placeholder="Search products" #input>
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
-  <div class="new-product-container">
-    <button mat-raised-button color="primary" class="new-product-button"
-      [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" (click)="createProduct()">
-      <mat-icon>add_circle_outline</mat-icon> New Product
-    </button>
-  </div>
-  <div class="table-container mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource()" matSort>
 
-      @for (column of columnsToDisplay; track column) {
-        <ng-container [matColumnDef]="column">
-          <th mat-header-cell *matHeaderCellDef>
-            @if (column !== 'Action') {
-              <div mat-sort-header>{{columnDisplayNames[column]}}</div>
-            } @else {
-              {{columnDisplayNames[column]}}
-            }
-          </th>
-          <td mat-cell *matCellDef="let row">
-            @if (column === 'Action') {
-              <button mat-icon-button color="primary" (click)="showProduct(row.id)">
-                <mat-icon class="details-icon">open_in_new</mat-icon>
-              </button>
-              <button mat-icon-button color="accent" [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole"
-                (click)="editProduct(row.id)">
-                <mat-icon class="edit-icon">edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" [appCheckPolicy]="policyNames.RequireSuperAdminRole"
-                (click)="deleteProduct(row.id)">
-                <mat-icon class="delete-icon">delete</mat-icon>
-              </button>
-            } @else {
-              @if (column === 'isDiscountActive') {
-                <span [class]="getSaleStatusClass(row)">
-                  {{row[column] | formatValue:column:row}}
-                </span>
+  <div class="admin-table-card">
+    <div class="admin-table-scroll">
+      <table mat-table [dataSource]="dataSource()" matSort>
+
+        @for (column of columnsToDisplay; track column) {
+          <ng-container [matColumnDef]="column">
+            <th mat-header-cell *matHeaderCellDef>
+              @if (column !== 'Action') {
+                <div mat-sort-header>{{columnDisplayNames[column]}}</div>
               } @else {
-                {{ row[column] | formatValue:column:row }}
+                {{columnDisplayNames[column]}}
               }
-            }
+            </th>
+            <td mat-cell *matCellDef="let row">
+              @if (column === 'Action') {
+                <button type="button" mat-icon-button aria-label="Show product" (click)="showProduct(row.id)">
+                  <mat-icon class="details-icon">open_in_new</mat-icon>
+                </button>
+                <button type="button" mat-icon-button aria-label="Edit product"
+                  [appCheckPolicy]="policyNames.RequireAtLeastAdministratorRole" (click)="editProduct(row.id)">
+                  <mat-icon class="edit-icon">edit</mat-icon>
+                </button>
+                <button type="button" mat-icon-button aria-label="Delete product"
+                  [appCheckPolicy]="policyNames.RequireSuperAdminRole" (click)="deleteProduct(row.id)">
+                  <mat-icon class="delete-icon">delete</mat-icon>
+                </button>
+              } @else {
+                @if (column === 'isDiscountActive') {
+                  <span class="status-pill" [class]="getSaleStatusClass(row)">
+                    {{row[column] | formatValue:column:row}}
+                  </span>
+                } @else {
+                  {{ row[column] | formatValue:column:row }}
+                }
+              }
+            </td>
+          </ng-container>
+        }
+
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+
+        <!-- Row shown when there is no matching data. -->
+        <tr *matNoDataRow>
+          <td class="admin-empty-cell" [attr.colspan]="columnsToDisplay.length">
+            No data matching the filter "{{input.value}}"
           </td>
-        </ng-container>
-      }
-
-      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-      <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
-
-      <!-- Row shown when there is no matching data. -->
-      <tr mat-row *matNoDataRow>
-        <td class="mat-cell" colspan="columnsToDisplay.length">No data matching the filter "{{input.value}}"</td>
-      </tr>
-    </table>
+        </tr>
+      </table>
+    </div>
     <mat-paginator [pageSizeOptions]="[5, 10, 50, 100]" [length]="totalCount()" showFirstLastButtons
       [pageSize]="this.shopParams().pageSize!" [pageIndex]="shopParams().pageNumber!-1">
     </mat-paginator>

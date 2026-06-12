@@ -41,7 +41,14 @@
   --ls-active:     light-dark(rgba(22, 33, 62, 0.1), rgba(187, 197, 235, 0.14));
   --ls-focus-ring: light-dark(#42507e, #9fb0e8);
   --ls-success:    light-dark(#197046, #7ed8a8);
+  --ls-warning:    light-dark(#8a5a00, #f3c969); // ≥ 4.5:1 on surface
   --ls-danger:     light-dark(#ba1a1a, #ffb4ab);
+
+  // Tinted backgrounds for status chips and banners; pair with the matching
+  // status color as text (contrast checked against the soft tint).
+  --ls-success-soft: light-dark(#e3f3ea, #1d3329);
+  --ls-warning-soft: light-dark(#fbf0d7, #382f1a);
+  --ls-danger-soft:  light-dark(#fcebea, #3d2227);
 
   // ------------------------------------------------------------ spacing ----
   // 4px base scale.

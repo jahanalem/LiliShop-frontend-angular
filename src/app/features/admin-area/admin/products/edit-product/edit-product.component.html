@@ -1,164 +1,176 @@
-<button mat-raised-button color="primary" (click)="navigateBack()" class="back-button">
-  <mat-icon class="arrow-back">arrow_back</mat-icon>
-  Back
-</button>
+<div class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <h1 class="admin-page-title">{{ isProductIdValid() ? 'Edit Product' : 'New Product' }}</h1>
+      <p class="admin-page-subtitle">Product details, pricing, discount and stock.</p>
+    </div>
+    <button type="button" mat-stroked-button (click)="navigateBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+  </header>
 
-<div class="form-container">
-  <div class="form-left">
-    <form (ngSubmit)="onSubmit()" class="product-form">
-      <mat-checkbox [formField]="productForm.isActive" color="primary">
-        Is Active?
-      </mat-checkbox>
+  <div class="form-container">
+    <div class="form-left admin-form-card">
+      <form (ngSubmit)="onSubmit()" class="product-form">
+        <mat-checkbox [formField]="productForm.isActive">
+          Is Active?
+        </mat-checkbox>
 
-      <mat-form-field hintLabel="Max 50 characters" appearance="outline" class="input-field">
-        <mat-label>Enter product name</mat-label>
-        <input [formField]="productForm.name" matInput #input placeholder="Product name">
-        <mat-hint align="end">{{ input.value.length }}/50</mat-hint>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="input-field">
-        <mat-label>Description</mat-label>
-        <textarea [formField]="productForm.description" matInput #inputDsc cdkTextareaAutosize
-          cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50" placeholder="Enter product description"></textarea>
-        <mat-hint align="end">{{ inputDsc.value.length }}/300</mat-hint>
-      </mat-form-field>
-
-      <mat-form-field hintLabel="Original Base Price" appearance="outline" class="input-field">
-        <mat-label>Base Price</mat-label>
-        <input [formField]="productForm.price" matInput #inputPrice type="number" step="0.01"
-          placeholder="Product base price">
-        <span matPrefix>€&nbsp;</span>
-      </mat-form-field>
-
-      <div class="discount-info single-discount">
-        <mat-icon class="info-icon">info</mat-icon>
-        <div class="info-text">
-          <h4>Single Product Discount Configuration</h4>
-          <p>
-            Use this section to apply a specific discount directly to this product.
-            <strong>This will automatically override any active Group Discounts.</strong>
-            The background server will automatically calculate the final price and handle start/end dates.
-          </p>
-        </div>
-      </div>
-
-      <mat-checkbox [formField]="productForm.isDiscountActive" (change)="onDiscountToggle($event.checked)"
-        color="primary">
-        Activate Single Discount?
-      </mat-checkbox>
-
-      @if (productForm.isDiscountActive().value()) {
-        <div class="discount-row discount-amount-row">
-          <mat-form-field appearance="outline" class="input-field amount-field">
-            <mat-label>Discount Amount</mat-label>
-            <input [formField]="productForm.discountAmount" matInput type="number" step="0.01"
-              placeholder="Enter amount">
-          </mat-form-field>
-
-          <mat-checkbox [formField]="productForm.isPercentage" color="primary" class="percentage-checkbox">
-            Is Percentage (%)?
-          </mat-checkbox>
-        </div>
-
-        <div class="discount-row">
-          <mat-form-field appearance="outline" class="input-field date-field">
-            <mat-label>Discount Start Date</mat-label>
-            <input matInput [matDatepicker]="startDatePicker" [formField]="productForm.discountStartDateDate"
-              placeholder="Select start date">
-            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #startDatePicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="input-field time-field">
-            <mat-label>Discount Start Time</mat-label>
-            <input matInput [matTimepicker]="startTimePicker" [formField]="productForm.discountStartDateTime"
-              placeholder="Select start time">
-            <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
-            <mat-timepicker #startTimePicker></mat-timepicker>
-          </mat-form-field>
-        </div>
-
-        <div class="discount-row">
-          <mat-form-field appearance="outline" class="input-field date-field">
-            <mat-label>Discount End Date</mat-label>
-            <input matInput [matDatepicker]="endDatePicker" [formField]="productForm.discountEndDateDate"
-              placeholder="Select end date">
-            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #endDatePicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="input-field time-field">
-            <mat-label>Discount End Time</mat-label>
-            <input matInput [matTimepicker]="endTimePicker" [formField]="productForm.discountEndDateTime"
-              placeholder="Select end time">
-            <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
-            <mat-timepicker #endTimePicker></mat-timepicker>
-          </mat-form-field>
-        </div>
-      }
-
-      @if (brands().length) {
-        <mat-form-field appearance="outline" class="input-field">
-          <mat-label>Brand</mat-label>
-          <mat-select [formField]="productForm.productBrandId" placeholder="Select a brand">
-            @for (brand of brands(); track brand.id) {
-              <mat-option [value]="brand.id">{{ brand.name }}</mat-option>
-            }
-          </mat-select>
+        <mat-form-field hintLabel="Max 50 characters" appearance="outline" class="input-field">
+          <mat-label>Enter product name</mat-label>
+          <input [formField]="productForm.name" matInput #input placeholder="Product name">
+          <mat-hint align="end">{{ input.value.length }}/50</mat-hint>
         </mat-form-field>
-      }
 
-      @if (types().length) {
         <mat-form-field appearance="outline" class="input-field">
-          <mat-label>Type</mat-label>
-          <mat-select [formField]="productForm.productTypeId" placeholder="Select a type">
-            @for (type of types(); track type.id) {
-              <mat-option [value]="type.id">{{ type.name }}</mat-option>
-            }
-          </mat-select>
+          <mat-label>Description</mat-label>
+          <textarea [formField]="productForm.description" matInput #inputDsc cdkTextareaAutosize
+            cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50" placeholder="Enter product description"></textarea>
+          <mat-hint align="end">{{ inputDsc.value.length }}/300</mat-hint>
         </mat-form-field>
-      }
 
-      @for (char of productForm.productCharacteristics; track char; let i = $index) {
-        <div class="size-qty-row">
-          <mat-form-field appearance="outline" class="input-field size-field">
-            <mat-label>Size</mat-label>
-            <mat-select [formField]="char.sizeId" placeholder="Select a size">
-              @for (size of availableSizes(char.sizeId().value()); track size.id) {
-                <mat-option [value]="size.id">{{ size.size }}</mat-option>
+        <mat-form-field hintLabel="Original Base Price" appearance="outline" class="input-field">
+          <mat-label>Base Price</mat-label>
+          <input [formField]="productForm.price" matInput #inputPrice type="number" step="0.01"
+            placeholder="Product base price">
+          <span matPrefix>€&nbsp;</span>
+        </mat-form-field>
+
+        <div class="admin-banner">
+          <mat-icon>info</mat-icon>
+          <div>
+            <h4>Single Product Discount Configuration</h4>
+            <p>
+              Use this section to apply a specific discount directly to this product.
+              <strong>This will automatically override any active Group Discounts.</strong>
+              The background server will automatically calculate the final price and handle start/end dates.
+            </p>
+          </div>
+        </div>
+
+        <mat-checkbox [formField]="productForm.isDiscountActive" (change)="onDiscountToggle($event.checked)">
+          Activate Single Discount?
+        </mat-checkbox>
+
+        @if (productForm.isDiscountActive().value()) {
+          <div class="admin-form-row">
+            <mat-form-field appearance="outline" class="input-field">
+              <mat-label>Discount Amount</mat-label>
+              <input [formField]="productForm.discountAmount" matInput type="number" step="0.01"
+                placeholder="Enter amount">
+            </mat-form-field>
+
+            <mat-checkbox [formField]="productForm.isPercentage" class="percentage-checkbox">
+              Is Percentage (%)?
+            </mat-checkbox>
+          </div>
+
+          <div class="admin-form-row">
+            <mat-form-field appearance="outline" class="input-field">
+              <mat-label>Discount Start Date</mat-label>
+              <input matInput [matDatepicker]="startDatePicker" [formField]="productForm.discountStartDateDate"
+                placeholder="Select start date">
+              <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #startDatePicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="input-field">
+              <mat-label>Discount Start Time</mat-label>
+              <input matInput [matTimepicker]="startTimePicker" [formField]="productForm.discountStartDateTime"
+                placeholder="Select start time">
+              <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
+              <mat-timepicker #startTimePicker></mat-timepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="admin-form-row">
+            <mat-form-field appearance="outline" class="input-field">
+              <mat-label>Discount End Date</mat-label>
+              <input matInput [matDatepicker]="endDatePicker" [formField]="productForm.discountEndDateDate"
+                placeholder="Select end date">
+              <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #endDatePicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="input-field">
+              <mat-label>Discount End Time</mat-label>
+              <input matInput [matTimepicker]="endTimePicker" [formField]="productForm.discountEndDateTime"
+                placeholder="Select end time">
+              <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
+              <mat-timepicker #endTimePicker></mat-timepicker>
+            </mat-form-field>
+          </div>
+        }
+
+        @if (brands().length) {
+          <mat-form-field appearance="outline" class="input-field">
+            <mat-label>Brand</mat-label>
+            <mat-select [formField]="productForm.productBrandId" placeholder="Select a brand">
+              @for (brand of brands(); track brand.id) {
+                <mat-option [value]="brand.id">{{ brand.name }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
+        }
 
-          <mat-form-field appearance="outline" class="input-field qty-field">
-            <mat-label>Quantity</mat-label>
-            <input [formField]="char.quantity" type="number" matInput placeholder="Enter quantity">
+        @if (types().length) {
+          <mat-form-field appearance="outline" class="input-field">
+            <mat-label>Type</mat-label>
+            <mat-select [formField]="productForm.productTypeId" placeholder="Select a type">
+              @for (type of types(); track type.id) {
+                <mat-option [value]="type.id">{{ type.name }}</mat-option>
+              }
+            </mat-select>
           </mat-form-field>
+        }
 
-          <button type="button" (click)="removeSize(i)" mat-icon-button color="warn" class="remove-size-button">
-            <mat-icon>delete</mat-icon>
+        @for (char of productForm.productCharacteristics; track char; let i = $index) {
+          <div class="admin-form-row size-qty-row">
+            <mat-form-field appearance="outline" class="input-field">
+              <mat-label>Size</mat-label>
+              <mat-select [formField]="char.sizeId" placeholder="Select a size">
+                @for (size of availableSizes(char.sizeId().value()); track size.id) {
+                  <mat-option [value]="size.id">{{ size.size }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="input-field">
+              <mat-label>Quantity</mat-label>
+              <input [formField]="char.quantity" type="number" matInput placeholder="Enter quantity">
+            </mat-form-field>
+
+            <button type="button" mat-icon-button aria-label="Remove size" class="remove-size-button"
+              (click)="removeSize(i)">
+              <mat-icon class="delete-icon">delete</mat-icon>
+            </button>
+          </div>
+        }
+
+        <div class="add-size-btn">
+          <button type="button" mat-stroked-button [disabled]="!canAddSize()" (click)="addSize()">
+            <mat-icon>add</mat-icon>
+            Add Size
           </button>
         </div>
-      }
 
-      <div class="add-size-btn">
-        <button [disabled]="!canAddSize()" type="button" (click)="addSize()" mat-raised-button>
-          Add Size
+        <button type="submit" [disabled]="isSaveDisabled()" mat-flat-button class="save-button">
+          Save Product
         </button>
-      </div>
+      </form>
+    </div>
 
-      <button type="submit" [disabled]="isSaveDisabled()" mat-raised-button color="primary" class="save-button">
-        Save Product
-      </button>
-    </form>
-  </div>
-
-  <div class="form-right">
-    @if (isProductIdValid()) {
-      <h3>Upload Photo</h3>
-      <app-photo-editor [product]="adminProduct()"></app-photo-editor>
-    } @else {
-      <p class="alert-message">
-        Please create a product first. Once the product is created, you'll be able to upload images.
-      </p>
-    }
+    <div class="form-right admin-form-card">
+      @if (isProductIdValid()) {
+        <h3>Upload Photo</h3>
+        <app-photo-editor [product]="adminProduct()"></app-photo-editor>
+      } @else {
+        <div class="admin-banner is-danger">
+          <mat-icon>image_not_supported</mat-icon>
+          <span>
+            Please create a product first. Once the product is created, you'll be able to upload images.
+          </span>
+        </div>
+      }
+    </div>
   </div>
 </div>

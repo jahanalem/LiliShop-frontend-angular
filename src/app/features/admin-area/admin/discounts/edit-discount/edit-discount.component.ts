@@ -1,22 +1,17 @@
 import { Component, inject, signal, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { ActivatedRoute, ParamMap, RouterModule } from '@angular/router';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 // Angular Material Modules
-import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { DiscountTargetType, IDiscount, ITargetEntityOption, ITierOption } from 'src/app/shared/models/discount-system';
 import { MatStepperModule } from '@angular/material/stepper';
-import { MatDivider } from '@angular/material/divider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { IBrand } from 'src/app/shared/models/brand';
@@ -29,22 +24,15 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 @Component({
   selector: 'app-edit-discount',
   imports: [
-    FormsModule,
     ReactiveFormsModule,
-    RouterModule,
-    MatCardModule,
     MatInputModule,
     MatFormFieldModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatSlideToggleModule,
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
-    MatExpansionModule,
-    MatTooltipModule,
     MatStepperModule,
-    MatDivider,
     MatCheckboxModule,
     MatTimepickerModule
   ],

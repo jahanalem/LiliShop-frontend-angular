@@ -1,84 +1,23 @@
-/* General Styles */
+@use 'styles/admin' as admin;
+
+@include admin.scaffold;
+@include admin.form;
+
 .admin-user-form {
-  font-family: 'Arial', sans-serif;
-  padding: 20px;
-  background-color: #f7f7f7;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.form-container {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.form-row {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: var(--ls-space-2);
+  max-width: 720px;
 }
 
-.form-section {
-  margin-bottom: 20px;
-}
-
-/* Form Fields */
-.custom-mat-field {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.readonly-field .mat-form-field-wrapper {
-  background-color: #e0e0e0;
-  border-radius: 4px;
-  padding-left: 8px;
-}
-
-/* Buttons */
-.back-button {
-  margin-bottom: 20px;
+.checkbox-group {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: var(--ls-space-2);
+  margin-bottom: var(--ls-space-4);
 }
 
 .save-button {
-  padding: 12px 24px;
-  font-size: 16px;
-  margin-top: 20px;
-  align-self: flex-end;
-}
-
-/* Additional Styling */
-.mat-checkbox {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  display: block;
-}
-
-.mat-checkbox .mat-checkbox-layout {
-  align-items: center;
-}
-
-.mat-form-field-appearance-outline .mat-form-field-outline {
-  border-color: #3f51b5;
-}
-
-.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
-  border-color: #3f51b5;
-}
-
-.mat-raised-button.mat-primary {
-  background-color: #3f51b5;
-}
-
-.mat-raised-button.mat-primary:hover {
-  background-color: #303f9f;
-}
-
-.mat-raised-button.mat-accent {
-  background-color: #ff4081;
-}
-
-.mat-raised-button.mat-accent:hover {
-  background-color: #f50057;
+  align-self: flex-start;
+  margin-top: var(--ls-space-2);
 }
