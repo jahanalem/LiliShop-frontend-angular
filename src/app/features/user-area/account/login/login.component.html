@@ -1,41 +1,65 @@
 <div class="login-container">
   <mat-card>
-    <mat-card-title>Login</mat-card-title>
-    <mat-card-content>
-      <form (ngSubmit)="onSubmit()">
-        <!-- Email input -->
-        <app-text-input
-          data-cy="email"
-          [field]="loginForm.email"
-          [label]="'Email address'">
-        </app-text-input>
+    @if (stage() === 'credentials') {
+      <mat-card-title>Login</mat-card-title>
+      <mat-card-content>
+        <form (ngSubmit)="onSubmit()">
+          <!-- Email input -->
+          <app-text-input
+            data-cy="email"
+            [field]="loginForm.email"
+            [label]="'Email address'">
+          </app-text-input>
 
-        <!-- Password input -->
-        <app-text-input
-          data-cy="password"
-          [field]="loginForm.password"
-          [label]="'Password'"
-          [type]="'password'">
-        </app-text-input>
+          <!-- Password input -->
+          <app-text-input
+            data-cy="password"
+            [field]="loginForm.password"
+            [label]="'Password'"
+            [type]="'password'">
+          </app-text-input>
 
-        <!-- Submit button -->
-        <button
-          data-cy="submit-button"
-          mat-raised-button
-          color="primary"
-          [disabled]="loginForm().invalid()"
-          type="submit">
-          <mat-icon>login</mat-icon> Sign in
-        </button>
+          @if (serverError()) {
+            <p class="server-error" data-cy="login-error">{{ serverError() }}</p>
+          }
 
-        <div class="forgot-password">
-          <a
-            data-cy="forgot-password-link"
-            routerLink="/account/forgot-password">
-            Forgot password?
-          </a>
-        </div>
-      </form>
-    </mat-card-content>
+          <!-- Submit button -->
+          <button
+            data-cy="submit-button"
+            mat-raised-button
+            color="primary"
+            [disabled]="loginForm().invalid() || submitting()"
+            type="submit">
+            <mat-icon>login</mat-icon> Sign in
+          </button>
+
+          <div class="forgot-password">
+            <a
+              data-cy="forgot-password-link"
+              routerLink="/account/forgot-password">
+              Forgot password?
+            </a>
+          </div>
+        </form>
+      </mat-card-content>
+    } @else if (stage() === 'verify') {
+      <mat-card-content>
+        <app-mfa-verify
+          [email]="credentials().email"
+          [password]="credentials().password"
+          (authenticated)="onVerified($event)"
+          (cancelled)="onCancelMfa()">
+        </app-mfa-verify>
+      </mat-card-content>
+    } @else {
+      <mat-card-content>
+        <app-mfa-setup
+          [email]="credentials().email"
+          [password]="credentials().password"
+          (enrolled)="onEnrolled()"
+          (cancelled)="onCancelMfa()">
+        </app-mfa-setup>
+      </mat-card-content>
+    }
   </mat-card>
 </div>

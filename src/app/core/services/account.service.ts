@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { of, Observable, ReplaySubject, tap, map, catchError, throwError, finalize } from 'rxjs';
 import { IAddress } from 'src/app/shared/models/address';
 import { IUser } from 'src/app/shared/models/user';
+import { IAuthenticatorSetup, IEnableAuthenticatorResult } from 'src/app/shared/models/mfa';
 import { environment } from 'src/environments/environment';
 import { StorageService } from './storage.service';
 import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
@@ -131,11 +132,35 @@ export class AccountService {
   login(values: any): Observable<IUser> {
     return this.http.post<IUser>(`${this.baseUrl}account/login`, values).pipe(
       tap((user: IUser) => {
-        if (user) {
+        // Only establish a session for a fully authenticated response. When the backend requires an
+        // additional factor (admin MFA) it returns 200 with an EMPTY token plus a requiresTwoFactor* flag;
+        // that is NOT an authenticated state and must not persist a (blank) token.
+        if (this.isAuthenticatedUser(user)) {
           this.updateCurrentUserState(user);
         }
       })
     );
+  }
+
+  /**
+   * True only for a fully authenticated login response (real token, no pending MFA step).
+   * Returns a plain boolean (not a type predicate) so it never narrows an IUser argument to `never`.
+   */
+  isAuthenticatedUser(user: IUser | null | undefined): boolean {
+    return !!user && !!user.token && !user.requiresTwoFactorSetup && !user.requiresTwoFactorCode;
+  }
+
+  /**
+   * Begins authenticator (TOTP) enrolment. Credentials are re-verified server-side because an admin
+   * being forced to enrol does not yet hold a token.
+   */
+  getAuthenticatorSetup(email: string, password: string): Observable<IAuthenticatorSetup> {
+    return this.http.post<IAuthenticatorSetup>(`${this.baseUrl}account/mfa/setup`, { email, password });
+  }
+
+  /** Completes enrolment: verifies the first code, enables MFA, and returns one-time recovery codes. */
+  enableAuthenticator(email: string, password: string, code: string): Observable<IEnableAuthenticatorResult> {
+    return this.http.post<IEnableAuthenticatorResult>(`${this.baseUrl}account/mfa/enable`, { email, password, code });
   }
 
   isLoggedIn(): boolean {

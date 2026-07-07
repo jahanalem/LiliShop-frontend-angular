@@ -236,9 +236,18 @@ export class PrintessEditorComponent implements OnInit, OnDestroy {
       outputFormat: this.outputType()     // can be 'pdf' or 'png'
     };
 
-    this.http.post(`${this.baseUrl}printessEditor/start-callback-job`, requestPayload).subscribe({
-      next: () => {
-        // SignalR will handle loading indicator reset once the job is completed
+    this.http.post<{ jobId: string }>(`${this.baseUrl}printessEditor/start-callback-job`, requestPayload).subscribe({
+      next: (res) => {
+        // Output for this job is delivered ONLY to its isolated group, so we must join it using the
+        // jobId returned here; otherwise the PrintessOutputReady notification would never arrive.
+        if (res?.jobId) {
+          this.printessSignalR.joinJobGroup(res.jobId).catch((err) => {
+            console.error('Failed to join the render job group', err);
+            this.printessSignalR.isLoading.set(false);
+            alert('Could not subscribe to the render job. Please try again.');
+          });
+        }
+        // SignalR resets the loading indicator once the job completes.
       },
       error: (err) => {
         this.printessSignalR.isLoading.set(false);

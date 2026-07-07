@@ -214,7 +214,15 @@ export class RegisterComponent implements OnInit {
         this.accountService.updateCurrentUserState(user);
         this.ngZone.run(() => this.router.navigateByUrl('/shop'));
       },
-      error: (error: any) => console.error(error),
+      error: (error: any) => {
+        // Administrator accounts are blocked from single-factor Google sign-in by the backend (they must
+        // use email + password + MFA). Show the backend message cleanly rather than failing silently.
+        const message =
+          error?.error?.detail ||
+          error?.error?.title ||
+          'Google sign-in could not be completed. Please try again.';
+        this.ngZone.run(() => this.errors.set([message]));
+      },
     });
   }
 }

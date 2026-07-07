@@ -29,6 +29,10 @@ export class ErrorService {
       case 404:
         this.handleNotFound();
         return;
+      case 429:
+        // Rate limited. The throttling middleware returns an empty body, so rely on the status.
+        this.notificationService.showError('Too many requests. Please wait a moment and try again.');
+        return;
       case 500:
         defaultErrorMessage = "A server error occurred. Please try again later.";
         break;

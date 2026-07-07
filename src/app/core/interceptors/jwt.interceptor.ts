@@ -17,6 +17,20 @@ export const jwtInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>,
   // check the bearer token would be sent to any host reached via HttpClient.
   const isApiRequest = request.url.startsWith(environment.apiUrl);
 
+  // Pre-authentication endpoints. A 401 from these means "bad credentials / wrong
+  // MFA code / admin blocked" — NOT "session expired", so we must not attempt a
+  // silent token refresh + retry (that would swallow the error and force a logout
+  // redirect, breaking the MFA and Google flows). Let their 401 reach the caller.
+  const isAuthEndpoint = [
+    'account/login',
+    'account/mfa/',
+    'account/google-login',
+    'account/register',
+    'account/forgot-password',
+    'account/reset-password',
+    'account/refresh-token',
+  ].some((path) => request.url.includes(path));
+
   const token = storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
 
   if (token && isApiRequest) {
@@ -29,7 +43,7 @@ export const jwtInterceptor: HttpInterceptorFn = (request: HttpRequest<unknown>,
 
   return next(request).pipe(
     catchError((error: any) => {
-      if (error.status === 401 && isApiRequest) {
+      if (error.status === 401 && isApiRequest && !isAuthEndpoint) {
         if (tokenService.isRefreshing()) {
           return tokenService.getRefreshTokenSubject().pipe(
             switchMap((newToken) => {
