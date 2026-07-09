@@ -7,6 +7,48 @@ import { MatIconModule } from '@angular/material/icon';
 import { AccountService } from 'src/app/core/services/account.service';
 import { IUser } from 'src/app/shared/models/user';
 
+
+/* MfaVerifyComponent Flow
+
+                  LoginComponent
+                         │
+                         ▼
+          Backend replied:
+    RequiresTwoFactorCode = true
+                         │
+                         ▼
+             MfaVerifyComponent
+                         │
+       User enters TOTP / Recovery Code
+                         │
+                         ▼
+        POST /account/login
+ { email, password, twoFactorCode }
+                         │
+                         ▼
+              Backend verifies:
+                 ✓ Password
+                 ✓ Lockout
+                 ✓ MFA Code
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+          Success               Failure
+              │                     │
+              ▼                     ▼
+      JWT + Refresh Token     Error message
+              │
+              ▼
+      authenticated.emit(user)
+              │
+              ▼
+         LoginComponent
+              │
+              ▼
+        User is signed in
+
+*/
+
 /**
  * Second factor for administrators. Re-posts the login with the TOTP (or recovery) code — the backend
  * holds no pending-login state, so the credentials plus the code are submitted together.

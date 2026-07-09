@@ -15,6 +15,103 @@ import { TextInputComponent } from 'src/app/shared/components/text-input/text-in
 import { MfaVerifyComponent } from '../mfa/mfa-verify.component';
 import { MfaSetupComponent } from '../mfa/mfa-setup.component';
 
+/* LoginComponent Authentication Flow
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                LoginComponent Authentication Flow                           │
+└─────────────────────────────────────────────────────────────────────────────────────────────┘
+
+                              User enters Email + Password
+                                           │
+                                           ▼
+                              POST /account/login
+                              { email, password }
+                                           │
+                                           ▼
+                          ┌────────────────────────────────┐
+                          │            Backend             │
+                          │                                │
+                          │ ✓ Find user                    │
+                          │ ✓ Check password               │
+                          │ ✓ Check account lockout        │
+                          │ ✓ Is MFA required?             │
+                          └────────────────────────────────┘
+                                           │
+                 ┌─────────────────────────┼──────────────────────────┐
+                 │                         │                          │
+                 ▼                         ▼                          ▼
+      Token issued                 RequiresTwoFactorSetup      RequiresTwoFactorCode
+      Token != ""                  Token = ""                 Token = ""
+                                   setup = true              code = true
+                                   code = false             setup = false
+                 │                         │                          │
+                 ▼                         ▼                          ▼
+        completeLogin()          Show MfaSetupComponent      Show MfaVerifyComponent
+                 │                         │                          │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │          POST /account/mfa/setup                   │
+                 │          { email, password }                       │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │              Backend verifies password             │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │          Generate/Get Authenticator Secret         │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │        Return SharedKey + QR Code URI              │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │        User scans QR with Authenticator            │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │     User enters first 6-digit verification code    │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │          POST /account/mfa/enable                  │
+                 │          { email, password, code }                 │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │             Backend verifies:                      │
+                 │             ✓ Password                             │
+                 │             ✓ First TOTP code                      │
+                 │             ✓ Enable MFA                           │
+                 │             ✓ Generate recovery codes              │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │          Show recovery codes                       │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │         User confirms they saved them              │
+                 │                         │                          │
+                 │                         ▼                          │
+                 │             Switch to MfaVerifyComponent ◄─────────┘
+                 │                         │
+                 │                         ▼
+                 │          User enters TOTP / Recovery Code
+                 │                         │
+                 │                         ▼
+                 │              POST /account/login
+                 │      { email, password, twoFactorCode }
+                 │                         │
+                 │                         ▼
+                 │             Backend verifies:
+                 │             ✓ Password
+                 │             ✓ Lockout
+                 │             ✓ TOTP or Recovery Code
+                 │                         │
+                 │                Token issued
+                 └─────────────────────────┘
+                                           │
+                                           ▼
+                                   completeLogin()
+                                           │
+                                           ▼
+                                      Navigate User
+
+*/
+
 interface LoginData {
   email: string;
   password: string;

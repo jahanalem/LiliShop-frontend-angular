@@ -119,15 +119,19 @@ export class AccountService {
     );
   }
 
-  /**
- * Authenticates a user by sending their login credentials to the server.
+/**
+ * Attempts to authenticate a user with their login credentials.
  *
- * Sends a POST request to the server with the user's login credentials.
- * If authentication is successful, the method updates the current user state
- * and stores the user's token in local storage.
+ * A successful response does not always mean the user is fully authenticated.
+ * For administrators, the backend may require an additional MFA step before
+ * issuing a token.
  *
- * @param {any} values - The user's login credentials.
- * @returns {Observable<IUser>} An Observable of the authenticated user object.
+ * Only responses containing a real JWT token establish an authenticated session.
+ * Pending MFA responses are returned to the caller unchanged so the UI can
+ * continue the MFA flow.
+ *
+ * @param values The user's login credentials.
+ * @returns The server's login response.
  */
   login(values: any): Observable<IUser> {
     return this.http.post<IUser>(`${this.baseUrl}account/login`, values).pipe(

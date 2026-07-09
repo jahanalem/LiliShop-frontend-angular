@@ -8,6 +8,42 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import * as QRCode from 'qrcode';
 import { AccountService } from 'src/app/core/services/account.service';
 
+/* MfaSetupComponent Flow
+
+            Component Created
+                   │
+                   ▼
+        loadSetup() → POST /mfa/setup
+                   │
+                   ▼
+          stage = "scan"
+                   │
+      User scans the QR code
+                   │
+                   ▼
+      User enters first 6-digit code
+                   │
+                   ▼
+       POST /mfa/enable
+                   │
+          Code is valid?
+            │         │
+           No        Yes
+            │         ▼
+     Show error   stage = "recovery"
+                      │
+          Show recovery codes
+                      │
+       User confirms they are saved
+                      │
+                      ▼
+             enrolled.emit()
+                      │
+                      ▼
+          Parent switches to MFA Verify
+
+*/
+
 /**
  * Authenticator (TOTP) enrolment for administrators without MFA. Fetches the shared key + otpauth URI,
  * renders a QR code, verifies the first code, then shows one-time recovery codes behind a mandatory
@@ -195,7 +231,7 @@ export class MfaSetupComponent implements OnInit {
   }
 
   copyRecoveryCodes(): void {
-    navigator.clipboard?.writeText(this.recoveryCodes().join('\n')).catch(() => { /* clipboard blocked */ });
+    navigator.clipboard?.writeText(this.recoveryCodes().join('\n')).catch(() => { this.serverError.set('Could not copy recovery codes. Please copy them manually.'); });
   }
 
   finish(): void {
@@ -208,3 +244,4 @@ export class MfaSetupComponent implements OnInit {
     return err?.error?.detail || err?.error?.title || fallback;
   }
 }
+
