@@ -1,0 +1,18 @@
+@if (languageService.languages().length > 1) {
+  <button mat-icon-button type="button" [matMenuTriggerFor]="languageMenu"
+    aria-label="Choose language" title="Choose language">
+    <mat-icon>language</mat-icon>
+  </button>
+
+  <mat-menu #languageMenu="matMenu" xPosition="before">
+    @for (language of languageService.languages(); track language.code) {
+      <button mat-menu-item type="button" class="language-option"
+        [class.is-active]="language.code === languageService.currentCode()"
+        [attr.lang]="language.code"
+        (click)="languageService.setLanguage(language.code)">
+        <mat-icon>{{ language.code === languageService.currentCode() ? 'check' : '' }}</mat-icon>
+        <span>{{ language.nativeName }}</span>
+      </button>
+    }
+  </mat-menu>
+}

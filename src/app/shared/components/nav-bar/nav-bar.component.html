@@ -19,6 +19,8 @@
       </nav>
 
       <div class="ls-header__actions">
+        <app-language-switcher class="ls-header__action"></app-language-switcher>
+
         <button mat-icon-button type="button" class="ls-header__action" (click)="themeService.toggleTheme()"
           [attr.aria-label]="themeService.isDark() ? 'Switch to light theme' : 'Switch to dark theme'"
           [title]="themeService.isDark() ? 'Switch to light theme' : 'Switch to dark theme'">

@@ -23,6 +23,20 @@
     })();
   </script>
 
+  <!-- Apply the persisted language before first paint so RTL layouts don't flash LTR.
+       Kept in sync with LanguageService (localStorage key "ls-lang", JSON-encoded). -->
+  <script>
+    (function () {
+      try {
+        var lang = JSON.parse(localStorage.getItem('ls-lang'));
+        if (lang && lang.code) {
+          document.documentElement.setAttribute('lang', lang.code);
+          document.documentElement.setAttribute('dir', lang.dir === 'rtl' ? 'rtl' : 'ltr');
+        }
+      } catch (e) { /* storage unavailable: keep the defaults from the html tag */ }
+    })();
+  </script>
+
   <!-- SEO & Social Meta Tags -->
   <meta name="description" content="LiliShop – Your online store for modern fashion and accessories. Discover now!">
   <meta property="og:type" content="website">

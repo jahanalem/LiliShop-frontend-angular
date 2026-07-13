@@ -24,6 +24,7 @@ import { StorageService } from 'src/app/core/services/storage.service';
 import { Router } from '@angular/router';
 import { BusyService } from 'src/app/core/services/busy.service';
 import { ThemeService } from 'src/app/core/services/theme.service';
+import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-nav-bar',
@@ -41,7 +42,8 @@ import { ThemeService } from 'src/app/core/services/theme.service';
     MatMenuModule,
     MatListModule,
     MatSidenavModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    LanguageSwitcherComponent
   ]
 })
 export class NavBarComponent implements OnInit, OnDestroy {

@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, inject, provideAppInitializer, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -8,16 +8,31 @@ import { routes } from './app.routes';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { languageInterceptor } from './core/interceptors/language.interceptor';
+import { LanguageService } from './core/services/language.service';
+import { registerAppLocales } from './core/i18n/locale-registry';
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { DatePipe } from '@angular/common';
+
+registerAppLocales();
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(withXhr(), withInterceptors([jwtInterceptor, loadingInterceptor, errorInterceptor])),
+    provideHttpClient(withXhr(), withInterceptors([languageInterceptor, jwtInterceptor, loadingInterceptor, errorInterceptor])),
     provideCloudinaryLoader('https://res.cloudinary.com/rouhi'),
+    // Fetch the active languages once at startup (non-blocking).
+    provideAppInitializer(() => {
+      inject(LanguageService).initialize();
+    }),
+    // The user's language drives currency/date/number formatting. Bound at
+    // bootstrap; LanguageService.setLanguage() reloads the app to re-evaluate it.
+    {
+      provide: LOCALE_ID,
+      useFactory: () => inject(LanguageService).localeId()
+    },
     BreadcrumbService,
     DatePipe
   ]
