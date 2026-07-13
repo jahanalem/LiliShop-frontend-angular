@@ -2,18 +2,24 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationService } from '../notification.service';
+import { TranslationService } from '../../i18n/translation.service';
+import { TranslationKeys } from '../../i18n/translation-keys';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorService {
   private notificationService = inject(NotificationService);
+  private translationService  = inject(TranslationService);
   private router              = inject(Router);
 
   constructor() { }
 
   handleError(response: HttpErrorResponse) {
-    let defaultErrorMessage = "An error occurred";
+    // The backend localizes ProblemDetails (title/detail) for the request culture, so a
+    // server-provided message always wins; the ClientError.* keys cover the cases where
+    // the response carries no usable body.
+    let defaultErrorMessage = this.translationService.translate(TranslationKeys.ClientError.Unexpected);
     const error = response.error || {};
 
     switch (response.status) {
@@ -21,33 +27,33 @@ export class ErrorService {
         defaultErrorMessage = this.getBadRequestMessage(error);
         break;
       case 401:
-        defaultErrorMessage = error.title || "Unauthorized";
+        defaultErrorMessage = error.title || 'Unauthorized';
         break;
       case 403:
-        defaultErrorMessage = "Access denied. You do not have permission to perform this action.";
+        defaultErrorMessage = this.translationService.translate(TranslationKeys.ClientError.AccessDenied);
         break;
       case 404:
         this.handleNotFound();
         return;
       case 429:
         // Rate limited. The throttling middleware returns an empty body, so rely on the status.
-        this.notificationService.showError('Too many requests. Please wait a moment and try again.');
+        this.notificationService.showError(this.translationService.translate(TranslationKeys.ClientError.TooManyRequests));
         return;
       case 500:
-        defaultErrorMessage = "A server error occurred. Please try again later.";
+        defaultErrorMessage = this.translationService.translate(TranslationKeys.ClientError.ServerError);
         break;
       default:
         defaultErrorMessage = response.message || defaultErrorMessage;
         break;
     }
 
-    const message = error.title || defaultErrorMessage;
+    const message = error.detail || error.title || defaultErrorMessage;
 
     this.notificationService.showError(`Error ${response.status}: ${message}`);
   }
 
   handleNotFound() {
-    this.notificationService.showError('404 Error: The resource was not found.');
+    this.notificationService.showError(this.translationService.translate(TranslationKeys.ClientError.NotFound));
     this.router.navigateByUrl('/not-found');
   }
 
@@ -61,7 +67,7 @@ export class ErrorService {
       }
       return modalStateErrors.flat().join('\n');
     } else {
-      return error.message || "Bad Request";
+      return error.detail || error.message || 'Bad Request';
     }
   }
 }

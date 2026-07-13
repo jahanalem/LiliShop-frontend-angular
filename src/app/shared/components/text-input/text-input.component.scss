@@ -8,7 +8,7 @@
 }
 
 .custom-input {
-  padding-right: 40px; /* Space for icons on the right */
+  padding-inline-end: 40px; /* Space for icons on the right */
 }
 
 .valid-icon {
@@ -18,7 +18,7 @@
 .loader {
   position: absolute;
   top: 50%;
-  right: 10px;
+  inset-inline-end: 10px;
   transform: translateY(-50%);
   color: var(--template-color);
 }

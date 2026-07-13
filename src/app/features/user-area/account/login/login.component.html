@@ -1,21 +1,21 @@
 <div class="login-container">
   <mat-card>
     @if (stage() === 'credentials') {
-      <mat-card-title>Login</mat-card-title>
+      <mat-card-title>{{ TranslationKeys.Auth.LoginTitle | translate }}</mat-card-title>
       <mat-card-content>
         <form (ngSubmit)="onSubmit()">
           <!-- Email input -->
           <app-text-input
             data-cy="email"
             [field]="loginForm.email"
-            [label]="'Email address'">
+            [label]="TranslationKeys.Auth.EmailLabel | translate">
           </app-text-input>
 
           <!-- Password input -->
           <app-text-input
             data-cy="password"
             [field]="loginForm.password"
-            [label]="'Password'"
+            [label]="TranslationKeys.Auth.PasswordLabel | translate"
             [type]="'password'">
           </app-text-input>
 
@@ -30,14 +30,14 @@
             color="primary"
             [disabled]="loginForm().invalid() || submitting()"
             type="submit">
-            <mat-icon>login</mat-icon> Sign in
+            <mat-icon>login</mat-icon> {{ TranslationKeys.Auth.SignIn | translate }}
           </button>
 
           <div class="forgot-password">
             <a
               data-cy="forgot-password-link"
               routerLink="/account/forgot-password">
-              Forgot password?
+              {{ TranslationKeys.Auth.ForgotPassword | translate }}
             </a>
           </div>
         </form>

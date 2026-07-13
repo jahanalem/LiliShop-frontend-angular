@@ -4,10 +4,13 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ErrorService } from '../services/utility-services/error.service';
 import { NotificationService } from '../services/notification.service';
+import { TranslationService } from '../i18n/translation.service';
+import { TranslationKeys } from '../i18n/translation-keys';
 
 export const errorInterceptor: HttpInterceptorFn = (request: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
   const notificationService = inject(NotificationService);
   const errorService = inject(ErrorService);
+  const translationService = inject(TranslationService);
 
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -16,7 +19,7 @@ export const errorInterceptor: HttpInterceptorFn = (request: HttpRequest<any>, n
         return throwError(() => error);
       }
       if (error.error instanceof ErrorEvent) {
-        notificationService.showError('An unexpected client-side error occurred.');
+        notificationService.showError(translationService.translate(TranslationKeys.ClientError.Unexpected));
         return throwError(() => new Error('Client-side error: ' + error.message));
       }
 

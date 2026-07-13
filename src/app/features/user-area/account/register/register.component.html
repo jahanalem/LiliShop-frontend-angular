@@ -5,21 +5,21 @@
         <app-text-input
           data-cy="display-name-container"
           [field]="registerForm.displayName"
-          [label]="'Display Name'"
+          [label]="TranslationKeys.Auth.DisplayNameLabel | translate"
           class="full-width"
         />
 
         <app-text-input
           data-cy="email-container"
           [field]="registerForm.email"
-          [label]="'Email address'"
+          [label]="TranslationKeys.Auth.EmailLabel | translate"
           class="full-width"
         />
 
         <app-text-input
           data-cy="password-container"
           [field]="registerForm.password"
-          [label]="'Password'"
+          [label]="TranslationKeys.Auth.PasswordLabel | translate"
           [type]="'password'"
           [showPasswordRules]="true"
           [autocomplete]="'new-password'"
@@ -29,7 +29,7 @@
         <app-text-input
           data-cy="confirm-password-container"
           [field]="registerForm.confirmPassword"
-          [label]="'Confirm Password'"
+          [label]="TranslationKeys.Auth.ConfirmPasswordLabel | translate"
           [type]="'password'"
           [autocomplete]="'new-password'"
           class="full-width"
@@ -43,7 +43,7 @@
           color="primary"
           class="full-width register-button"
         >
-          <mat-icon>person_add</mat-icon> Register
+          <mat-icon>person_add</mat-icon> {{ TranslationKeys.Auth.Register | translate }}
         </button>
 
         @if (errors().length) {

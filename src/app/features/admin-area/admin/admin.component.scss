@@ -55,8 +55,8 @@
 .app-progress-bar {
   position: fixed;
   top: var(--ls-navbar-h);
-  left: 0;
-  right: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
   z-index: calc(var(--ls-z-navbar) + 1);
   height: 3px;
   --mat-progress-bar-active-indicator-color: var(--ls-brand);
@@ -71,7 +71,7 @@
 .app-sidenav {
   width: 260px;
   background: var(--ls-surface);
-  border-right: 1px solid var(--ls-border);
+  border-inline-end: 1px solid var(--ls-border);
   box-shadow: none !important;
 }
 

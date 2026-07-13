@@ -1,6 +1,7 @@
 @if (languageService.languages().length > 1) {
   <button mat-icon-button type="button" [matMenuTriggerFor]="languageMenu"
-    aria-label="Choose language" title="Choose language">
+    [attr.aria-label]="TranslationKeys.Nav.ChooseLanguage | translate"
+    [title]="TranslationKeys.Nav.ChooseLanguage | translate">
     <mat-icon>language</mat-icon>
   </button>
 

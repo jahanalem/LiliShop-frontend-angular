@@ -2,26 +2,23 @@
   <div class="footer-container">
     <div class="footer-row">
       <div class="footer-column about">
-        <h3>About Lili Shop</h3>
-        <p>
-          Lili Shop offers a wide range of chic and simple fashion products, catering to all your style needs.
-          Discover the latest trends and timeless classics in our collection.
-        </p>
+        <h3>{{ TranslationKeys.Footer.AboutTitle | translate }}</h3>
+        <p>{{ TranslationKeys.Footer.AboutText | translate }}</p>
       </div>
 
       <div class="footer-column links">
-        <h3>Quick Links</h3>
+        <h3>{{ TranslationKeys.Footer.QuickLinks | translate }}</h3>
         <ul>
-          <li><a routerLink="/shop">Shop</a></li>
-          <li><a routerLink="/contact">Contact</a></li>
-          <li><a routerLink="/about">About Us</a></li>
-          <li><a routerLink="/privacy-policy">Privacy Policy</a></li>
-          <li><a routerLink="/terms-of-service">Terms of Service</a></li>
+          <li><a routerLink="/shop">{{ TranslationKeys.Nav.Shop | translate }}</a></li>
+          <li><a routerLink="/contact">{{ TranslationKeys.Nav.Contact | translate }}</a></li>
+          <li><a routerLink="/about">{{ TranslationKeys.Nav.About | translate }}</a></li>
+          <li><a routerLink="/privacy-policy">{{ TranslationKeys.Footer.PrivacyPolicy | translate }}</a></li>
+          <li><a routerLink="/terms-of-service">{{ TranslationKeys.Footer.TermsOfService | translate }}</a></li>
         </ul>
       </div>
 
       <div class="footer-column contact">
-        <h3>Contact Us</h3>
+        <h3>{{ TranslationKeys.Footer.ContactUs | translate }}</h3>
         <p>
           <mat-icon>location_on</mat-icon>
           <span>60438 Frankfurt am Main, Germany</span>
@@ -37,7 +34,7 @@
       </div>
 
       <div class="footer-column social">
-        <h3>Follow Us</h3>
+        <h3>{{ TranslationKeys.Footer.FollowUs | translate }}</h3>
         <div class="social-icons">
           <a title="Facebook"
              href="https://www.facebook.com/roohiX19"
@@ -72,9 +69,9 @@
     </div>
 
     <div class="footer-bottom">
-      <p>&copy; {{ currentYear }} Lili Shop. All rights reserved.</p>
+      <p>{{ TranslationKeys.Footer.AllRightsReserved | translate: [currentYear] }}</p>
       <p class="footer-credits">
-        Designed with <mat-icon class="heart-icon">favorite</mat-icon> by Said Roohullah Allem
+        {{ TranslationKeys.Footer.DesignedWith | translate }} <mat-icon class="heart-icon">favorite</mat-icon> {{ TranslationKeys.Footer.ByAuthor | translate }}
       </p>
     </div>
   </div>

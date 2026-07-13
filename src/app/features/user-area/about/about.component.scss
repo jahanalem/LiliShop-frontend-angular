@@ -90,7 +90,7 @@
     &::after {
       content: '';
       position: absolute;
-      left: 0;
+      inset-inline-start: 0;
       bottom: 0;
       width: 56px;
       height: 4px;
@@ -174,7 +174,7 @@
 .feature-category ul,
 .tech-details-list {
   margin: 0;
-  padding-left: var(--ls-space-5);
+  padding-inline-start: var(--ls-space-5);
   color: var(--ls-text-soft);
 
   li {
@@ -218,7 +218,7 @@
 
     ul {
       margin: 0;
-      padding-left: var(--ls-space-5);
+      padding-inline-start: var(--ls-space-5);
       color: var(--ls-text-soft);
 
       li {

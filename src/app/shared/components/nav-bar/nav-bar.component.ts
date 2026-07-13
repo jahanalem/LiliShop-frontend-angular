@@ -25,6 +25,8 @@ import { Router } from '@angular/router';
 import { BusyService } from 'src/app/core/services/busy.service';
 import { ThemeService } from 'src/app/core/services/theme.service';
 import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-nav-bar',
@@ -43,10 +45,13 @@ import { LanguageSwitcherComponent } from '../language-switcher/language-switche
     MatListModule,
     MatSidenavModule,
     MatProgressBarModule,
-    LanguageSwitcherComponent
+    LanguageSwitcherComponent,
+    TranslatePipe
   ]
 })
 export class NavBarComponent implements OnInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   basket$     : Observable<IBasket | null>;
   currentUser$: Observable<IUser | null>;
   readonly sidenav = viewChild.required<MatSidenav>('sidenav');

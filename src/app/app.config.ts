@@ -10,6 +10,7 @@ import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { languageInterceptor } from './core/interceptors/language.interceptor';
 import { LanguageService } from './core/services/language.service';
+import { TranslationService } from './core/i18n/translation.service';
 import { registerAppLocales } from './core/i18n/locale-registry';
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { DatePipe } from '@angular/common';
@@ -23,9 +24,11 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideHttpClient(withXhr(), withInterceptors([languageInterceptor, jwtInterceptor, loadingInterceptor, errorInterceptor])),
     provideCloudinaryLoader('https://res.cloudinary.com/rouhi'),
-    // Fetch the active languages once at startup (non-blocking).
+    // Fetch the active languages and translations once at startup (non-blocking; the
+    // translation dictionary applies its localStorage snapshot synchronously).
     provideAppInitializer(() => {
       inject(LanguageService).initialize();
+      inject(TranslationService).initialize();
     }),
     // The user's language drives currency/date/number formatting. Bound at
     // bootstrap; LanguageService.setLanguage() reloads the app to re-evaluate it.

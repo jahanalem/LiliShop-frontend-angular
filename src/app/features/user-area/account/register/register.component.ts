@@ -33,6 +33,8 @@ import { IUser } from 'src/app/shared/models/user';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 declare namespace google {
   namespace accounts {
@@ -56,9 +58,11 @@ interface RegisterData {
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TextInputComponent, MatButtonModule, MatIconModule, FormsModule],
+  imports: [TextInputComponent, MatButtonModule, MatIconModule, FormsModule, TranslatePipe],
 })
 export class RegisterComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private readonly accountService = inject(AccountService);
   private readonly router         = inject(Router);
   private readonly ngZone         = inject(NgZone);

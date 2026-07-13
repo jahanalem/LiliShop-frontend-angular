@@ -75,7 +75,7 @@
 }
 
 .discount-timer {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: 0.9rem;
   background-color: var(--ls-accent-soft);
   padding: 0.5rem 1rem;
@@ -118,7 +118,7 @@
 }
 
 .mat-icon {
-  margin-right: 0.5rem;
+  margin-inline-end: 0.5rem;
 }
 
 /* Button Hover Animation */
@@ -191,7 +191,7 @@
   }
 
   .product-description {
-    text-align: left;
+    text-align: start;
     font-size: 0.8rem;
   }
 

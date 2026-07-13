@@ -12,18 +12,18 @@
 
       <nav class="ls-header__nav" aria-label="Main navigation">
         <a routerLink="/shop" routerLinkActive="is-active" ariaCurrentWhenActive="page"
-          [routerLinkActiveOptions]="{exact: true}">Shop</a>
-        <a routerLink="/contact" routerLinkActive="is-active" ariaCurrentWhenActive="page">Contact</a>
+          [routerLinkActiveOptions]="{exact: true}">{{ TranslationKeys.Nav.Shop | translate }}</a>
+        <a routerLink="/contact" routerLinkActive="is-active" ariaCurrentWhenActive="page">{{ TranslationKeys.Nav.Contact | translate }}</a>
         <a routerLink="/about" routerLinkActive="is-active" ariaCurrentWhenActive="page"
-          [routerLinkActiveOptions]="{exact: true}">About</a>
+          [routerLinkActiveOptions]="{exact: true}">{{ TranslationKeys.Nav.About | translate }}</a>
       </nav>
 
       <div class="ls-header__actions">
         <app-language-switcher class="ls-header__action"></app-language-switcher>
 
         <button mat-icon-button type="button" class="ls-header__action" (click)="themeService.toggleTheme()"
-          [attr.aria-label]="themeService.isDark() ? 'Switch to light theme' : 'Switch to dark theme'"
-          [title]="themeService.isDark() ? 'Switch to light theme' : 'Switch to dark theme'">
+          [attr.aria-label]="(themeService.isDark() ? TranslationKeys.Nav.LightTheme : TranslationKeys.Nav.DarkTheme) | translate"
+          [title]="(themeService.isDark() ? TranslationKeys.Nav.LightTheme : TranslationKeys.Nav.DarkTheme) | translate">
           <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
 
@@ -46,34 +46,34 @@
             @if (hasAccessToAdminPanel()) {
               <button mat-menu-item type="button" routerLink="/admin">
                 <mat-icon>admin_panel_settings</mat-icon>
-                <span>Admin Panel</span>
+                <span>{{ TranslationKeys.Nav.AdminPanel | translate }}</span>
               </button>
             }
             <button mat-menu-item type="button" routerLink="/basket">
               <mat-icon>shopping_cart</mat-icon>
-              <span>My Cart</span>
+              <span>{{ TranslationKeys.Nav.MyCart | translate }}</span>
             </button>
             <button mat-menu-item type="button" routerLink="/orders">
               <mat-icon>receipt_long</mat-icon>
-              <span>My Orders</span>
+              <span>{{ TranslationKeys.Nav.MyOrders | translate }}</span>
             </button>
             <button mat-menu-item type="button" routerLink="/price-drop-subscriptions">
               <mat-icon>price_check</mat-icon>
-              <span>Price Alerts</span>
+              <span>{{ TranslationKeys.Nav.PriceAlerts | translate }}</span>
             </button>
             <mat-divider></mat-divider>
             <button mat-menu-item type="button" (click)="logout()">
               <mat-icon>logout</mat-icon>
-              <span>Logout</span>
+              <span>{{ TranslationKeys.Nav.Logout | translate }}</span>
             </button>
             <button mat-menu-item type="button" (click)="logoutFromAllDevices()">
               <mat-icon>phonelink_erase</mat-icon>
-              <span>Logout All Devices</span>
+              <span>{{ TranslationKeys.Nav.LogoutAllDevices | translate }}</span>
             </button>
           </mat-menu>
         } @else {
-          <a mat-button routerLink="/account/login" class="ls-header__login">Login</a>
-          <a mat-flat-button routerLink="/account/register" class="ls-header__signup">Sign up</a>
+          <a mat-button routerLink="/account/login" class="ls-header__login">{{ TranslationKeys.Nav.Login | translate }}</a>
+          <a mat-flat-button routerLink="/account/register" class="ls-header__signup">{{ TranslationKeys.Nav.Signup | translate }}</a>
         }
       </div>
     </div>
@@ -97,38 +97,38 @@
       <a mat-list-item routerLink="/shop" routerLinkActive="is-active" ariaCurrentWhenActive="page"
         [routerLinkActiveOptions]="{exact: true}" (click)="closeSidenav()">
         <mat-icon matListItemIcon>storefront</mat-icon>
-        <span matListItemTitle>Shop</span>
+        <span matListItemTitle>{{ TranslationKeys.Nav.Shop | translate }}</span>
       </a>
       <a mat-list-item routerLink="/contact" routerLinkActive="is-active" ariaCurrentWhenActive="page"
         (click)="closeSidenav()">
         <mat-icon matListItemIcon>email</mat-icon>
-        <span matListItemTitle>Contact</span>
+        <span matListItemTitle>{{ TranslationKeys.Nav.Contact | translate }}</span>
       </a>
       <a mat-list-item routerLink="/about" routerLinkActive="is-active" ariaCurrentWhenActive="page"
         [routerLinkActiveOptions]="{exact: true}" (click)="closeSidenav()">
         <mat-icon matListItemIcon>info</mat-icon>
-        <span matListItemTitle>About Us</span>
+        <span matListItemTitle>{{ TranslationKeys.Nav.About | translate }}</span>
       </a>
 
       @if (currentUser$ | async; as user) {
         <mat-divider></mat-divider>
         <a mat-list-item routerLink="/orders" (click)="closeSidenav()">
           <mat-icon matListItemIcon>receipt_long</mat-icon>
-          <span matListItemTitle>My Orders</span>
+          <span matListItemTitle>{{ TranslationKeys.Nav.MyOrders | translate }}</span>
         </a>
         <a mat-list-item (click)="logout(); closeSidenav();">
           <mat-icon matListItemIcon>logout</mat-icon>
-          <span matListItemTitle>Logout</span>
+          <span matListItemTitle>{{ TranslationKeys.Nav.Logout | translate }}</span>
         </a>
       } @else {
         <mat-divider></mat-divider>
         <a mat-list-item routerLink="/account/login" (click)="closeSidenav()">
           <mat-icon matListItemIcon>login</mat-icon>
-          <span matListItemTitle>Login</span>
+          <span matListItemTitle>{{ TranslationKeys.Nav.Login | translate }}</span>
         </a>
         <a mat-list-item routerLink="/account/register" (click)="closeSidenav()">
           <mat-icon matListItemIcon>person_add</mat-icon>
-          <span matListItemTitle>Sign Up</span>
+          <span matListItemTitle>{{ TranslationKeys.Nav.Signup | translate }}</span>
         </a>
       }
     </mat-nav-list>
@@ -137,7 +137,7 @@
       <mat-divider></mat-divider>
       <button mat-button type="button" class="ls-drawer__theme-btn" (click)="themeService.toggleTheme()">
         <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-        {{ themeService.isDark() ? 'Light theme' : 'Dark theme' }}
+        {{ (themeService.isDark() ? TranslationKeys.Nav.LightTheme : TranslationKeys.Nav.DarkTheme) | translate }}
       </button>
     </div>
   </mat-sidenav>

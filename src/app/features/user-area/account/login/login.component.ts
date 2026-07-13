@@ -14,6 +14,8 @@ import { IUser } from 'src/app/shared/models/user';
 import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
 import { MfaVerifyComponent } from '../mfa/mfa-verify.component';
 import { MfaSetupComponent } from '../mfa/mfa-setup.component';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 /* LoginComponent Authentication Flow
 
@@ -134,9 +136,12 @@ type LoginStage = 'credentials' | 'verify' | 'setup';
     RouterLink,
     MfaVerifyComponent,
     MfaSetupComponent,
+    TranslatePipe,
   ],
 })
 export class LoginComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private accountService = inject(AccountService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
