@@ -1,0 +1,165 @@
+<div class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <h1 class="admin-page-title">Translations</h1>
+      <p class="admin-page-subtitle">Edit system texts per language — changes go live without a redeploy.</p>
+    </div>
+  </header>
+
+  <!-- Per-language completion -->
+  <section class="completion-grid" aria-label="Translation completion per language">
+    @for (item of completion(); track item.culture) {
+      <mat-card class="completion-card" [class.is-complete]="item.percent === 100">
+        <div class="completion-header">
+          <span class="completion-culture">{{ item.culture }}</span>
+          <span class="completion-percent">{{ item.percent }}%</span>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="item.percent"></mat-progress-bar>
+        <div class="completion-footer">
+          <span>{{ item.translatedKeys }} / {{ item.totalKeys }} keys</span>
+          @if (item.percent < 100) {
+            <button mat-button type="button" (click)="showMissing(item.culture)">Missing keys</button>
+          }
+        </div>
+      </mat-card>
+    }
+  </section>
+
+  @if (missingCulture(); as culture) {
+    <mat-card class="missing-card">
+      <div class="missing-header">
+        <h2>Missing in “{{ culture }}” ({{ missingKeys().length }})</h2>
+        <button mat-icon-button type="button" (click)="missingCulture.set(null)" aria-label="Close missing keys">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="missing-keys">
+        @for (key of missingKeys(); track key) {
+          <button mat-stroked-button type="button" class="missing-key" (click)="prefillMissing(key)">{{ key }}</button>
+        } @empty {
+          <p>Nothing missing — this language is complete. 🎉</p>
+        }
+      </div>
+    </mat-card>
+  }
+
+  <!-- Add / translate a key -->
+  <mat-card class="new-entry-card">
+    <h2>Add or overwrite a translation</h2>
+    <div class="new-entry-row">
+      <mat-form-field appearance="outline" class="grow">
+        <mat-label>Key</mat-label>
+        <input matInput [(ngModel)]="newKey" placeholder="Auth.SignIn">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Language</mat-label>
+        <mat-select [(ngModel)]="newCulture">
+          @for (language of languages(); track language.code) {
+            <mat-option [value]="language.code">{{ language.code }} — {{ language.englishName }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="grow">
+        <mat-label>Value</mat-label>
+        <input matInput [(ngModel)]="newValue" [attr.dir]="null">
+      </mat-form-field>
+      <button mat-flat-button type="button" (click)="createEntry()"
+        [disabled]="!newKey.trim() || !newCulture.trim() || !newValue.trim()">
+        <mat-icon>save</mat-icon> Save
+      </button>
+    </div>
+  </mat-card>
+
+  <!-- Search + table -->
+  <mat-card class="entries-card">
+    <div class="filter-row">
+      <mat-form-field appearance="outline" class="grow">
+        <mat-label>Search key or value</mat-label>
+        <input matInput [(ngModel)]="search" (keyup.enter)="applyFilter()">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Language</mat-label>
+        <mat-select [(ngModel)]="cultureFilter" (selectionChange)="applyFilter()">
+          <mat-option [value]="null">All</mat-option>
+          @for (language of languages(); track language.code) {
+            <mat-option [value]="language.code">{{ language.code }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <button mat-stroked-button type="button" (click)="applyFilter()">
+        <mat-icon>search</mat-icon> Search
+      </button>
+    </div>
+
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="entries()" class="entries-table">
+        <ng-container matColumnDef="key">
+          <th mat-header-cell *matHeaderCellDef>Key</th>
+          <td mat-cell *matCellDef="let entry"><code>{{ entry.key }}</code></td>
+        </ng-container>
+
+        <ng-container matColumnDef="culture">
+          <th mat-header-cell *matHeaderCellDef>Lang</th>
+          <td mat-cell *matCellDef="let entry">{{ entry.culture }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="value">
+          <th mat-header-cell *matHeaderCellDef>Value</th>
+          <td mat-cell *matCellDef="let entry" class="value-cell">
+            @if (editingId() === entry.id) {
+              <mat-form-field appearance="outline" class="inline-edit">
+                <input matInput [(ngModel)]="editDraft" (keyup.enter)="saveEdit(entry)" (keyup.escape)="cancelEdit()">
+              </mat-form-field>
+            } @else {
+              <span [attr.lang]="entry.culture">{{ entry.value }}</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="updatedBy">
+          <th mat-header-cell *matHeaderCellDef>Last change</th>
+          <td mat-cell *matCellDef="let entry" class="audit-cell">
+            @if (entry.updatedBy) {<span>{{ entry.updatedBy }}</span>}
+            @if (entry.updatedAt) {<span class="audit-date">{{ entry.updatedAt | date:'short' }}</span>}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let entry" class="actions-cell">
+            @if (editingId() === entry.id) {
+              <button mat-icon-button type="button" (click)="saveEdit(entry)" aria-label="Save">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button mat-icon-button type="button" (click)="cancelEdit()" aria-label="Cancel">
+                <mat-icon>close</mat-icon>
+              </button>
+            } @else {
+              <button mat-icon-button type="button" (click)="startEdit(entry)" aria-label="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button type="button" (click)="deleteEntry(entry)" aria-label="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="totalEntries()"
+      [pageIndex]="pageIndex - 1"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[20, 50, 100]"
+      (page)="onPage($event)">
+    </mat-paginator>
+  </mat-card>
+</div>

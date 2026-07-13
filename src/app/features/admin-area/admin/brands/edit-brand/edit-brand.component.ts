@@ -17,6 +17,9 @@ import { DialogComponent } from 'src/app/shared/components/dialog/dialog.compone
 import { MatDialog } from '@angular/material/dialog';
 
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
+import { LanguageService } from 'src/app/core/services/language.service';
+import { INameTranslation } from 'src/app/shared/models/localization';
 
 @Component({
     selector: 'app-edit-brand',
@@ -24,7 +27,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     styleUrls: ['./edit-brand.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [RouterModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, ReactiveFormsModule]
+  imports: [RouterModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, ReactiveFormsModule, FormsModule]
 })
 export class EditBrandComponent implements OnInit {
   brandForm!: FormGroup;
@@ -37,6 +40,10 @@ export class EditBrandComponent implements OnInit {
   private destroy$ = new Subject<void>();
 
   private brandService   = inject(BrandService);
+  protected languageService = inject(LanguageService);
+
+  /** Per-culture name drafts for the non-default languages (default culture = the main Name field). */
+  translationDrafts: Record<string, string> = {};
   private activatedRoute = inject(ActivatedRoute);
   private router         = inject(Router);
   private dialog         = inject(MatDialog);
@@ -85,6 +92,7 @@ export class EditBrandComponent implements OnInit {
     ).subscribe((response) => {
       this.brand.set(response);
       this.updateBrandForm(response);
+      this.applyTranslationDrafts(response);
     });
   }
 
@@ -95,9 +103,41 @@ export class EditBrandComponent implements OnInit {
     });
   }
 
+  /** Active languages except the default one (its content is the main Name field). */
+  get extraLanguages() {
+    return this.languageService.languages().filter(l => !l.isDefault);
+  }
+
+  private applyTranslationDrafts(brand: IBrand): void {
+    this.translationDrafts = {};
+    for (const translation of brand.translations ?? []) {
+      this.translationDrafts[translation.culture] = translation.name;
+    }
+  }
+
+  private buildTranslationsPayload(defaultName: string): INameTranslation[] {
+    const defaultCulture = this.languageService.languages().find(l => l.isDefault)?.code;
+    const translations: INameTranslation[] = [];
+
+    if (defaultCulture) {
+      translations.push({ culture: defaultCulture, name: defaultName });
+    }
+    for (const [culture, name] of Object.entries(this.translationDrafts)) {
+      if (name?.trim()) {
+        translations.push({ culture, name: name.trim() });
+      }
+    }
+    return translations;
+  }
+
+  onTranslationChange(): void {
+    this.brandForm.markAsDirty();
+  }
+
   onSubmit() {
     const formValue = this.brandForm.value as IBrand;
     const brandPayload = { ...this.brand(), ...formValue };
+    brandPayload.translations = this.buildTranslationsPayload(formValue.name);
     delete (brandPayload as { [key: string]: any })["createdDate"];
     delete (brandPayload as { [key: string]: any })["modifiedDate"];
     const brandAction = brandPayload && brandPayload.id > 0

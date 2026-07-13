@@ -19,6 +19,24 @@
       <mat-hint align="end">{{input.value.length}}/20</mat-hint>
     </mat-form-field>
 
+    @if (extraLanguages.length > 0) {
+      <section class="translations-section">
+        <h3 class="translations-title">Translations</h3>
+        <p class="translations-hint">Leave a field empty to fall back to the default-language name.</p>
+        @for (language of extraLanguages; track language.code) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Name ({{ language.nativeName }})</mat-label>
+            <input matInput maxlength="20"
+              [attr.lang]="language.code"
+              [dir]="language.direction"
+              [(ngModel)]="translationDrafts[language.code]"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="onTranslationChange()">
+          </mat-form-field>
+        }
+      </section>
+    }
+
     <button type="submit" [disabled]="isSaveDisabled" [attr.aria-disabled]="isSaveDisabled.toString()"
       mat-flat-button class="save-button">Save</button>
   </form>

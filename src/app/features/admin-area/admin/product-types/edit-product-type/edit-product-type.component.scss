@@ -14,3 +14,18 @@
 .save-button {
   margin-top: var(--ls-space-2);
 }
+
+.translations-section {
+  margin-block-start: 8px;
+
+  .translations-title {
+    margin: 0 0 2px;
+    font-size: 1rem;
+  }
+
+  .translations-hint {
+    margin: 0 0 10px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+}
