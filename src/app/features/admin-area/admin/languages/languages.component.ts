@@ -21,6 +21,7 @@ const EMPTY_FORM: ILanguageUpsert = {
   isActive: true,
   isDefault: false,
   displayOrder: 0,
+  countries: [],
 };
 
 /**
@@ -58,6 +59,9 @@ export class LanguagesComponent implements OnInit {
 
   form: ILanguageUpsert = { ...EMPTY_FORM };
 
+  /** Comma-separated view of form.countries for the text input. */
+  countriesText = '';
+
   ngOnInit(): void {
     this.load();
   }
@@ -68,10 +72,12 @@ export class LanguagesComponent implements OnInit {
 
   edit(language: ILanguageAdmin): void {
     this.form = { ...language };
+    this.countriesText = (language.countries ?? []).join(', ');
   }
 
   resetForm(): void {
     this.form = { ...EMPTY_FORM };
+    this.countriesText = '';
   }
 
   toggleActive(language: ILanguageAdmin): void {
@@ -82,6 +88,10 @@ export class LanguagesComponent implements OnInit {
     if (!this.form.code.trim() || !this.form.nativeName.trim() || !this.form.englishName.trim()) {
       return;
     }
+    this.form.countries = this.countriesText
+      .split(',')
+      .map(c => c.trim().toUpperCase())
+      .filter(c => c.length > 0);
     this.save(this.form);
   }
 

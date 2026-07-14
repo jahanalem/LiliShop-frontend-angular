@@ -1,4 +1,4 @@
-import { beforeEach, afterEach, describe, expect, it } from "vitest";
+import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import { TestBed } from '@angular/core/testing';
 
 import { LanguageService } from './language.service';
@@ -8,9 +8,9 @@ import { environment } from 'src/environments/environment';
 import { ILanguage } from 'src/app/shared/models/language';
 
 const LANGUAGES: ILanguage[] = [
-  { code: 'en', nativeName: 'English', englishName: 'English', direction: 'ltr', isDefault: true },
-  { code: 'de', nativeName: 'Deutsch', englishName: 'German', direction: 'ltr', isDefault: false },
-  { code: 'fa', nativeName: 'فارسی', englishName: 'Persian', direction: 'rtl', isDefault: false },
+  { code: 'en', nativeName: 'English', englishName: 'English', direction: 'ltr', isDefault: true, countries: ['US', 'GB'] },
+  { code: 'de', nativeName: 'Deutsch', englishName: 'German', direction: 'ltr', isDefault: false, countries: ['DE', 'AT'] },
+  { code: 'fa', nativeName: 'فارسی', englishName: 'Persian', direction: 'rtl', isDefault: false, countries: ['IR'] },
 ];
 
 describe('LanguageService', () => {
@@ -85,5 +85,66 @@ describe('LanguageService', () => {
     expect(service.localeId()).toBe('en');
     service.currentCode.set('de');
     expect(service.localeId()).toBe('de');
+  });
+
+  describe('first-visit language detection', () => {
+    function initializeWithTimezone(timezone: string | undefined): { reload: ReturnType<typeof vi.fn> } {
+      const reload = vi.fn();
+      vi.spyOn(service as any, 'reloadApp').mockImplementation(reload);
+      vi.spyOn(service, 'getTimezone').mockReturnValue(timezone);
+      service.initialize();
+      httpMock.expectOne(`${environment.apiUrl}languages`).flush(LANGUAGES);
+      return { reload };
+    }
+
+    it('selects the language of the device country on a true first visit (Iran → fa)', () => {
+      const { reload } = initializeWithTimezone('Asia/Tehran');
+
+      const stored = JSON.parse(localStorage.getItem('ls-lang')!);
+      expect(stored.code).toBe('fa');
+      expect(stored.source).toBe('detected');
+      expect(reload).toHaveBeenCalled();
+    });
+
+    it('never overrides an explicit user choice (priority 1 beats geo)', () => {
+      localStorage.setItem('ls-lang', JSON.stringify({ code: 'en', dir: 'ltr', source: 'user' }));
+      const { reload } = initializeWithTimezone('Asia/Tehran');
+
+      expect(JSON.parse(localStorage.getItem('ls-lang')!).code).toBe('en');
+      expect(reload).not.toHaveBeenCalled();
+    });
+
+    it('falls through to the browser/default language for unmapped timezones', () => {
+      const before = service.currentCode();
+      const { reload } = initializeWithTimezone('Etc/UTC');
+
+      expect(service.currentCode()).toBe(before);
+      expect(reload).not.toHaveBeenCalled();
+    });
+
+    it('applies the profile language on a fresh device after login', () => {
+      const reload = vi.fn();
+      vi.spyOn(service as any, 'reloadApp').mockImplementation(reload);
+      service.initialize();
+      httpMock.expectOne(`${environment.apiUrl}languages`).flush(LANGUAGES);
+
+      service.applyProfileLanguage('de');
+
+      const stored = JSON.parse(localStorage.getItem('ls-lang')!);
+      expect(stored.code).toBe('de');
+      expect(stored.source).toBe('user');
+      expect(reload).toHaveBeenCalled();
+    });
+
+    it('keeps the local explicit choice over the profile language', () => {
+      localStorage.setItem('ls-lang', JSON.stringify({ code: 'fa', dir: 'rtl', source: 'user' }));
+      const reload = vi.fn();
+      vi.spyOn(service as any, 'reloadApp').mockImplementation(reload);
+
+      service.applyProfileLanguage('de');
+
+      expect(JSON.parse(localStorage.getItem('ls-lang')!).code).toBe('fa');
+      expect(reload).not.toHaveBeenCalled();
+    });
   });
 });

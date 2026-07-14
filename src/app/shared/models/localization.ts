@@ -31,6 +31,7 @@ export interface ILanguageAdmin {
   isActive: boolean;
   isDefault: boolean;
   displayOrder: number;
+  countries: string[];
 }
 
 export interface ILanguageUpsert {
@@ -42,6 +43,7 @@ export interface ILanguageUpsert {
   isActive: boolean;
   isDefault: boolean;
   displayOrder: number;
+  countries?: string[];
 }
 
 export interface INameTranslation {

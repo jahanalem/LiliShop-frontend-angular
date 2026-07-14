@@ -7,6 +7,7 @@ import { IUser } from 'src/app/shared/models/user';
 import { IAuthenticatorSetup, IEnableAuthenticatorResult } from 'src/app/shared/models/mfa';
 import { environment } from 'src/environments/environment';
 import { StorageService } from './storage.service';
+import { LanguageService } from './language.service';
 import { LOCAL_STORAGE_KEYS } from 'src/app/shared/constants/auth';
 import { UserQueryParams } from 'src/app/shared/models/userQueryParams';
 import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
@@ -20,6 +21,7 @@ export class AccountService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private storageService = inject(StorageService);
+  private languageService = inject(LanguageService);
 
   private readonly baseUrl = environment.apiUrl;
   private currentUserSource = new ReplaySubject<IUser | null>(1);
@@ -285,6 +287,10 @@ export class AccountService {
   public updateCurrentUserState(user: IUser): void {
     this.storageService.set(LOCAL_STORAGE_KEYS.AUTH_TOKEN, user.token);
     this.currentUserSource.next(user);
+
+    // Fresh device, signed-in user with a stored language preference: apply it (an explicit
+    // local choice on this device always wins — the language service enforces that).
+    this.languageService.applyProfileLanguage(user.preferredLanguageCode);
   }
 
   /**

@@ -32,6 +32,11 @@
         <mat-label>Order</mat-label>
         <input matInput type="number" [(ngModel)]="form.displayOrder">
       </mat-form-field>
+      <mat-form-field appearance="outline" class="grow">
+        <mat-label>Countries (ISO codes, comma-separated)</mat-label>
+        <input matInput [(ngModel)]="countriesText" placeholder="DE, AT, CH">
+        <mat-hint>Used to suggest this language to first-time visitors from these countries.</mat-hint>
+      </mat-form-field>
     </div>
     <div class="language-form-row">
       <mat-checkbox [(ngModel)]="form.isActive">Active</mat-checkbox>

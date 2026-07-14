@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 import { ILanguage } from 'src/app/shared/models/language';
 import { StorageService } from './storage.service';
 import { REGISTERED_LOCALES } from '../i18n/locale-registry';
+import { countryFromTimezone } from '../i18n/timezone-country-map';
 
 const LANGUAGE_STORAGE_KEY = 'ls-lang';
 const DEFAULT_LANGUAGE_CODE = 'en';
@@ -17,6 +18,12 @@ const RTL_LANGUAGE_CODES: ReadonlySet<string> = new Set(['fa', 'ar', 'he', 'ur']
 interface StoredLanguage {
   code: string;
   dir: 'ltr' | 'rtl';
+  /**
+   * How this value was chosen: 'user' = explicit choice (never auto-overridden, per GDPR-style
+   * user control), 'detected' = automatic first-visit detection (may be re-evaluated).
+   * Absent on entries written before this field existed — treated as 'user' to be safe.
+   */
+  source?: 'user' | 'detected';
 }
 
 /**
@@ -69,6 +76,7 @@ export class LanguageService {
       next: languages => {
         this.languages.set(languages ?? []);
         this.ensureCurrentIsActive();
+        this.runFirstVisitDetection();
       },
       error: () => {
         // Language metadata is non-critical: keep the current (persisted or default)
@@ -77,16 +85,119 @@ export class LanguageService {
     });
   }
 
+  /**
+   * First-visit language detection. Priority chain:
+   *   1. Explicit user choice (localStorage, source 'user') — absolute, never overridden here.
+   *   2. Device timezone → country → Language.CountryCodes mapping (data-driven; solves the
+   *      "browser is English but the user is in Iran/Turkey/China" case without any IP lookup).
+   *   3. Browser language (already applied by resolveInitialCode at bootstrap).
+   *   4. Backend default language (applied by ensureCurrentIsActive when nothing else matches).
+   * Privacy: only the timezone string every site can read is used; nothing leaves the device
+   * and no location data is stored — just the resulting language choice, tagged 'detected'.
+   */
+  private runFirstVisitDetection(): void {
+    const stored = this.storageService.get<StoredLanguage>(LANGUAGE_STORAGE_KEY);
+    if (stored?.code && stored.source !== 'detected') {
+      return; // explicit (or legacy) choice — priority 1 wins.
+    }
+
+    const detected = this.detectLanguageFromTimezone();
+    if (!detected || detected.code === this.currentCode()) {
+      if (detected) {
+        // Same language as currently shown — just remember how we got here.
+        this.persist(detected.code, detected.direction, 'detected');
+      }
+      return;
+    }
+
+    this.persist(detected.code, detected.direction, 'detected');
+    this.writeCultureCookie(detected.code);
+    // One-time reload on first visit so LOCALE_ID, translations and direction all rebind.
+    this.reloadApp();
+  }
+
+  private detectLanguageFromTimezone(): ILanguage | null {
+    const timezone = this.getTimezone();
+    const country = countryFromTimezone(timezone);
+    if (!country) {
+      return null;
+    }
+
+    // Languages arrive ordered by DisplayOrder: when two languages claim one country,
+    // the earlier one wins deterministically.
+    return this.languages().find(l => l.countries?.includes(country)) ?? null;
+  }
+
+  /** Separated for testability (specs can override the device timezone). */
+  getTimezone(): string | undefined {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * Applies the signed-in user's stored language on a fresh device (profile preference is an
+   * explicit choice, priority 1). A local explicit choice on THIS device stays authoritative.
+   */
+  applyProfileLanguage(code: string | null | undefined): void {
+    if (!code) {
+      return;
+    }
+
+    const stored = this.storageService.get<StoredLanguage>(LANGUAGE_STORAGE_KEY);
+    if (stored?.code && stored.source !== 'detected') {
+      return; // this device already has an explicit choice.
+    }
+
+    const normalized = code.toLowerCase();
+    if (normalized === this.currentCode()) {
+      this.persist(normalized, this.currentDirection(), 'user');
+      return;
+    }
+
+    if (!this.languages().some(l => l.code === normalized)) {
+      return; // stored preference points at a deactivated language.
+    }
+
+    this.persist(normalized, this.directionFor(normalized), 'user');
+    this.writeCultureCookie(normalized);
+    this.reloadApp();
+  }
+
   setLanguage(code: string): void {
     if (code === this.currentCode()) {
       return;
     }
 
     const direction = this.directionFor(code);
-    this.storageService.set<StoredLanguage>(LANGUAGE_STORAGE_KEY, { code, dir: direction });
+    this.persist(code, direction, 'user');
     this.writeCultureCookie(code);
 
-    // Full reload so LOCALE_ID and all locale-sensitive pipes pick up the new locale.
+    // Store the explicit choice in the profile too, so a login on a fresh device restores it
+    // (401 for anonymous users is expected and ignored). The reload waits for this request to
+    // settle — reloading immediately would cancel it — but never longer than 800 ms.
+    let reloaded = false;
+    const reloadOnce = () => {
+      if (!reloaded) {
+        reloaded = true;
+        // Full reload so LOCALE_ID and all locale-sensitive pipes pick up the new locale.
+        this.reloadApp();
+      }
+    };
+
+    this.http.put(`${environment.apiUrl}account/preferred-language`, { languageCode: code })
+      .subscribe({ next: reloadOnce, error: reloadOnce });
+    setTimeout(reloadOnce, 800);
+  }
+
+  private persist(code: string, dir: 'ltr' | 'rtl', source: 'user' | 'detected'): void {
+    this.storageService.set<StoredLanguage>(LANGUAGE_STORAGE_KEY, { code, dir, source });
+  }
+
+  /** Seam for tests; jsdom cannot navigate. */
+  protected reloadApp(): void {
     this.document.location.reload();
   }
 
@@ -113,7 +224,7 @@ export class LanguageService {
 
     const fallback = languages.find(l => l.isDefault) ?? languages[0];
     this.currentCode.set(fallback.code);
-    this.storageService.set<StoredLanguage>(LANGUAGE_STORAGE_KEY, { code: fallback.code, dir: fallback.direction });
+    this.persist(fallback.code, fallback.direction, 'detected');
     this.writeCultureCookie(fallback.code);
   }
 

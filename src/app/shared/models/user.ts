@@ -7,4 +7,5 @@ export interface IUser {
   emailConfirmed:  boolean;
   requiresTwoFactorSetup?: boolean;           // admin has not enrolled an authenticator yet
   requiresTwoFactorCode ?: boolean;           // admin enrolled; a TOTP / recovery code is required
+  preferredLanguageCode ?: string | null;     // stored language; applied on fresh devices after login
 }
