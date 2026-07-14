@@ -14,10 +14,10 @@
 
     <div class="action-buttons">
       <button mat-stroked-button color="primary" routerLink="/shop">
-        <mat-icon>arrow_back</mat-icon> Continue Shopping
+        <mat-icon>arrow_back</mat-icon> {{ TranslationKeys.Basket.ContinueShopping | translate }}
       </button>
       <button mat-raised-button color="accent" routerLink="/checkout">
-        Proceed to Checkout <mat-icon>arrow_forward</mat-icon>
+        {{ TranslationKeys.Basket.ProceedToCheckout | translate }} <mat-icon>arrow_forward</mat-icon>
       </button>
     </div>
   </div>
@@ -27,7 +27,7 @@
     <mat-card color="warn">
       <mat-card-content>
         <mat-icon>warning</mat-icon>
-        There are no items in your basket
+        {{ TranslationKeys.Basket.Empty | translate }}
       </mat-card-content>
     </mat-card>
   </div>

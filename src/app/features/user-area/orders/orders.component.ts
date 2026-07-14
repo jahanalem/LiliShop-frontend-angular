@@ -10,6 +10,8 @@ import { IOrder } from 'src/app/shared/models/order';
 
 
 import { MatChipsModule } from '@angular/material/chips';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-orders',
@@ -17,9 +19,11 @@ import { MatChipsModule } from '@angular/material/chips';
     styleUrls: ['./orders.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [CommonModule, RouterModule, MatChipsModule, MatButtonModule, MatTableModule, MatCardModule]
+  imports: [TranslatePipe, CommonModule, RouterModule, MatChipsModule, MatButtonModule, MatTableModule, MatCardModule]
 })
 export class OrdersComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   orders = signal<IOrder[]>([]);
   displayedColumns: string[] = ['orderId', 'date', 'total', 'status', 'action'];
   private orderService = inject(OrdersService);

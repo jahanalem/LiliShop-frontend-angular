@@ -1,5 +1,5 @@
 <div>
-  <app-text-input [label]="'Name on card'" [field]="checkoutForm().payment.nameOnCard"></app-text-input>
+  <app-text-input [label]="TranslationKeys.Checkout.NameOnCard | translate" [field]="checkoutForm().payment.nameOnCard"></app-text-input>
 
   <div class="payment-fields">
     <div class="stripe-element-container full-width">
@@ -21,10 +21,10 @@
 
 <div class="action-buttons">
   <button mat-stroked-button color="primary" cdkStepperPrevious>
-    <mat-icon>arrow_back</mat-icon> Back to Review
+    <mat-icon>arrow_back</mat-icon> {{ TranslationKeys.Checkout.BackToReview | translate }}
   </button>
   <button mat-raised-button color="primary" [disabled]="isActivatedSubmitButton()" (click)="submitOrder()">
-    Submit order
+    {{ TranslationKeys.Checkout.SubmitOrder | translate }}
     <mat-icon>arrow_forward</mat-icon>
     @if (loading()) {
       <mat-icon class="loading-spinner">autorenew</mat-icon>

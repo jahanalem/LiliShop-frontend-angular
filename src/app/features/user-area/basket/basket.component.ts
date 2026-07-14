@@ -8,6 +8,8 @@ import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { IBasket, IBasketItem, IBasketTotals } from 'src/app/shared/models/basket';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-basket',
@@ -15,9 +17,11 @@ import { IBasket, IBasketItem, IBasketTotals } from 'src/app/shared/models/baske
     styleUrls: ['./basket.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatButtonModule, MatIconModule, MatCardModule]
+  imports: [TranslatePipe, RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatButtonModule, MatIconModule, MatCardModule]
 })
 export class BasketComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private basketService = inject(BasketService);
 
   basket = signal<IBasket | null>(null);

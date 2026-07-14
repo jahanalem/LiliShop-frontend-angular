@@ -1,38 +1,38 @@
 <div>
   <div class="checkout-section">
     <div class="header-container">
-      <h4>Shipping address</h4>
+      <h4>{{ TranslationKeys.Checkout.ShippingAddress | translate }}</h4>
       <button mat-button (click)="saveUserAddress()" [disabled]="isSaveDisabled()" color="primary">
-        Save as default address
+        {{ TranslationKeys.Checkout.SaveDefaultAddress | translate }}
       </button>
     </div>
 
     <div class="form-field">
-      <app-text-input [label]="'First name'" [field]="checkoutForm().address.firstName"></app-text-input>
+      <app-text-input [label]="TranslationKeys.Checkout.FirstName | translate" [field]="checkoutForm().address.firstName"></app-text-input>
     </div>
     <div class="form-field">
-      <app-text-input [label]="'Last name'" [field]="checkoutForm().address.lastName"></app-text-input>
+      <app-text-input [label]="TranslationKeys.Checkout.LastName | translate" [field]="checkoutForm().address.lastName"></app-text-input>
     </div>
     <div class="form-field">
-      <app-text-input [label]="'Street'" [field]="checkoutForm().address.street"></app-text-input>
+      <app-text-input [label]="TranslationKeys.Checkout.Street | translate" [field]="checkoutForm().address.street"></app-text-input>
     </div>
     <div class="form-field">
-      <app-text-input [label]="'City'" [field]="checkoutForm().address.city"></app-text-input>
+      <app-text-input [label]="TranslationKeys.Checkout.City | translate" [field]="checkoutForm().address.city"></app-text-input>
     </div>
     <div class="form-field">
-      <app-text-input [label]="'State'" [field]="checkoutForm().address.state"></app-text-input>
+      <app-text-input [label]="TranslationKeys.Checkout.State | translate" [field]="checkoutForm().address.state"></app-text-input>
     </div>
     <div class="form-field">
-      <app-text-input [label]="'Zip code'" [field]="checkoutForm().address.zipCode"></app-text-input>
+      <app-text-input [label]="TranslationKeys.Checkout.ZipCode | translate" [field]="checkoutForm().address.zipCode"></app-text-input>
     </div>
   </div>
 
   <div class="action-buttons">
     <button mat-stroked-button routerLink="/basket" color="primary">
-      <mat-icon>arrow_back</mat-icon> Back to basket
+      <mat-icon>arrow_back</mat-icon> {{ TranslationKeys.Checkout.BackToBasket | translate }}
     </button>
     <button mat-raised-button color="accent" [disabled]="checkoutForm().address().invalid()" cdkStepperNext>
-      Go to delivery <mat-icon>arrow_forward</mat-icon>
+      {{ TranslationKeys.Checkout.GoToDelivery | translate }} <mat-icon>arrow_forward</mat-icon>
     </button>
   </div>
 </div>

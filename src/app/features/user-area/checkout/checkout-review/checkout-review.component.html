@@ -6,9 +6,9 @@
 }
 <div class="action-buttons">
   <button mat-stroked-button color="primary" cdkStepperPrevious>
-    <mat-icon>arrow_back</mat-icon> Back to Delivery
+    <mat-icon>arrow_back</mat-icon> {{ TranslationKeys.Checkout.BackToDelivery | translate }}
   </button>
   <button mat-raised-button color="primary" (click)="createPaymentIntent()">
-    Go to Payment <mat-icon>arrow_forward</mat-icon>
+    {{ TranslationKeys.Checkout.GoToPayment | translate }} <mat-icon>arrow_forward</mat-icon>
   </button>
 </div>

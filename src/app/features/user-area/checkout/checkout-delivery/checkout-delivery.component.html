@@ -1,5 +1,5 @@
 <div class="delivery-section">
-  <h4>Choose your delivery method</h4>
+  <h4>{{ TranslationKeys.Checkout.ChooseDelivery | translate }}</h4>
 
   <mat-radio-group [value]="checkoutForm().delivery.deliveryMethod().value()">
     @for (dMethod of deliveryMethods(); track dMethod.id) {
@@ -14,9 +14,9 @@
 
 <div class="action-buttons">
   <button mat-stroked-button color="primary" cdkStepperPrevious>
-    <mat-icon>arrow_back</mat-icon> Back to address
+    <mat-icon>arrow_back</mat-icon> {{ TranslationKeys.Checkout.BackToAddress | translate }}
   </button>
   <button mat-raised-button color="accent" [disabled]="checkoutForm().delivery().invalid()" cdkStepperNext>
-    Go to review <mat-icon>arrow_forward</mat-icon>
+    {{ TranslationKeys.Checkout.GoToReview | translate }} <mat-icon>arrow_forward</mat-icon>
   </button>
 </div>

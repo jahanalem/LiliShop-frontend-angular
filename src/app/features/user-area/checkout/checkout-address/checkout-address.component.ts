@@ -10,6 +10,8 @@ import { RouterModule } from '@angular/router';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 
 import { type CheckoutForm } from '../checkout.component';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-checkout-address',
@@ -17,9 +19,11 @@ import { type CheckoutForm } from '../checkout.component';
   styleUrls: ['./checkout-address.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterModule, TextInputComponent, MatButtonModule, MatIconModule, CdkStepperModule]
+  imports: [TranslatePipe, RouterModule, TextInputComponent, MatButtonModule, MatIconModule, CdkStepperModule]
 })
 export class CheckoutAddressComponent implements OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   // The whole checkout form node, passed down from the parent.
   checkoutForm = input.required<CheckoutForm>();
 

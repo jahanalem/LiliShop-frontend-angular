@@ -66,7 +66,7 @@
             <div class="action-buttons">
               <button mat-raised-button color="primary" (click)="addItemToBasket()" class="action-button">
                 <mat-icon>shopping_cart</mat-icon>
-                Add to cart
+                {{ TranslationKeys.Product.AddToCart | translate }}
               </button>
 
               @if(currentUserId() > 0 && currentUserEmailConfirmed()){
@@ -82,14 +82,14 @@
                   <mat-icon>
                     {{ isSubscribed() ? 'notifications_off' : 'notifications' }}
                   </mat-icon>
-                  {{ isSubscribed() ? 'Unsubscribe from price drops' : 'Notify me of price drops' }}
+                  {{ (isSubscribed() ? TranslationKeys.Product.UnsubscribePriceDrops : TranslationKeys.Product.NotifyPriceDrops) | translate }}
                 </button>
               }
             </div>
           </div>
         </div>
       }@else {
-        <p>Loading product details...</p>
+        <p>{{ TranslationKeys.Product.Loading | translate }}</p>
       }
     </div>
   </div>

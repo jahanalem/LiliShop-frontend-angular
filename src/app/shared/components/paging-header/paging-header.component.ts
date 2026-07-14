@@ -18,6 +18,8 @@ import { MatTableModule } from '@angular/material/table';
 
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-paging-header',
@@ -25,7 +27,7 @@ import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core
     styleUrls: ['./paging-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [
+  imports: [TranslatePipe, 
     RouterModule,
     MatDialogModule,
     MatIconModule,
@@ -47,6 +49,8 @@ import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core
 
 })
 export class PagingHeaderComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   pageNumber = input<number>(1);
   pageSize   = input<number>(1);
   totalCount = input<number>(0);

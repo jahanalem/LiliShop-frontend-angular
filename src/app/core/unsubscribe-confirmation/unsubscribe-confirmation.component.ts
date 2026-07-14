@@ -1,15 +1,19 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-unsubscribe-confirmation',
-    imports: [],
+    imports: [TranslatePipe, ],
     templateUrl: './unsubscribe-confirmation.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './unsubscribe-confirmation.component.scss'
 })
 export class UnsubscribeConfirmationComponent {
+  protected readonly TranslationKeys = TranslationKeys;
+
   success = signal<boolean | null>(null);
 
   private destroy$ = new Subject<void>();

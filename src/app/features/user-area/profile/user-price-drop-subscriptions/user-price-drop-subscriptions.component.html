@@ -1,7 +1,7 @@
 <mat-card class="subscriptions-card">
   <mat-card-header>
     <mat-card-title>
-      My Subscriptions
+      {{ TranslationKeys.Subs.Title | translate }}
     </mat-card-title>
   </mat-card-header>
 
@@ -16,21 +16,21 @@
           [dataSource]="subscriptions()">
           <!-- Product Name Column -->
           <ng-container matColumnDef="productName">
-            <th mat-header-cell *matHeaderCellDef>Product Name</th>
+            <th mat-header-cell *matHeaderCellDef>{{ TranslationKeys.Subs.ProductName | translate }}</th>
             <td mat-cell *matCellDef="let sub">
               <a [routerLink]="['/shop', sub.productId]" target="_blank">{{ sub.productName }}</a>
             </td>
           </ng-container>
           <!-- Current Price Column -->
           <ng-container matColumnDef="currentPrice">
-            <th mat-header-cell *matHeaderCellDef>Current Price</th>
+            <th mat-header-cell *matHeaderCellDef>{{ TranslationKeys.Subs.CurrentPrice | translate }}</th>
             <td mat-cell *matCellDef="let sub">
               {{ sub.productPrice | currency }}
             </td>
           </ng-container>
           <!-- Old Price Column -->
           <ng-container matColumnDef="oldPrice">
-            <th mat-header-cell *matHeaderCellDef>Old Price</th>
+            <th mat-header-cell *matHeaderCellDef>{{ TranslationKeys.Subs.OldPrice | translate }}</th>
             <td mat-cell *matCellDef="let sub">
               @if (sub.oldPrice !== null) {
                 {{ sub.oldPrice | currency }}
@@ -41,14 +41,14 @@
           </ng-container>
           <!-- Subscription Date Column -->
           <ng-container matColumnDef="subscriptionDate">
-            <th mat-header-cell *matHeaderCellDef>Subscription Date</th>
+            <th mat-header-cell *matHeaderCellDef>{{ TranslationKeys.Subs.Date | translate }}</th>
             <td mat-cell *matCellDef="let sub">{{ sub.subscriptionDate | date:'short' }}</td>
           </ng-container>
           <!-- Action Column -->
           <ng-container matColumnDef="action">
-            <th mat-header-cell *matHeaderCellDef>Action</th>
+            <th mat-header-cell *matHeaderCellDef>{{ TranslationKeys.Orders.Action | translate }}</th>
             <td mat-cell *matCellDef="let sub">
-              <button mat-raised-button color="warn" (click)="unsubscribe(sub.productId)">Unsubscribe</button>
+              <button mat-raised-button color="warn" (click)="unsubscribe(sub.productId)">{{ TranslationKeys.Subs.Unsubscribe | translate }}</button>
             </td>
           </ng-container>
           <!-- Header / Row Definitions -->
@@ -58,7 +58,7 @@
       } @else {
         <div class="no-subscriptions">
           <mat-icon>info_outline</mat-icon>
-          <p>You don't have any active subscriptions</p>
+          <p>{{ TranslationKeys.Subs.Empty | translate }}</p>
         </div>
       }
     }

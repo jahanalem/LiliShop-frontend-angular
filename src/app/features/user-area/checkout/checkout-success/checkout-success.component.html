@@ -4,10 +4,10 @@
       <i class="fa fa-check"></i>
     </div>
     <h2 class="confirmation-title">
-      Thank you, {{ (currentUser$ | async)?.displayName }}. Your order is confirmed.
+      {{ TranslationKeys.Checkout.ThankYou | translate: [(currentUser$ | async)?.displayName ?? ''] }}
     </h2>
     <p class="confirmation-message">
-      Your order hasn't shipped yet but this is to be expected as we are not a real store.
+      {{ TranslationKeys.Checkout.NotShippedNote | translate }}
     </p>
     <div class="confirmation-buttons">
       @if (order()) {
@@ -16,7 +16,7 @@
           color="primary"
           routerLink="/orders/{{ order().id }}"
           >
-          View your order
+          {{ TranslationKeys.Checkout.ViewYourOrder | translate }}
         </button>
       }
       @if (!order()) {
@@ -25,7 +25,7 @@
           color="primary"
           routerLink="/orders"
           >
-          View your orders
+          {{ TranslationKeys.Checkout.ViewYourOrders | translate }}
         </button>
       }
     </div>

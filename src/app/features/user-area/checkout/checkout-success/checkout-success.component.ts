@@ -6,6 +6,8 @@ import { Observable, of } from 'rxjs';
 import { IUser } from 'src/app/shared/models/user';
 import { AccountService } from 'src/app/core/services/account.service';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-checkout-success',
@@ -13,9 +15,11 @@ import { CommonModule } from '@angular/common';
     styleUrls: ['./checkout-success.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [CommonModule, RouterModule, MatButtonModule]
+    imports: [TranslatePipe, CommonModule, RouterModule, MatButtonModule]
 })
 export class CheckoutSuccessComponent {
+  protected readonly TranslationKeys = TranslationKeys;
+
   protected currentUser$: Observable<IUser | null> = of(null);
 
   order = signal<IOrder>({} as IOrder);

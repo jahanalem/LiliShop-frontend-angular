@@ -39,41 +39,41 @@
     <!-- Form panel -->
     <div class="panel">
       <header class="panel__head">
-        <h2 class="panel__title">Send a message</h2>
-        <p class="panel__sub">Fields marked are required — I read every note personally.</p>
+        <h2 class="panel__title">{{ TranslationKeys.Contact.SendMessage | translate }}</h2>
+        <p class="panel__sub">{{ TranslationKeys.Contact.FormHint | translate }}</p>
       </header>
 
       <form class="form" (ngSubmit)="onSubmit()">
         <div class="form__row">
           <app-text-input
             class="form__field"
-            [label]="'First Name'"
+            [label]="TranslationKeys.Checkout.FirstName | translate"
             [field]="contactForm.firstName">
           </app-text-input>
 
           <app-text-input
             class="form__field"
-            [label]="'Last Name'"
+            [label]="TranslationKeys.Checkout.LastName | translate"
             [field]="contactForm.lastName">
           </app-text-input>
         </div>
 
         <app-text-input
           class="form__field"
-          [label]="'Email Address'"
+          [label]="TranslationKeys.Auth.EmailLabel | translate"
           [field]="contactForm.email">
         </app-text-input>
 
         <mat-form-field appearance="outline" class="form__message">
-          <mat-label>Message</mat-label>
+          <mat-label>{{ TranslationKeys.Contact.Message | translate }}</mat-label>
           <textarea
             matInput
             rows="6"
             [formField]="contactForm.message"
-            placeholder="How can I help?">
+            [placeholder]="TranslationKeys.Contact.MessagePlaceholder | translate">
           </textarea>
           @if (contactForm.message().touched() && contactForm.message().invalid()) {
-            <mat-error>Message is required</mat-error>
+            <mat-error>{{ TranslationKeys.Contact.MessageRequired | translate }}</mat-error>
           }
         </mat-form-field>
 
@@ -87,9 +87,9 @@
           }
           <span class="form__submit-label">
             @if (isSubmitting()) {
-              Sending…
+              {{ TranslationKeys.Contact.Sending | translate }}
             } @else {
-              Send message
+              {{ TranslationKeys.Contact.Send | translate }}
             }
           </span>
         </button>

@@ -14,6 +14,8 @@ import { CheckoutAddressComponent } from './checkout-address/checkout-address.co
 import { CheckoutDeliveryComponent } from './checkout-delivery/checkout-delivery.component';
 import { CheckoutReviewComponent } from './checkout-review/checkout-review.component';
 import { CheckoutPaymentComponent } from './checkout-payment/checkout-payment.component';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 export interface CheckoutAddress {
   firstName: string;
@@ -36,9 +38,11 @@ export interface CheckoutData {
   styleUrls: ['./checkout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [MatStepperModule, CheckoutAddressComponent, CheckoutDeliveryComponent, CheckoutReviewComponent, CheckoutPaymentComponent, OrderTotalsComponent, MatCardModule]
+  imports: [TranslatePipe, MatStepperModule, CheckoutAddressComponent, CheckoutDeliveryComponent, CheckoutReviewComponent, CheckoutPaymentComponent, OrderTotalsComponent, MatCardModule]
 })
 export class CheckoutComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   basketTotals = signal<IBasketTotals | null>(null);
 
   private accountService = inject(AccountService);

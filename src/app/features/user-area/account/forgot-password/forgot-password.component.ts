@@ -10,6 +10,8 @@ import { AccountService } from 'src/app/core/services/account.service';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordResponse';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-forgot-password',
@@ -17,9 +19,11 @@ import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordRes
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterModule, ReactiveFormsModule]
+  imports: [TranslatePipe, RouterModule, ReactiveFormsModule]
 })
 export class ForgotPasswordComponent {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private fb = inject(FormBuilder);
   private accountService = inject(AccountService);
   private dialog = inject(MatDialog);

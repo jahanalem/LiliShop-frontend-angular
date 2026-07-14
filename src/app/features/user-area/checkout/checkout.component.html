@@ -3,22 +3,22 @@
     <div class="checkout-content">
       <div class="checkout-stepper">
         <mat-stepper [linear]="true" #appStepper>
-          <mat-step [completed]="checkoutForm.address().valid()" label="Address">
+          <mat-step [completed]="checkoutForm.address().valid()" [label]="TranslationKeys.Checkout.StepAddress | translate">
             <app-checkout-address [checkoutForm]="checkoutForm"></app-checkout-address>
           </mat-step>
 
-          <mat-step [completed]="checkoutForm.delivery().valid()" label="Delivery">
+          <mat-step [completed]="checkoutForm.delivery().valid()" [label]="TranslationKeys.Checkout.StepDelivery | translate">
             <app-checkout-delivery
               [checkoutForm]="checkoutForm"
               (deliveryMethodSelected)="onDeliveryMethodSelected($event)">
             </app-checkout-delivery>
           </mat-step>
 
-          <mat-step label="Review">
+          <mat-step [label]="TranslationKeys.Checkout.StepReview | translate">
             <app-checkout-review [appStepper]="appStepper"></app-checkout-review>
           </mat-step>
 
-          <mat-step label="Payment">
+          <mat-step [label]="TranslationKeys.Checkout.StepPayment | translate">
             <app-checkout-payment [checkoutForm]="checkoutForm"></app-checkout-payment>
           </mat-step>
         </mat-stepper>

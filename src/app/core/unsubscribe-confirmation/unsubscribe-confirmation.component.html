@@ -1,14 +1,14 @@
 <div class="unsubscribe-confirmation-container">
-  <h1>Unsubscribe Confirmation</h1>
+  <h1>{{ TranslationKeys.Unsubscribe.Title | translate }}</h1>
 
   @if(success()){
   <div class="success-message">
-    <p>You have successfully unsubscribed from our mailing list!</p>
+    <p>{{ TranslationKeys.Unsubscribe.Success | translate }}</p>
   </div>
   }@else{
   <div class="error-message">
-    <p>Sorry, there was an issue with your unsubscription request.</p>
+    <p>{{ TranslationKeys.Unsubscribe.Failure | translate }}</p>
   </div>
   }
-  <button (click)="redirectToHome()" class="home-button">Return to Home Page</button>
+  <button (click)="redirectToHome()" class="home-button">{{ TranslationKeys.Common.GoHome | translate }}</button>
 </div>

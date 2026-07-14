@@ -18,6 +18,8 @@ import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-order-totals',
@@ -25,7 +27,7 @@ import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core
     styleUrls: ['./order-totals.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [
+  imports: [TranslatePipe, 
     CommonModule, RouterModule,
     MatDialogModule,
     MatIconModule,
@@ -47,6 +49,8 @@ import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core
 
 })
 export class OrderTotalsComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   shippingPrice = input<number>(0);
   subtotal      = input<number>(0);
   total         = input<number>(0);

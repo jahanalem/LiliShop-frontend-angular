@@ -1,14 +1,12 @@
 <header>
   @if (hasResults()) {
     <span class="visible-items">
-      Showing
-      <strong>{{getStartItem()}} - {{getEndItem()}}</strong> of
-      <strong>{{totalCount()}}</strong> results
+      {{ TranslationKeys.Paging.ShowingRange | translate: [getStartItem(), getEndItem(), totalCount()] }}
     </span>
   }
   @if (noResults()) {
     <span>
-      There are <strong>0</strong> results for this filter.
+      {{ TranslationKeys.Paging.NoResults | translate }}
     </span>
   }
 </header>

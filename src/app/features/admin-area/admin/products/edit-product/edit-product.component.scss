@@ -68,3 +68,35 @@
     width: 100%;
   }
 }
+
+.translations-section {
+  margin-block: 8px 4px;
+
+  .translations-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 2px;
+    font-size: 1rem;
+  }
+
+  .translations-hint {
+    margin: 0 0 8px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+
+  .tab-done-icon {
+    font-size: 16px;
+    inline-size: 16px;
+    block-size: 16px;
+    margin-inline-start: 6px;
+    color: var(--ls-success, #2e7d32);
+  }
+
+  .translation-tab-body {
+    display: flex;
+    flex-direction: column;
+    padding-block-start: 12px;
+  }
+}

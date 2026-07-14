@@ -8,6 +8,8 @@ import { ActivatedRoute } from '@angular/router';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { IOrder } from 'src/app/shared/models/order';
 import { OrdersService } from 'src/app/core/services/orders.service';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-order-detailed',
@@ -15,9 +17,11 @@ import { OrdersService } from 'src/app/core/services/orders.service';
     styleUrls: ['./order-detailed.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatCardModule]
+  imports: [TranslatePipe, RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatCardModule]
 })
 export class OrderDetailedComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   order = signal<IOrder | undefined>(undefined);
 
   private orderService      = inject(OrdersService);

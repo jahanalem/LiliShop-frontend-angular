@@ -11,6 +11,8 @@ import { pattern as patterns } from 'src/app/shared/constants/patterns';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 interface ContactData {
   firstName: string;
@@ -24,7 +26,7 @@ interface ContactData {
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
+  imports: [TranslatePipe, 
     TextInputComponent,
     FormField,
     MatFormFieldModule,
@@ -36,6 +38,8 @@ interface ContactData {
   ],
 })
 export class ContactComponent {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private contactService = inject(ContactService);
   private notificationService = inject(NotificationService);
 

@@ -12,6 +12,8 @@ import { DialogComponent } from 'src/app/shared/components/dialog/dialog.compone
 
 import { IBasket } from 'src/app/shared/models/basket';
 import { IUser } from 'src/app/shared/models/user';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-checkout-review',
@@ -19,9 +21,11 @@ import { IUser } from 'src/app/shared/models/user';
     styleUrls: ['./checkout-review.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [BasketSummaryComponent, MatButtonModule, MatIconModule, CdkStepperModule]
+    imports: [TranslatePipe, BasketSummaryComponent, MatButtonModule, MatIconModule, CdkStepperModule]
 })
 export class CheckoutReviewComponent implements OnInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   appStepper = input.required<CdkStepper>();
   basket     = signal<IBasket | null>(null);
 

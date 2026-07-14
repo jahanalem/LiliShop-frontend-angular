@@ -16,6 +16,8 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 import { ThemeService } from 'src/app/core/services/theme.service';
 import { type CheckoutForm } from '../checkout.component';
 import { CdkStepperModule } from '@angular/cdk/stepper';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-checkout-payment',
@@ -23,9 +25,11 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
   styleUrls: ['./checkout-payment.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [TextInputComponent, MatButtonModule, MatIconModule, MatCardModule, CdkStepperModule]
+  imports: [TranslatePipe, TextInputComponent, MatButtonModule, MatIconModule, MatCardModule, CdkStepperModule]
 })
 export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   checkoutForm = input.required<CheckoutForm>();
 
   readonly cardNumberElement = viewChild.required<ElementRef>('cardNumber');

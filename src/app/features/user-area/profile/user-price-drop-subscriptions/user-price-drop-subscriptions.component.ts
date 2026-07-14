@@ -8,16 +8,20 @@ import { RouterLink } from '@angular/router';
 import { AccountService } from 'src/app/core/services/account.service';
 import { SubscriptionService } from 'src/app/core/services/subscription.service';
 import { IPriceDropSubscription } from 'src/app/shared/models/priceDropSubscription';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-user-price-drop-subscriptions',
-  imports: [CommonModule, MatProgressSpinnerModule, RouterLink, MatCardModule, MatTableModule, MatIcon],
+  imports: [TranslatePipe, CommonModule, MatProgressSpinnerModule, RouterLink, MatCardModule, MatTableModule, MatIcon],
   templateUrl: './user-price-drop-subscriptions.component.html',
   styleUrl: './user-price-drop-subscriptions.component.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserPriceDropSubscriptionsComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private subscriptionService = inject(SubscriptionService);
   private accountService      = inject(AccountService);
 

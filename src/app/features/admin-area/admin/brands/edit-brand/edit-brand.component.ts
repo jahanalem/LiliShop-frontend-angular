@@ -110,8 +110,13 @@ export class EditBrandComponent implements OnInit {
 
   private applyTranslationDrafts(brand: IBrand): void {
     this.translationDrafts = {};
+    // The default culture's name is the main Name field; keeping it out of the drafts
+    // prevents a stale duplicate from overriding the edited value on save.
+    const defaultCulture = this.languageService.languages().find(l => l.isDefault)?.code;
     for (const translation of brand.translations ?? []) {
-      this.translationDrafts[translation.culture] = translation.name;
+      if (translation.culture !== defaultCulture) {
+        this.translationDrafts[translation.culture] = translation.name;
+      }
     }
   }
 

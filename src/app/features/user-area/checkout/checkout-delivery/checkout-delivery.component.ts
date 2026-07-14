@@ -11,6 +11,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { CommonModule } from '@angular/common';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 import { type CheckoutForm } from '../checkout.component';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-checkout-delivery',
@@ -18,9 +20,11 @@ import { type CheckoutForm } from '../checkout.component';
   styleUrls: ['./checkout-delivery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [MatRadioModule,  CommonModule, MatButtonModule, MatIconModule, CdkStepperModule]
+  imports: [TranslatePipe, MatRadioModule,  CommonModule, MatButtonModule, MatIconModule, CdkStepperModule]
 })
 export class CheckoutDeliveryComponent implements OnInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   checkoutForm = input.required<CheckoutForm>();
 
   // The parent owns the model, so selection bubbles up for it to write.

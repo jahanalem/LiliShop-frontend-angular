@@ -2,21 +2,21 @@
 <section>
   <div class="order-summary-container">
     <div class="order-summary-header">
-      <h6 class="text-uppercase">Order Summary</h6>
+      <h6 class="text-uppercase">{{ TranslationKeys.OrderTotals.Title | translate }}</h6>
     </div>
     <div class="order-summary-content">
-      <p class="text-muted">Shipping and additional costs are calculated based on values you have entered.</p>
+      <p class="text-muted">{{ TranslationKeys.OrderTotals.Hint | translate }}</p>
       <ul class="order-summary-list">
         <li class="order-summary-item">
-          <span>Order Subtotal</span>
+          <span>{{ TranslationKeys.OrderTotals.Subtotal | translate }}</span>
           <strong>{{subtotal() | currency}}</strong>
         </li>
         <li class="order-summary-item">
-          <span>Shipping and handling</span>
+          <span>{{ TranslationKeys.OrderTotals.Shipping | translate }}</span>
           <strong>{{shippingPrice() | currency}}</strong>
         </li>
         <li class="order-summary-item order-total">
-          <span>Total</span>
+          <span>{{ TranslationKeys.OrderTotals.Total | translate }}</span>
           <strong class="total-price">{{total() | currency}}</strong>
         </li>
       </ul>

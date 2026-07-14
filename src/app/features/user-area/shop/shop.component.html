@@ -5,7 +5,7 @@
       <div class="mobile-controls">
         <button mat-stroked-button (click)="toggleFilters()" class="toggle-filters-button">
           <mat-icon>filter_list</mat-icon>
-          <span>Filters & Sort</span>
+          <span>{{ TranslationKeys.Shop.FiltersAndSort | translate }}</span>
         </button>
       </div>
     }
@@ -14,7 +14,7 @@
       <aside class="filters-panel" [class.filters-panel--visible-mobile]="!filtersHidden() && isMobileScreen()">
         @if (isMobileScreen()) {
           <div class="filters-panel__header">
-            <h3>Filters & Sort</h3>
+            <h3>{{ TranslationKeys.Shop.FiltersAndSort | translate }}</h3>
             <button mat-icon-button (click)="toggleFilters()" aria-label="Close filters">
               <mat-icon>close</mat-icon>
             </button>
@@ -24,16 +24,16 @@
         <div class="filters-panel__content">
           <div class="filter-actions">
             <button mat-stroked-button (click)="onReset()" class="full-width clear-all-button">
-              <mat-icon>clear_all</mat-icon> Clear All Filters
+              <mat-icon>clear_all</mat-icon> {{ TranslationKeys.Shop.ClearAllFilters | translate }}
             </button>
           </div>
 
           <mat-card class="filter-group">
             <mat-card-content>
               <mat-form-field appearance="outline" class="full-width search-field">
-                <mat-label>Search Products</mat-label>
+                <mat-label>{{ TranslationKeys.Shop.SearchProducts | translate }}</mat-label>
                 <input matInput
-                  placeholder="e.g., coat"
+                  [placeholder]="TranslationKeys.Shop.SearchPlaceholder | translate"
                   #search (keyup.enter)="onSearch()" />
                   @if (search.value) {
                     <button mat-icon-button matSuffix (click)="onSearch()" aria-label="Search">
@@ -46,25 +46,25 @@
             </mat-card>
 
             <mat-card class="filter-group">
-              <mat-card-title class="filter-group__title">Refine By</mat-card-title>
+              <mat-card-title class="filter-group__title">{{ TranslationKeys.Shop.RefineBy | translate }}</mat-card-title>
               <mat-card-content>
-                <label id="sale-label" class="filter-label">On Sale</label>
+                <label id="sale-label" class="filter-label">{{ TranslationKeys.Shop.OnSale | translate }}</label>
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select [(ngModel)]="shopParams().sale" (selectionChange)="onFilterSelected($event.value, 'sale')" aria-labelledby="sale-label">
                     @for (sale of saleOptions; track sale) {
                       <mat-option [value]="sale.value">
-                        {{ sale.name }}
+                        {{ sale.name | translate }}
                       </mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
 
-                <label id="sort-label" class="filter-label">Sort By</label>
+                <label id="sort-label" class="filter-label">{{ TranslationKeys.Shop.SortBy | translate }}</label>
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-select [(ngModel)]="shopParams().sort" (selectionChange)="onFilterSelected($event.value, 'sort')" aria-labelledby="sort-label">
                     @for (sort of sortOptions; track sort) {
                       <mat-option [value]="sort.value">
-                        {{ sort.name }}
+                        {{ sort.name | translate }}
                       </mat-option>
                     }
                   </mat-select>
@@ -74,9 +74,9 @@
 
             @if (types() && brands()) {
               <mat-card class="filter-group">
-                <mat-card-title class="filter-group__title">Categories</mat-card-title>
+                <mat-card-title class="filter-group__title">{{ TranslationKeys.Shop.Categories | translate }}</mat-card-title>
                 <mat-card-content>
-                  <label id="brand-label" class="filter-label">Brand</label>
+                  <label id="brand-label" class="filter-label">{{ TranslationKeys.Shop.Brand | translate }}</label>
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select [(ngModel)]="shopParams().brandId" (selectionChange)="onFilterSelected($event.value, 'brand')" aria-labelledby="brand-label">
                       @for (brand of brands(); track brand) {
@@ -86,7 +86,7 @@
                       }
                     </mat-select>
                   </mat-form-field>
-                  <label id="type-label" class="filter-label">Type</label>
+                  <label id="type-label" class="filter-label">{{ TranslationKeys.Shop.Type | translate }}</label>
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select [(ngModel)]="shopParams().typeId" (selectionChange)="onFilterSelected($event.value, 'type')" aria-labelledby="type-label">
                       @for (type of types(); track type) {
@@ -96,7 +96,7 @@
                       }
                     </mat-select>
                   </mat-form-field>
-                  <label id="size-label" class="filter-label">Size</label>
+                  <label id="size-label" class="filter-label">{{ TranslationKeys.Shop.Size | translate }}</label>
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-select [(ngModel)]="shopParams().sizeId" (selectionChange)="onFilterSelected($event.value, 'size')" aria-labelledby="size-label">
                       @for (size of sizes(); track size) {
@@ -142,7 +142,7 @@
                 <mat-spinner diameter="50"></mat-spinner>
               </div>
             } @error {
-              <p>Failed to load products. Please try again.</p>
+              <p>{{ TranslationKeys.Shop.LoadFailed | translate }}</p>
             }
 
             @if (!isLoading() && (!products() || products().length === 0)) {
@@ -152,9 +152,9 @@
           @else if (!isLoading() && (!products() || products().length === 0)) {
             <div class="no-products-message">
               <mat-icon class="no-products-icon">search_off</mat-icon>
-              <p>No products found matching your criteria.</p>
-              <p>Try adjusting your filters or search terms.</p>
-              <button mat-stroked-button (click)="onReset()">Clear Filters</button>
+              <p>{{ TranslationKeys.Shop.NoProductsFound | translate }}</p>
+              <p>{{ TranslationKeys.Shop.TryAdjustingFilters | translate }}</p>
+              <button mat-stroked-button (click)="onReset()">{{ TranslationKeys.Shop.ClearFilters | translate }}</button>
             </div>
           }
 

@@ -2,25 +2,25 @@
   <mat-table [dataSource]="orders()">
     <!-- Order ID Column -->
     <ng-container matColumnDef="orderId">
-      <mat-header-cell *matHeaderCellDef> Order </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef> {{ TranslationKeys.Orders.Order | translate }} </mat-header-cell>
       <mat-cell *matCellDef="let order"> {{order.id}} </mat-cell>
     </ng-container>
 
     <!-- Date Column -->
     <ng-container matColumnDef="date">
-      <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef> {{ TranslationKeys.Orders.Date | translate }} </mat-header-cell>
       <mat-cell *matCellDef="let order"> {{order.orderDate | date:'medium'}} </mat-cell>
     </ng-container>
 
     <!-- Total Column -->
     <ng-container matColumnDef="total">
-      <mat-header-cell *matHeaderCellDef> Total </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef> {{ TranslationKeys.Orders.Total | translate }} </mat-header-cell>
       <mat-cell *matCellDef="let order"> {{order.total | currency}} </mat-cell>
     </ng-container>
 
     <!-- Status Column -->
     <ng-container matColumnDef="status">
-      <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef> {{ TranslationKeys.Orders.Status | translate }} </mat-header-cell>
       <mat-cell *matCellDef="let order">
         <mat-chip color="primary" selected>{{order.status}}</mat-chip>
       </mat-cell>
@@ -28,9 +28,9 @@
 
     <!-- Action Column -->
     <ng-container matColumnDef="action">
-      <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef> {{ TranslationKeys.Orders.Action | translate }} </mat-header-cell>
       <mat-cell *matCellDef="let order">
-        <button mat-raised-button color="primary" routerLink="/orders/{{order.id}}">View</button>
+        <button mat-raised-button color="primary" routerLink="/orders/{{order.id}}">{{ TranslationKeys.Orders.View | translate }}</button>
       </mat-cell>
     </ng-container>
 

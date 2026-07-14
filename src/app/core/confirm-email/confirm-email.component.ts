@@ -2,15 +2,19 @@ import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal }
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-confirm-email',
-    imports: [],
+    imports: [TranslatePipe, ],
     templateUrl: './confirm-email.component.html',
     styleUrl: './confirm-email.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfirmEmailComponent implements OnInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   success = signal<boolean | null>(null);
   email   = signal<string | null>(null);
 

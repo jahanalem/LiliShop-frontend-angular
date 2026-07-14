@@ -30,6 +30,66 @@
           <mat-hint align="end">{{ inputDsc.value.length }}/300</mat-hint>
         </mat-form-field>
 
+        @if (extraLanguages().length > 0) {
+          <section class="translations-section">
+            <h3 class="translations-title">
+              <mat-icon>translate</mat-icon>
+              Translations
+            </h3>
+            <p class="translations-hint">
+              The fields above are the default language. Leave a language's name empty to fall back to it.
+            </p>
+            <mat-tab-group>
+              @for (language of extraLanguages(); track language.code) {
+                <mat-tab>
+                  <ng-template mat-tab-label>
+                    <span [attr.lang]="language.code">{{ language.nativeName }}</span>
+                    @if (draftFor(language.code).name.trim()) {
+                      <mat-icon class="tab-done-icon">check_circle</mat-icon>
+                    }
+                  </ng-template>
+
+                  <div class="translation-tab-body" [dir]="language.direction">
+                    <mat-form-field appearance="outline" class="input-field">
+                      <mat-label>Name ({{ language.englishName }})</mat-label>
+                      <input matInput [attr.lang]="language.code"
+                        [(ngModel)]="draftFor(language.code).name"
+                        [ngModelOptions]="{ standalone: true }"
+                        (ngModelChange)="onTranslationChange()">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="input-field">
+                      <mat-label>Description ({{ language.englishName }})</mat-label>
+                      <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="6" cdkAutosizeMaxRows="30"
+                        [attr.lang]="language.code"
+                        [(ngModel)]="draftFor(language.code).description"
+                        [ngModelOptions]="{ standalone: true }"
+                        (ngModelChange)="onTranslationChange()"></textarea>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="input-field">
+                      <mat-label>SEO title (optional)</mat-label>
+                      <input matInput [attr.lang]="language.code"
+                        [(ngModel)]="draftFor(language.code).seoTitle"
+                        [ngModelOptions]="{ standalone: true }"
+                        (ngModelChange)="onTranslationChange()">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="input-field">
+                      <mat-label>SEO description (optional)</mat-label>
+                      <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="2" cdkAutosizeMaxRows="6"
+                        [attr.lang]="language.code"
+                        [(ngModel)]="draftFor(language.code).seoDescription"
+                        [ngModelOptions]="{ standalone: true }"
+                        (ngModelChange)="onTranslationChange()"></textarea>
+                    </mat-form-field>
+                  </div>
+                </mat-tab>
+              }
+            </mat-tab-group>
+          </section>
+        }
+
         <mat-form-field hintLabel="Original Base Price" appearance="outline" class="input-field">
           <mat-label>Base Price</mat-label>
           <input [formField]="productForm.price" matInput #inputPrice type="number" step="0.01"

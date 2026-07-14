@@ -8,6 +8,7 @@ import { ISizeClassification } from 'src/app/shared/models/productCharacteristic
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { IProductType } from 'src/app/shared/models/productType';
 import { environment } from 'src/environments/environment';
+import { IProductTranslation } from 'src/app/shared/models/localization';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +37,11 @@ export class ProductService {
 
   getProduct(productId: number): Observable<IProduct> {
     return this.http.get<IProduct>(`${this.baseUrl}products/${productId}`);
+  }
+
+  /** All translation rows (every culture) of one product — admin editor only. */
+  getProductTranslations(productId: number): Observable<IProductTranslation[]> {
+    return this.http.get<IProductTranslation[]>(`${this.baseUrl}products/${productId}/translations`);
   }
 
   getProducts(isActive?: boolean): Observable<ProductPagination> {

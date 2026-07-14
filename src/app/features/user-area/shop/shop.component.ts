@@ -20,6 +20,8 @@ import { IProductType } from 'src/app/shared/models/productType';
 
 import { MatSelectModule } from '@angular/material/select';
 import { ProductItemComponent } from './product-item/product-item.component';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-shop',
@@ -27,9 +29,11 @@ import { ProductItemComponent } from './product-item/product-item.component';
   styleUrls: ['./shop.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterModule, MatSelectModule, ProductItemComponent, PagingHeaderComponent, PagerComponent, MatProgressSpinnerModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCardModule, FormsModule]
+  imports: [TranslatePipe, RouterModule, MatSelectModule, ProductItemComponent, PagingHeaderComponent, PagerComponent, MatProgressSpinnerModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCardModule, FormsModule]
 })
 export class ShopComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   searchTerm = viewChild.required<ElementRef<HTMLInputElement>>('search');
 
   private productService = inject(ProductService);
@@ -46,16 +50,17 @@ export class ShopComponent implements OnInit {
   isMobileScreen = signal<boolean>(false);
   filtersHidden  = signal<boolean>(true);
 
+  // name holds a translation key; the template renders it through the translate pipe.
   readonly sortOptions = [
-    { name: 'Alphabetical', value: 'name' },
-    { name: 'Price: Low to high', value: 'priceAsc' },
-    { name: 'Price: High to low', value: 'priceDesc' },
+    { name: TranslationKeys.Shop.SortAlphabetical, value: 'name' },
+    { name: TranslationKeys.Shop.SortPriceAsc, value: 'priceAsc' },
+    { name: TranslationKeys.Shop.SortPriceDesc, value: 'priceDesc' },
   ];
 
   readonly saleOptions = [
-    { name: 'All Products', value: 'all' },
-    { name: 'Only Sale Products', value: 'sale' },
-    { name: 'Non-Sale Products', value: 'nonSale' },
+    { name: TranslationKeys.Shop.AllProducts, value: 'all' },
+    { name: TranslationKeys.Shop.OnlySaleProducts, value: 'sale' },
+    { name: TranslationKeys.Shop.NonSaleProducts, value: 'nonSale' },
   ];
 
   constructor() {

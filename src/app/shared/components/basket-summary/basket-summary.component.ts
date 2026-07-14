@@ -20,6 +20,8 @@ import { RouterModule } from '@angular/router';
 import { IOrderItem } from 'src/app/shared/models/order';
 import { IBasketItem } from './../../models/basket';
 import { Component, OnInit, ChangeDetectionStrategy, output, input } from '@angular/core';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-basket-summary',
@@ -27,7 +29,7 @@ import { Component, OnInit, ChangeDetectionStrategy, output, input } from '@angu
     styleUrls: ['./basket-summary.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [
+  imports: [TranslatePipe, 
     CommonModule, RouterModule,
     MatDialogModule,
     MatIconModule,
@@ -49,6 +51,8 @@ import { Component, OnInit, ChangeDetectionStrategy, output, input } from '@angu
 
 })
 export class BasketSummaryComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
 
   isBasket  = input<boolean>(true);
   isOrder   = input<boolean>(false);

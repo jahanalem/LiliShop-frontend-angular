@@ -1,17 +1,17 @@
 
 @if (success() !== null) {
   <div class="email-confirmation-container">
-    <h1>Email Confirmation</h1>
+    <h1>{{ TranslationKeys.ConfirmEmail.Title | translate }}</h1>
     @if (success()) {
       <div class="success-message">
-        <p>Your email <span class="highlight">{{ email() }}</span> has been successfully confirmed!</p>
+        <p>{{ TranslationKeys.ConfirmEmail.Success | translate: [email()] }}</p>
       </div>
     }
     @if (!success()) {
       <div class="error-message">
-        <p>Unfortunately, there was a problem confirming your email <span class="highlight">{{ email() }}</span>.</p>
+        <p>{{ TranslationKeys.ConfirmEmail.Failure | translate: [email()] }}</p>
       </div>
     }
-    <button (click)="redirectToHome()" class="home-button">Go to Home Page</button>
+    <button (click)="redirectToHome()" class="home-button">{{ TranslationKeys.Common.GoHome | translate }}</button>
   </div>
 }

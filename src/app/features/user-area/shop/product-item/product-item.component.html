@@ -1,7 +1,7 @@
 @if (product(); as p) {
 <article class="product-card">
   @if (isDiscountActive()) {
-    <span class="product-card__badge">Sale</span>
+    <span class="product-card__badge">{{ TranslationKeys.Product.Sale | translate }}</span>
   }
 
   <a [routerLink]="['/shop', p.id]" class="product-card__media" [attr.aria-label]="'View details for ' + p.name">
@@ -16,7 +16,7 @@
         sizes="(max-width: 600px) 45vw, (max-width: 960px) 30vw, 25vw"
       />
     }
-    <span class="product-card__overlay" aria-hidden="true">View details</span>
+    <span class="product-card__overlay" aria-hidden="true">{{ TranslationKeys.Product.ViewDetails | translate }}</span>
   </a>
 
   <div class="product-card__body">
@@ -36,7 +36,7 @@
     <button mat-flat-button type="button" class="product-card__cta" (click)="addItemToBasket()"
       [attr.aria-label]="'Add ' + p.name + ' to cart'">
       <mat-icon>add_shopping_cart</mat-icon>
-      Add to cart
+      {{ TranslationKeys.Product.AddToCart | translate }}
     </button>
   </div>
 </article>

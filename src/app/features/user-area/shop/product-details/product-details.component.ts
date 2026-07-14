@@ -13,6 +13,8 @@ import { INotificationSubscription } from 'src/app/shared/models/notificationSub
 import { AccountService } from 'src/app/core/services/account.service';
 
 import { NgOptimizedImage } from '@angular/common';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-product-details',
@@ -20,9 +22,11 @@ import { NgOptimizedImage } from '@angular/common';
     styleUrls: ['./product-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [CommonModule, RouterModule, NgOptimizedImage, MatButtonModule, MatIconModule]
+  imports: [TranslatePipe, CommonModule, RouterModule, NgOptimizedImage, MatButtonModule, MatIconModule]
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   product                   = signal<IProduct>({} as IProduct);
   quantity                  = signal<number>(1);
   isSubscribed              = signal<boolean>(false);

@@ -16,6 +16,8 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { ProductService } from 'src/app/core/services/product.service';
+import { LanguageService } from 'src/app/core/services/language.service';
+import { IProductTranslation } from 'src/app/shared/models/localization';
 import { StorageService } from 'src/app/core/services/storage.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { DiscountService } from 'src/app/core/services/discount.service';
@@ -28,6 +30,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
+import { FormsModule } from '@angular/forms';
 
 
 interface ProductCharacteristicModel {
@@ -77,7 +81,7 @@ const EMPTY_FORM_MODEL: ProductFormModel = {
   styleUrls: ['./edit-product.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [FormField, MatFormFieldModule, MatInputModule, MatTableModule, MatIconModule, MatSelectModule, MatCheckboxModule, MatTooltipModule, MatDatepickerModule, MatTimepickerModule, MatNativeDateModule, PhotoEditorComponent, MatButtonModule],
+  imports: [FormField, FormsModule, MatFormFieldModule, MatInputModule, MatTableModule, MatIconModule, MatSelectModule, MatCheckboxModule, MatTooltipModule, MatTabsModule, MatDatepickerModule, MatTimepickerModule, MatNativeDateModule, PhotoEditorComponent, MatButtonModule],
 })
 export class EditProductComponent implements OnInit, OnDestroy {
 
@@ -85,6 +89,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly productService = inject(ProductService);
+  protected readonly languageService = inject(LanguageService);
   private readonly storageService = inject(StorageService);
   private readonly discountService = inject(DiscountService);
   private readonly notificationService = inject(NotificationService);
@@ -108,6 +113,17 @@ export class EditProductComponent implements OnInit, OnDestroy {
   private productIdFromUrl = 0;
 
   readonly productModel = signal<ProductFormModel>({ ...EMPTY_FORM_MODEL });
+
+  /**
+   * Per-culture content drafts for the NON-default languages; the default language's content
+   * is the main Name/Description fields. Keyed by culture code.
+   */
+  translationDrafts: Record<string, { name: string; description: string; seoTitle: string; seoDescription: string }> = {};
+  private readonly translationsDirty = signal(false);
+
+  /** Active languages except the default one (its content lives in the main fields). */
+  readonly extraLanguages = computed(() =>
+    this.languageService.languages().filter(l => !l.isDefault));
 
   readonly productForm = form(this.productModel, (p) => {
     required(p.name);
@@ -134,7 +150,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
   });
 
   readonly isFormDirty = computed(
-    () => this.snapshot(this.productModel()) !== this.pristineSnapshot()
+    () => this.snapshot(this.productModel()) !== this.pristineSnapshot() || this.translationsDirty()
   );
 
   readonly isSaveDisabled = computed(() => !(this.isFormValid() && this.isFormDirty()));
@@ -195,6 +211,11 @@ export class EditProductComponent implements OnInit, OnDestroy {
           (await this.fetch(this.discountService.getSingleDiscountForProduct(adminProduct.id))) ?? null;
       }
 
+      // GET /products/{id} localizes name/description for the admin's UI language; the raw
+      // per-culture rows are the source of truth for this form. The default-culture row feeds
+      // the main fields (never a translation), the rest become drafts.
+      await this.applyTranslations(adminProduct);
+
       this.adminProduct.set(adminProduct);
       this.productModel.set(this.toFormModel(adminProduct));
     } catch (error) {
@@ -246,6 +267,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
       productCharacteristics: values.productCharacteristics.map(c => ({ ...c, sizeName: '' })),
       productPhotos         : existing?.productPhotos ?? [],
       discount              : discountPayload,
+      translations          : this.buildTranslationsPayload(values),
     };
 
     const save$ = isUpdate
@@ -265,6 +287,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
           price: returnedProduct.previousPrice ?? returnedProduct.price,
           isDiscountActive: discountPayload?.isActive ?? oldDiscount?.isActive ?? false,
         }));
+        this.translationsDirty.set(false);
         this.markPristine();
 
         const action = isUpdate ? 'updated' : 'created';
@@ -275,6 +298,68 @@ export class EditProductComponent implements OnInit, OnDestroy {
         console.error('Error saving product:', error);
       },
     });
+  }
+
+  private async applyTranslations(adminProduct: IProductAdmin): Promise<void> {
+    this.translationDrafts = {};
+    let rows: IProductTranslation[] = [];
+    try {
+      rows = await this.fetch(this.productService.getProductTranslations(adminProduct.id)) ?? [];
+    } catch (error) {
+      console.error('Failed to load product translations:', error);
+    }
+
+    const defaultCulture = this.languageService.languages().find(l => l.isDefault)?.code;
+    for (const row of rows) {
+      if (row.culture === defaultCulture) {
+        adminProduct.name = row.name;
+        adminProduct.description = row.description;
+        continue;
+      }
+      this.translationDrafts[row.culture] = {
+        name          : row.name ?? '',
+        description   : row.description ?? '',
+        seoTitle      : row.seoTitle ?? '',
+        seoDescription: row.seoDescription ?? '',
+      };
+    }
+    this.translationsDirty.set(false);
+  }
+
+  draftFor(culture: string): { name: string; description: string; seoTitle: string; seoDescription: string } {
+    return this.translationDrafts[culture] ??= { name: '', description: '', seoTitle: '', seoDescription: '' };
+  }
+
+  onTranslationChange(): void {
+    this.translationsDirty.set(true);
+  }
+
+  private buildTranslationsPayload(values: ProductFormModel): IProductTranslation[] {
+    const translations: IProductTranslation[] = [];
+
+    const defaultCulture = this.languageService.languages().find(l => l.isDefault)?.code;
+    if (defaultCulture) {
+      translations.push({
+        culture: defaultCulture,
+        name: values.name,
+        description: values.description,
+      });
+    }
+
+    for (const [culture, draft] of Object.entries(this.translationDrafts)) {
+      if (culture === defaultCulture || !draft.name?.trim()) {
+        continue; // no name = fall back to the default language for this culture
+      }
+      translations.push({
+        culture,
+        name          : draft.name.trim(),
+        description   : draft.description?.trim() || values.description,
+        seoTitle      : draft.seoTitle?.trim() || null,
+        seoDescription: draft.seoDescription?.trim() || null,
+      });
+    }
+
+    return translations;
   }
 
   private buildDiscountPayload(
