@@ -215,17 +215,38 @@ export class LanguageService {
     return DEFAULT_LANGUAGE_CODE;
   }
 
-  /** The persisted choice may have been deactivated in the database; fall back to the default language. */
+  /**
+   * The persisted/current language may have been deactivated in the database. Recover through
+   * the SAME priority chain as a first visit (geo → browser → default) rather than jumping
+   * straight to the default, then reload once so translations, LOCALE_ID and direction all
+   * rebind — the app must never keep running in an invalid language state.
+   */
   private ensureCurrentIsActive(): void {
     const languages = this.languages();
     if (languages.length === 0 || languages.some(l => l.code === this.currentCode())) {
       return;
     }
 
-    const fallback = languages.find(l => l.isDefault) ?? languages[0];
-    this.currentCode.set(fallback.code);
-    this.persist(fallback.code, fallback.direction, 'detected');
-    this.writeCultureCookie(fallback.code);
+    const replacement =
+      this.detectLanguageFromTimezone()
+      ?? this.findActiveBrowserLanguage()
+      ?? languages.find(l => l.isDefault)
+      ?? languages[0];
+
+    this.currentCode.set(replacement.code);
+    this.persist(replacement.code, replacement.direction, 'detected');
+    this.writeCultureCookie(replacement.code);
+    this.reloadApp();
+  }
+
+  /** The browser's preferred language, if it is one of the ACTIVE shop languages. */
+  private findActiveBrowserLanguage(): ILanguage | null {
+    const browserLanguage = this.document.defaultView?.navigator?.language;
+    if (!browserLanguage) {
+      return null;
+    }
+    const code = browserLanguage.split('-')[0].toLowerCase();
+    return this.languages().find(l => l.code === code) ?? null;
   }
 
   private directionFor(code: string): 'ltr' | 'rtl' {

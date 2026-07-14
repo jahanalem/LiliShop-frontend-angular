@@ -55,7 +55,9 @@
         <mat-label>Language</mat-label>
         <mat-select [(ngModel)]="newCulture">
           @for (language of languages(); track language.code) {
-            <mat-option [value]="language.code">{{ language.code }} — {{ language.englishName }}</mat-option>
+            <mat-option [value]="language.code">
+              {{ language.code }} — {{ language.englishName }}{{ language.isActive ? '' : ' (inactive)' }}
+            </mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -82,7 +84,7 @@
         <mat-select [(ngModel)]="cultureFilter" (selectionChange)="applyFilter()">
           <mat-option [value]="null">All</mat-option>
           @for (language of languages(); track language.code) {
-            <mat-option [value]="language.code">{{ language.code }}</mat-option>
+            <mat-option [value]="language.code">{{ language.code }}{{ language.isActive ? '' : ' (inactive)' }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
