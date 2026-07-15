@@ -238,7 +238,11 @@
     position: fixed;
     top: 0;
     inset-inline-start: 0;
-    transform: translateX(-100%);
+    // The drawer is anchored with the logical `inset-inline-start`, but
+    // translateX slides along the physical axis. In RTL the panel sits on the
+    // right, so it must slide toward +X to hide off-screen; otherwise it stays
+    // partially visible. Flip the offset per direction via a custom property.
+    transform: translateX(var(--filters-hidden-offset, -100%));
     width: 320px;
     max-width: 85vw;
     height: 100dvh;
@@ -261,6 +265,10 @@
       overflow-y: auto;
       height: calc(100% - var(--ls-navbar-h-mobile));
       @include mx.thin-scrollbar;
+    }
+
+    :host-context([dir="rtl"]) & {
+      --filters-hidden-offset: 100%;
     }
 
     &.filters-panel--visible-mobile {
