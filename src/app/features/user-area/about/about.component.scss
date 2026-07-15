@@ -137,6 +137,189 @@
   margin: 0;
 }
 
+// -------------------------------------------------- lilishop intro / cta ----
+.lili-intro {
+  p {
+    color: var(--ls-text-soft);
+    line-height: 1.75;
+    margin-bottom: var(--ls-space-5);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ls-space-3);
+  }
+}
+
+.lili-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ls-space-2);
+  padding: var(--ls-space-3) var(--ls-space-5);
+  border-radius: var(--ls-radius-pill);
+  font-weight: 600;
+  font-size: var(--ls-fs-sm);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    transform var(--ls-dur-fast) var(--ls-ease),
+    box-shadow var(--ls-dur-fast) var(--ls-ease),
+    background-color var(--ls-dur-fast) var(--ls-ease);
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+
+  &--primary {
+    background: var(--ls-accent-strong);
+    color: var(--ls-on-accent);
+
+    @media (hover: hover) {
+      &:hover {
+        box-shadow: var(--ls-shadow-md);
+      }
+    }
+  }
+
+  &--ghost {
+    background: var(--ls-brand-soft);
+    color: var(--ls-brand-text);
+    border-color: var(--ls-border);
+  }
+}
+
+// ------------------------------------------------------- highlight stats ----
+.lili-stats {
+  list-style: none;
+  margin: 0 0 var(--ls-space-5);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--ls-space-4);
+}
+
+.lili-stat {
+  @include mx.card;
+  padding: var(--ls-space-5) var(--ls-space-4);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ls-space-1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--ls-accent), var(--ls-brand));
+  }
+
+  &__icon {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  &__value {
+    font-size: var(--ls-fs-xl);
+    font-weight: 700;
+    color: var(--ls-brand-text);
+    line-height: 1.1;
+  }
+
+  &__label {
+    font-size: var(--ls-fs-xs);
+    color: var(--ls-text-soft);
+    line-height: 1.4;
+  }
+}
+
+// ------------------------------------------------------- feature card grid --
+.lili-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--ls-space-4);
+  margin-bottom: var(--ls-space-4);
+
+  &__hint {
+    text-align: center;
+    color: var(--ls-text-faint);
+    font-size: var(--ls-fs-sm);
+    margin: 0 0 var(--ls-space-4);
+  }
+}
+
+.lili-feature {
+  @include mx.card;
+  padding: var(--ls-space-5);
+  transition:
+    transform var(--ls-dur) var(--ls-ease),
+    box-shadow var(--ls-dur) var(--ls-ease),
+    border-color var(--ls-dur) var(--ls-ease);
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--ls-shadow-md);
+      border-color: var(--ls-border-strong);
+    }
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ls-radius-md);
+    background: var(--ls-brand-soft);
+    color: var(--ls-brand-text);
+    margin-bottom: var(--ls-space-3);
+
+    mat-icon {
+      width: 24px;
+      height: 24px;
+      font-size: 24px;
+    }
+  }
+
+  &__title {
+    font-size: var(--ls-fs-md);
+    margin: 0 0 var(--ls-space-2);
+    color: var(--ls-text);
+  }
+
+  &__text {
+    font-size: var(--ls-fs-sm);
+    line-height: 1.6;
+    color: var(--ls-text-soft);
+    margin: 0;
+  }
+}
+
+.feature-intro {
+  color: var(--ls-text-soft);
+  line-height: 1.7;
+  margin: 0 0 var(--ls-space-5);
+}
+
 // ------------------------------------------------------------- accordion ----
 .about-accordion {
   display: block;
@@ -250,5 +433,14 @@
 
   .about-card {
     padding: var(--ls-space-5);
+  }
+
+  .lili-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lili-intro__actions .lili-btn {
+    flex: 1 1 auto;
+    justify-content: center;
   }
 }
