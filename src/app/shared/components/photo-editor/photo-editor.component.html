@@ -5,10 +5,10 @@
         <img src="{{photo.url}}" alt="photo of product" class="product-photo">
         <div class="button-group">
           <button mat-raised-button color="primary" type="button" [disabled]="photo.isMain" (click)="setMainPhoto(photo)">
-            Main
+            {{ TranslationKeys.Admin.Photos.Main | translate }}
           </button>
           <button mat-raised-button color="warn" [disabled]="photo.isMain" (click)="deletePhoto(photo.id)" type="button"
-            title="Delete">
+            [attr.title]="TranslationKeys.Common.Delete | translate">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
@@ -20,15 +20,15 @@
 <div class="upload-section">
 
   <div class="upload-dropzone">
-    <h3>Add photos</h3>
+    <h3>{{ TranslationKeys.Admin.Photos.AddPhotos | translate }}</h3>
 
     <div ng2FileDrop [ngClass]="{'file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)"
       [uploader]="uploader()" class="drop-zone">
       <mat-icon class="upload-icon">cloud_upload</mat-icon>
-      <p>Drop photos here</p>
+      <p>{{ TranslationKeys.Admin.Photos.DropHere | translate }}</p>
     </div>
 
-    <label>Multiple</label>
+    <label>{{ TranslationKeys.Admin.Photos.Multiple | translate }}</label>
     <input
       type="file"
       ng2FileSelect
@@ -36,7 +36,7 @@
       multiple title="Select multiple files"
       aria-label="Select multiple files" />
 
-      <label>Single</label>
+      <label>{{ TranslationKeys.Admin.Photos.Single | translate }}</label>
       <input
         type="file"
         ng2FileSelect
@@ -47,15 +47,15 @@
 
       @if (lengthOfFileItem) {
         <div class="upload-queue">
-          <h3>Upload queue</h3>
-          <p>Queue length: {{ lengthOfFileItem }}</p>
+          <h3>{{ TranslationKeys.Admin.Photos.Queue | translate }}</h3>
+          <p>{{ TranslationKeys.Admin.Photos.QueueLength | translate: [lengthOfFileItem] }}</p>
           <table mat-table [dataSource]="fileQueue || []">
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <th mat-header-cell *matHeaderCellDef>{{ TranslationKeys.Admin.Common.Name | translate }}</th>
               <td mat-cell *matCellDef="let item"><strong>{{ item?.file?.name }}</strong></td>
             </ng-container>
             <ng-container matColumnDef="size">
-              <th mat-header-cell *matHeaderCellDef>Size</th>
+              <th mat-header-cell *matHeaderCellDef>{{ TranslationKeys.Shop.Size | translate }}</th>
               <td mat-cell *matCellDef="let item" nowrap>{{ $safeNavigationMigration(item?.file?.size) / 1024 / 1024 | number:'.2' }} MB</td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="['name', 'size']"></tr>
@@ -65,14 +65,14 @@
           <div class="button-group">
             <button mat-raised-button color="primary" (click)="uploader()?.uploadAll()"
               [disabled]="!uploader()?.getNotUploadedItems()?.length">
-              Upload all
+              {{ TranslationKeys.Admin.Photos.UploadAll | translate }}
             </button>
             <button mat-raised-button color="warn" (click)="uploader()?.cancelAll()" [disabled]="!uploader()?.isUploading">
-              Cancel all
+              {{ TranslationKeys.Admin.Photos.CancelAll | translate }}
             </button>
             <button mat-raised-button color="accent" (click)="uploader()?.clearQueue()"
               [disabled]="!uploader()?.queue?.length">
-              Remove all
+              {{ TranslationKeys.Admin.Photos.RemoveAll | translate }}
             </button>
           </div>
         </div>

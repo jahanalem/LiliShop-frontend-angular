@@ -21,6 +21,8 @@ import { PaginationWithData } from 'src/app/shared/models/pagination';
 import { DeleteService } from 'src/app/core/services/utility-services/delete.service';
 import { SearchService } from 'src/app/core/services/utility-services/search.service';
 import { PolicyNames } from 'src/app/shared/models/policy';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-products',
@@ -28,9 +30,12 @@ import { PolicyNames } from 'src/app/shared/models/policy';
     styleUrls: ['./products.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [RouterModule, FormatValuePipe, CheckPolicyDirective, MatFormFieldModule, MatPaginatorModule, MatButtonModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
+  imports: [
+    TranslatePipe,RouterModule, FormatValuePipe, CheckPolicyDirective, MatFormFieldModule, MatPaginatorModule, MatButtonModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
 })
 export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   paginator = viewChild.required<MatPaginator>(MatPaginator);
   sort      = viewChild.required<MatSort>(MatSort);
 
@@ -44,14 +49,15 @@ export class ProductsComponent implements OnInit, AfterViewInit, OnDestroy {
   pageSizeOptions  = signal<number[]>([5, 10, 25]);
 
   columnsToDisplay: string[] = ['id', 'name', 'price', 'productType', 'productBrand', 'isDiscountActive', 'Action'];
+  // Values are translation keys; the template renders them through the translate pipe.
   columnDisplayNames: { [key: string]: string } = {
-    'id'              : 'ID',
-    'name'            : 'Name',
-    'price'           : 'Price',
-    'productType'     : 'Type',
-    'productBrand'    : 'Brand',
-    'isDiscountActive': 'Sale',
-    'Action'          : 'Action'
+    'id'              : TranslationKeys.Admin.Common.Id,
+    'name'            : TranslationKeys.Admin.Common.Name,
+    'price'           : TranslationKeys.Admin.Common.Price,
+    'productType'     : TranslationKeys.Shop.Type,
+    'productBrand'    : TranslationKeys.Shop.Brand,
+    'isDiscountActive': TranslationKeys.Admin.Products.Sale,
+    'Action'          : TranslationKeys.Admin.Common.Actions
   };
 
   destroy$ = new Subject<void>();

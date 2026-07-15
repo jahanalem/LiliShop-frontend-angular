@@ -28,6 +28,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IProductPhoto } from '../../models/productPhoto';
 import { ProductService } from 'src/app/core/services/product.service';
 import { FileUploadModule } from 'ng2-file-upload';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-photo-editor',
@@ -41,6 +43,7 @@ import { FileUploadModule } from 'ng2-file-upload';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
   imports: [
+    TranslatePipe,
     CommonModule, RouterModule,
     MatDialogModule,
     MatIconModule,
@@ -63,6 +66,8 @@ import { FileUploadModule } from 'ng2-file-upload';
 
 })
 export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private accountService = inject(AccountService);
   private productService = inject(ProductService);
 

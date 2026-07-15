@@ -20,6 +20,8 @@ import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IDialogData } from '../../models/dialog-data.interface';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-dialog',
@@ -28,6 +30,7 @@ import { IDialogData } from '../../models/dialog-data.interface';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
   imports: [
+    TranslatePipe,
     RouterModule,
     MatDialogModule,
     MatIconModule,
@@ -49,6 +52,7 @@ import { IDialogData } from '../../models/dialog-data.interface';
 
 })
 export class DialogComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
   private dialogData = inject<IDialogData>(MAT_DIALOG_DATA);
 
   data = signal<IDialogData>(this.dialogData);

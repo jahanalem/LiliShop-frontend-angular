@@ -13,6 +13,7 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 interface ContactData {
   firstName: string;
@@ -41,6 +42,7 @@ export class ContactComponent {
   protected readonly TranslationKeys = TranslationKeys;
 
   private contactService = inject(ContactService);
+  private translationService = inject(TranslationService);
   private notificationService = inject(NotificationService);
 
   readonly isSubmitting = signal(false);
@@ -73,12 +75,12 @@ export class ContactComponent {
     // name/signature and your success/reset handling.
     this.contactService.createMessage(this.contactModel()).subscribe({
       next: () => {
-        this.notificationService.showSuccess('Your message has been sent.');
+        this.notificationService.showSuccess(this.translationService.translate(TranslationKeys.Contact.Sent));
         this.resetForm();
         this.isSubmitting.set(false);
       },
       error: (error: any) => {
-        this.notificationService.showError(error?.message ?? 'Failed to send your message.');
+        this.notificationService.showError(error?.message ?? this.translationService.translate(TranslationKeys.Contact.SendFailed));
         console.error(error);
         this.isSubmitting.set(false);
       },

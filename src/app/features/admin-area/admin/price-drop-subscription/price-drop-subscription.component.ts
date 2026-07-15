@@ -16,6 +16,8 @@ import { IPriceDropSubscription } from 'src/app/shared/models/priceDropSubscript
 
 import { PriceDropSubscriptionQueryParams } from 'src/app/shared/models/priceDropSubscriptionQueryParams';
 import { PriceDropSubscriptionPagination } from 'src/app/shared/models/pagination';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-price-drop-subscription',
@@ -23,9 +25,12 @@ import { PriceDropSubscriptionPagination } from 'src/app/shared/models/paginatio
   styleUrls: ['./price-drop-subscription.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, MatFormFieldModule, MatPaginatorModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
+  imports: [
+    TranslatePipe,CommonModule, RouterModule, MatFormFieldModule, MatPaginatorModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
 })
 export class PriceDropSubscriptionComponent implements OnInit, AfterViewInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   paginator = viewChild.required<MatPaginator>(MatPaginator);
   sort = viewChild.required<MatSort>(MatSort);
 

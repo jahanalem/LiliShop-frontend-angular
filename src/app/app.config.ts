@@ -12,6 +12,8 @@ import { languageInterceptor } from './core/interceptors/language.interceptor';
 import { LanguageService } from './core/services/language.service';
 import { TranslationService } from './core/i18n/translation.service';
 import { registerAppLocales } from './core/i18n/locale-registry';
+import { LocalizedMatPaginatorIntl } from './core/i18n/localized-paginator-intl';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { DatePipe } from '@angular/common';
 
@@ -36,6 +38,8 @@ export const appConfig: ApplicationConfig = {
       provide: LOCALE_ID,
       useFactory: () => inject(LanguageService).localeId()
     },
+    // Paginator labels come from the same backend translation catalog as all UI text.
+    { provide: MatPaginatorIntl, useClass: LocalizedMatPaginatorIntl },
     BreadcrumbService,
     DatePipe
   ]

@@ -20,6 +20,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from 'src/app/core/services/language.service';
 import { INameTranslation } from 'src/app/shared/models/localization';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 @Component({
     selector: 'app-edit-brand',
@@ -27,9 +30,12 @@ import { INameTranslation } from 'src/app/shared/models/localization';
     styleUrls: ['./edit-brand.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [RouterModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, ReactiveFormsModule, FormsModule]
+  imports: [
+    TranslatePipe,RouterModule, MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, ReactiveFormsModule, FormsModule]
 })
 export class EditBrandComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   brandForm!: FormGroup;
 
   brand          = signal<IBrand | null>(null);
@@ -40,6 +46,7 @@ export class EditBrandComponent implements OnInit {
   private destroy$ = new Subject<void>();
 
   private brandService   = inject(BrandService);
+  private readonly translationService = inject(TranslationService);
   protected languageService = inject(LanguageService);
 
   /** Per-culture name drafts for the non-default languages (default culture = the main Name field). */
@@ -162,8 +169,8 @@ export class EditBrandComponent implements OnInit {
   navigateBack() {
     if (this.brandForm.dirty) {
       const dialogData: IDialogData = {
-        title: 'Discard change',
-        content: 'Would you like to discard your changes?',
+        title: this.translationService.translate(TranslationKeys.Admin.Common.DiscardTitle),
+        content: this.translationService.translate(TranslationKeys.Admin.Common.DiscardContent),
         showConfirmationButtons: true
       };
       const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });

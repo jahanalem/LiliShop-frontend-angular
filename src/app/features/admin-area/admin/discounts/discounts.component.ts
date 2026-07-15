@@ -21,10 +21,13 @@ import { PaginationWithData } from 'src/app/shared/models/pagination';
 import { PolicyNames } from 'src/app/shared/models/policy';
 
 import { ProductService } from 'src/app/core/services/product.service';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-discounts',
-  imports: [MatInputModule,
+  imports: [
+    TranslatePipe,MatInputModule,
     MatFormFieldModule,
     MatIconModule, FormatValuePipe, CheckPolicyDirective, MatPaginatorModule, MatButtonModule, MatTableModule, MatSortModule],
   templateUrl: './discounts.component.html',
@@ -32,6 +35,8 @@ import { ProductService } from 'src/app/core/services/product.service';
   styleUrl: './discounts.component.scss'
 })
 export class DiscountsComponent implements OnInit, AfterViewInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   paginator = viewChild.required<MatPaginator>(MatPaginator);
   sort = viewChild.required<MatSort>(MatSort);
 
@@ -45,13 +50,14 @@ export class DiscountsComponent implements OnInit, AfterViewInit, OnDestroy {
   pageSizeOptions  = signal<number[]>([5, 10, 25]);
 
   columnsToDisplay: string[] = ['id', 'name', 'startDate', 'endDate', 'isActive', 'Action'];
+  // Values are translation keys; the template renders them through the translate pipe.
   columnDisplayNames: { [key: string]: string } = {
-    'id': 'ID',
-    'name': 'Name',
-    'startDate': 'Start Date',
-    'endDate': 'End Date',
-    'isActive': 'Active?',
-    'Action': 'Action'
+    'id': TranslationKeys.Admin.Common.Id,
+    'name': TranslationKeys.Admin.Common.Name,
+    'startDate': TranslationKeys.Admin.Discounts.StartDate,
+    'endDate': TranslationKeys.Admin.Discounts.EndDate,
+    'isActive': TranslationKeys.Admin.Common.Active,
+    'Action': TranslationKeys.Admin.Common.Actions
   };
 
   destroy$ = new Subject<void>();

@@ -7,8 +7,8 @@ import { PrivacyPolicyComponent } from './shared/components/privacy-policy/priva
 
 export const routes: Routes = [
   { path: '', loadChildren: () => import('./features/user-area/user-layout.routes').then(m => m.USER_LAYOUT_ROUTES) },
-  { path: 'not-found', component: NotFoundComponent, data: { breadcrumb: 'Not Found' } },
-  { path: 'server-error', component: ServerErrorComponent, data: { breadcrumb: 'Server Error' } },
+  { path: 'not-found', component: NotFoundComponent, data: { breadcrumb: 'Errors.NotFoundHeading' } },
+  { path: 'server-error', component: ServerErrorComponent, data: { breadcrumb: 'Errors.ServerErrorHeading' } },
   { path: 'confirm-email', component: ConfirmEmailComponent },
   { path: 'unsubscribe-confirmation', component: UnsubscribeConfirmationComponent },
   { path: 'privacy-policy', component: PrivacyPolicyComponent },

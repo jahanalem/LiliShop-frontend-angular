@@ -12,6 +12,8 @@ import { IContactUsMessage } from 'src/app/shared/models/contactUsMessage';
 
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-edit-contact-us-messages',
@@ -19,9 +21,12 @@ import { MatNativeDateModule } from '@angular/material/core';
   templateUrl: './edit-contact-us-messages.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './edit-contact-us-messages.component.scss',
-  imports: [MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, MatButtonModule, MatIconModule, MatInputModule, FormsModule]
+  imports: [
+    TranslatePipe,MatDatepickerModule, MatNativeDateModule, MatFormFieldModule, MatButtonModule, MatIconModule, MatInputModule, FormsModule]
 })
 export class EditContactUsMessagesComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   contactUsMessage = signal<IContactUsMessage>({} as IContactUsMessage);
   replyMessage: string = '';
   enableReply: boolean = false;

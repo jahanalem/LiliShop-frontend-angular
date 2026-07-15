@@ -18,6 +18,8 @@ import {
   ILanguageCompletion,
   ILocalizationEntry,
 } from 'src/app/shared/models/localization';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 /**
  * Translation management: per-language completion, searchable system-translation table with
@@ -31,6 +33,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
+    TranslatePipe,
     DatePipe,
     FormsModule,
     MatButtonModule,
@@ -46,6 +49,8 @@ import {
   ],
 })
 export class TranslationsComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private adminService = inject(LocalizationAdminService);
   private notificationService = inject(NotificationService);
 

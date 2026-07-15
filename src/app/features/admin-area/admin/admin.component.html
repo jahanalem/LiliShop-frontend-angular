@@ -19,12 +19,12 @@
   <mat-menu #userMenu="matMenu" xPosition="before" class="modern-menu">
     <button mat-menu-item routerLink="/admin/profile">
       <mat-icon>person</mat-icon>
-      <span>Profile</span>
+      <span>{{ TranslationKeys.Admin.Nav.Profile | translate }}</span>
     </button>
     <mat-divider></mat-divider>
     <button mat-menu-item (click)="logout()" class="logout-item">
       <mat-icon>exit_to_app</mat-icon>
-      <span>Logout</span>
+      <span>{{ TranslationKeys.Nav.Logout | translate }}</span>
     </button>
   </mat-menu>
 </mat-toolbar>
@@ -39,7 +39,7 @@
 <mat-sidenav-container class="app-sidenav-container">
   <mat-sidenav #sidenavComponent="matSidenav" class="app-sidenav" [opened]="sidenav().mode !== 'over'">
     <div class="sidenav-header">
-      <h2 class="sidenav-app-title">Admin Panel</h2>
+      <h2 class="sidenav-app-title">{{ TranslationKeys.Nav.AdminPanel | translate }}</h2>
     </div>
 
     <mat-nav-list class="nav-list">
@@ -50,7 +50,7 @@
            routerLinkActive="active-nav-item"
            class="nav-item">
           <mat-icon matListItemIcon class="nav-icon">{{ item.icon }}</mat-icon>
-          <span matListItemTitle class="nav-item-name">{{ item.name }}</span>
+          <span matListItemTitle class="nav-item-name">{{ item.name | translate }}</span>
         </a>
       }
     </mat-nav-list>

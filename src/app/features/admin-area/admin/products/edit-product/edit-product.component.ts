@@ -32,6 +32,9 @@ import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 
 interface ProductCharacteristicModel {
@@ -81,11 +84,15 @@ const EMPTY_FORM_MODEL: ProductFormModel = {
   styleUrls: ['./edit-product.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [FormField, FormsModule, MatFormFieldModule, MatInputModule, MatTableModule, MatIconModule, MatSelectModule, MatCheckboxModule, MatTooltipModule, MatTabsModule, MatDatepickerModule, MatTimepickerModule, MatNativeDateModule, PhotoEditorComponent, MatButtonModule],
+  imports: [
+    TranslatePipe,FormField, FormsModule, MatFormFieldModule, MatInputModule, MatTableModule, MatIconModule, MatSelectModule, MatCheckboxModule, MatTooltipModule, MatTabsModule, MatDatepickerModule, MatTimepickerModule, MatNativeDateModule, PhotoEditorComponent, MatButtonModule],
 })
 export class EditProductComponent implements OnInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
 
   private readonly dialog = inject(MatDialog);
+  private readonly translationService = inject(TranslationService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly productService = inject(ProductService);
@@ -238,7 +245,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     if (!this.isFormValid()) {
-      this.notificationService.showError('Form Validation Error: Please fill out the form correctly.');
+      this.notificationService.showError(this.translationService.translate(TranslationKeys.Admin.Products.FormInvalid));
       return;
     }
 
@@ -294,7 +301,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
         this.notificationService.showSuccess(`Success: Product ${action} successfully.`);
       },
       error: (error) => {
-        this.notificationService.showError('Error: An error occurred while saving the product.');
+        this.notificationService.showError(this.translationService.translate(TranslationKeys.Admin.Products.SaveError));
         console.error('Error saving product:', error);
       },
     });
@@ -451,8 +458,8 @@ export class EditProductComponent implements OnInit, OnDestroy {
     }
 
     const dialogData: IDialogData = {
-      title: 'Discard change',
-      content: 'Would you like to discard your changes?',
+      title: this.translationService.translate(TranslationKeys.Admin.Common.DiscardTitle),
+      content: this.translationService.translate(TranslationKeys.Admin.Common.DiscardContent),
       showConfirmationButtons: true,
     };
 

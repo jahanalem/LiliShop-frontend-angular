@@ -1,12 +1,12 @@
 <div class="admin-page">
   <header class="admin-page-header">
     <div>
-      <h1 class="admin-page-title">{{ isProductIdValid() ? 'Edit Product' : 'New Product' }}</h1>
-      <p class="admin-page-subtitle">Product details, pricing, discount and stock.</p>
+      <h1 class="admin-page-title">{{ (isProductIdValid() ? TranslationKeys.Admin.Products.EditTitle : TranslationKeys.Admin.Products.New) | translate }}</h1>
+      <p class="admin-page-subtitle">{{ TranslationKeys.Admin.Products.EditSubtitle | translate }}</p>
     </div>
     <button type="button" mat-stroked-button (click)="navigateBack()">
       <mat-icon>arrow_back</mat-icon>
-      Back
+      {{ TranslationKeys.Admin.Common.Back | translate }}
     </button>
   </header>
 
@@ -14,19 +14,19 @@
     <div class="form-left admin-form-card">
       <form (ngSubmit)="onSubmit()" class="product-form">
         <mat-checkbox [formField]="productForm.isActive">
-          Is Active?
+          {{ TranslationKeys.Admin.Common.Active | translate }}
         </mat-checkbox>
 
-        <mat-form-field hintLabel="Max 50 characters" appearance="outline" class="input-field">
-          <mat-label>Enter product name</mat-label>
-          <input [formField]="productForm.name" matInput #input placeholder="Product name">
+        <mat-form-field [hintLabel]="TranslationKeys.Admin.Common.MaxChars | translate: [50]" appearance="outline" class="input-field">
+          <mat-label>{{ TranslationKeys.Admin.Products.NameLabel | translate }}</mat-label>
+          <input [formField]="productForm.name" matInput #input>
           <mat-hint align="end">{{ input.value.length }}/50</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="input-field">
-          <mat-label>Description</mat-label>
+          <mat-label>{{ TranslationKeys.Admin.Products.Description | translate }}</mat-label>
           <textarea [formField]="productForm.description" matInput #inputDsc cdkTextareaAutosize
-            cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50" placeholder="Enter product description"></textarea>
+            cdkAutosizeMinRows="10" cdkAutosizeMaxRows="50"></textarea>
           <mat-hint align="end">{{ inputDsc.value.length }}/300</mat-hint>
         </mat-form-field>
 
@@ -34,10 +34,10 @@
           <section class="translations-section">
             <h3 class="translations-title">
               <mat-icon>translate</mat-icon>
-              Translations
+              {{ TranslationKeys.Admin.Common.Translations | translate }}
             </h3>
             <p class="translations-hint">
-              The fields above are the default language. Leave a language's name empty to fall back to it.
+              {{ TranslationKeys.Admin.Products.TranslationsHint | translate }}
             </p>
             <mat-tab-group>
               @for (language of extraLanguages(); track language.code) {
@@ -51,7 +51,7 @@
 
                   <div class="translation-tab-body" [dir]="language.direction">
                     <mat-form-field appearance="outline" class="input-field">
-                      <mat-label>Name ({{ language.englishName }})</mat-label>
+                      <mat-label>{{ TranslationKeys.Admin.Common.NameIn | translate: [language.englishName] }}</mat-label>
                       <input matInput [attr.lang]="language.code"
                         [(ngModel)]="draftFor(language.code).name"
                         [ngModelOptions]="{ standalone: true }"
@@ -59,7 +59,7 @@
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="input-field">
-                      <mat-label>Description ({{ language.englishName }})</mat-label>
+                      <mat-label>{{ TranslationKeys.Admin.Products.Description | translate }} ({{ language.englishName }})</mat-label>
                       <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="6" cdkAutosizeMaxRows="30"
                         [attr.lang]="language.code"
                         [(ngModel)]="draftFor(language.code).description"
@@ -68,7 +68,7 @@
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="input-field">
-                      <mat-label>SEO title (optional)</mat-label>
+                      <mat-label>{{ TranslationKeys.Admin.Products.SeoTitle | translate }}</mat-label>
                       <input matInput [attr.lang]="language.code"
                         [(ngModel)]="draftFor(language.code).seoTitle"
                         [ngModelOptions]="{ standalone: true }"
@@ -76,7 +76,7 @@
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="input-field">
-                      <mat-label>SEO description (optional)</mat-label>
+                      <mat-label>{{ TranslationKeys.Admin.Products.SeoDescription | translate }}</mat-label>
                       <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="2" cdkAutosizeMaxRows="6"
                         [attr.lang]="language.code"
                         [(ngModel)]="draftFor(language.code).seoDescription"
@@ -90,54 +90,53 @@
           </section>
         }
 
-        <mat-form-field hintLabel="Original Base Price" appearance="outline" class="input-field">
-          <mat-label>Base Price</mat-label>
+        <mat-form-field [hintLabel]="TranslationKeys.Admin.Products.BasePrice | translate" appearance="outline" class="input-field">
+          <mat-label>{{ TranslationKeys.Admin.Products.BasePrice | translate }}</mat-label>
           <input [formField]="productForm.price" matInput #inputPrice type="number" step="0.01"
-            placeholder="Product base price">
+           >
           <span matPrefix>€&nbsp;</span>
         </mat-form-field>
 
         <div class="admin-banner">
           <mat-icon>info</mat-icon>
           <div>
-            <h4>Single Product Discount Configuration</h4>
+            <h4>{{ TranslationKeys.Admin.Products.DiscountBannerTitle | translate }}</h4>
             <p>
-              Use this section to apply a specific discount directly to this product.
-              <strong>This will automatically override any active Group Discounts.</strong>
-              The background server will automatically calculate the final price and handle start/end dates.
+              {{ TranslationKeys.Admin.Products.DiscountBannerBody | translate }}
+              <strong>{{ TranslationKeys.Admin.Products.DiscountBannerOverride | translate }}</strong>
             </p>
           </div>
         </div>
 
         <mat-checkbox [formField]="productForm.isDiscountActive" (change)="onDiscountToggle($event.checked)">
-          Activate Single Discount?
+          {{ TranslationKeys.Admin.Products.ActivateDiscount | translate }}
         </mat-checkbox>
 
         @if (productForm.isDiscountActive().value()) {
           <div class="admin-form-row">
             <mat-form-field appearance="outline" class="input-field">
-              <mat-label>Discount Amount</mat-label>
+              <mat-label>{{ TranslationKeys.Admin.Products.DiscountAmount | translate }}</mat-label>
               <input [formField]="productForm.discountAmount" matInput type="number" step="0.01"
-                placeholder="Enter amount">
+               >
             </mat-form-field>
 
             <mat-checkbox [formField]="productForm.isPercentage" class="percentage-checkbox">
-              Is Percentage (%)?
+              {{ TranslationKeys.Admin.Discounts.IsPercentage | translate }} (%)
             </mat-checkbox>
           </div>
 
           <div class="admin-form-row">
             <mat-form-field appearance="outline" class="input-field">
-              <mat-label>Discount Start Date</mat-label>
+              <mat-label>{{ TranslationKeys.Admin.Products.DiscountStartDate | translate }}</mat-label>
               <input matInput [matDatepicker]="startDatePicker" [formField]="productForm.discountStartDateDate"
-                placeholder="Select start date">
+                >
               <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
               <mat-datepicker #startDatePicker></mat-datepicker>
             </mat-form-field>
             <mat-form-field appearance="outline" class="input-field">
-              <mat-label>Discount Start Time</mat-label>
+              <mat-label>{{ TranslationKeys.Admin.Products.DiscountStartTime | translate }}</mat-label>
               <input matInput [matTimepicker]="startTimePicker" [formField]="productForm.discountStartDateTime"
-                placeholder="Select start time">
+                >
               <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
               <mat-timepicker #startTimePicker></mat-timepicker>
             </mat-form-field>
@@ -145,16 +144,16 @@
 
           <div class="admin-form-row">
             <mat-form-field appearance="outline" class="input-field">
-              <mat-label>Discount End Date</mat-label>
+              <mat-label>{{ TranslationKeys.Admin.Products.DiscountEndDate | translate }}</mat-label>
               <input matInput [matDatepicker]="endDatePicker" [formField]="productForm.discountEndDateDate"
-                placeholder="Select end date">
+                >
               <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
               <mat-datepicker #endDatePicker></mat-datepicker>
             </mat-form-field>
             <mat-form-field appearance="outline" class="input-field">
-              <mat-label>Discount End Time</mat-label>
+              <mat-label>{{ TranslationKeys.Admin.Products.DiscountEndTime | translate }}</mat-label>
               <input matInput [matTimepicker]="endTimePicker" [formField]="productForm.discountEndDateTime"
-                placeholder="Select end time">
+                >
               <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
               <mat-timepicker #endTimePicker></mat-timepicker>
             </mat-form-field>
@@ -163,8 +162,8 @@
 
         @if (brands().length) {
           <mat-form-field appearance="outline" class="input-field">
-            <mat-label>Brand</mat-label>
-            <mat-select [formField]="productForm.productBrandId" placeholder="Select a brand">
+            <mat-label>{{ TranslationKeys.Shop.Brand | translate }}</mat-label>
+            <mat-select [formField]="productForm.productBrandId">
               @for (brand of brands(); track brand.id) {
                 <mat-option [value]="brand.id">{{ brand.name }}</mat-option>
               }
@@ -174,8 +173,8 @@
 
         @if (types().length) {
           <mat-form-field appearance="outline" class="input-field">
-            <mat-label>Type</mat-label>
-            <mat-select [formField]="productForm.productTypeId" placeholder="Select a type">
+            <mat-label>{{ TranslationKeys.Shop.Type | translate }}</mat-label>
+            <mat-select [formField]="productForm.productTypeId">
               @for (type of types(); track type.id) {
                 <mat-option [value]="type.id">{{ type.name }}</mat-option>
               }
@@ -186,8 +185,8 @@
         @for (char of productForm.productCharacteristics; track char; let i = $index) {
           <div class="admin-form-row size-qty-row">
             <mat-form-field appearance="outline" class="input-field">
-              <mat-label>Size</mat-label>
-              <mat-select [formField]="char.sizeId" placeholder="Select a size">
+              <mat-label>{{ TranslationKeys.Shop.Size | translate }}</mat-label>
+              <mat-select [formField]="char.sizeId">
                 @for (size of availableSizes(char.sizeId().value()); track size.id) {
                   <mat-option [value]="size.id">{{ size.size }}</mat-option>
                 }
@@ -195,11 +194,11 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="input-field">
-              <mat-label>Quantity</mat-label>
-              <input [formField]="char.quantity" type="number" matInput placeholder="Enter quantity">
+              <mat-label>{{ TranslationKeys.Admin.Products.Quantity | translate }}</mat-label>
+              <input [formField]="char.quantity" type="number" matInput>
             </mat-form-field>
 
-            <button type="button" mat-icon-button aria-label="Remove size" class="remove-size-button"
+            <button type="button" mat-icon-button [attr.aria-label]="TranslationKeys.Common.Delete | translate" class="remove-size-button"
               (click)="removeSize(i)">
               <mat-icon class="delete-icon">delete</mat-icon>
             </button>
@@ -209,25 +208,25 @@
         <div class="add-size-btn">
           <button type="button" mat-stroked-button [disabled]="!canAddSize()" (click)="addSize()">
             <mat-icon>add</mat-icon>
-            Add Size
+            {{ TranslationKeys.Admin.Products.AddSize | translate }}
           </button>
         </div>
 
         <button type="submit" [disabled]="isSaveDisabled()" mat-flat-button class="save-button">
-          Save Product
+          {{ TranslationKeys.Admin.Products.Save | translate }}
         </button>
       </form>
     </div>
 
     <div class="form-right admin-form-card">
       @if (isProductIdValid()) {
-        <h3>Upload Photo</h3>
+        <h3>{{ TranslationKeys.Admin.Products.UploadPhoto | translate }}</h3>
         <app-photo-editor [product]="adminProduct()"></app-photo-editor>
       } @else {
         <div class="admin-banner is-danger">
           <mat-icon>image_not_supported</mat-icon>
           <span>
-            Please create a product first. Once the product is created, you'll be able to upload images.
+            {{ TranslationKeys.Admin.Products.CreateFirst | translate }}
           </span>
         </div>
       }

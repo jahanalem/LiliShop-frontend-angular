@@ -12,6 +12,9 @@ import { MatTableModule } from '@angular/material/table';
 import { LocalizationAdminService } from 'src/app/core/services/localization-admin.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { ILanguageAdmin, ILanguageUpsert } from 'src/app/shared/models/localization';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 const EMPTY_FORM: ILanguageUpsert = {
   code: '',
@@ -36,6 +39,7 @@ const EMPTY_FORM: ILanguageUpsert = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
+    TranslatePipe,
     FormsModule,
     MatButtonModule,
     MatCardModule,
@@ -49,7 +53,10 @@ const EMPTY_FORM: ILanguageUpsert = {
   ],
 })
 export class LanguagesComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private adminService = inject(LocalizationAdminService);
+  private translationService = inject(TranslationService);
   private notificationService = inject(NotificationService);
 
   readonly displayedColumns = ['code', 'nativeName', 'englishName', 'direction', 'displayOrder', 'isDefault', 'isActive', 'actions'] as const;
@@ -99,7 +106,7 @@ export class LanguagesComponent implements OnInit {
     this.saving.set(true);
     this.adminService.upsertLanguage(language).subscribe({
       next: saved => {
-        this.notificationService.showSuccess(`Language '${saved.code}' saved and live.`);
+        this.notificationService.showSuccess(this.translationService.translate(TranslationKeys.Admin.Languages.Saved, [saved.code]));
         this.saving.set(false);
         this.resetForm();
         this.load();

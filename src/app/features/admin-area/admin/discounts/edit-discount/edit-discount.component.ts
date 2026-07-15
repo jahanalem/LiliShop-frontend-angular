@@ -20,10 +20,14 @@ import { ProductService } from 'src/app/core/services/product.service';
 import { DiscountService } from 'src/app/core/services/discount.service';
 import { catchError, firstValueFrom, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { NotificationService } from 'src/app/core/services/notification.service';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 @Component({
   selector: 'app-edit-discount',
   imports: [
+    TranslatePipe,
     ReactiveFormsModule,
     MatInputModule,
     MatFormFieldModule,
@@ -41,6 +45,8 @@ import { NotificationService } from 'src/app/core/services/notification.service'
   styleUrl: './edit-discount.component.scss'
 })
 export class EditDiscountComponent implements OnInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   isEditMode = false;
   discountIdFromUrl      : number = 0;                     // 0 means new discount
 
@@ -55,9 +61,9 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
   discount = signal<IDiscount | undefined>(undefined);
 
   targetEntityOptions = [
-    { label: 'All', value: DiscountTargetType.All },
-    { label: 'Product Brand', value: DiscountTargetType.ProductBrand },
-    { label: 'Product Type', value: DiscountTargetType.ProductType }
+    { label: TranslationKeys.Admin.Discounts.TargetAll, value: DiscountTargetType.All },
+    { label: TranslationKeys.Shop.Brand, value: DiscountTargetType.ProductBrand },
+    { label: TranslationKeys.Shop.Type, value: DiscountTargetType.ProductType }
   ];
   targetEntityIdOptionsMap = new Map<DiscountTargetType, ITargetEntityOption[]>();
 
@@ -66,6 +72,7 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
   private fb              = inject(FormBuilder);
   private activatedRoute  = inject(ActivatedRoute);
   private notificationService = inject(NotificationService);
+  private translationService  = inject(TranslationService);
 
   destroy$ = new Subject<void>();
 
@@ -259,21 +266,21 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
     if (this.isEditMode) {
       this.discountService.updateDiscount(discount).subscribe({
         next: () => {
-          this.notificationService.showSuccess('Discount updated successfully');
+          this.notificationService.showSuccess(this.translationService.translate(TranslationKeys.Admin.Discounts.Updated));
         },
         error: err => {
-          this.notificationService.showError('Failed to update discount');
+          this.notificationService.showError(this.translationService.translate(TranslationKeys.Admin.Discounts.UpdateFailed));
           console.error('Error updating discount:', err);
         }
       });
     } else {
       this.discountService.createDiscount(discount).subscribe({
         next: () => {
-          this.notificationService.showSuccess('Discount created successfully');
+          this.notificationService.showSuccess(this.translationService.translate(TranslationKeys.Admin.Discounts.Created));
           console.log('Create Discount', discount);
         },
         error: (err) => {
-          this.notificationService.showError('Failed to create discount');
+          this.notificationService.showError(this.translationService.translate(TranslationKeys.Admin.Discounts.CreateFailed));
           console.error('Error creating discount:', err);
         }
       });
@@ -375,7 +382,7 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
       const isFreeShipping = tier.get('isFreeShipping')?.value;
 
       let label = `${amount}${isPercentage ? '%' : '€'}`;
-      if (isFreeShipping) label += ' + Free shipping';
+      if (isFreeShipping) label += ` ${this.translationService.translate(TranslationKeys.Admin.Discounts.FreeShippingSuffix)}`;
 
       return {
         label,
@@ -516,7 +523,7 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
             (brandId !== null && typeId === null)) {
             return {
               duplicateBrandTypePair: {
-                message: 'Must specify both Brand and Type unless using "All"',
+                message: TranslationKeys.Admin.Discounts.RuleBothBrandType,
                 groups : [groupIndex]
               }
             };
@@ -534,7 +541,7 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
           if (universalGroupIndex !== null) {
             return {
               duplicateBrandTypePair: {
-                message: 'Only one universal discount group allowed',
+                message: TranslationKeys.Admin.Discounts.RuleOneUniversal,
                 groups : [universalGroupIndex, groupIndex]
               }
             };
@@ -542,7 +549,7 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
           if (allBrandsForType.size > 0 || allTypesForBrand.size > 0 || specificBrandTypes.size > 0) {
             return {
               duplicateBrandTypePair: {
-                message: 'Universal discount cannot coexist with specific rules',
+                message: TranslationKeys.Admin.Discounts.RuleUniversalCoexist,
                 groups : [groupIndex]
               }
             };
@@ -558,7 +565,7 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
           (typeId === 0 && (brandId === null || brandId === 0))) {
           return {
             duplicateBrandTypePair: {
-              message: 'When using "All" for Brand/Type, you must specify the other',
+              message: TranslationKeys.Admin.Discounts.RuleAllRequiresOther,
               groups : [groupIndex]
             }
           };

@@ -8,16 +8,16 @@
 <div mat-dialog-actions class="dialog-actions">
   @if (!data().showConfirmationButtons) {
     <button mat-button mat-dialog-close class="close-button">
-      <mat-icon>close</mat-icon> Close
+      <mat-icon>close</mat-icon> {{ TranslationKeys.Common.Close | translate }}
     </button>
   }
 
   @if (data().showConfirmationButtons) {
     <button mat-raised-button [mat-dialog-close]="false" cdkFocusInitial class="no-button">
-      <mat-icon>cancel</mat-icon> No
+      <mat-icon>cancel</mat-icon> {{ TranslationKeys.Common.No | translate }}
     </button>
     <button mat-raised-button color="primary" [mat-dialog-close]="true" class="yes-button">
-      <mat-icon>check_circle</mat-icon> Yes
+      <mat-icon>check_circle</mat-icon> {{ TranslationKeys.Common.Yes | translate }}
     </button>
   }
 </div>

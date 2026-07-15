@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { PrintessSignalRService } from 'src/app/core/services/printess-signal-r.service';
 import { environment } from 'src/environments/environment';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 interface TemplateDto {
   name        : string;
@@ -22,9 +24,12 @@ const PRINTESS_EMBED_URL     = `${PRINTESS_EDITOR_ORIGIN}/printess-editor/embed.
   templateUrl: './printess-editor.component.html',
   styleUrl: './printess-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [MatFormFieldModule, MatSelectModule, MatButtonToggleModule, MatButtonModule, MatIconModule]
+  imports: [
+    TranslatePipe,MatFormFieldModule, MatSelectModule, MatButtonToggleModule, MatButtonModule, MatIconModule]
 })
 export class PrintessEditorComponent implements OnInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   // The Printess shop token is a credential and must never be hardcoded in
   // the bundle; it is fetched from the backend, which holds the real secret.
   shopToken        = signal<string | null>(null);

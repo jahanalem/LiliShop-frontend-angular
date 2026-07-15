@@ -1,14 +1,14 @@
 <div class="admin-page">
   <header class="admin-page-header">
     <div>
-      <h1 class="admin-page-title">Printess Editor</h1>
-      <p class="admin-page-subtitle">Design templates and generate print-ready documents.</p>
+      <h1 class="admin-page-title">{{ TranslationKeys.Admin.Printess.Title | translate }}</h1>
+      <p class="admin-page-subtitle">{{ TranslationKeys.Admin.Printess.Subtitle | translate }}</p>
     </div>
   </header>
 
   <div class="control-bar">
     <mat-form-field appearance="outline" subscriptSizing="dynamic" class="control-field">
-      <mat-label>Template</mat-label>
+      <mat-label>{{ TranslationKeys.Admin.Printess.Template | translate }}</mat-label>
       <mat-select [value]="templateName()" (selectionChange)="onTemplateChange($event.value)">
         @for (t of templates(); track t.name) {
           <mat-option [value]="t.name">{{ t.name }}</mat-option>
@@ -17,7 +17,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" subscriptSizing="dynamic" class="control-field">
-      <mat-label>Output type</mat-label>
+      <mat-label>{{ TranslationKeys.Admin.Printess.OutputType | translate }}</mat-label>
       <mat-select [value]="outputType()" (selectionChange)="outputType.set($event.value)">
         <mat-option value="pdf">PDF</mat-option>
         <mat-option value="image">Image</mat-option>
@@ -26,8 +26,8 @@
 
     <mat-button-toggle-group [value]="useCallback()" (change)="useCallback.set($event.value)"
       aria-label="Generation mode">
-      <mat-button-toggle [value]="false">Polling</mat-button-toggle>
-      <mat-button-toggle [value]="true">Callback</mat-button-toggle>
+      <mat-button-toggle [value]="false">{{ TranslationKeys.Admin.Printess.Polling | translate }}</mat-button-toggle>
+      <mat-button-toggle [value]="true">{{ TranslationKeys.Admin.Printess.Callback | translate }}</mat-button-toggle>
     </mat-button-toggle-group>
 
     <span class="control-spacer"></span>
@@ -35,11 +35,9 @@
     <button type="button" mat-flat-button [disabled]="isButtonDisabled()"
       (click)="useCallback() ? startCallbackJob() : downloadDocument()">
       {{
-      useCallback() && isCallbackLoading
-      ? 'Generating via Callback…'
-      : !useCallback() && isPollingLoading()
-      ? 'Generating via Polling…'
-      : 'Generate Document'
+      (useCallback() && isCallbackLoading) || (!useCallback() && isPollingLoading())
+      ? (TranslationKeys.Admin.Printess.Generating | translate)
+      : (TranslationKeys.Admin.Printess.Generate | translate)
       }}
     </button>
   </div>
@@ -47,7 +45,7 @@
   @if (useCallback() && !saveToken()) {
     <div class="admin-banner is-warning">
       <mat-icon>warning_amber</mat-icon>
-      <span>Edit and save your design in the Printess editor first (click the “Add to Basket” button).</span>
+      <span>{{ TranslationKeys.Admin.Printess.SaveFirst | translate }}</span>
     </div>
   }
 

@@ -19,7 +19,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { Observable } from 'rxjs';
-import { BreadcrumbService, BreadcrumbComponent } from 'xng-breadcrumb';
+import { BreadcrumbService, BreadcrumbComponent, BreadcrumbItemDirective } from 'xng-breadcrumb';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 @Component({
@@ -46,7 +47,9 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
     MatPaginatorModule,
     MatCardModule,
     MatTableModule,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    BreadcrumbItemDirective,
+    TranslatePipe
   ]
 
 })

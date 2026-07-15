@@ -18,6 +18,7 @@ import { type CheckoutForm } from '../checkout.component';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 @Component({
   selector: 'app-checkout-payment',
@@ -50,6 +51,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   loading = signal(false);
 
   private basketService = inject(BasketService);
+  private translationService = inject(TranslationService);
   private checkoutService = inject(CheckoutService);
   public notificationService = inject(NotificationService);
   private router = inject(Router);
@@ -153,7 +155,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
       if (paymentResult.paymentIntent) {
         this.handleSuccessfulPayment(createdOrder, basket);
       } else {
-        this.notificationService.showError(paymentResult.error.message ?? 'Error!');
+        this.notificationService.showError(paymentResult.error.message ?? this.translationService.translate(TranslationKeys.ClientError.Unexpected));
       }
     } catch (error) {
       console.error('An error occurred while submitting the order:', error);

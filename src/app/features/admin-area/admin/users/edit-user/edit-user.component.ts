@@ -16,6 +16,8 @@ import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
 import { IRole } from 'src/app/shared/models/role';
 
 import { MatSelectModule } from '@angular/material/select';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-edit-user',
@@ -23,9 +25,12 @@ import { MatSelectModule } from '@angular/material/select';
     styleUrls: ['./edit-user.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [RouterModule, MatSelectModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCheckboxModule, ReactiveFormsModule]
+  imports: [
+    TranslatePipe,RouterModule, MatSelectModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCheckboxModule, ReactiveFormsModule]
 })
 export class EditUserComponent implements OnInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   adminUserForm!: FormGroup;
 
   adminUser = signal<IAdminAreaUser | null>(null);

@@ -12,6 +12,8 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
   @Component({
     selector: 'app-admin',
@@ -28,7 +30,8 @@ import { MatButtonModule } from '@angular/material/button';
       MatSidenavModule,
       MatDividerModule,
       MatListModule,
-      MatButtonModule
+      MatButtonModule,
+      TranslatePipe
     ]
 })
 export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit {
@@ -41,18 +44,21 @@ export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit 
   private accountService = inject(AccountService);
   protected busyService  = inject(BusyService);
 
+  protected readonly TranslationKeys = TranslationKeys;
+
+  // Labels are translation keys — the sidenav renders them through the translate pipe.
   navItems = [
-    { name: 'Dashboard', link: '/admin',                     icon: 'dashboard' },
-    { name: 'Products',  link: '/admin/products',            icon: 'storefront' },
-    { name: 'Brands',    link: '/admin/brands',              icon: 'verified' },
-    { name: 'Types',     link: '/admin/product-types',       icon: 'category' },
-    { name: 'Messages',  link: '/admin/contact-us-messages', icon: 'message' },
-    { name: 'Discounts', link: '/admin/discounts',           icon: 'price_check'},
-    { name: 'Users',     link: '/admin/users',               icon: 'supervisor_account' },
-    { name: 'Price Drop Alerts', link: '/admin/subscribers/drop-price', icon: 'price_change' },
-    { name: 'Translations', link: '/admin/translations',     icon: 'translate' },
-    { name: 'Languages',    link: '/admin/languages',        icon: 'language' },
-    { name: 'Printess Editor', link: '/admin/printess-editor', icon: 'draw' },
+    { name: TranslationKeys.Admin.Nav.Dashboard, link: '/admin',                     icon: 'dashboard' },
+    { name: TranslationKeys.Admin.Nav.Products,  link: '/admin/products',            icon: 'storefront' },
+    { name: TranslationKeys.Admin.Nav.Brands,    link: '/admin/brands',              icon: 'verified' },
+    { name: TranslationKeys.Admin.Nav.Types,     link: '/admin/product-types',       icon: 'category' },
+    { name: TranslationKeys.Admin.Nav.Messages,  link: '/admin/contact-us-messages', icon: 'message' },
+    { name: TranslationKeys.Admin.Nav.Discounts, link: '/admin/discounts',           icon: 'price_check'},
+    { name: TranslationKeys.Admin.Nav.Users,     link: '/admin/users',               icon: 'supervisor_account' },
+    { name: TranslationKeys.Nav.PriceAlerts, link: '/admin/subscribers/drop-price', icon: 'price_change' },
+    { name: TranslationKeys.Admin.Nav.Translations, link: '/admin/translations',     icon: 'translate' },
+    { name: TranslationKeys.Admin.Nav.Languages,    link: '/admin/languages',        icon: 'language' },
+    { name: TranslationKeys.Admin.Nav.Printess, link: '/admin/printess-editor', icon: 'draw' },
   ];
 
   constructor() {

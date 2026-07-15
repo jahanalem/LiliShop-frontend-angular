@@ -10,6 +10,7 @@ import { IOrder } from 'src/app/shared/models/order';
 import { OrdersService } from 'src/app/core/services/orders.service';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 @Component({
     selector: 'app-order-detailed',
@@ -27,6 +28,7 @@ export class OrderDetailedComponent implements OnInit {
   private orderService      = inject(OrdersService);
   private activatedRoute    = inject(ActivatedRoute);
   private breadcrumbService = inject(BreadcrumbService);
+  private translationService = inject(TranslationService);
 
   constructor() {
     this.breadcrumbService.set('@OrderDetailed', '');
@@ -44,7 +46,8 @@ export class OrderDetailedComponent implements OnInit {
     this.orderService.getOrderDetailed(+id).subscribe({
       next: (order: IOrder) => {
         this.order.set(order);
-        this.breadcrumbService.set('@OrderDetailed', `Order# ${order.id} - ${order.status}`);
+        this.breadcrumbService.set('@OrderDetailed',
+          this.translationService.translate(TranslationKeys.Orders.DetailCrumb, [order.id, order.status]));
       }, error: (error) => {
         console.log(error);
       }

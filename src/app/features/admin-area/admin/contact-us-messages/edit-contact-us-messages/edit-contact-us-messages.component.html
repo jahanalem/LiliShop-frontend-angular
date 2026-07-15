@@ -1,51 +1,51 @@
 <div class="admin-page">
   <header class="admin-page-header">
     <div>
-      <h1 class="admin-page-title">Message</h1>
-      <p class="admin-page-subtitle">Customer contact message details.</p>
+      <h1 class="admin-page-title">{{ TranslationKeys.Admin.Messages.EditTitle | translate }}</h1>
+      <p class="admin-page-subtitle">{{ TranslationKeys.Admin.Messages.EditSubtitle | translate }}</p>
     </div>
     <button type="button" mat-stroked-button (click)="cancel()">
       <mat-icon>arrow_back</mat-icon>
-      Back
+      {{ TranslationKeys.Admin.Common.Back | translate }}
     </button>
   </header>
 
   <div class="admin-form-card message-card">
     <form>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>First Name</mat-label>
-        <input matInput [(ngModel)]="contactUsMessage().firstName" title="first name" name="firstName" readonly>
+        <mat-label>{{ TranslationKeys.Checkout.FirstName | translate }}</mat-label>
+        <input matInput [(ngModel)]="contactUsMessage().firstName" name="firstName" readonly>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Last Name</mat-label>
-        <input matInput [(ngModel)]="contactUsMessage().lastName" title="last name" name="lastName" readonly>
+        <mat-label>{{ TranslationKeys.Checkout.LastName | translate }}</mat-label>
+        <input matInput [(ngModel)]="contactUsMessage().lastName" name="lastName" readonly>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Email Address</mat-label>
-        <input matInput [(ngModel)]="contactUsMessage().email" title="email" name="email" readonly>
+        <mat-label>{{ TranslationKeys.Auth.EmailLabel | translate }}</mat-label>
+        <input matInput [(ngModel)]="contactUsMessage().email" name="email" readonly>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Message</mat-label>
-        <textarea matInput [(ngModel)]="contactUsMessage().message" rows="15" cols="50" title="message" name="message"
+        <mat-label>{{ TranslationKeys.Contact.Message | translate }}</mat-label>
+        <textarea matInput [(ngModel)]="contactUsMessage().message" rows="15" cols="50" name="message"
           readonly></textarea>
       </mat-form-field>
 
       <div class="date-fields">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Created Date</mat-label>
+          <mat-label>{{ TranslationKeys.Admin.Messages.CreatedDate | translate }}</mat-label>
           <input matInput [matDatepicker]="picker1" [(ngModel)]="contactUsMessage().createdDate" name="createdDate"
-            title="created date" disabled>
+            disabled>
           <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
           <mat-datepicker #picker1></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Modified Date</mat-label>
+          <mat-label>{{ TranslationKeys.Admin.Messages.ModifiedDate | translate }}</mat-label>
           <input matInput [matDatepicker]="picker2" [(ngModel)]="contactUsMessage().modifiedDate" name="modifiedDate"
-            title="modified date" disabled>
+            disabled>
           <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
           <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>
@@ -53,8 +53,8 @@
 
       @if (enableReply) {
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Reply</mat-label>
-          <textarea matInput placeholder="Write your reply here..." [(ngModel)]="replyMessage" name="replyMessage"
+          <mat-label>{{ TranslationKeys.Admin.Messages.Reply | translate }}</mat-label>
+          <textarea matInput [placeholder]="TranslationKeys.Admin.Messages.ReplyPlaceholder | translate" [(ngModel)]="replyMessage" name="replyMessage"
             [ngModelOptions]="{standalone: true}"></textarea>
         </mat-form-field>
       }
@@ -62,7 +62,7 @@
 
     @if (enableReply) {
       <div class="form-actions">
-        <button type="button" mat-flat-button (click)="sendReply()">Send Reply</button>
+        <button type="button" mat-flat-button (click)="sendReply()">{{ TranslationKeys.Admin.Messages.SendReply | translate }}</button>
       </div>
     }
   </div>

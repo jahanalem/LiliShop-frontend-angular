@@ -12,6 +12,7 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
 import { type CheckoutForm } from '../checkout.component';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 @Component({
   selector: 'app-checkout-address',
@@ -30,6 +31,7 @@ export class CheckoutAddressComponent implements OnDestroy {
   destroy$ = new Subject<void>();
 
   private accountService = inject(AccountService);
+  private translationService = inject(TranslationService);
   private notificationService = inject(NotificationService);
 
   ngOnDestroy(): void {
@@ -44,7 +46,7 @@ export class CheckoutAddressComponent implements OnDestroy {
       .updateAddress(address)
       .pipe(
         takeUntil(this.destroy$),
-        tap(() => this.notificationService.showSuccess('Address saved.')),
+        tap(() => this.notificationService.showSuccess(this.translationService.translate(TranslationKeys.Checkout.AddressSaved))),
         catchError((error: any) => {
           this.notificationService.showError(error.message);
           console.error(error);

@@ -1,31 +1,31 @@
 <div class="admin-page">
   <header class="admin-page-header">
     <div>
-      <h1 class="admin-page-title">Product Type</h1>
-      <p class="admin-page-subtitle">Name the type and control its availability.</p>
+      <h1 class="admin-page-title">{{ TranslationKeys.Admin.Types.EditTitle | translate }}</h1>
+      <p class="admin-page-subtitle">{{ TranslationKeys.Admin.Types.EditSubtitle | translate }}</p>
     </div>
     <button type="button" mat-stroked-button (click)="navigateBack()">
       <mat-icon>arrow_back</mat-icon>
-      Back
+      {{ TranslationKeys.Admin.Common.Back | translate }}
     </button>
   </header>
 
   <form [formGroup]="typeForm" (ngSubmit)="onSubmit()" class="admin-form-card entity-form">
-    <mat-checkbox formControlName="isActive" (change)="onIsActiveChange($event.checked)">Is Active?</mat-checkbox>
+    <mat-checkbox formControlName="isActive" (change)="onIsActiveChange($event.checked)">{{ TranslationKeys.Admin.Common.Active | translate }}</mat-checkbox>
 
-    <mat-form-field hintLabel="Max 20 characters" appearance="outline" class="full-width">
-      <mat-label>Enter type name</mat-label>
-      <input formControlName="name" matInput #input maxlength="20" placeholder="type name">
+    <mat-form-field [hintLabel]="TranslationKeys.Admin.Common.MaxChars | translate: [20]" appearance="outline" class="full-width">
+      <mat-label>{{ TranslationKeys.Admin.Types.NameLabel | translate }}</mat-label>
+      <input formControlName="name" matInput #input maxlength="20">
       <mat-hint align="end">{{input.value.length}}/20</mat-hint>
     </mat-form-field>
 
     @if (extraLanguages.length > 0) {
       <section class="translations-section">
-        <h3 class="translations-title">Translations</h3>
-        <p class="translations-hint">Leave a field empty to fall back to the default-language name.</p>
+        <h3 class="translations-title">{{ TranslationKeys.Admin.Common.Translations | translate }}</h3>
+        <p class="translations-hint">{{ TranslationKeys.Admin.Common.TranslationsHint | translate }}</p>
         @for (language of extraLanguages; track language.code) {
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Name ({{ language.nativeName }})</mat-label>
+            <mat-label>{{ TranslationKeys.Admin.Common.NameIn | translate: [language.nativeName] }}</mat-label>
             <input matInput maxlength="20"
               [attr.lang]="language.code"
               [dir]="language.direction"
@@ -38,6 +38,6 @@
     }
 
     <button type="submit" [disabled]="isSaveDisabled" [attr.aria-disabled]="isSaveDisabled.toString()"
-      mat-flat-button class="save-button">Save</button>
+      mat-flat-button class="save-button">{{ TranslationKeys.Common.Save | translate }}</button>
   </form>
 </div>

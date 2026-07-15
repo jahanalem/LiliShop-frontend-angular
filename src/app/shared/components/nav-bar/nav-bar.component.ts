@@ -27,6 +27,7 @@ import { ThemeService } from 'src/app/core/services/theme.service';
 import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -65,6 +66,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
   private basketService        = inject(BasketService);
   private snackBar             = inject(MatSnackBar);
   private router               = inject(Router);
+  private translationService   = inject(TranslationService);
   protected busyService        = inject(BusyService);
   protected themeService       = inject(ThemeService);
 
@@ -110,10 +112,12 @@ export class NavBarComponent implements OnInit, OnDestroy {
   }
 
   logoutFromAllDevices() {
-    if (confirm("Are you sure you want to log out from all devices?")) {
+    if (confirm(this.translationService.translate(TranslationKeys.Nav.LogoutAllConfirm))) {
       this.accountService.logoutFromAllDevices().subscribe({
         next: () => {
-          this.snackBar.open('Successfully logged out from all devices.', 'Close', {
+          this.snackBar.open(
+            this.translationService.translate(TranslationKeys.Auth.LoggedOutAll),
+            this.translationService.translate(TranslationKeys.Common.Close), {
             duration: 3000,
             horizontalPosition: 'right',
             verticalPosition: 'top'
@@ -122,7 +126,9 @@ export class NavBarComponent implements OnInit, OnDestroy {
           this.router.navigateByUrl('/account/login');
         },
         error: (error) => {
-          this.snackBar.open('Failed to log out from all devices. Please try again.', 'Close', {
+          this.snackBar.open(
+            this.translationService.translate(TranslationKeys.Auth.LogoutAllFailed),
+            this.translationService.translate(TranslationKeys.Common.Close), {
             duration: 3000,
             horizontalPosition: 'right',
             verticalPosition: 'top'

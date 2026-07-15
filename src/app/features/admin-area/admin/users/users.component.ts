@@ -20,6 +20,8 @@ import { IAdminAreaUser } from 'src/app/shared/models/adminAreaUser';
 import { DeleteService } from 'src/app/core/services/utility-services/delete.service';
 import { UserPagination } from 'src/app/shared/models/pagination';
 import { SearchService } from 'src/app/core/services/utility-services/search.service';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 enum ColumnNames {
   Id             = 'id',
@@ -36,9 +38,12 @@ enum ColumnNames {
     styleUrls: ['./users.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [RouterModule, FormatValuePipe, MatFormFieldModule, MatPaginatorModule, MatButtonModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
+  imports: [
+    TranslatePipe,RouterModule, FormatValuePipe, MatFormFieldModule, MatPaginatorModule, MatButtonModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
 })
 export class UsersComponent implements AfterViewInit, OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   paginator = viewChild<MatPaginator>(MatPaginator);
   sort      = viewChild<MatSort>(MatSort);
 
@@ -55,13 +60,14 @@ export class UsersComponent implements AfterViewInit, OnInit {
     ColumnNames.Action
   ];
 
+  // Values are translation keys; the template renders them through the translate pipe.
   columnFriendlyNames: { [key in ColumnNames]: string } = {
-    [ColumnNames.Id]            : 'ID',
-    [ColumnNames.Email]         : 'Email',
-    [ColumnNames.DisplayName]   : 'Name',
-    [ColumnNames.RoleName]      : 'Role',
-    [ColumnNames.EmailConfirmed]: 'Email Confirmed',
-    [ColumnNames.Action]        : 'Action'
+    [ColumnNames.Id]            : TranslationKeys.Admin.Common.Id,
+    [ColumnNames.Email]         : TranslationKeys.Auth.EmailLabel,
+    [ColumnNames.DisplayName]   : TranslationKeys.Admin.Common.Name,
+    [ColumnNames.RoleName]      : TranslationKeys.Admin.Users.Role,
+    [ColumnNames.EmailConfirmed]: TranslationKeys.Admin.Users.EmailConfirmed,
+    [ColumnNames.Action]        : TranslationKeys.Admin.Common.Actions
   };
 
   private unsubscribe$ = new Subject<void>();

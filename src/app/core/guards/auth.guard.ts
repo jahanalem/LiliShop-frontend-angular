@@ -7,6 +7,8 @@ import { AccountService } from '../services/account.service';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { IUser } from 'src/app/shared/models/user';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 
 
@@ -15,6 +17,7 @@ export const authGuard: CanMatchFn = (route: Route, segments: UrlSegment[]): Obs
   const accountService = inject(AccountService);
   const router = inject(Router);
   const dialog = inject(MatDialog);
+  const translationService = inject(TranslationService);
 
   const policyName = route.data?.['policy'] as string | undefined;
 
@@ -37,7 +40,7 @@ export const authGuard: CanMatchFn = (route: Route, segments: UrlSegment[]): Obs
           if (hasPermission(requiredRoles, authenticatedUser)) {
             return true;
           }
-          showAccessDeniedDialog(dialog);
+          showAccessDeniedDialog(dialog, translationService);
           redirectToHomePage(router, segments);
           return false;
         })
@@ -55,9 +58,12 @@ const redirectToLoginPage = (router: Router, segments: UrlSegment[]): void => {
   router.navigate(['account/login'], { queryParams: { returnUrl } });
 };
 
-const showAccessDeniedDialog = (dialog: MatDialog): void => {
+const showAccessDeniedDialog = (dialog: MatDialog, translationService: TranslationService): void => {
   dialog.open(DialogComponent, {
-    data: { title: 'Access Denied!', content: "You don't have permission to view this page" },
+    data: {
+      title: translationService.translate(TranslationKeys.Auth.AccessDeniedTitle),
+      content: translationService.translate(TranslationKeys.Auth.AccessDeniedContent)
+    },
   });
 };
 

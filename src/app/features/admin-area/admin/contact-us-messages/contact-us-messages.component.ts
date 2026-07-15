@@ -21,6 +21,8 @@ import { IContactUsMessage } from 'src/app/shared/models/contactUsMessage';
 import { ContactUsMessageQueryParams } from 'src/app/shared/models/contactUsMessageQueryParams';
 import { PaginationWithData } from 'src/app/shared/models/pagination';
 import { PolicyNames } from 'src/app/shared/models/policy';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-contact-us-messages',
@@ -28,9 +30,12 @@ import { PolicyNames } from 'src/app/shared/models/policy';
   templateUrl: './contact-us-messages.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './contact-us-messages.component.scss',
-  imports: [CommonModule, RouterModule, FormatValuePipe, CheckPolicyDirective, MatFormFieldModule, MatPaginatorModule, MatButtonModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
+  imports: [
+    TranslatePipe,CommonModule, RouterModule, FormatValuePipe, CheckPolicyDirective, MatFormFieldModule, MatPaginatorModule, MatButtonModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
 })
 export class ContactUsMessagesComponent implements OnInit, OnDestroy {
+  protected readonly TranslationKeys = TranslationKeys;
+
   paginator = viewChild.required<MatPaginator>(MatPaginator);
   sort      = viewChild.required<MatSort>(MatSort);
 
@@ -132,5 +137,21 @@ export class ContactUsMessagesComponent implements OnInit, OnDestroy {
 
   applyFilter(filterValueEvent: Event) {
     this.searchService.applyFilter(filterValueEvent, this.paginator(), this.messageParams());
+  }
+
+  /** Maps a raw column id onto its translation key for the header row. */
+  protected columnLabel(column: string): string {
+    const labels: Record<string, string> = {
+      id: TranslationKeys.Admin.Common.Id,
+      name: TranslationKeys.Admin.Common.Name,
+      isActive: TranslationKeys.Admin.Common.Active,
+      email: TranslationKeys.Auth.EmailLabel,
+      firstName: TranslationKeys.Checkout.FirstName,
+      lastName: TranslationKeys.Checkout.LastName,
+      message: TranslationKeys.Contact.Message,
+      createdDate: TranslationKeys.Admin.Messages.CreatedDate,
+      Action: TranslationKeys.Admin.Common.Actions
+    };
+    return labels[column] ?? column;
   }
 }

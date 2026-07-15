@@ -16,6 +16,8 @@ import { DeleteService } from 'src/app/core/services/utility-services/delete.ser
 import { BrandParams } from 'src/app/shared/models/BrandParams';
 import { IBrand } from 'src/app/shared/models/brand';
 import { PolicyNames } from 'src/app/shared/models/policy';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-brands',
@@ -23,9 +25,12 @@ import { PolicyNames } from 'src/app/shared/models/policy';
     styleUrls: ['./brands.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [RouterModule, FormatValuePipe, CheckPolicyDirective, MatPaginatorModule, MatButtonModule, MatTableModule, MatIconModule, MatSortModule]
+  imports: [
+    TranslatePipe,RouterModule, FormatValuePipe, CheckPolicyDirective, MatPaginatorModule, MatButtonModule, MatTableModule, MatIconModule, MatSortModule]
 })
 export class BrandsComponent implements AfterViewInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   paginator = viewChild.required<MatPaginator>(MatPaginator);
 
   policyNames = PolicyNames;
@@ -83,5 +88,21 @@ export class BrandsComponent implements AfterViewInit {
 
   createBrand() {
     this.router.navigateByUrl(`/admin/brands/edit/${-1}`);
+  }
+
+  /** Maps a raw column id onto its translation key for the header row. */
+  protected columnLabel(column: string): string {
+    const labels: Record<string, string> = {
+      id: TranslationKeys.Admin.Common.Id,
+      name: TranslationKeys.Admin.Common.Name,
+      isActive: TranslationKeys.Admin.Common.Active,
+      email: TranslationKeys.Auth.EmailLabel,
+      firstName: TranslationKeys.Checkout.FirstName,
+      lastName: TranslationKeys.Checkout.LastName,
+      message: TranslationKeys.Contact.Message,
+      createdDate: TranslationKeys.Admin.Messages.CreatedDate,
+      Action: TranslationKeys.Admin.Common.Actions
+    };
+    return labels[column] ?? column;
   }
 }
