@@ -55,26 +55,134 @@
     <section class="about-section" aria-labelledby="project-title">
       <h2 id="project-title" class="about-section__title">Project Showcase: 🛍️ LiliShop</h2>
       <p class="about-section__meta">
-        Developed by Said Roohullah Allem &middot; GitHub:
+        Designed &amp; built solo by Said Roohullah Allem &middot; GitHub:
         <a href="https://github.com/jahanalem" target="_blank" rel="noopener">jahanalem</a>
-        &middot; January 2026
+        &middot; Actively developed &amp; maintained
       </p>
 
-      <div class="about-card">
+      <div class="about-card lili-intro">
         <h3 class="about-card__title">Project Overview &amp; Core Technologies</h3>
         <p>
-          LiliShop is a modern e-commerce platform developed with <strong>.NET 10</strong> and
-          <strong>Angular 22</strong>, designed to provide a seamless shopping experience for users and robust
-          management capabilities for administrators.
+          LiliShop is a modern, security-hardened e-commerce platform built with <strong>.NET 10</strong> and
+          <strong>Angular 22</strong>. It pairs a multi-language, mobile-friendly storefront with a powerful admin
+          panel — designed for a seamless shopping experience and robust management capabilities alike.
         </p>
-        <p class="about-card__link-row">
-          <strong>Website:</strong>
-          <a href="https://lilishop-bwdfb5azanh0cfa8.germanywestcentral-01.azurewebsites.net/shop" target="_blank"
+        <div class="lili-intro__actions">
+          <a class="lili-btn lili-btn--primary"
+            href="https://lilishop-bwdfb5azanh0cfa8.germanywestcentral-01.azurewebsites.net/shop" target="_blank"
             rel="noopener">
-            lilishop-bwdfb5azanh0cfa8.germanywestcentral-01.azurewebsites.net/shop
+            <mat-icon>open_in_new</mat-icon>
+            <span>Visit Live Demo</span>
           </a>
-        </p>
+          <a class="lili-btn lili-btn--ghost"
+            href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0061_LiliShop-Security-Series-Overview.md"
+            target="_blank" rel="noopener">
+            <mat-icon>shield</mat-icon>
+            <span>Security Series</span>
+          </a>
+        </div>
       </div>
+
+      <!-- ---------------------------------------------- highlight stats -->
+      <ul class="lili-stats" aria-label="LiliShop at a glance">
+        <li class="lili-stat">
+          <span class="lili-stat__icon" aria-hidden="true">🌍</span>
+          <span class="lili-stat__value">11</span>
+          <span class="lili-stat__label">Languages<br />incl. RTL (عربی · فارسی)</span>
+        </li>
+        <li class="lili-stat">
+          <span class="lili-stat__icon" aria-hidden="true">🛡️</span>
+          <span class="lili-stat__value">8</span>
+          <span class="lili-stat__label">Security fixes<br />OWASP-aligned review</span>
+        </li>
+        <li class="lili-stat">
+          <span class="lili-stat__icon" aria-hidden="true">⚡</span>
+          <span class="lili-stat__value">.NET 10</span>
+          <span class="lili-stat__label">+ Angular 22<br />latest-gen stack</span>
+        </li>
+        <li class="lili-stat">
+          <span class="lili-stat__icon" aria-hidden="true">🔐</span>
+          <span class="lili-stat__value">MFA</span>
+          <span class="lili-stat__label">Admin two-factor<br />TOTP + backup codes</span>
+        </li>
+      </ul>
+
+      <!-- ------------------------------------------ feature card grid -->
+      <div class="lili-features" role="list">
+        <article class="lili-feature" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>travel_explore</mat-icon></span>
+          <h3 class="lili-feature__title">Product Discovery</h3>
+          <p class="lili-feature__text">
+            Browse a full catalog with filtering by brand, type &amp; size, name search, price/alphabetical sorting,
+            and a discounts-only view.
+          </p>
+        </article>
+
+        <article class="lili-feature" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>shopping_cart_checkout</mat-icon></span>
+          <h3 class="lili-feature__title">Secure Checkout</h3>
+          <p class="lili-feature__text">
+            Card payments via <strong>Stripe</strong> with 3D&nbsp;Secure/SCA. Totals are re-validated server-side and
+            orders confirm only through a verified Stripe webhook.
+          </p>
+        </article>
+
+        <article class="lili-feature" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>language</mat-icon></span>
+          <h3 class="lili-feature__title">Multi-Language</h3>
+          <p class="lili-feature__text">
+            A storefront in <strong>11 languages</strong> — including full right-to-left support for Arabic &amp;
+            Persian — down to translated product, brand &amp; category names.
+          </p>
+        </article>
+
+        <article class="lili-feature" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>verified_user</mat-icon></span>
+          <h3 class="lili-feature__title">Security-First</h3>
+          <p class="lili-feature__text">
+            Admin MFA, brute-force protection, hardened access control (IDOR), verified Google sign-in, CORS &amp;
+            security headers — from a self-led white-box review.
+          </p>
+        </article>
+
+        <article class="lili-feature" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>sell</mat-icon></span>
+          <h3 class="lili-feature__title">Smart Discounts</h3>
+          <p class="lili-feature__text">
+            Single-product &amp; group campaigns run simultaneously; a best-price engine always shows the lowest active
+            price and falls back gracefully as promotions expire.
+          </p>
+        </article>
+
+        <article class="lili-feature" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>bolt</mat-icon></span>
+          <h3 class="lili-feature__title">Real-Time &amp; Design</h3>
+          <p class="lili-feature__text">
+            Integrated <strong>Printess</strong> editor exports designs to PDF/image, with live render-status updates
+            pushed over <strong>SignalR</strong>.
+          </p>
+        </article>
+
+        <article class="lili-feature" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>notifications_active</mat-icon></span>
+          <h3 class="lili-feature__title">Price-Drop Alerts</h3>
+          <p class="lili-feature__text">
+            Subscribe to products and get an email the moment the price drops, managed from a dedicated one-click
+            subscriptions page.
+          </p>
+        </article>
+
+        <article class="lili-feature" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>admin_panel_settings</mat-icon></span>
+          <h3 class="lili-feature__title">Granular Admin Control</h3>
+          <p class="lili-feature__text">
+            Five-tier role-based access (SuperAdmin → Viewer) lets the owner grant full or narrowly-scoped admin
+            privileges to other users.
+          </p>
+        </article>
+      </div>
+
+      <p class="lili-features__hint">Explore the full feature breakdown below 👇</p>
 
       <mat-accordion multi="true" class="about-accordion">
         <mat-expansion-panel>
@@ -93,13 +201,23 @@
               </ul>
             </div>
             <div class="feature-category">
+              <h4>🌍 Language &amp; Localization</h4>
+              <ul>
+                <li>Use the storefront in 11 languages: English, German, Spanish, Russian, Hindi, Chinese, Turkish, Danish, Swedish, plus Persian and Arabic.</li>
+                <li>Full right-to-left (RTL) layout support for Persian and Arabic.</li>
+                <li>Switch language instantly from a dedicated language switcher — product, brand, and category names are translated too, not just UI labels.</li>
+                <li>Receive transactional emails in your selected language.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
               <h4>🛒 Purchasing &amp; Account Management</h4>
               <ul>
-                <li>Securely purchase products using Stripe (supporting payment methods like Mastercard).</li>
+                <li>Securely purchase products using Stripe, with card payments protected by 3D Secure / Strong Customer Authentication (SCA).</li>
                 <li>Access a detailed history of completed orders.</li>
                 <li>Register for an account using a traditional username/password combination or via Google social login.</li>
                 <li>Confirm registration through an email verification link.</li>
                 <li>Utilize a password recovery feature for forgotten passwords.</li>
+                <li>Stay signed in seamlessly across sessions thanks to automatic, silent token refresh.</li>
                 <li>Log out from all active sessions on different devices for enhanced security.</li>
               </ul>
             </div>
@@ -122,6 +240,44 @@
 
         <mat-expansion-panel>
           <mat-expansion-panel-header>
+            <mat-panel-title>Security &amp; Trust</mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <p class="feature-intro">
+              LiliShop went through a full, self-led, white-box security review — eight real vulnerabilities found and
+              fixed, each documented in its own technical article
+              (<a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0061_LiliShop-Security-Series-Overview.md"
+                target="_blank" rel="noopener">read the series</a>).
+            </p>
+            <div class="feature-category">
+              <h4>🔐 Authentication Hardening</h4>
+              <ul>
+                <li><strong>Multi-Factor Authentication (MFA):</strong> Mandatory TOTP-based two-factor login for admins (Google Authenticator / Authy compatible), with 10 single-use backup codes for device loss.</li>
+                <li><strong>Brute-Force Protection:</strong> IP-based rate limiting plus automatic account lockout after repeated failed sign-ins.</li>
+                <li><strong>Verified Google Sign-In:</strong> Google identity tokens are cryptographically signature-checked before being trusted, preventing forged login tokens.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🛡️ Access Control &amp; Integrity</h4>
+              <ul>
+                <li><strong>Payment Integrity:</strong> Every price and quantity is re-validated against the database before checkout; orders confirm only via a cryptographically verified Stripe webhook.</li>
+                <li><strong>Broken Access Control (IDOR):</strong> Requests can only ever reach data that belongs to the caller, with a properly secured admin dashboard.</li>
+                <li><strong>SSRF Protection:</strong> The Printess callback validates both the sender and the target address before acting.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🌐 Platform &amp; Configuration</h4>
+              <ul>
+                <li><strong>CORS &amp; Security Headers:</strong> A correctly scoped CORS policy backed by browser-level protections (CSP, HSTS, and more).</li>
+                <li><strong>Reduced Information Disclosure:</strong> Sanitized logs, generic error messages, and a login flow that doesn't reveal which emails have an account.</li>
+                <li><strong>Secrets Management:</strong> No API keys, passwords, or signing secrets live in source control — all are injected from Azure configuration at deploy time.</li>
+              </ul>
+            </div>
+          </ng-template>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
             <mat-panel-title>Admin Features</mat-panel-title>
           </mat-expansion-panel-header>
           <ng-template matExpansionPanelContent>
@@ -132,6 +288,7 @@
                 <li>View, search (by name), and sort the product list using various data columns.</li>
                 <li>Assign one or more images to each product, with images hosted on Cloudinary.</li>
                 <li>Manage product brands and types with full CRUD functionality.</li>
+                <li>Translate product, brand, and category names into any supported language from a dedicated translations UI.</li>
               </ul>
             </div>
             <div class="feature-category">
@@ -139,22 +296,23 @@
               <ul>
                 <li>View a list of all registered users, with search (by name) and sort functionalities.</li>
                 <li>View a list of users subscribed to product price drop notifications.</li>
-                <li>Grant varying access permissions to users, including the ability to create other administrators with full or limited privileges.</li>
+                <li>Assign fine-grained, role-based permissions across five tiers (SuperAdmin, Administrator, DiscountManager, AdminPanelViewer, Standard) — granting other users full or narrowly-scoped admin access.</li>
               </ul>
             </div>
             <div class="feature-category">
               <h4>💸 Discount System</h4>
               <ul>
                 <li><strong>Single Product Discounts:</strong> Apply time-limited discounts to individual products. The discounted price is automatically displayed during the promotional period and reverts to the original price upon expiration.</li>
-                <li><strong>Group Discounts:</strong> A sophisticated system for defining discounts applicable to specific product brands or product types within defined timeframes. These are managed via an intuitive admin interface.</li>
+                <li><strong>Group Discounts:</strong> A sophisticated system for defining discounts applicable to specific product brands or product types within defined timeframes, managed via an intuitive admin interface.</li>
+                <li><strong>Multi-Campaign Engine:</strong> Multiple campaigns can run at once; the system automatically resolves and displays the best price per product and falls back to the next-best active promotion as campaigns expire.</li>
                 <li><em>Priority Note:</em> Single-product discounts take precedence over group discounts.</li>
-                <li><em>Future Enhancements:</em> Size-based and per-product conditions within group discounts, along with a unified single and group discount system, are planned for future development.</li>
+                <li><em>Future Enhancements:</em> Size-based and per-product conditions within group discounts are planned for future development.</li>
               </ul>
             </div>
             <div class="feature-category">
               <h4>📝 Content &amp; Communication Management</h4>
               <ul>
-                <li>Integrate the Printess Editor within the admin panel, allowing for the export of designs as PDF or image files.</li>
+                <li>Integrate the Printess Editor within the admin panel, allowing for the export of designs as PDF or image files, with live render-status updates streamed over SignalR.</li>
                 <li>View and manage messages received from users via the 'Contact Us' page.</li>
               </ul>
             </div>
@@ -171,11 +329,14 @@
               <li><strong>Frontend Framework:</strong> Angular 22</li>
               <li><strong>Programming Languages:</strong> C#, TypeScript</li>
               <li><strong>Database:</strong> Microsoft SQL Server with Entity Framework Core for data access.</li>
-              <li><strong>Payment Processing:</strong> Stripe for handling online payments.</li>
+              <li><strong>Payment Processing:</strong> Stripe for handling online payments, with 3D Secure / SCA support.</li>
               <li><strong>Caching:</strong> Hybrid caching strategy utilizing Redis for performance optimization.</li>
               <li><strong>Background Processing:</strong> Hangfire for managing background jobs (e.g., email notifications, discount expiration).</li>
-              <li><strong>Email Service:</strong> SendGrid for transactional email delivery.</li>
-              <li><strong>Cloud Services:</strong> Cloudinary for image storage and management.</li>
+              <li><strong>Real-Time Communication:</strong> SignalR for pushing live status updates (e.g., the Printess design pipeline) to connected clients.</li>
+              <li><strong>Email Service:</strong> SendGrid for transactional email delivery, sent in the recipient's chosen language.</li>
+              <li><strong>Cloud Services:</strong> Cloudinary for image storage and management, hosted on Azure.</li>
+              <li><strong>Localization:</strong> 11 languages including full RTL support, spanning UI, emails, API error messages, and admin-editable business data.</li>
+              <li><strong>Quality:</strong> End-to-end tests with Cypress and a growing xUnit unit-test suite.</li>
               <li>
                 <strong>
                   <a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0026_Refactoring-LiliShop-with-Clean-Architecture.md"
@@ -200,6 +361,7 @@
           <mat-chip>Stripe</mat-chip>
           <mat-chip>Redis</mat-chip>
           <mat-chip>Hangfire</mat-chip>
+          <mat-chip>SignalR</mat-chip>
           <mat-chip>SendGrid</mat-chip>
           <mat-chip>Cloudinary</mat-chip>
         </mat-chip-set>
