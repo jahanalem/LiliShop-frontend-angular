@@ -92,8 +92,36 @@ export const TranslationKeys = {
     Sending: 'Contact.Sending',
   },
   Email: {
+    Common: {
+      ButtonFallback: 'Email.Common.ButtonFallback',
+      Greeting: 'Email.Common.Greeting',
+      SignOff: 'Email.Common.SignOff',
+      Team: 'Email.Common.Team',
+      VisitShop: 'Email.Common.VisitShop',
+    },
+    Confirmation: {
+      Button: 'Email.Confirmation.Button',
+      Ignore: 'Email.Confirmation.Ignore',
+      Intro: 'Email.Confirmation.Intro',
+      Title: 'Email.Confirmation.Title',
+    },
     ConfirmationSubject: 'Email.ConfirmationSubject',
+    PasswordReset: {
+      Button: 'Email.PasswordReset.Button',
+      Expiry: 'Email.PasswordReset.Expiry',
+      Ignore: 'Email.PasswordReset.Ignore',
+      Intro: 'Email.PasswordReset.Intro',
+      Title: 'Email.PasswordReset.Title',
+    },
     PasswordResetSubject: 'Email.PasswordResetSubject',
+    PriceDrop: {
+      Button: 'Email.PriceDrop.Button',
+      Intro: 'Email.PriceDrop.Intro',
+      Reason: 'Email.PriceDrop.Reason',
+      Subject: 'Email.PriceDrop.Subject',
+      Title: 'Email.PriceDrop.Title',
+      Unsubscribe: 'Email.PriceDrop.Unsubscribe',
+    },
   },
   Error: {
     AddOrUpdateFailed: 'Error.AddOrUpdateFailed',
