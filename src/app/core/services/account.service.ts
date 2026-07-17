@@ -169,6 +169,20 @@ export class AccountService {
     return this.http.post<IEnableAuthenticatorResult>(`${this.baseUrl}account/mfa/enable`, { email, password, code });
   }
 
+  /**
+   * Self-service MFA reset for the signed-in administrator. The password re-confirms identity;
+   * the backend invalidates the authenticator secret and recovery codes and ends every session,
+   * so the caller must expect to be signed out after a successful reset.
+   */
+  resetAuthenticator(password: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}account/mfa/reset`, { password });
+  }
+
+  /** Break-glass MFA reset of another user's account (SuperAdmin only, enforced server-side). */
+  resetAuthenticatorForUser(userId: number): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}account/user/${userId}/mfa/reset`, {});
+  }
+
   isLoggedIn(): boolean {
     const token = this.storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
     return !!token;

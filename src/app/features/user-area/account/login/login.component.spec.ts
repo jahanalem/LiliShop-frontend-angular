@@ -22,7 +22,11 @@ describe('LoginComponent', () => {
 
     beforeEach(async () => {
         const accountServiceMock = {
-            login: vi.fn().mockName("AccountService.login")
+            login: vi.fn().mockName("AccountService.login"),
+            // Same contract as the real service: only a response with a real token and no
+            // pending two-factor step counts as an authenticated login.
+            isAuthenticatedUser: (user: IUser | null | undefined) =>
+                !!user && !!user.token && !user.requiresTwoFactorSetup && !user.requiresTwoFactorCode
         };
         const routerMock = {
             navigateByUrl: vi.fn().mockName("Router.navigateByUrl")
@@ -75,7 +79,7 @@ describe('LoginComponent', () => {
     });
 
     it('should call onSubmit and navigate to returnUrl when login is successful', () => {
-        (accountService.login as Mock).mockReturnValue(of({} as IUser));
+        (accountService.login as Mock).mockReturnValue(of({ token: 'jwt' } as IUser));
         const navigateSpy = (component['router'].navigateByUrl as Mock);
 
         component.loginForm.email().value.set('test@example.com');
@@ -86,16 +90,52 @@ describe('LoginComponent', () => {
         expect(navigateSpy).toHaveBeenCalledWith(component.returnUrl());
     });
 
-    it('should call onSubmit and log an error when login fails', () => {
+    it('should call onSubmit and show a server error when login fails', () => {
         (accountService.login as Mock).mockReturnValue(throwError(() => 'Login failed'));
-        const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
 
         component.loginForm.email().value.set('test@example.com');
         component.loginForm.password().value.set('password');
         component.onSubmit();
 
         expect(accountService.login).toHaveBeenCalled();
-        expect(consoleSpy).toHaveBeenCalledWith('Submit failed!', 'Login failed');
+        expect(component.serverError()).toBeTruthy();
+        expect(component.stage()).toBe('credentials');
+    });
+
+    it('should enter the MFA setup stage when the backend requires enrollment', () => {
+        (accountService.login as Mock).mockReturnValue(
+            of({ token: '', requiresTwoFactorSetup: true } as IUser));
+
+        component.loginForm.email().value.set('admin@example.com');
+        component.loginForm.password().value.set('password');
+        component.onSubmit();
+
+        expect(component.stage()).toBe('setup');
+        expect(component.credentials()).toEqual({ email: 'admin@example.com', password: 'password' });
+    });
+
+    it('should enter the MFA verify stage when the backend requires a code', () => {
+        (accountService.login as Mock).mockReturnValue(
+            of({ token: '', requiresTwoFactorCode: true } as IUser));
+
+        component.loginForm.email().value.set('admin@example.com');
+        component.loginForm.password().value.set('password');
+        component.onSubmit();
+
+        expect(component.stage()).toBe('verify');
+    });
+
+    it('should discard credentials and return to the credentials stage on MFA cancel', () => {
+        (accountService.login as Mock).mockReturnValue(
+            of({ token: '', requiresTwoFactorCode: true } as IUser));
+
+        component.loginForm.email().value.set('admin@example.com');
+        component.loginForm.password().value.set('password');
+        component.onSubmit();
+        component.onCancelMfa();
+
+        expect(component.stage()).toBe('credentials');
+        expect(component.credentials()).toEqual({ email: '', password: '' });
     });
 
     it('should not call onSubmit when form is invalid', () => {

@@ -1,0 +1,40 @@
+@use 'styles/admin' as admin;
+
+@include admin.scaffold;
+
+.security-card {
+  max-width: 640px;
+  padding: var(--ls-space-3, 12px);
+}
+
+.security-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block-start: 0;
+  font-size: 1.05rem;
+}
+
+.security-card-description {
+  margin-block: 0.5rem 1rem;
+}
+
+.reset-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .password-field {
+    max-width: 320px;
+  }
+}
+
+.server-error {
+  color: var(--mat-sys-error, #b00020);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+}

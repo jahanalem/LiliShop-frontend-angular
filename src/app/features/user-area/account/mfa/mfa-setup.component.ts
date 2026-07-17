@@ -7,6 +7,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import * as QRCode from 'qrcode';
 import { AccountService } from 'src/app/core/services/account.service';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 /* MfaSetupComponent Flow
 
@@ -52,33 +55,30 @@ import { AccountService } from 'src/app/core/services/account.service';
 @Component({
   selector: 'app-mfa-setup',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, MatCheckboxModule],
+  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, MatCheckboxModule, TranslatePipe],
   template: `
     <div class="mfa-container">
       @if (stage() === 'scan') {
-        <h2>Set up two-factor authentication</h2>
-        <p>
-          Administrator accounts must use MFA. Scan this QR code with an authenticator app
-          (Google Authenticator, Authy, 1Password…), then enter the generated 6-digit code to confirm.
-        </p>
+        <h2>{{ TranslationKeys.Mfa.SetupTitle | translate }}</h2>
+        <p>{{ TranslationKeys.Mfa.SetupIntro | translate }}</p>
 
         @if (loading() && !sharedKey()) {
-          <p>Preparing setup…</p>
+          <p>{{ TranslationKeys.Mfa.PreparingSetup | translate }}</p>
         }
 
         @if (qrDataUrl()) {
-          <img [src]="qrDataUrl()" alt="Authenticator QR code" class="qr" />
+          <img [src]="qrDataUrl()" [alt]="TranslationKeys.Mfa.QrAlt | translate" class="qr" />
         }
 
         @if (sharedKey()) {
           <p class="manual-key">
-            Can't scan? Enter this key manually:<br />
+            {{ TranslationKeys.Mfa.ManualKeyHint | translate }}<br />
             <code data-cy="mfa-shared-key">{{ sharedKey() }}</code>
           </p>
 
           <form (ngSubmit)="enable()">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Verification code</mat-label>
+              <mat-label>{{ TranslationKeys.Mfa.VerificationCode | translate }}</mat-label>
               <input
                 matInput
                 name="code"
@@ -95,14 +95,14 @@ import { AccountService } from 'src/app/core/services/account.service';
             }
 
             <div class="actions">
-              <button mat-button type="button" (click)="cancelled.emit()">Back</button>
+              <button mat-button type="button" (click)="cancelled.emit()">{{ TranslationKeys.Common.Back | translate }}</button>
               <button
                 mat-raised-button
                 color="primary"
                 type="submit"
                 data-cy="mfa-enable"
                 [disabled]="loading() || !code().trim()">
-                <mat-icon>check</mat-icon> Enable
+                <mat-icon>check</mat-icon> {{ TranslationKeys.Mfa.Enable | translate }}
               </button>
             </div>
           </form>
@@ -110,14 +110,12 @@ import { AccountService } from 'src/app/core/services/account.service';
 
         @if (serverError() && !sharedKey()) {
           <p class="server-error">{{ serverError() }}</p>
-          <button mat-button type="button" (click)="cancelled.emit()">Back to login</button>
+          <button mat-button type="button" (click)="cancelled.emit()">{{ TranslationKeys.Mfa.BackToLogin | translate }}</button>
         }
       } @else {
-        <h2>Save your recovery codes</h2>
+        <h2>{{ TranslationKeys.Mfa.RecoveryTitle | translate }}</h2>
         <p>
-          <strong>Store these one-time recovery codes somewhere safe.</strong>
-          Each one can be used once to sign in if you lose your authenticator device.
-          They will not be shown again.
+          <strong>{{ TranslationKeys.Mfa.RecoveryIntro | translate }}</strong>
         </p>
 
         <ul class="recovery-codes" data-cy="recovery-codes">
@@ -127,7 +125,7 @@ import { AccountService } from 'src/app/core/services/account.service';
         </ul>
 
         <button mat-stroked-button type="button" (click)="copyRecoveryCodes()">
-          <mat-icon>content_copy</mat-icon> Copy codes
+          <mat-icon>content_copy</mat-icon> {{ TranslationKeys.Mfa.CopyCodes | translate }}
         </button>
 
         <mat-checkbox
@@ -135,7 +133,7 @@ import { AccountService } from 'src/app/core/services/account.service';
           [ngModel]="savedConfirmed()"
           (ngModelChange)="savedConfirmed.set($event)"
           data-cy="recovery-confirm">
-          I have saved these recovery codes.
+          {{ TranslationKeys.Mfa.SavedConfirm | translate }}
         </mat-checkbox>
 
         <div class="actions">
@@ -146,7 +144,7 @@ import { AccountService } from 'src/app/core/services/account.service';
             data-cy="mfa-finish"
             [disabled]="!savedConfirmed()"
             (click)="finish()">
-            Continue to sign in
+            {{ TranslationKeys.Mfa.ContinueToSignIn | translate }}
           </button>
         </div>
       }
@@ -165,7 +163,10 @@ import { AccountService } from 'src/app/core/services/account.service';
   `],
 })
 export class MfaSetupComponent implements OnInit {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private accountService = inject(AccountService);
+  private translationService = inject(TranslationService);
 
   readonly email = input.required<string>();
   readonly password = input.required<string>();
@@ -203,7 +204,7 @@ export class MfaSetupComponent implements OnInit {
       },
       error: (err) => {
         this.loading.set(false);
-        this.serverError.set(this.extractError(err, 'Could not start MFA setup. Please try again.'));
+        this.serverError.set(this.extractError(err, TranslationKeys.Mfa.SetupFailed));
       },
     });
   }
@@ -225,13 +226,15 @@ export class MfaSetupComponent implements OnInit {
       },
       error: (err) => {
         this.loading.set(false);
-        this.serverError.set(this.extractError(err, 'Verification code is invalid. Please try again.'));
+        this.serverError.set(this.extractError(err, TranslationKeys.Mfa.InvalidCode));
       },
     });
   }
 
   copyRecoveryCodes(): void {
-    navigator.clipboard?.writeText(this.recoveryCodes().join('\n')).catch(() => { this.serverError.set('Could not copy recovery codes. Please copy them manually.'); });
+    navigator.clipboard?.writeText(this.recoveryCodes().join('\n')).catch(() => {
+      this.serverError.set(this.translationService.translate(TranslationKeys.Mfa.CopyFailed));
+    });
   }
 
   finish(): void {
@@ -240,8 +243,8 @@ export class MfaSetupComponent implements OnInit {
     }
   }
 
-  private extractError(err: any, fallback: string): string {
-    return err?.error?.detail || err?.error?.title || fallback;
+  /** Server errors arrive already localized (ProblemDetails.detail); the key is the local fallback. */
+  private extractError(err: any, fallbackKey: string): string {
+    return err?.error?.detail || err?.error?.title || this.translationService.translate(fallbackKey);
   }
 }
-

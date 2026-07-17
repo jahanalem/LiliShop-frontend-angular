@@ -10,6 +10,7 @@ import { DialogComponent } from 'src/app/shared/components/dialog/dialog.compone
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -27,6 +28,7 @@ export class ResetPasswordComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
+  private translationService = inject(TranslationService);
 
   resetPasswordForm!: FormGroup;
   token = signal<string>('');
@@ -56,10 +58,9 @@ export class ResetPasswordComponent {
       this.accountService.resetPassword(this.token(), this.date(), this.email(), newPassword).subscribe(
         {
           next: () => {
-            console.log('Password successfully reset');
             const dialogData: IDialogData = {
-              content: "Password successfully reset",
-              title: "Reset Password",
+              content: this.translationService.translate(TranslationKeys.Auth.PasswordResetDoneContent),
+              title: this.translationService.translate(TranslationKeys.Auth.PasswordResetDoneTitle),
               showConfirmationButtons: false
             };
             const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });

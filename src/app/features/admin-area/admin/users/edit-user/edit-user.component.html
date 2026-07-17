@@ -68,6 +68,17 @@
 
       <!-- Save Button -->
       <button type="submit" mat-flat-button class="save-button">{{ TranslationKeys.Common.Save | translate }}</button>
+
+      <!-- Break-glass MFA recovery (SuperAdmin, never for the own account): invalidates the
+           user's authenticator + recovery codes and signs them out everywhere, so a user who
+           lost both phone and codes can sign in with their password and re-enrol. -->
+      @if (canResetMfa()) {
+        <button type="button" mat-stroked-button class="mfa-reset-button" data-cy="admin-mfa-reset"
+          (click)="resetMfa()" [disabled]="resettingMfa()">
+          <mat-icon>restart_alt</mat-icon>
+          {{ TranslationKeys.Admin.Users.ResetMfa | translate }}
+        </button>
+      }
     </form>
   }
 </div>

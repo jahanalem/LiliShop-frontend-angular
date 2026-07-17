@@ -12,6 +12,7 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { IForgotPasswordResponse } from 'src/app/shared/models/forgotPasswordResponse';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -28,6 +29,7 @@ export class ForgotPasswordComponent {
   private accountService = inject(AccountService);
   private dialog = inject(MatDialog);
   private router = inject(Router);
+  private translationService = inject(TranslationService);
 
   forgotPasswordForm!: FormGroup;
   isSubmitting = signal<boolean>(false);
@@ -46,9 +48,10 @@ export class ForgotPasswordComponent {
         finalize(() => { this.isSubmitting.update(() => false); })
       ).subscribe({
         next: (response: IForgotPasswordResponse) => {
+          // The content comes from the backend already localized for the request culture.
           const dialogData: IDialogData = {
             content: response.message,
-            title: "Reset Password Link Sent",
+            title: this.translationService.translate(TranslationKeys.Auth.ResetLinkSentTitle),
             showConfirmationButtons: false
           };
           const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });

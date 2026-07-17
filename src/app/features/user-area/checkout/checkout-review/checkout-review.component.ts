@@ -14,6 +14,7 @@ import { IBasket } from 'src/app/shared/models/basket';
 import { IUser } from 'src/app/shared/models/user';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 @Component({
     selector: 'app-checkout-review',
@@ -31,9 +32,10 @@ export class CheckoutReviewComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  private basketService  = inject(BasketService);
-  private accountService = inject(AccountService);
-  private dialog         = inject(MatDialog);
+  private basketService      = inject(BasketService);
+  private accountService     = inject(AccountService);
+  private dialog             = inject(MatDialog);
+  private translationService = inject(TranslationService);
 
   constructor() { }
 
@@ -61,8 +63,8 @@ export class CheckoutReviewComponent implements OnInit, OnDestroy {
           });
         } else {
           const dialogData: IDialogData = {
-            content: "Please confirm your email before continuing to shop.",
-            title: "Email Confirmation Required",
+            content: this.translationService.translate(TranslationKeys.Checkout.EmailConfirmContent),
+            title: this.translationService.translate(TranslationKeys.Checkout.EmailConfirmTitle),
             showConfirmationButtons: false
           };
           const dialogRef = this.dialog.open<DialogComponent, IDialogData>(DialogComponent, { data: dialogData });

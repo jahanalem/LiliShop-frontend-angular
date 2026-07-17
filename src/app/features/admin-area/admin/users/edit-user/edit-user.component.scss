@@ -21,3 +21,9 @@
   align-self: flex-start;
   margin-top: var(--ls-space-2);
 }
+
+.mfa-reset-button {
+  align-self: flex-start;
+  margin-top: var(--ls-space-2);
+  color: var(--mat-sys-error, #b00020);
+}

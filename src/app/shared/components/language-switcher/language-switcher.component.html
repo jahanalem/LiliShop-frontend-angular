@@ -1,8 +1,10 @@
 @if (languageService.languages().length > 1) {
-  <button mat-icon-button type="button" [matMenuTriggerFor]="languageMenu"
+  <button mat-button type="button" class="language-trigger" [matMenuTriggerFor]="languageMenu"
     [attr.aria-label]="TranslationKeys.Nav.ChooseLanguage | translate"
     [title]="TranslationKeys.Nav.ChooseLanguage | translate">
     <mat-icon>language</mat-icon>
+    <span class="language-name" [attr.lang]="languageService.currentCode()">{{ currentLanguageName() }}</span>
+    <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
   </button>
 
   <mat-menu #languageMenu="matMenu" xPosition="before">

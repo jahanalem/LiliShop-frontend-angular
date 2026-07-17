@@ -19,6 +19,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'discounts', loadComponent: () => import('./discounts/discounts.component').then(c => c.DiscountsComponent) },
       { path: 'discounts/new', loadComponent: () => import('./discounts/edit-discount/edit-discount.component').then(c => c.EditDiscountComponent) },
       { path: 'discounts/edit/:id', loadComponent: () => import('./discounts/edit-discount/edit-discount.component').then(c => c.EditDiscountComponent) },
+      { path: 'profile', loadComponent: () => import('./profile/admin-profile.component').then(c => c.AdminProfileComponent) },
       { path: 'translations', loadComponent: () => import('./translations/translations.component').then(c => c.TranslationsComponent) },
       { path: 'languages', loadComponent: () => import('./languages/languages.component').then(c => c.LanguagesComponent) },
       { path: 'printess-editor', loadComponent: () => import('./printess-editor/printess-editor.component').then(c => c.PrintessEditorComponent) }

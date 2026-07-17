@@ -16,6 +16,7 @@ import { MfaVerifyComponent } from '../mfa/mfa-verify.component';
 import { MfaSetupComponent } from '../mfa/mfa-setup.component';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 /* LoginComponent Authentication Flow
 
@@ -146,6 +147,7 @@ export class LoginComponent implements OnInit {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private authorizationService = inject(AuthorizationService);
+  private translationService = inject(TranslationService);
 
   readonly returnUrl = signal<string>('/');
 
@@ -159,14 +161,24 @@ export class LoginComponent implements OnInit {
   // 1. The data model
   readonly loginModel = signal<LoginData>({ email: '', password: '' });
 
-  // 2. The form + validation
+  // 2. The form + validation. Messages are reactive functions, so they are always rendered in
+  // the current language (and update when the dictionary loads).
   readonly loginForm = form(this.loginModel, (path) => {
-    required(path.email, { message: 'Email address is required' });
+    required(path.email, { message: this.requiredMessage(TranslationKeys.Auth.EmailLabel) });
     // patterns.EMAIL is a string constant, so wrap it in a RegExp
-    pattern(path.email, new RegExp(patterns.EMAIL), { message: 'Invalid email address' });
+    pattern(path.email, new RegExp(patterns.EMAIL), {
+      message: () => this.translationService.translate(TranslationKeys.Validation.InvalidEmail),
+    });
 
-    required(path.password, { message: 'Password is required' });
+    required(path.password, { message: this.requiredMessage(TranslationKeys.Auth.PasswordLabel) });
   });
+
+  /** Reactive, localized "The {field} is required." message — re-evaluates when translations load. */
+  private requiredMessage(labelKey: string): () => string {
+    return () => this.translationService.translate(
+      TranslationKeys.Validation.Required,
+      [this.translationService.translate(labelKey)]);
+  }
 
   ngOnInit(): void {
     this.returnUrl.set(this.activatedRoute.snapshot.queryParams['returnUrl'] || '/shop');
@@ -188,7 +200,8 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.submitting.set(false);
-        this.serverError.set(err?.error?.detail || err?.error?.title || 'Invalid email or password.');
+        this.serverError.set(err?.error?.detail || err?.error?.title
+          || this.translationService.translate(TranslationKeys.Auth.InvalidCredentials));
       },
     });
   }

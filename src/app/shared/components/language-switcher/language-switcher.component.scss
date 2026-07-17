@@ -1,3 +1,35 @@
+// The trigger shows the globe icon plus the current language's native name, so users always
+// see which language is active. Uses logical properties + flex `gap`, so RTL layouts mirror
+// automatically without any direction-specific overrides.
+.language-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  padding-inline: 0.5rem;
+
+  .language-name {
+    max-width: 7.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .dropdown-arrow {
+    margin-inline-start: -0.25rem;
+  }
+
+  // On small screens fall back to the compact icon-only look to keep the toolbar uncluttered;
+  // the active language stays visible via the checkmark inside the menu (and the tooltip).
+  @media (max-width: 599px) {
+    .language-name,
+    .dropdown-arrow {
+      display: none;
+    }
+  }
+}
+
 .language-option.is-active {
   font-weight: 600;
 }

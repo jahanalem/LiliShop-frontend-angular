@@ -54,15 +54,26 @@ export class ContactComponent {
     message: '',
   });
 
+  // Messages are reactive functions, so they are always rendered in the current language.
+  // The label keys match the ones the template uses for the same fields.
   readonly contactForm = form(this.contactModel, (path) => {
-    required(path.firstName, { message: 'First name is required' });
-    required(path.lastName, { message: 'Last name is required' });
+    required(path.firstName, { message: this.requiredMessage(TranslationKeys.Checkout.FirstName) });
+    required(path.lastName, { message: this.requiredMessage(TranslationKeys.Checkout.LastName) });
 
-    required(path.email, { message: 'Email address is required' });
-    pattern(path.email, new RegExp(patterns.EMAIL), { message: 'Invalid email address' });
+    required(path.email, { message: this.requiredMessage(TranslationKeys.Auth.EmailLabel) });
+    pattern(path.email, new RegExp(patterns.EMAIL), {
+      message: () => this.translationService.translate(TranslationKeys.Validation.InvalidEmail),
+    });
 
-    required(path.message, { message: 'Message is required' });
+    required(path.message, { message: () => this.translationService.translate(TranslationKeys.Contact.MessageRequired) });
   });
+
+  /** Reactive, localized "The {field} is required." message — re-evaluates when translations load. */
+  private requiredMessage(labelKey: string): () => string {
+    return () => this.translationService.translate(
+      TranslationKeys.Validation.Required,
+      [this.translationService.translate(labelKey)]);
+  }
 
   onSubmit(): void {
     if (this.contactForm().invalid()) {

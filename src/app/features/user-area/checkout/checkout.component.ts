@@ -16,6 +16,7 @@ import { CheckoutReviewComponent } from './checkout-review/checkout-review.compo
 import { CheckoutPaymentComponent } from './checkout-payment/checkout-payment.component';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 export interface CheckoutAddress {
   firstName: string;
@@ -47,6 +48,7 @@ export class CheckoutComponent implements OnInit {
 
   private accountService = inject(AccountService);
   private basketService = inject(BasketService);
+  private translationService = inject(TranslationService);
 
   // The whole checkout is one signal model; its shape is the form's shape.
   readonly checkoutModel = signal<CheckoutData>({
@@ -55,18 +57,29 @@ export class CheckoutComponent implements OnInit {
     payment: { nameOnCard: '' },
   });
 
+  // Messages are reactive functions, so they are always rendered in the current language.
+  // The label keys match the ones the templates use for the same fields.
   readonly checkoutForm = form(this.checkoutModel, (path) => {
-    required(path.address.firstName, { message: 'First name is required' });
-    required(path.address.lastName, { message: 'Last name is required' });
-    required(path.address.street, { message: 'Street is required' });
-    required(path.address.city, { message: 'City is required' });
-    required(path.address.state, { message: 'State is required' });
-    required(path.address.zipCode, { message: 'Zip code is required' });
+    required(path.address.firstName, { message: this.requiredMessage(TranslationKeys.Checkout.FirstName) });
+    required(path.address.lastName, { message: this.requiredMessage(TranslationKeys.Checkout.LastName) });
+    required(path.address.street, { message: this.requiredMessage(TranslationKeys.Checkout.Street) });
+    required(path.address.city, { message: this.requiredMessage(TranslationKeys.Checkout.City) });
+    required(path.address.state, { message: this.requiredMessage(TranslationKeys.Checkout.State) });
+    required(path.address.zipCode, { message: this.requiredMessage(TranslationKeys.Checkout.ZipCode) });
 
-    required(path.delivery.deliveryMethod, { message: 'Please choose a delivery method' });
+    required(path.delivery.deliveryMethod, {
+      message: () => this.translationService.translate(TranslationKeys.Checkout.ChooseDelivery),
+    });
 
-    required(path.payment.nameOnCard, { message: 'Name on card is required' });
+    required(path.payment.nameOnCard, { message: this.requiredMessage(TranslationKeys.Checkout.NameOnCard) });
   });
+
+  /** Reactive, localized "The {field} is required." message — re-evaluates when translations load. */
+  private requiredMessage(labelKey: string): () => string {
+    return () => this.translationService.translate(
+      TranslationKeys.Validation.Required,
+      [this.translationService.translate(labelKey)]);
+  }
 
   ngOnInit(): void {
     this.loadUserAddress();

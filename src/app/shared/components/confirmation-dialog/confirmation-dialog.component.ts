@@ -1,24 +1,11 @@
-
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatListModule } from '@angular/material/list';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
 
-import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
     selector: 'app-confirmation-dialog',
@@ -26,27 +13,15 @@ import { MatDialogRef } from '@angular/material/dialog';
     styleUrls: ['./confirmation-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [
-    RouterModule,
-    MatDialogModule,
-    MatIconModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatMenuModule,
-    MatListModule,
-    MatSidenavModule,
-    MatBadgeModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    MatProgressBarModule,
-    MatPaginatorModule,
-    MatCardModule,
-    MatTableModule
-]
-
+    imports: [
+      TranslatePipe,
+      MatDialogModule,
+      MatIconModule,
+      MatButtonModule
+    ]
 })
-export class ConfirmationDialogComponent {  dialogRef = inject<MatDialogRef<ConfirmationDialogComponent>>(MatDialogRef);
+export class ConfirmationDialogComponent {
+  protected readonly TranslationKeys = TranslationKeys;
 
+  dialogRef = inject<MatDialogRef<ConfirmationDialogComponent>>(MatDialogRef);
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,4 +17,15 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 export class LanguageSwitcherComponent {
   protected readonly TranslationKeys = TranslationKeys;
   protected languageService = inject(LanguageService);
+
+  /**
+   * The native name of the active language, shown beside the globe icon so users can see
+   * the current selection at a glance. Falls back to the uppercased code until the language
+   * list has loaded from the API.
+   */
+  protected readonly currentLanguageName = computed(() => {
+    const current = this.languageService.languages()
+      .find(language => language.code === this.languageService.currentCode());
+    return current?.nativeName ?? this.languageService.currentCode().toUpperCase();
+  });
 }

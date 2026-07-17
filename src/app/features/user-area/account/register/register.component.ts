@@ -35,6 +35,7 @@ import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 declare namespace google {
   namespace accounts {
@@ -63,10 +64,18 @@ interface RegisterData {
 export class RegisterComponent implements OnInit {
   protected readonly TranslationKeys = TranslationKeys;
 
-  private readonly accountService = inject(AccountService);
-  private readonly router         = inject(Router);
-  private readonly ngZone         = inject(NgZone);
-  private readonly dialog         = inject(MatDialog);
+  private readonly accountService     = inject(AccountService);
+  private readonly router             = inject(Router);
+  private readonly ngZone             = inject(NgZone);
+  private readonly dialog             = inject(MatDialog);
+  private readonly translationService = inject(TranslationService);
+
+  /** Reactive, localized "The {field} is required." message — re-evaluates when translations load. */
+  private requiredMessage(labelKey: string): () => string {
+    return () => this.translationService.translate(
+      TranslationKeys.Validation.Required,
+      [this.translationService.translate(labelKey)]);
+  }
 
   private readonly clientId = environment.google_clientId;
 
@@ -81,14 +90,15 @@ export class RegisterComponent implements OnInit {
     confirmPassword: '',
   });
 
-  // 2. The form + all validation rules in one schema
+  // 2. The form + all validation rules in one schema. Messages are reactive functions, so they
+  // are always rendered in the current language (and update when the dictionary loads).
   readonly registerForm = form(this.registerModel, (path) => {
-    required(path.displayName, { message: 'Display Name is required' });
+    required(path.displayName, { message: this.requiredMessage(TranslationKeys.Auth.DisplayNameLabel) });
 
-    required(path.email, { message: 'Email address is required' });
+    required(path.email, { message: this.requiredMessage(TranslationKeys.Auth.EmailLabel) });
     // patterns.EMAIL is a string constant, so wrap it in a RegExp for signal-forms pattern()
     pattern(path.email, new RegExp(patterns.EMAIL), {
-      message: 'Invalid email address',
+      message: () => this.translationService.translate(TranslationKeys.Validation.InvalidEmail),
     });
 
     // Async: email must not already be taken (debounced + cached)
@@ -109,28 +119,27 @@ export class RegisterComponent implements OnInit {
         const email = this.registerModel().email;
         if (email) this.emailCache.set(email, taken);
         return taken
-          ? { kind: errorType.EMAIL_EXISTS, message: 'Email address is in use' }
+          ? { kind: errorType.EMAIL_EXISTS, message: this.translationService.translate(TranslationKeys.Auth.EmailInUse) }
           : undefined;
       },
       onError: (): ValidationError => ({
         kind: errorType.UNKNOWN_ERROR,
-        message: 'Could not verify the email. Please try again.',
+        message: this.translationService.translate(TranslationKeys.Auth.EmailCheckFailed),
       }),
     });
 
-    required(path.password, { message: 'Password is required' });
+    required(path.password, { message: this.requiredMessage(TranslationKeys.Auth.PasswordLabel) });
     // patterns.PASSWORD is a string constant, so wrap it in a RegExp
     pattern(path.password, new RegExp(patterns.PASSWORD), {
-      message:
-        'Password must have 1 Uppercase, 1 Lowercase, 1 number, 1 non-alphanumeric, and at least 6 characters',
+      message: () => this.translationService.translate(TranslationKeys.Auth.PasswordRule),
     });
 
-    required(path.confirmPassword, { message: 'Confirm Password is required' });
+    required(path.confirmPassword, { message: this.requiredMessage(TranslationKeys.Auth.ConfirmPasswordLabel) });
 
     // Cross-field: confirmation must match the password
     validate(path.confirmPassword, ({ value, valueOf }) =>
       value() !== valueOf(path.password)
-        ? { kind: errorType.MATCHING, message: 'Confirm Password does not match' }
+        ? { kind: errorType.MATCHING, message: this.translationService.translate(TranslationKeys.Auth.PasswordsDoNotMatch) }
         : null,
     );
   });
@@ -153,16 +162,20 @@ export class RegisterComponent implements OnInit {
           'LiliShop-Registration-Status-Message',
         );
         if (customMessage) {
-          this.openDialog('Email Confirmation Error', customMessage);
+          this.openDialog(
+            this.translationService.translate(TranslationKeys.Auth.ConfirmEmailErrorTitle),
+            customMessage,
+          );
         } else {
           this.openDialog(
-            'Email Confirmation Sent',
-            'A confirmation link has been sent to your email. Please confirm it.',
+            this.translationService.translate(TranslationKeys.Auth.ConfirmEmailSentTitle),
+            this.translationService.translate(TranslationKeys.Auth.ConfirmEmailSentContent),
           );
         }
         return null; // success
       } catch (error: any) {
-        this.errors.set(error?.errors ?? ['Registration failed']);
+        this.errors.set(error?.errors
+          ?? [this.translationService.translate(TranslationKeys.Auth.RegistrationFailed)]);
         return [];
       }
     });
@@ -224,7 +237,7 @@ export class RegisterComponent implements OnInit {
         const message =
           error?.error?.detail ||
           error?.error?.title ||
-          'Google sign-in could not be completed. Please try again.';
+          this.translationService.translate(TranslationKeys.Auth.GoogleSignInFailed);
         this.ngZone.run(() => this.errors.set([message]));
       },
     });

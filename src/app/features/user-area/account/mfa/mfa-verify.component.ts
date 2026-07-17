@@ -6,6 +6,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { AccountService } from 'src/app/core/services/account.service';
 import { IUser } from 'src/app/shared/models/user';
+import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
+import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 
 /* MfaVerifyComponent Flow
@@ -56,15 +59,15 @@ import { IUser } from 'src/app/shared/models/user';
 @Component({
   selector: 'app-mfa-verify',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule],
+  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatIconModule, TranslatePipe],
   template: `
     <div class="mfa-container">
-      <h2>Two-factor verification</h2>
-      <p>Enter the 6-digit code from your authenticator app. You can also enter a one-time recovery code.</p>
+      <h2>{{ TranslationKeys.Mfa.VerifyTitle | translate }}</h2>
+      <p>{{ TranslationKeys.Mfa.VerifyIntro | translate }}</p>
 
       <form (ngSubmit)="submit()">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Authentication code</mat-label>
+          <mat-label>{{ TranslationKeys.Mfa.AuthCodeLabel | translate }}</mat-label>
           <input
             matInput
             name="code"
@@ -81,14 +84,14 @@ import { IUser } from 'src/app/shared/models/user';
         }
 
         <div class="actions">
-          <button mat-button type="button" (click)="cancelled.emit()">Back</button>
+          <button mat-button type="button" (click)="cancelled.emit()">{{ TranslationKeys.Common.Back | translate }}</button>
           <button
             mat-raised-button
             color="primary"
             type="submit"
             data-cy="mfa-submit"
             [disabled]="submitting() || !code().trim()">
-            <mat-icon>verified_user</mat-icon> Verify
+            <mat-icon>verified_user</mat-icon> {{ TranslationKeys.Mfa.Verify | translate }}
           </button>
         </div>
       </form>
@@ -102,7 +105,10 @@ import { IUser } from 'src/app/shared/models/user';
   `],
 })
 export class MfaVerifyComponent {
+  protected readonly TranslationKeys = TranslationKeys;
+
   private accountService = inject(AccountService);
+  private translationService = inject(TranslationService);
 
   readonly email = input.required<string>();
   readonly password = input.required<string>();
@@ -131,7 +137,7 @@ export class MfaVerifyComponent {
           if (this.accountService.isAuthenticatedUser(user)) {
             this.authenticated.emit(user);
           } else {
-            this.serverError.set('Verification did not complete. Please try again.');
+            this.serverError.set(this.translationService.translate(TranslationKeys.Mfa.VerifyIncomplete));
           }
         },
         error: (err) => {
@@ -141,7 +147,9 @@ export class MfaVerifyComponent {
       });
   }
 
+  /** Server errors arrive already localized (ProblemDetails.detail); the key is the local fallback. */
   private extractError(err: any): string {
-    return err?.error?.detail || err?.error?.title || 'Invalid authentication code. Please try again.';
+    return err?.error?.detail || err?.error?.title
+      || this.translationService.translate(TranslationKeys.Mfa.InvalidCode);
   }
 }

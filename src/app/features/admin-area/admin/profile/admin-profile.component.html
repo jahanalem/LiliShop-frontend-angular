@@ -1,0 +1,50 @@
+<div class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <h1 class="admin-page-title">{{ TranslationKeys.Admin.Profile.Title | translate }}</h1>
+      <p class="admin-page-subtitle">{{ TranslationKeys.Admin.Profile.SecuritySubtitle | translate }}</p>
+    </div>
+  </header>
+
+  @if (canResetMfa()) {
+    <mat-card class="security-card">
+      <h2 class="security-card-heading">
+        <mat-icon>security</mat-icon>
+        {{ TranslationKeys.Admin.Profile.MfaHeading | translate }}
+      </h2>
+
+      <p class="security-card-description">{{ TranslationKeys.Admin.Profile.MfaDescription | translate }}</p>
+
+      <form (ngSubmit)="resetMfa()" class="reset-form">
+        <mat-form-field appearance="outline" class="password-field">
+          <mat-label>{{ TranslationKeys.Admin.Profile.CurrentPassword | translate }}</mat-label>
+          <input
+            matInput
+            type="password"
+            name="password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            autocomplete="current-password"
+            data-cy="mfa-reset-password"
+            required />
+        </mat-form-field>
+
+        @if (serverError()) {
+          <p class="server-error" data-cy="mfa-reset-error">{{ serverError() }}</p>
+        }
+
+        <div class="actions">
+          <button
+            mat-raised-button
+            color="warn"
+            type="submit"
+            data-cy="mfa-reset-submit"
+            [disabled]="resetting() || !password().trim()">
+            <mat-icon>restart_alt</mat-icon>
+            {{ TranslationKeys.Admin.Profile.ResetMfa | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card>
+  }
+</div>
