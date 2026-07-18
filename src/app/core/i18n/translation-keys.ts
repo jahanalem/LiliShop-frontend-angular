@@ -192,6 +192,8 @@ export const TranslationKeys = {
       AddVariant: 'Admin.Products.AddVariant',
       BasePrice: 'Admin.Products.BasePrice',
       CreateFirst: 'Admin.Products.CreateFirst',
+      DefiningAttributes: 'Admin.Products.DefiningAttributes',
+      DefiningAttributesHint: 'Admin.Products.DefiningAttributesHint',
       Description: 'Admin.Products.Description',
       DiscountAmount: 'Admin.Products.DiscountAmount',
       DiscountBannerBody: 'Admin.Products.DiscountBannerBody',

@@ -134,4 +134,85 @@ describe('ProductDetailsComponent (variant selector)', () => {
     component.selectValue(10, 101);
     expect(component.selectedVariant()).toBeNull();
   });
+
+  it('shows every active size value as an axis, not just the first', () => {
+    // Bug 2 guard: all active variants contribute their defining size value.
+    expect(component.axes()[0].values.map(v => v.name)).toEqual(['M', 'L']);
+  });
+});
+
+describe('ProductDetailsComponent (Color as a defining axis)', () => {
+  let component: ProductDetailsComponent;
+  let fixture: ComponentFixture<ProductDetailsComponent>;
+
+  const product: IProduct = {
+    id: 40, name: 'Colour Tee', description: 'A tee', price: 30,
+    pictureUrl: 'x.png', picturePublicId: 'x', productTypeId: 1, productBrandId: 1,
+    isActive: true, productCharacteristics: [], productPhotos: []
+  };
+
+  const sizeAttr: IProductAttribute = { id: 10, code: 'size', name: 'Size', inputType: 'Select', swatchType: 'None', isFilterable: true, displayOrder: 20, isActive: true };
+  const colorAttr: IProductAttribute = { id: 20, code: 'color', name: 'Color', inputType: 'MultiSelect', swatchType: 'ColorHex', isFilterable: true, displayOrder: 10, isActive: true };
+
+  function link(variantId: number, attr: IProductAttribute, valueId: number, valueName: string, sortOrder: number) {
+    return {
+      id: valueId * 100 + variantId, productVariantId: variantId,
+      productAttributeId: attr.id, productAttributeValueId: valueId, isDefining: true, // both axes DEFINING here
+      productAttribute: attr,
+      productAttributeValue: { id: valueId, productAttributeId: attr.id, code: valueName.toLowerCase(), name: valueName, sortOrder, isActive: true }
+    };
+  }
+
+  // Product 40: BLUE-S and RED-S — colour is a defining axis, so the customer must be able to pick it.
+  const variants: IProductVariant[] = [
+    {
+      id: 1, productId: 40, sku: 'P40-BLUE-S', price: 30, axisSignature: '10:101|20:201', isActive: true, position: 1,
+      attributeValues: [link(1, sizeAttr, 101, 'S', 20), link(1, colorAttr, 201, 'Blue', 80)],
+      inventory: { id: 1, productVariantId: 1, quantityOnHand: 4, quantityReserved: 0 }
+    },
+    {
+      id: 2, productId: 40, sku: 'P40-RED-S', price: 30, axisSignature: '10:101|20:202', isActive: true, position: 2,
+      attributeValues: [link(2, sizeAttr, 101, 'S', 20), link(2, colorAttr, 202, 'Red', 40)],
+      inventory: { id: 2, productVariantId: 2, quantityOnHand: 2, quantityReserved: 0 }
+    }
+  ];
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [NoopAnimationsModule, ProductDetailsComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: { paramMap: of(new Map([['id', '40']]) as any) } },
+        { provide: ProductService, useValue: { getProduct: vi.fn().mockReturnValue(of(product)) } },
+        { provide: ProductVariantService, useValue: { getVariants: vi.fn().mockReturnValue(of(variants)) } },
+        { provide: BasketService, useValue: { addItemToBasket: vi.fn() } },
+        { provide: AccountService, useValue: { currentUser$: of(null) } },
+        { provide: SubscriptionService, useValue: { checkSubscription: vi.fn().mockReturnValue(of(false)) } },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ProductDetailsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('exposes Colour as a selectable axis (not just descriptive info)', () => {
+    const axisNames = component.axes().map(a => a.name);
+    expect(axisNames).toEqual(expect.arrayContaining(['Size', 'Color']));
+    const colour = component.axes().find(a => a.name === 'Color')!;
+    expect(colour.values.map(v => v.name)).toEqual(expect.arrayContaining(['Blue', 'Red']));
+  });
+
+  it('auto-selects the single size and resolves the SKU once colour is chosen', () => {
+    // Both variants are size S, so the single-value Size axis is preselected; the customer
+    // only needs to pick a colour.
+    expect(component.selection().get(10)).toBe(101);
+
+    component.selectValue(20, 202); // Red
+    expect(component.selectedVariant()?.sku).toBe('P40-RED-S');
+
+    component.selectValue(20, 201); // switch to Blue
+    expect(component.selectedVariant()?.sku).toBe('P40-BLUE-S');
+  });
 });

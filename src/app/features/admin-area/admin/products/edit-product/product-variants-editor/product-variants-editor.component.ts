@@ -21,9 +21,11 @@ import { TranslationService } from 'src/app/core/i18n/translation.service';
 import { VariantStockDialogComponent, VariantStockDialogData } from '../variant-stock-dialog/variant-stock-dialog.component';
 
 /**
- * One editable variant row. Select-type attributes are DEFINING axes (one value each,
- * identity-forming); MultiSelect attributes are DESCRIPTIVE (several values, e.g. the colors of a
- * striped shirt). Links whose attribute is inactive/unknown are preserved untouched on save.
+ * One editable variant row. Which attributes DEFINE a variant is chosen per product (see
+ * `definingAttributeIds`), not from the attribute's global input type — so Color can be a defining
+ * axis for a colour-variant tee while staying descriptive for a striped shirt. `selections` holds
+ * the chosen value ids per attribute (one for a defining axis, several for a descriptive facet);
+ * links whose attribute is inactive/unknown are preserved untouched on save.
  */
 interface VariantRow {
   id: number;
@@ -32,12 +34,9 @@ interface VariantRow {
   quantityOnHand: number;
   isActive: boolean;
   position: number;
-  /** Select-attribute id → chosen value id (defining). */
-  axisSelections: Record<number, number | null>;
-  /** MultiSelect-attribute id → chosen value ids (descriptive). */
-  descriptiveSelections: Record<number, number[]>;
-  preservedAxes: IVariantAttributeSelection[];
-  preservedDescriptive: IVariantAttributeSelection[];
+  /** attributeId → chosen value ids (defining attributes use only the first). */
+  selections: Record<number, number[]>;
+  preserved: IVariantAttributeSelection[];
 }
 
 @Component({
@@ -63,17 +62,19 @@ export class ProductVariantsEditorComponent implements OnInit {
   readonly errorMessage = signal<string>('');
   readonly generatorOpen = signal<boolean>(false);
 
-  private readonly attributes = signal<IProductAttribute[]>([]);
+  /** Every active attribute (with at least one active value) available in this editor. */
+  readonly attributes = signal<IProductAttribute[]>([]);
 
-  /** Defining axes offered in each row: every active Select attribute with active values. */
-  readonly axisAttributes = computed<IProductAttribute[]>(() =>
-    this.attributes().filter(a => a.inputType === 'Select'));
+  /** Per-PRODUCT choice: which attributes identify a variant. Everything else is descriptive. */
+  readonly definingAttributeIds = signal<Set<number>>(new Set());
 
-  /** Descriptive facets offered in each row: every active MultiSelect attribute. */
+  readonly definingAttributes = computed<IProductAttribute[]>(() =>
+    this.attributes().filter(a => this.definingAttributeIds().has(a.id)));
+
   readonly descriptiveAttributes = computed<IProductAttribute[]>(() =>
-    this.attributes().filter(a => a.inputType === 'MultiSelect'));
+    this.attributes().filter(a => !this.definingAttributeIds().has(a.id)));
 
-  /** Generator state: axis attribute id → value ids picked for combination generation. */
+  /** Generator state: defining attribute id → value ids picked for combination generation. */
   generatorSelections: Record<number, number[]> = {};
 
   private readonly variantService = inject(ProductVariantService);
@@ -85,7 +86,6 @@ export class ProductVariantsEditorComponent implements OnInit {
   ngOnInit(): void {
     this.attributeService.getAllAttributes(true).subscribe({
       next: (allAttributes) => {
-        // All ACTIVE attributes with at least one active value participate in the editor.
         this.attributes.set(allAttributes
           .filter(a => (a.values?.filter(v => v.isActive).length ?? 0) > 0)
           .map(a => ({ ...a, values: a.values!.filter(v => v.isActive) })));
@@ -101,6 +101,7 @@ export class ProductVariantsEditorComponent implements OnInit {
   private loadVariants(): void {
     this.variantService.getVariants(this.productId()).subscribe({
       next: (variants) => {
+        this.definingAttributeIds.set(this.deriveDefiningAttributeIds(variants));
         this.rows.set(variants.map(v => this.toRow(v)));
         this.dirty.set(false);
       },
@@ -108,29 +109,64 @@ export class ProductVariantsEditorComponent implements OnInit {
     });
   }
 
-  private toRow(variant: IProductVariant): VariantRow {
-    const axisAttributeIds = new Set(this.axisAttributes().map(a => a.id));
-    const descriptiveAttributeIds = new Set(this.descriptiveAttributes().map(a => a.id));
+  /**
+   * The product's defining attributes: those already marked defining on existing variants;
+   * for a product with no defining links yet, default to the Select-type attributes so a fresh
+   * product gets sensible single-value axes out of the box.
+   */
+  private deriveDefiningAttributeIds(variants: IProductVariant[]): Set<number> {
+    const known = new Set(this.attributes().map(a => a.id));
+    const defining = new Set<number>();
+    for (const variant of variants) {
+      for (const link of variant.attributeValues) {
+        if (link.isDefining && known.has(link.productAttributeId)) {
+          defining.add(link.productAttributeId);
+        }
+      }
+    }
+    if (defining.size === 0) {
+      for (const attribute of this.attributes()) {
+        if (attribute.inputType === 'Select') {
+          defining.add(attribute.id);
+        }
+      }
+    }
+    return defining;
+  }
 
-    const axisSelections: Record<number, number | null> = {};
-    const descriptiveSelections: Record<number, number[]> = {};
-    const preservedAxes: IVariantAttributeSelection[] = [];
-    const preservedDescriptive: IVariantAttributeSelection[] = [];
+  isDefiningAttribute(attributeId: number): boolean {
+    return this.definingAttributeIds().has(attributeId);
+  }
+
+  toggleDefiningAttribute(attributeId: number): void {
+    const next = new Set(this.definingAttributeIds());
+    if (next.has(attributeId)) {
+      next.delete(attributeId);
+    } else {
+      next.add(attributeId);
+      // A defining axis carries a single value — trim any multi-selection down to the first.
+      this.rows.update(rows => rows.map(row => {
+        const values = row.selections[attributeId];
+        return values && values.length > 1
+          ? { ...row, selections: { ...row.selections, [attributeId]: [values[0]] } }
+          : row;
+      }));
+    }
+    this.definingAttributeIds.set(next);
+    this.dirty.set(true);
+  }
+
+  private toRow(variant: IProductVariant): VariantRow {
+    const known = new Set(this.attributes().map(a => a.id));
+    const selections: Record<number, number[]> = {};
+    const preserved: IVariantAttributeSelection[] = [];
 
     for (const link of variant.attributeValues) {
-      const selection = { attributeId: link.productAttributeId, valueId: link.productAttributeValueId };
-      if (link.isDefining) {
-        if (axisAttributeIds.has(link.productAttributeId)) {
-          axisSelections[link.productAttributeId] = link.productAttributeValueId;
-        } else {
-          preservedAxes.push(selection); // defining link of an inactive/non-Select attribute
-        }
+      if (known.has(link.productAttributeId)) {
+        (selections[link.productAttributeId] ??= []).push(link.productAttributeValueId);
       } else {
-        if (descriptiveAttributeIds.has(link.productAttributeId)) {
-          (descriptiveSelections[link.productAttributeId] ??= []).push(link.productAttributeValueId);
-        } else {
-          preservedDescriptive.push(selection);
-        }
+        // Link of an inactive/unknown attribute — round-trip it untouched (defining-ness kept).
+        preserved.push({ attributeId: link.productAttributeId, valueId: link.productAttributeValueId });
       }
     }
 
@@ -141,11 +177,17 @@ export class ProductVariantsEditorComponent implements OnInit {
       quantityOnHand: variant.inventory?.quantityOnHand ?? 0,
       isActive: variant.isActive,
       position: variant.position,
-      axisSelections,
-      descriptiveSelections,
-      preservedAxes,
-      preservedDescriptive
+      selections,
+      preserved
     };
+  }
+
+  singleValue(row: VariantRow, attributeId: number): number | null {
+    return row.selections[attributeId]?.[0] ?? null;
+  }
+
+  multiValue(row: VariantRow, attributeId: number): number[] {
+    return row.selections[attributeId] ?? [];
   }
 
   updateRow(index: number, patch: Partial<VariantRow>): void {
@@ -153,16 +195,17 @@ export class ProductVariantsEditorComponent implements OnInit {
     this.dirty.set(true);
   }
 
-  setAxisValue(index: number, attributeId: number, valueId: number | null): void {
-    this.rows.update(rows => rows.map((row, i) => i === index
-      ? { ...row, axisSelections: { ...row.axisSelections, [attributeId]: valueId } }
-      : row));
-    this.dirty.set(true);
+  setSingleValue(index: number, attributeId: number, valueId: number | null): void {
+    this.setSelection(index, attributeId, valueId == null ? [] : [valueId]);
   }
 
-  setDescriptiveValues(index: number, attributeId: number, valueIds: number[]): void {
+  setMultiValue(index: number, attributeId: number, valueIds: number[]): void {
+    this.setSelection(index, attributeId, valueIds);
+  }
+
+  private setSelection(index: number, attributeId: number, valueIds: number[]): void {
     this.rows.update(rows => rows.map((row, i) => i === index
-      ? { ...row, descriptiveSelections: { ...row.descriptiveSelections, [attributeId]: valueIds } }
+      ? { ...row, selections: { ...row.selections, [attributeId]: valueIds } }
       : row));
     this.dirty.set(true);
   }
@@ -180,10 +223,8 @@ export class ProductVariantsEditorComponent implements OnInit {
       quantityOnHand: 0,
       isActive: true,
       position: (Math.max(0, ...rows.map(r => r.position)) + 10),
-      axisSelections: {},
-      descriptiveSelections: {},
-      preservedAxes: [],
-      preservedDescriptive: []
+      selections: {},
+      preserved: []
     };
   }
 
@@ -258,12 +299,12 @@ export class ProductVariantsEditorComponent implements OnInit {
   }
 
   /**
-   * Cartesian product of the picked values per axis, minus combinations already present.
-   * Rows arrive as drafts (blank SKU = server auto-generates); the batch save validates
+   * Cartesian product of the picked values per DEFINING attribute, minus combinations already
+   * present. Rows arrive as drafts (blank SKU = server auto-generates); the batch save validates
    * uniqueness server-side.
    */
   generateCombinations(): void {
-    const groups = this.axisAttributes()
+    const groups = this.definingAttributes()
       .map(attribute => ({ attributeId: attribute.id, valueIds: this.generatorSelections[attribute.id] ?? [] }))
       .filter(group => group.valueIds.length > 0);
     if (groups.length === 0) {
@@ -275,19 +316,19 @@ export class ProductVariantsEditorComponent implements OnInit {
       combos = combos.flatMap(combo => group.valueIds.map(valueId => ({ ...combo, [group.attributeId]: valueId })));
     }
 
-    const existingSignatures = new Set(this.rows().map(row => this.signatureOf(row.axisSelections, row.preservedAxes)));
+    const existingSignatures = new Set(this.rows().map(row => this.signatureOf(row)));
     const newRows: VariantRow[] = [];
     let currentRows = this.rows();
 
     for (const combo of combos) {
-      const signature = this.signatureOf(combo, []);
+      const draft = this.createEmptyRow([...currentRows, ...newRows]);
+      draft.selections = Object.fromEntries(Object.entries(combo).map(([attrId, valueId]) => [Number(attrId), [valueId]]));
+      const signature = this.signatureOf(draft);
       if (existingSignatures.has(signature)) {
         continue;
       }
       existingSignatures.add(signature);
-      const row = this.createEmptyRow([...currentRows, ...newRows]);
-      row.axisSelections = combo;
-      newRows.push(row);
+      newRows.push(draft);
     }
 
     if (newRows.length === 0) {
@@ -302,11 +343,18 @@ export class ProductVariantsEditorComponent implements OnInit {
     this.generatorSelections = {};
   }
 
-  private signatureOf(axisSelections: Record<number, number | null>, preserved: IVariantAttributeSelection[]): string {
-    const pairs = Object.entries(axisSelections)
-      .filter(([, valueId]) => valueId != null)
-      .map(([attributeId, valueId]) => [Number(attributeId), valueId as number] as const)
-      .concat(preserved.map(p => [p.attributeId, p.valueId] as const));
+  /** Defining signature of a row (matches the backend's AxisSignature): sorted attr:value of defining axes. */
+  private signatureOf(row: VariantRow): string {
+    const definingIds = this.definingAttributeIds();
+    const pairs: [number, number][] = [];
+    for (const [attrId, values] of Object.entries(row.selections)) {
+      if (definingIds.has(Number(attrId)) && values.length > 0) {
+        pairs.push([Number(attrId), values[0]]);
+      }
+    }
+    for (const p of row.preserved) {
+      pairs.push([p.attributeId, p.valueId]);
+    }
     return pairs
       .sort((a, b) => a[0] - b[0] || a[1] - b[1])
       .map(([attributeId, valueId]) => `${attributeId}:${valueId}`)
@@ -317,30 +365,42 @@ export class ProductVariantsEditorComponent implements OnInit {
 
   save(): void {
     this.errorMessage.set('');
+    const definingIds = this.definingAttributeIds();
 
-    const payload: IVariantUpsertRow[] = this.rows().map(row => ({
-      id: row.id,
-      sku: row.sku?.trim() ? row.sku.trim() : null,
-      price: row.price,
-      isActive: row.isActive,
-      position: row.position,
-      // Only meaningful for new rows (initial stock); the backend ignores it for existing ones.
-      quantityOnHand: row.quantityOnHand,
-      axisValues: [
-        ...Object.entries(row.axisSelections)
-          .filter(([, valueId]) => valueId != null)
-          .map(([attributeId, valueId]) => ({ attributeId: Number(attributeId), valueId: valueId as number })),
-        ...row.preservedAxes
-      ],
-      descriptiveValues: [
-        ...Object.entries(row.descriptiveSelections)
-          .flatMap(([attributeId, valueIds]) => valueIds.map(valueId => ({ attributeId: Number(attributeId), valueId }))),
-        ...row.preservedDescriptive
-      ]
-    }));
+    const payload: IVariantUpsertRow[] = this.rows().map(row => {
+      const axisValues: IVariantAttributeSelection[] = [...row.preserved];
+      const descriptiveValues: IVariantAttributeSelection[] = [];
+
+      for (const [attrIdStr, valueIds] of Object.entries(row.selections)) {
+        const attributeId = Number(attrIdStr);
+        if (valueIds.length === 0) {
+          continue;
+        }
+        if (definingIds.has(attributeId)) {
+          axisValues.push({ attributeId, valueId: valueIds[0] }); // defining = single value
+        } else {
+          for (const valueId of valueIds) {
+            descriptiveValues.push({ attributeId, valueId });
+          }
+        }
+      }
+
+      return {
+        id: row.id,
+        sku: row.sku?.trim() ? row.sku.trim() : null,
+        price: row.price,
+        isActive: row.isActive,
+        position: row.position,
+        // Only meaningful for new rows (initial stock); the backend ignores it for existing ones.
+        quantityOnHand: row.quantityOnHand,
+        axisValues,
+        descriptiveValues
+      };
+    });
 
     this.variantService.saveVariants(this.productId(), payload).subscribe({
       next: (variants) => {
+        this.definingAttributeIds.set(this.deriveDefiningAttributeIds(variants));
         this.rows.set(variants.map(v => this.toRow(v)));
         this.dirty.set(false);
         this.notificationService.showSuccess(

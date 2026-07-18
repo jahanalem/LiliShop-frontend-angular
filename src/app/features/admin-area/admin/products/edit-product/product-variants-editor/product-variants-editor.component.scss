@@ -113,3 +113,22 @@
   margin-inline-end: 6px;
   vertical-align: middle;
 }
+
+.defining-picker {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-block-end: 10px;
+
+  .defining-hint {
+    margin: 0 0 6px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+
+  .defining-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}

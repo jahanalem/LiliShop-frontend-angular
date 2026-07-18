@@ -16,11 +16,27 @@
     </div>
   </div>
 
+  @if (attributes().length > 0) {
+    <fieldset class="defining-picker">
+      <legend class="filter-label">{{ TranslationKeys.Admin.Products.DefiningAttributes | translate }}</legend>
+      <p class="defining-hint">{{ TranslationKeys.Admin.Products.DefiningAttributesHint | translate }}</p>
+      <div class="defining-values">
+        @for (attribute of attributes(); track attribute.id) {
+          <mat-checkbox
+            [checked]="isDefiningAttribute(attribute.id)"
+            (change)="toggleDefiningAttribute(attribute.id)">
+            {{ attribute.name }}
+          </mat-checkbox>
+        }
+      </div>
+    </fieldset>
+  }
+
   @if (generatorOpen()) {
     <div class="generator-panel">
       <p class="generator-hint">{{ TranslationKeys.Admin.Products.GenerateHint | translate }}</p>
       <div class="generator-fields">
-        @for (attribute of axisAttributes(); track attribute.id) {
+        @for (attribute of definingAttributes(); track attribute.id) {
           <mat-form-field appearance="outline" class="generator-field">
             <mat-label>{{ attribute.name }}</mat-label>
             <mat-select multiple [(ngModel)]="generatorSelections[attribute.id]" [ngModelOptions]="{ standalone: true }">
@@ -43,11 +59,11 @@
         (ngModelChange)="updateRow($index, { isActive: $event })"
         [attr.aria-label]="TranslationKeys.Admin.Common.Active | translate"></mat-checkbox>
 
-      @for (attribute of axisAttributes(); track attribute.id) {
+      @for (attribute of definingAttributes(); track attribute.id) {
         <mat-form-field appearance="outline" class="variant-axis-select">
           <mat-label>{{ attribute.name }}</mat-label>
-          <mat-select [ngModel]="row.axisSelections[attribute.id] ?? null" [ngModelOptions]="{ standalone: true }"
-            (ngModelChange)="setAxisValue($index, attribute.id, $event)">
+          <mat-select [ngModel]="singleValue(row, attribute.id)" [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="setSingleValue($index, attribute.id, $event)">
             <mat-option [value]="null">—</mat-option>
             @for (value of attribute.values; track value.id) {
               <mat-option [value]="value.id">{{ value.name }}</mat-option>
@@ -59,8 +75,8 @@
       @for (attribute of descriptiveAttributes(); track attribute.id) {
         <mat-form-field appearance="outline" class="variant-axis-select">
           <mat-label>{{ attribute.name }}</mat-label>
-          <mat-select multiple [ngModel]="row.descriptiveSelections[attribute.id] ?? []" [ngModelOptions]="{ standalone: true }"
-            (ngModelChange)="setDescriptiveValues($index, attribute.id, $event)">
+          <mat-select multiple [ngModel]="multiValue(row, attribute.id)" [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="setMultiValue($index, attribute.id, $event)">
             @for (value of attribute.values; track value.id) {
               <mat-option [value]="value.id">
                 @if (attribute.swatchType === 'ColorHex' && value.colorHex) {
