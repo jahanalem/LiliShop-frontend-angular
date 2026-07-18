@@ -1,0 +1,152 @@
+<div class="admin-page">
+  <header class="admin-page-header">
+    <div>
+      <h1 class="admin-page-title">{{ TranslationKeys.Admin.Attributes.EditTitle | translate }}</h1>
+      <p class="admin-page-subtitle">{{ TranslationKeys.Admin.Attributes.EditSubtitle | translate }}</p>
+    </div>
+    <button type="button" mat-stroked-button (click)="navigateBack()">
+      <mat-icon>arrow_back</mat-icon>
+      {{ TranslationKeys.Admin.Common.Back | translate }}
+    </button>
+  </header>
+
+  <form [formGroup]="attributeForm" (ngSubmit)="onSubmit()" class="admin-form-card entity-form">
+    <mat-checkbox formControlName="isActive">{{ TranslationKeys.Admin.Common.Active | translate }}</mat-checkbox>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ TranslationKeys.Admin.Attributes.NameLabel | translate }}</mat-label>
+      <input formControlName="name" matInput maxlength="100">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" [hintLabel]="TranslationKeys.Admin.Attributes.CodeHint | translate">
+      <mat-label>{{ TranslationKeys.Admin.Attributes.CodeLabel | translate }}</mat-label>
+      <input formControlName="code" matInput maxlength="50">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ TranslationKeys.Admin.Attributes.InputType | translate }}</mat-label>
+      <mat-select formControlName="inputType">
+        @for (option of inputTypes; track option.value) {
+          <mat-option [value]="option.value">{{ option.labelKey | translate }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ TranslationKeys.Admin.Attributes.SwatchType | translate }}</mat-label>
+      <mat-select formControlName="swatchType">
+        @for (option of swatchTypes; track option.value) {
+          <mat-option [value]="option.value">{{ option.labelKey | translate }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="isFilterable">{{ TranslationKeys.Admin.Attributes.Filterable | translate }}</mat-checkbox>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ TranslationKeys.Admin.Attributes.DisplayOrder | translate }}</mat-label>
+      <input formControlName="displayOrder" matInput type="number">
+    </mat-form-field>
+
+    @if (extraLanguages.length > 0) {
+      <section class="translations-section">
+        <h3 class="translations-title">{{ TranslationKeys.Admin.Common.Translations | translate }}</h3>
+        <p class="translations-hint">{{ TranslationKeys.Admin.Common.TranslationsHint | translate }}</p>
+        @for (language of extraLanguages; track language.code) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ TranslationKeys.Admin.Common.NameIn | translate: [language.nativeName] }}</mat-label>
+            <input matInput maxlength="100"
+              [attr.lang]="language.code"
+              [dir]="language.direction"
+              [(ngModel)]="translationDrafts[language.code]"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="onTranslationChange()">
+          </mat-form-field>
+        }
+      </section>
+    }
+
+    <section class="values-section full-width">
+      <div class="values-header">
+        <div>
+          <h3 class="values-title">{{ TranslationKeys.Admin.Attributes.Values | translate }}</h3>
+          <p class="values-hint">{{ TranslationKeys.Admin.Attributes.ValuesHint | translate }}</p>
+        </div>
+        <button type="button" mat-stroked-button (click)="addValue()">
+          <mat-icon>add</mat-icon>
+          {{ TranslationKeys.Admin.Attributes.AddValue | translate }}
+        </button>
+      </div>
+
+      @for (row of values(); track $index) {
+        <div class="value-row-wrapper">
+          <div class="value-row">
+            <mat-checkbox [ngModel]="row.isActive" [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="updateValue($index, { isActive: $event })"
+              [attr.aria-label]="TranslationKeys.Admin.Common.Active | translate"></mat-checkbox>
+
+            <mat-form-field appearance="outline" class="value-name">
+              <mat-label>{{ TranslationKeys.Admin.Attributes.ValueNameLabel | translate }}</mat-label>
+              <input matInput maxlength="100" [ngModel]="row.name" [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="updateValue($index, { name: $event })">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="value-code">
+              <mat-label>{{ TranslationKeys.Admin.Attributes.ValueCodeLabel | translate }}</mat-label>
+              <input matInput maxlength="50" [ngModel]="row.code" [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="updateValue($index, { code: $event })">
+            </mat-form-field>
+
+            @if (isColorSwatch) {
+              <input class="value-color" type="color" [ngModel]="row.colorHex ?? '#000000'"
+                [ngModelOptions]="{ standalone: true }" (ngModelChange)="updateValue($index, { colorHex: $event })"
+                [attr.aria-label]="TranslationKeys.Admin.Attributes.ColorLabel | translate">
+            }
+
+            <mat-form-field appearance="outline" class="value-sort">
+              <mat-label>{{ TranslationKeys.Admin.Attributes.SortOrder | translate }}</mat-label>
+              <input matInput type="number" [ngModel]="row.sortOrder" [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="updateValue($index, { sortOrder: $event })">
+            </mat-form-field>
+
+            @if (extraLanguages.length > 0) {
+              <button type="button" mat-icon-button (click)="toggleValueTranslations($index)"
+                [attr.aria-label]="TranslationKeys.Admin.Common.Translations | translate"
+                [class.expanded]="row.expanded">
+                <mat-icon>translate</mat-icon>
+              </button>
+            }
+
+            <button type="button" mat-icon-button (click)="removeValue($index)"
+              [attr.aria-label]="TranslationKeys.Admin.Attributes.RemoveValue | translate">
+              <mat-icon class="delete-icon">delete</mat-icon>
+            </button>
+          </div>
+
+          @if (row.expanded) {
+            <div class="value-translations">
+              @for (language of extraLanguages; track language.code) {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ TranslationKeys.Admin.Common.NameIn | translate: [language.nativeName] }}</mat-label>
+                  <input matInput maxlength="100"
+                    [attr.lang]="language.code"
+                    [dir]="language.direction"
+                    [ngModel]="row.translations[language.code] ?? ''"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="updateValueTranslation($index, language.code, $event)">
+                </mat-form-field>
+              }
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    @if (errorMessage()) {
+      <p class="error-message" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <button type="submit" [disabled]="isSaveDisabled" [attr.aria-disabled]="isSaveDisabled.toString()"
+      mat-flat-button class="save-button">{{ TranslationKeys.Common.Save | translate }}</button>
+  </form>
+</div>

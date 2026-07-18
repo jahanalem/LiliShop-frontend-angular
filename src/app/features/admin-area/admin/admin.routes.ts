@@ -12,6 +12,7 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       { path: 'products', loadChildren: () => import('./products/products.routes').then(m => m.PRODUCTS_ROUTES) },
       { path: 'brands', loadChildren: () => import('./brands/brands.routes').then(m => m.BRANDS_ROUTES) },
+      { path: 'attributes', loadChildren: () => import('./attributes/attributes.routes').then(m => m.ATTRIBUTES_ROUTES) },
       { path: 'product-types', loadChildren: () => import('./product-types/product-types.routes').then(m => m.PRODUCT_TYPES_ROUTES) },
       { path: 'contact-us-messages', loadChildren: () => import('./contact-us-messages/contact-us-messages.routes').then(m => m.CONTACT_US_MESSAGES_ROUTES) },
       { path: 'users', loadChildren: () => import('./users/users.routes').then(m => m.USERS_ROUTES) },

@@ -1,0 +1,98 @@
+@use 'styles/admin' as admin;
+
+@include admin.scaffold;
+@include admin.form;
+
+.entity-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ls-space-4);
+  max-width: 860px;
+}
+
+.save-button {
+  margin-top: var(--ls-space-2);
+}
+
+.translations-section {
+  margin-block-start: 8px;
+
+  .translations-title {
+    margin: 0 0 2px;
+    font-size: 1rem;
+  }
+
+  .translations-hint {
+    margin: 0 0 10px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+}
+
+.values-section {
+  width: 100%;
+  margin-block-start: 8px;
+
+  .values-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--ls-space-4);
+    margin-block-end: 8px;
+  }
+
+  .values-title {
+    margin: 0 0 2px;
+    font-size: 1rem;
+  }
+
+  .values-hint {
+    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+}
+
+.value-row-wrapper {
+  border-block-end: 1px solid rgba(0, 0, 0, 0.08);
+  padding-block: 6px;
+}
+
+.value-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ls-space-2);
+
+  .value-name {
+    flex: 2 1 160px;
+  }
+
+  .value-code {
+    flex: 1 1 120px;
+  }
+
+  .value-sort {
+    flex: 0 1 100px;
+  }
+
+  .value-color {
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+  }
+}
+
+.value-translations {
+  padding: 4px 0 4px 40px;
+}
+
+.error-message {
+  color: var(--mat-sys-error, #b3261e);
+  margin: 0;
+}

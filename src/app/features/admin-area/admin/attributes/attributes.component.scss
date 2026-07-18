@@ -1,0 +1,12 @@
+@use 'styles/admin' as admin;
+
+@include admin.scaffold;
+@include admin.table;
+
+.attribute-code {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 0.85em;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  padding: 2px 6px;
+}

@@ -3,6 +3,33 @@
 
 export const TranslationKeys = {
   Admin: {
+    Attributes: {
+      AddValue: 'Admin.Attributes.AddValue',
+      CodeHint: 'Admin.Attributes.CodeHint',
+      CodeLabel: 'Admin.Attributes.CodeLabel',
+      ColorLabel: 'Admin.Attributes.ColorLabel',
+      DisplayOrder: 'Admin.Attributes.DisplayOrder',
+      EditSubtitle: 'Admin.Attributes.EditSubtitle',
+      EditTitle: 'Admin.Attributes.EditTitle',
+      Filterable: 'Admin.Attributes.Filterable',
+      InputType: 'Admin.Attributes.InputType',
+      InputTypeMultiSelect: 'Admin.Attributes.InputTypeMultiSelect',
+      InputTypeSelect: 'Admin.Attributes.InputTypeSelect',
+      NameLabel: 'Admin.Attributes.NameLabel',
+      New: 'Admin.Attributes.New',
+      RemoveValue: 'Admin.Attributes.RemoveValue',
+      SortOrder: 'Admin.Attributes.SortOrder',
+      Subtitle: 'Admin.Attributes.Subtitle',
+      SwatchType: 'Admin.Attributes.SwatchType',
+      SwatchTypeColorHex: 'Admin.Attributes.SwatchTypeColorHex',
+      SwatchTypeImage: 'Admin.Attributes.SwatchTypeImage',
+      SwatchTypeNone: 'Admin.Attributes.SwatchTypeNone',
+      Title: 'Admin.Attributes.Title',
+      ValueCodeLabel: 'Admin.Attributes.ValueCodeLabel',
+      ValueNameLabel: 'Admin.Attributes.ValueNameLabel',
+      Values: 'Admin.Attributes.Values',
+      ValuesHint: 'Admin.Attributes.ValuesHint',
+    },
     Brands: {
       EditSubtitle: 'Admin.Brands.EditSubtitle',
       EditTitle: 'Admin.Brands.EditTitle',
@@ -104,6 +131,7 @@ export const TranslationKeys = {
       Title: 'Admin.Messages.Title',
     },
     Nav: {
+      Attributes: 'Admin.Nav.Attributes',
       Brands: 'Admin.Nav.Brands',
       Dashboard: 'Admin.Nav.Dashboard',
       Discounts: 'Admin.Nav.Discounts',

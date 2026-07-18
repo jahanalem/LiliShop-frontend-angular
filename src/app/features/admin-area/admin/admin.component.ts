@@ -52,6 +52,7 @@ export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit 
     { name: TranslationKeys.Admin.Nav.Products,  link: '/admin/products',            icon: 'storefront' },
     { name: TranslationKeys.Admin.Nav.Brands,    link: '/admin/brands',              icon: 'verified' },
     { name: TranslationKeys.Admin.Nav.Types,     link: '/admin/product-types',       icon: 'category' },
+    { name: TranslationKeys.Admin.Nav.Attributes, link: '/admin/attributes',         icon: 'tune' },
     { name: TranslationKeys.Admin.Nav.Messages,  link: '/admin/contact-us-messages', icon: 'message' },
     { name: TranslationKeys.Admin.Nav.Discounts, link: '/admin/discounts',           icon: 'price_check'},
     { name: TranslationKeys.Admin.Nav.Users,     link: '/admin/users',               icon: 'supervisor_account' },
