@@ -44,11 +44,19 @@
           (ngModelChange)="updateRow($index, { price: $event })">
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="variant-stock">
-        <mat-label>{{ TranslationKeys.Admin.Products.Stock | translate }}</mat-label>
-        <input matInput type="number" min="0" [ngModel]="row.quantityOnHand" [ngModelOptions]="{ standalone: true }"
-          (ngModelChange)="updateRow($index, { quantityOnHand: $event })">
-      </mat-form-field>
+      @if (row.id === 0) {
+        <mat-form-field appearance="outline" class="variant-stock">
+          <mat-label>{{ TranslationKeys.Admin.Products.Stock | translate }}</mat-label>
+          <input matInput type="number" min="0" [ngModel]="row.quantityOnHand" [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="updateRow($index, { quantityOnHand: $event })">
+        </mat-form-field>
+      } @else {
+        <button type="button" mat-stroked-button class="stock-button" (click)="openStockDialog($index)"
+          [attr.aria-label]="TranslationKeys.Admin.Inventory.History | translate">
+          <mat-icon>inventory_2</mat-icon>
+          {{ TranslationKeys.Admin.Products.Stock | translate }}: {{ row.quantityOnHand }}
+        </button>
+      }
 
       <button type="button" mat-icon-button (click)="removeRow($index)"
         [attr.aria-label]="TranslationKeys.Common.Delete | translate">

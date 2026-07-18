@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ProductAttributeService } from 'src/app/core/services/product-attribute.service';
 import { ProductVariantService } from 'src/app/core/services/product-variant.service';
 import { NotificationService } from 'src/app/core/services/notification.service';
+import { VariantStockDialogComponent, VariantStockDialogData } from '../variant-stock-dialog/variant-stock-dialog.component';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { IProductAttribute, IProductAttributeValue } from 'src/app/shared/models/productAttribute';
@@ -183,6 +184,31 @@ export class ProductVariantsEditorComponent implements OnInit {
       });
   }
 
+  /** Stock of a saved variant changes only through the ledger dialog (delta + reason). */
+  openStockDialog(index: number): void {
+    const row = this.rows()[index];
+    if (!row || row.id === 0) {
+      return;
+    }
+
+    const data: VariantStockDialogData = {
+      variantId: row.id,
+      sku: row.sku,
+      quantityOnHand: row.quantityOnHand
+    };
+    this.dialog.open<VariantStockDialogComponent, VariantStockDialogData, number>(VariantStockDialogComponent, { data })
+      .afterClosed()
+      .subscribe({
+        next: (newQuantity?: number) => {
+          if (newQuantity !== undefined) {
+            // Server-confirmed value; not a form edit, so the dirty flag stays untouched.
+            this.rows.update(rows => rows.map((r, i) => i === index ? { ...r, quantityOnHand: newQuantity } : r));
+          }
+        },
+        error: (error) => console.error(error)
+      });
+  }
+
   save(): void {
     this.errorMessage.set('');
     const sizeAttributeId = this.sizeAttribute()?.id;
@@ -193,6 +219,7 @@ export class ProductVariantsEditorComponent implements OnInit {
       price: row.price,
       isActive: row.isActive,
       position: row.position,
+      // Only meaningful for new rows (initial stock); the backend ignores it for existing ones.
       quantityOnHand: row.quantityOnHand,
       axisValues: [
         ...(row.sizeValueId && sizeAttributeId

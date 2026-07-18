@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>{{ TranslationKeys.Admin.Inventory.DialogTitle | translate: [data.sku] }}</h2>
+
+<mat-dialog-content class="stock-dialog-content">
+  <p class="current-stock">
+    {{ TranslationKeys.Admin.Inventory.CurrentStock | translate }}:
+    <strong>{{ quantityOnHand() }}</strong>
+  </p>
+
+  <div class="adjust-form">
+    <mat-form-field appearance="outline" class="delta-field">
+      <mat-label>{{ TranslationKeys.Admin.Inventory.Delta | translate }}</mat-label>
+      <input matInput type="number" [(ngModel)]="delta" [ngModelOptions]="{ standalone: true }">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="reason-field">
+      <mat-label>{{ TranslationKeys.Admin.Inventory.Reason | translate }}</mat-label>
+      <input matInput maxlength="500" [(ngModel)]="reason" [ngModelOptions]="{ standalone: true }">
+    </mat-form-field>
+
+    <button type="button" mat-flat-button [disabled]="!canApply" (click)="apply()">
+      {{ TranslationKeys.Admin.Inventory.Apply | translate }}
+    </button>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="error-message" role="alert">{{ errorMessage() || (TranslationKeys.Admin.Inventory.AdjustFailed | translate) }}</p>
+  }
+
+  <h3 class="history-title">{{ TranslationKeys.Admin.Inventory.History | translate }}</h3>
+  <table class="history-table">
+    <thead>
+      <tr>
+        <th>{{ TranslationKeys.Admin.Inventory.Date | translate }}</th>
+        <th>{{ TranslationKeys.Admin.Inventory.Change | translate }}</th>
+        <th>{{ TranslationKeys.Admin.Inventory.Reason | translate }}</th>
+        <th>{{ TranslationKeys.Admin.Inventory.By | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of transactions(); track row.id) {
+        <tr>
+          <td>{{ row.createdDate | date: 'short' }}</td>
+          <td [class.negative]="row.delta < 0" [class.positive]="row.delta > 0">
+            {{ row.delta > 0 ? '+' : '' }}{{ row.delta }}
+            <span class="type-label">({{ typeLabel(row.type) | translate }})</span>
+          </td>
+          <td>
+            {{ row.reason }}
+            @if (row.orderId) {
+              <span class="order-ref">{{ TranslationKeys.Admin.Inventory.Order | translate }} #{{ row.orderId }}</span>
+            }
+          </td>
+          <td>{{ row.performedBy }}</td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="4" class="empty-history">{{ TranslationKeys.Admin.Common.NoData | translate }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" mat-stroked-button (click)="close()">{{ TranslationKeys.Common.Close | translate }}</button>
+</mat-dialog-actions>
