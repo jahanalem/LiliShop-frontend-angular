@@ -13,4 +13,10 @@ export class ProductQueryParams implements ISortParams, IPaginationParams, ISear
 
   search       : string = '';
   sale         : string = 'all';
+
+  /**
+   * Attribute facets: one entry per attribute holding the selected value ids
+   * (["201,202", "101"] → yellow-or-black AND size-M, satisfied by the same variant).
+   */
+  attrValues   : string[] = [];
 }

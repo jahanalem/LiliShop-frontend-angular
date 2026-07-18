@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ShopComponent } from './shop.component';
 import { ProductService } from 'src/app/core/services/product.service';
+import { ProductAttributeService } from 'src/app/core/services/product-attribute.service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ElementRef, signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -76,14 +77,15 @@ describe('ShopComponent', () => {
         expect(productService.getProducts).toHaveBeenCalled();
     });
 
-    it('should call productService.getBrands(), getTypes(), and getSizes() when getFilters() is called', () => {
+    it('should load brands, types, and filterable attributes when getFilters() is called', () => {
+        const attributeService = TestBed.inject(ProductAttributeService);
         vi.spyOn(productService, 'getBrands').mockReturnValue(of([]));
         vi.spyOn(productService, 'getTypes').mockReturnValue(of([]));
-        vi.spyOn(productService, 'getSizes').mockReturnValue(of([]));
+        vi.spyOn(attributeService, 'getAllAttributes').mockReturnValue(of([]));
         component.getFilters();
         expect(productService.getBrands).toHaveBeenCalled();
         expect(productService.getTypes).toHaveBeenCalled();
-        expect(productService.getSizes).toHaveBeenCalled();
+        expect(attributeService.getAllAttributes).toHaveBeenCalledWith(true);
     });
 
     it('should update shopParams and call getProducts() when onFilterSelected() is called', () => {

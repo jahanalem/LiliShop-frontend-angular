@@ -12,11 +12,13 @@ import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
+import { ProductAttributeService } from 'src/app/core/services/product-attribute.service';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProduct } from 'src/app/shared/models/product';
-import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
+import { IProductAttribute } from 'src/app/shared/models/productAttribute';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { IProductType } from 'src/app/shared/models/productType';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { MatSelectModule } from '@angular/material/select';
 import { ProductItemComponent } from './product-item/product-item.component';
@@ -29,7 +31,7 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
   styleUrls: ['./shop.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [TranslatePipe, RouterModule, MatSelectModule, ProductItemComponent, PagingHeaderComponent, PagerComponent, MatProgressSpinnerModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCardModule, FormsModule]
+  imports: [TranslatePipe, RouterModule, MatSelectModule, MatCheckboxModule, ProductItemComponent, PagingHeaderComponent, PagerComponent, MatProgressSpinnerModule, MatFormFieldModule, MatButtonModule, MatInputModule, MatIconModule, MatCardModule, FormsModule]
 })
 export class ShopComponent implements OnInit {
   protected readonly TranslationKeys = TranslationKeys;
@@ -37,11 +39,15 @@ export class ShopComponent implements OnInit {
   searchTerm = viewChild.required<ElementRef<HTMLInputElement>>('search');
 
   private productService = inject(ProductService);
+  private attributeService = inject(ProductAttributeService);
 
   products   = signal<IProduct[]>([]);
   brands     = signal<IBrand[]>([]);
   types      = signal<IProductType[]>([]);
-  sizes      = signal<ISizeClassification[]>([]);
+  /** Filterable attributes (Size, Color, Pattern, …) rendered as facet checkbox groups. */
+  facetAttributes = signal<IProductAttribute[]>([]);
+  /** attributeId → selected value ids; one attrValues entry per attribute goes to the API. */
+  private selectedFacets = signal<Record<number, number[]>>({});
   shopParams = signal<ProductQueryParams>({} as ProductQueryParams);
   totalCount = signal<number>(0);
   isLoading  = signal<boolean>(false);
@@ -128,18 +134,45 @@ export class ShopComponent implements OnInit {
   // getFilters method
   async getFilters(): Promise<void> {
     try {
-      const [brands, types, sizes] = await Promise.all([
+      const [brands, types, attributes] = await Promise.all([
         firstValueFrom(this.productService.getBrands(true)),
         firstValueFrom(this.productService.getTypes(true)),
-        firstValueFrom(this.productService.getSizes(true)),
+        firstValueFrom(this.attributeService.getAllAttributes(true)),
       ]);
 
       this.brands.set([{ id: 0, name: 'All Brands' }, ...brands]);
       this.types.set([{ id: 0, name: 'All Types' }, ...types]);
-      this.sizes.set([{ id: 0, size: 'All Sizes', isActive: false }, ...sizes]);
+      this.facetAttributes.set(attributes
+        .filter(a => a.isFilterable && (a.values?.filter(v => v.isActive).length ?? 0) > 0)
+        .map(a => ({ ...a, values: a.values!.filter(v => v.isActive) })));
     } catch (error) {
       console.error(error);
     }
+  }
+
+  // --- Attribute facets ---------------------------------------------------
+
+  isFacetSelected(attributeId: number, valueId: number): boolean {
+    return this.selectedFacets()[attributeId]?.includes(valueId) ?? false;
+  }
+
+  async toggleFacetValue(attributeId: number, valueId: number): Promise<void> {
+    const facets = { ...this.selectedFacets() };
+    const current = facets[attributeId] ?? [];
+    facets[attributeId] = current.includes(valueId)
+      ? current.filter(id => id !== valueId)
+      : [...current, valueId];
+    if (facets[attributeId].length === 0) {
+      delete facets[attributeId];
+    }
+    this.selectedFacets.set(facets);
+
+    const params = this.productService.getShopParams();
+    params.attrValues = Object.values(facets).map(ids => ids.join(','));
+    params.pageNumber = 1;
+    this.productService.setShopParams(params);
+    this.shopParams.set(params);
+    await this.getProducts();
   }
 
   // onPageChanged method
@@ -179,6 +212,7 @@ export class ShopComponent implements OnInit {
       this.searchTerm().nativeElement.value = '';
     }
     const defaultParams = new ProductQueryParams();
+    this.selectedFacets.set({});
     this.shopParams.set(defaultParams);
     this.productService.setShopParams(defaultParams);
     this.productService.clearProductCache();

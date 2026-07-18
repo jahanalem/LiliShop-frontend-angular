@@ -96,16 +96,23 @@
                       }
                     </mat-select>
                   </mat-form-field>
-                  <label id="size-label" class="filter-label">{{ TranslationKeys.Shop.Size | translate }}</label>
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-select [(ngModel)]="shopParams().sizeId" (selectionChange)="onFilterSelected($event.value, 'size')" aria-labelledby="size-label">
-                      @for (size of sizes(); track size) {
-                        <mat-option [value]="size.id">
-                          {{ size.size }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
+                  @for (attribute of facetAttributes(); track attribute.id) {
+                    <fieldset class="facet-group">
+                      <legend class="filter-label">{{ attribute.name }}</legend>
+                      <div class="facet-values">
+                        @for (value of attribute.values; track value.id) {
+                          <mat-checkbox
+                            [checked]="isFacetSelected(attribute.id, value.id)"
+                            (change)="toggleFacetValue(attribute.id, value.id)">
+                            @if (attribute.swatchType === 'ColorHex' && value.colorHex) {
+                              <span class="facet-color-dot" [style.background]="value.colorHex"></span>
+                            }
+                            {{ value.name }}
+                          </mat-checkbox>
+                        }
+                      </div>
+                    </fieldset>
+                  }
                 </mat-card-content>
               </mat-card>
             }

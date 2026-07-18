@@ -98,6 +98,13 @@ export class ProductService {
       }
     });
 
+    // One attrValues entry per attribute; the backend ANDs entries within the same variant.
+    for (const group of this.shopParams.attrValues ?? []) {
+      if (group) {
+        params = params.append('attrValues', group);
+      }
+    }
+
     return this.http.get<ProductPagination>(`${this.baseUrl}products`, { observe: 'response', params })
       .pipe(
         map(response => {
