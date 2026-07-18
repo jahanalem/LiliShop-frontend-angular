@@ -182,35 +182,13 @@
           </mat-form-field>
         }
 
-        @for (char of productForm.productCharacteristics; track char; let i = $index) {
-          <div class="admin-form-row size-qty-row">
-            <mat-form-field appearance="outline" class="input-field">
-              <mat-label>{{ TranslationKeys.Shop.Size | translate }}</mat-label>
-              <mat-select [formField]="char.sizeId">
-                @for (size of availableSizes(char.sizeId().value()); track size.id) {
-                  <mat-option [value]="size.id">{{ size.size }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="input-field">
-              <mat-label>{{ TranslationKeys.Admin.Products.Quantity | translate }}</mat-label>
-              <input [formField]="char.quantity" type="number" matInput>
-            </mat-form-field>
-
-            <button type="button" mat-icon-button [attr.aria-label]="TranslationKeys.Common.Delete | translate" class="remove-size-button"
-              (click)="removeSize(i)">
-              <mat-icon class="delete-icon">delete</mat-icon>
-            </button>
-          </div>
+        @if (isProductIdValid()) {
+          <app-product-variants-editor
+            [productId]="adminProduct()?.id ?? 0"
+            [defaultPrice]="productModel().price" />
+        } @else {
+          <p class="variants-create-first-hint">{{ TranslationKeys.Admin.Products.SaveProductFirstForVariants | translate }}</p>
         }
-
-        <div class="add-size-btn">
-          <button type="button" mat-stroked-button [disabled]="!canAddSize()" (click)="addSize()">
-            <mat-icon>add</mat-icon>
-            {{ TranslationKeys.Admin.Products.AddSize | translate }}
-          </button>
-        </div>
 
         <button type="submit" [disabled]="isSaveDisabled()" mat-flat-button class="save-button">
           {{ TranslationKeys.Admin.Products.Save | translate }}

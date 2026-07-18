@@ -1,4 +1,5 @@
 import { PhotoEditorComponent } from 'src/app/shared/components/photo-editor/photo-editor.component';
+import { ProductVariantsEditorComponent } from './product-variants-editor/product-variants-editor.component';
 import { MatButtonModule } from '@angular/material/button';
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, computed, signal, inject } from '@angular/core';
 import { form, required, min, max, FormField } from '@angular/forms/signals';
@@ -10,7 +11,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { IProduct, IProductAdmin } from './../../../../../shared/models/product';
 import { IBrand } from 'src/app/shared/models/brand';
 import { IProductType } from 'src/app/shared/models/productType';
-import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ISingleDiscount } from 'src/app/shared/models/discount';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 
@@ -37,13 +37,6 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 
-interface ProductCharacteristicModel {
-  id: number;
-  productId: number;
-  sizeId: number;
-  quantity: number;
-}
-
 interface ProductFormModel {
   isActive: boolean;
   name: string;
@@ -51,7 +44,6 @@ interface ProductFormModel {
   price: number;
   productBrandId: number | null;
   productTypeId: number | null;
-  productCharacteristics: ProductCharacteristicModel[];
   isDiscountActive: boolean;
   discountAmount: number | null;
   isPercentage: boolean;
@@ -68,7 +60,6 @@ const EMPTY_FORM_MODEL: ProductFormModel = {
   price: 0,
   productBrandId: null,
   productTypeId: null,
-  productCharacteristics: [],
   isDiscountActive: false,
   discountAmount: null,
   isPercentage: true,
@@ -85,7 +76,7 @@ const EMPTY_FORM_MODEL: ProductFormModel = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
-    TranslatePipe,FormField, FormsModule, MatFormFieldModule, MatInputModule, MatTableModule, MatIconModule, MatSelectModule, MatCheckboxModule, MatTooltipModule, MatTabsModule, MatDatepickerModule, MatTimepickerModule, MatNativeDateModule, PhotoEditorComponent, MatButtonModule],
+    TranslatePipe,FormField, FormsModule, MatFormFieldModule, MatInputModule, MatTableModule, MatIconModule, MatSelectModule, MatCheckboxModule, MatTooltipModule, MatTabsModule, MatDatepickerModule, MatTimepickerModule, MatNativeDateModule, PhotoEditorComponent, ProductVariantsEditorComponent, MatButtonModule],
 })
 export class EditProductComponent implements OnInit, OnDestroy {
   protected readonly TranslationKeys = TranslationKeys;
@@ -106,7 +97,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
   // Reference data for the dropdowns.
   readonly brands = signal<IBrand[]>([]);
   readonly types = signal<IProductType[]>([]);
-  readonly sizes = signal<ISizeClassification[]>([]);
 
   // The product currently being edited (undefined while creating a new one).
   readonly adminProduct = signal<IProductAdmin | undefined>(undefined);
@@ -164,13 +154,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   readonly isProductIdValid = computed(() => (this.adminProduct()?.id ?? 0) > 0);
 
-  readonly canAddSize = computed(
-    () => this.productModel().productCharacteristics.length < this.sizes().length
-  );
-
   async ngOnInit(): Promise<void> {
     try {
-      await Promise.all([this.loadBrands(), this.loadTypes(), this.loadSizes()]);
+      await Promise.all([this.loadBrands(), this.loadTypes()]);
       await this.loadProduct();
       this.cacheProduct();
       this.markPristine();
@@ -193,10 +179,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   private async loadTypes(): Promise<void> {
     this.types.set(await this.fetch(this.productService.getTypes(true)));
-  }
-
-  private async loadSizes(): Promise<void> {
-    this.sizes.set(await this.fetch(this.productService.getSizes(true)));
   }
 
   private async loadProduct(): Promise<void> {
@@ -271,7 +253,9 @@ export class EditProductComponent implements OnInit, OnDestroy {
       productBrand          : existing?.productBrand,
       productBrandId        : values.productBrandId ?? 0,
       isActive              : values.isActive,
-      productCharacteristics: values.productCharacteristics.map(c => ({ ...c, sizeName: '' })),
+      // Sizes/stock are managed by the variants editor (which keeps these legacy rows in
+      // sync server-side); the product save must not touch them.
+      productCharacteristics: existing?.productCharacteristics ?? [],
       productPhotos         : existing?.productPhotos ?? [],
       discount              : discountPayload,
       translations          : this.buildTranslationsPayload(values),
@@ -418,37 +402,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
     }));
   }
 
-  // --- Size rows ----------------------------------------------------------
-
-  addSize(): void {
-    const free = this.availableSizes(-1);
-    if (free.length === 0) {
-      return;
-    }
-
-    const productId = this.adminProduct()?.id ?? this.productIdFromUrl ?? 0;
-    this.productModel.update(m => ({
-      ...m,
-      productCharacteristics: [
-        ...m.productCharacteristics,
-        { id: 0, productId, sizeId: free[0].id, quantity: 1 },
-      ],
-    }));
-  }
-
-  removeSize(index: number): void {
-    this.productModel.update(m => ({
-      ...m,
-      productCharacteristics: m.productCharacteristics.filter((_, i) => i !== index),
-    }));
-  }
-
-  /** Sizes selectable in a row: the one already chosen there, plus any not used elsewhere. */
-  availableSizes(currentSizeId: number): ISizeClassification[] {
-    const used = new Set(this.productModel().productCharacteristics.map(c => c.sizeId));
-    return this.sizes().filter(size => size.id === currentSizeId || !used.has(size.id));
-  }
-
   // --- Navigation ---------------------------------------------------------
 
   navigateBack(): void {
@@ -496,12 +449,6 @@ export class EditProductComponent implements OnInit, OnDestroy {
       price                 : product.previousPrice ?? product.price,
       productBrandId        : product.productBrandId,
       productTypeId         : product.productTypeId,
-      productCharacteristics: (product.productCharacteristics ?? []).map(pc => ({
-        id       : pc.id,
-        productId: pc.productId,
-        sizeId   : pc.sizeId,
-        quantity : pc.quantity,
-      })),
       isDiscountActive     : discount?.isActive ?? false,
       discountAmount       : discount?.amount ?? null,
       isPercentage         : discount?.isPercentage ?? true,

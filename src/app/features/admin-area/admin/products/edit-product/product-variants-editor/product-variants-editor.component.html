@@ -1,0 +1,67 @@
+<section class="variants-section">
+  <div class="variants-header">
+    <div>
+      <h3 class="variants-title">{{ TranslationKeys.Admin.Products.Variants | translate }}</h3>
+      <p class="variants-hint">{{ TranslationKeys.Admin.Products.VariantsHint | translate }}</p>
+    </div>
+    <button type="button" mat-stroked-button (click)="addRow()">
+      <mat-icon>add</mat-icon>
+      {{ TranslationKeys.Admin.Products.AddVariant | translate }}
+    </button>
+  </div>
+
+  @for (row of rows(); track $index) {
+    <div class="variant-row">
+      <mat-checkbox [ngModel]="row.isActive" [ngModelOptions]="{ standalone: true }"
+        (ngModelChange)="updateRow($index, { isActive: $event })"
+        [attr.aria-label]="TranslationKeys.Admin.Common.Active | translate"></mat-checkbox>
+
+      @if (sizeValues().length > 0) {
+        <mat-form-field appearance="outline" class="variant-size">
+          <mat-label>{{ TranslationKeys.Shop.Size | translate }}</mat-label>
+          <mat-select [ngModel]="row.sizeValueId" [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="updateRow($index, { sizeValueId: $event })">
+            @for (value of availableSizeValues(row); track value.id) {
+              <mat-option [value]="value.id">{{ value.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      @for (label of row.otherAxisLabels; track label) {
+        <span class="axis-chip">{{ label }}</span>
+      }
+
+      <mat-form-field appearance="outline" class="variant-sku" [hintLabel]="TranslationKeys.Admin.Products.SkuHint | translate">
+        <mat-label>{{ TranslationKeys.Admin.Products.SkuLabel | translate }}</mat-label>
+        <input matInput maxlength="64" [ngModel]="row.sku" [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="updateRow($index, { sku: $event })">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="variant-price">
+        <mat-label>{{ TranslationKeys.Admin.Common.Price | translate }}</mat-label>
+        <input matInput type="number" min="0" [ngModel]="row.price" [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="updateRow($index, { price: $event })">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="variant-stock">
+        <mat-label>{{ TranslationKeys.Admin.Products.Stock | translate }}</mat-label>
+        <input matInput type="number" min="0" [ngModel]="row.quantityOnHand" [ngModelOptions]="{ standalone: true }"
+          (ngModelChange)="updateRow($index, { quantityOnHand: $event })">
+      </mat-form-field>
+
+      <button type="button" mat-icon-button (click)="removeRow($index)"
+        [attr.aria-label]="TranslationKeys.Common.Delete | translate">
+        <mat-icon class="delete-icon">delete</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <p class="error-message" role="alert">{{ errorMessage() }}</p>
+  }
+
+  <button type="button" mat-flat-button class="save-variants-button" [disabled]="!dirty()" (click)="save()">
+    {{ TranslationKeys.Admin.Products.SaveVariants | translate }}
+  </button>
+</section>

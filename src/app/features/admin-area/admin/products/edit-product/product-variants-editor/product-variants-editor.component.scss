@@ -1,0 +1,65 @@
+.variants-section {
+  width: 100%;
+  margin-block-start: 8px;
+}
+
+.variants-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-block-end: 8px;
+
+  .variants-title {
+    margin: 0 0 2px;
+    font-size: 1rem;
+  }
+
+  .variants-hint {
+    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+}
+
+.variant-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-block-end: 1px solid rgba(0, 0, 0, 0.08);
+  padding-block: 6px;
+
+  .variant-size {
+    flex: 1 1 120px;
+  }
+
+  .variant-sku {
+    flex: 1.5 1 150px;
+  }
+
+  .variant-price {
+    flex: 0 1 110px;
+  }
+
+  .variant-stock {
+    flex: 0 1 100px;
+  }
+}
+
+.axis-chip {
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.error-message {
+  color: var(--mat-sys-error, #b3261e);
+  margin: 8px 0 0;
+}
+
+.save-variants-button {
+  margin-top: 10px;
+}
