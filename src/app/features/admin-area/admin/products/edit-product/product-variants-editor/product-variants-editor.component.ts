@@ -182,12 +182,24 @@ export class ProductVariantsEditorComponent implements OnInit {
     };
   }
 
+  /**
+   * Shared, stable empty selection. A descriptive `mat-select multiple` binds its `[ngModel]` to
+   * `multiValue(...)`, which runs on every change-detection pass. Returning a fresh `[]` here would
+   * hand the value accessor a NEW array reference each pass; NgModel would treat that as a change,
+   * write it back to the control, MatSelect would `markForCheck()`, and — under zoneless change
+   * detection — that schedules yet another pass, looping forever (NG0103 / "page unresponsive").
+   * A single shared instance keeps the reference identical across passes, so the loop never starts.
+   * (MatSelect only reads this array to resolve the selection; it never mutates it, so sharing one
+   * instance across every unset multi-select is safe.)
+   */
+  private static readonly NO_SELECTION: number[] = [];
+
   singleValue(row: VariantRow, attributeId: number): number | null {
     return row.selections[attributeId]?.[0] ?? null;
   }
 
   multiValue(row: VariantRow, attributeId: number): number[] {
-    return row.selections[attributeId] ?? [];
+    return row.selections[attributeId] ?? ProductVariantsEditorComponent.NO_SELECTION;
   }
 
   updateRow(index: number, patch: Partial<VariantRow>): void {

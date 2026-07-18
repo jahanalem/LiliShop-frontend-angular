@@ -151,4 +151,30 @@ describe('ProductVariantsEditorComponent', () => {
     expect(drafts.length).toBe(2); // S and L
     expect(drafts.map(d => component.singleValue(d, 10)).sort()).toEqual([102, 103]);
   });
+
+  // Regression: the descriptive `mat-select multiple` binds [ngModel]="multiValue(row, attrId)",
+  // which is re-evaluated on every change-detection pass. Returning a fresh [] each call handed
+  // MatSelect a new array reference every pass; under zoneless change detection that looped forever
+  // (NG0103) — the reported "Edit Product page stuck loading / browser unresponsive" bug. The value
+  // must therefore be reference-stable for an unchanged selection.
+  it('multiValue returns a stable array reference for an unset selection (no zoneless CD loop)', async () => {
+    const { component } = await setup([sizeVariant(1, 'P39-M', 101)]);
+    const row = component.rows()[0]; // Color (id 20) is descriptive and unset on this row.
+
+    const first = component.multiValue(row, 20);
+    const second = component.multiValue(row, 20);
+
+    expect(first).toEqual([]);
+    expect(second).toBe(first); // SAME reference across calls — a fresh [] each call broke the page.
+  });
+
+  it('multiValue returns the row\'s stored selection reference once values are chosen', async () => {
+    const { component } = await setup([]);
+    component.addRow();
+    component.setMultiValue(0, 20, [201, 202]); // Blue + Red (descriptive)
+    const row = component.rows()[0];
+
+    expect(component.multiValue(row, 20)).toEqual([201, 202]);
+    expect(component.multiValue(row, 20)).toBe(component.multiValue(row, 20)); // stable reference
+  });
 });
