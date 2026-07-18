@@ -34,8 +34,10 @@ export class FormatValuePipe implements PipeTransform {
         return this.yesNo(!!product?.previousPrice);
       }
       case 'isActive': {
-        const discount = context as IDiscount;
-        return this.yesNo(!!discount?.isActive);
+        // Tables that pass the row as context (discounts, products) read the flag from it;
+        // plain cells (brands, types, attributes) fall back to the cell value itself.
+        const flag = context != null ? !!(context as IDiscount)?.isActive : !!value;
+        return this.yesNo(flag);
       }
       default:
         return value;

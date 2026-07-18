@@ -4,11 +4,38 @@
       <h3 class="variants-title">{{ TranslationKeys.Admin.Products.Variants | translate }}</h3>
       <p class="variants-hint">{{ TranslationKeys.Admin.Products.VariantsHint | translate }}</p>
     </div>
-    <button type="button" mat-stroked-button (click)="addRow()">
-      <mat-icon>add</mat-icon>
-      {{ TranslationKeys.Admin.Products.AddVariant | translate }}
-    </button>
+    <div class="variants-actions">
+      <button type="button" mat-stroked-button (click)="toggleGenerator()">
+        <mat-icon>auto_awesome</mat-icon>
+        {{ TranslationKeys.Admin.Products.GenerateVariants | translate }}
+      </button>
+      <button type="button" mat-stroked-button (click)="addRow()">
+        <mat-icon>add</mat-icon>
+        {{ TranslationKeys.Admin.Products.AddVariant | translate }}
+      </button>
+    </div>
   </div>
+
+  @if (generatorOpen()) {
+    <div class="generator-panel">
+      <p class="generator-hint">{{ TranslationKeys.Admin.Products.GenerateHint | translate }}</p>
+      <div class="generator-fields">
+        @for (attribute of axisAttributes(); track attribute.id) {
+          <mat-form-field appearance="outline" class="generator-field">
+            <mat-label>{{ attribute.name }}</mat-label>
+            <mat-select multiple [(ngModel)]="generatorSelections[attribute.id]" [ngModelOptions]="{ standalone: true }">
+              @for (value of attribute.values; track value.id) {
+                <mat-option [value]="value.id">{{ value.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+        <button type="button" mat-flat-button [disabled]="!canGenerate" (click)="generateCombinations()">
+          {{ TranslationKeys.Admin.Products.Generate | translate }}
+        </button>
+      </div>
+    </div>
+  }
 
   @for (row of rows(); track $index) {
     <div class="variant-row">
@@ -16,20 +43,34 @@
         (ngModelChange)="updateRow($index, { isActive: $event })"
         [attr.aria-label]="TranslationKeys.Admin.Common.Active | translate"></mat-checkbox>
 
-      @if (sizeValues().length > 0) {
-        <mat-form-field appearance="outline" class="variant-size">
-          <mat-label>{{ TranslationKeys.Shop.Size | translate }}</mat-label>
-          <mat-select [ngModel]="row.sizeValueId" [ngModelOptions]="{ standalone: true }"
-            (ngModelChange)="updateRow($index, { sizeValueId: $event })">
-            @for (value of availableSizeValues(row); track value.id) {
+      @for (attribute of axisAttributes(); track attribute.id) {
+        <mat-form-field appearance="outline" class="variant-axis-select">
+          <mat-label>{{ attribute.name }}</mat-label>
+          <mat-select [ngModel]="row.axisSelections[attribute.id] ?? null" [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="setAxisValue($index, attribute.id, $event)">
+            <mat-option [value]="null">—</mat-option>
+            @for (value of attribute.values; track value.id) {
               <mat-option [value]="value.id">{{ value.name }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
       }
 
-      @for (label of row.otherAxisLabels; track label) {
-        <span class="axis-chip">{{ label }}</span>
+      @for (attribute of descriptiveAttributes(); track attribute.id) {
+        <mat-form-field appearance="outline" class="variant-axis-select">
+          <mat-label>{{ attribute.name }}</mat-label>
+          <mat-select multiple [ngModel]="row.descriptiveSelections[attribute.id] ?? []" [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="setDescriptiveValues($index, attribute.id, $event)">
+            @for (value of attribute.values; track value.id) {
+              <mat-option [value]="value.id">
+                @if (attribute.swatchType === 'ColorHex' && value.colorHex) {
+                  <span class="option-color-dot" [style.background]="value.colorHex"></span>
+                }
+                {{ value.name }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
       }
 
       <mat-form-field appearance="outline" class="variant-sku" [hintLabel]="TranslationKeys.Admin.Products.SkuHint | translate">
