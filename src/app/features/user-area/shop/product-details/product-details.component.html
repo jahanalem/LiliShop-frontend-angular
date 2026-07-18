@@ -25,14 +25,55 @@
             @if (isDiscountActive()) {
               <div class="price-section">
                 <p class="original-price" style="text-decoration: line-through; color: #888;">
-                  {{ product().previousPrice | currency }}
+                  {{ displayPreviousPrice() | currency }}
                 </p>
                 <p class="price" style="color: #e53935; font-weight: bold;">
-                  {{ product().price | currency }}
+                  {{ displayPrice() | currency }}
                 </p>
                 </div>
             } @else {
-              <p class="price">{{ product().price | currency }}</p>
+              <p class="price">{{ displayPrice() | currency }}</p>
+            }
+
+            @for (axis of axes(); track axis.attributeId) {
+              <div class="variant-axis" role="radiogroup" [attr.aria-label]="axis.name">
+                <span class="axis-name">{{ axis.name }}</span>
+                <div class="axis-values">
+                  @for (value of axis.values; track value.valueId) {
+                    <button type="button" class="axis-value-chip"
+                      role="radio"
+                      [attr.aria-checked]="isValueSelected(axis.attributeId, value.valueId)"
+                      [class.selected]="isValueSelected(axis.attributeId, value.valueId)"
+                      [class.unavailable]="isValueUnavailable(axis.attributeId, value.valueId)"
+                      (click)="selectValue(axis.attributeId, value.valueId)">
+                      @if (axis.swatchType === 'ColorHex' && value.colorHex) {
+                        <span class="color-dot" [style.background]="value.colorHex"></span>
+                      }
+                      {{ value.name }}
+                      @if (isValueSelected(axis.attributeId, value.valueId)) {
+                        <mat-icon class="selected-check">check</mat-icon>
+                      }
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+
+            @for (info of descriptiveInfo(); track info.name) {
+              <p class="descriptive-info">{{ info.name }}: <strong>{{ info.values }}</strong></p>
+            }
+
+            @if (selectedVariant(); as variant) {
+              <p class="sku-line">
+                <span class="sku">{{ variant.sku }}</span>
+                @if (isOutOfStock()) {
+                  <span class="stock-warning out-of-stock">{{ TranslationKeys.Shop.OutOfStock | translate }}</span>
+                } @else if ((availableQuantity() ?? 99) < 6) {
+                  <span class="stock-warning low-stock">{{ TranslationKeys.Shop.OnlyNLeft | translate: [availableQuantity()] }}</span>
+                }
+              </p>
+            } @else if (axes().length > 0) {
+              <p class="select-options-hint">{{ TranslationKeys.Shop.SelectOptions | translate }}</p>
             }
 
             <p class="product-description">
@@ -64,7 +105,9 @@
             </div>
 
             <div class="action-buttons">
-              <button mat-raised-button color="primary" (click)="addItemToBasket()" class="action-button">
+              <button mat-raised-button color="primary" (click)="addItemToBasket()" class="action-button"
+                [disabled]="!canAddToBasket()"
+                [attr.aria-disabled]="!canAddToBasket()">
                 <mat-icon>shopping_cart</mat-icon>
                 {{ TranslationKeys.Product.AddToCart | translate }}
               </button>

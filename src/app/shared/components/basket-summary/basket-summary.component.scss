@@ -80,3 +80,16 @@ button[mat-icon-button] {
     align-self: flex-end;
   }
 }
+
+.variant-description {
+  margin: 2px 0;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.line-sku {
+  margin: 0;
+  font-size: 0.75rem;
+  opacity: 0.6;
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+}

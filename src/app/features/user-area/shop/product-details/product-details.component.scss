@@ -200,3 +200,105 @@
     gap: 0.5rem;
   }
 }
+
+.variant-axis {
+  margin: 10px 0 2px;
+
+  .axis-name {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-block-end: 6px;
+  }
+
+  .axis-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .axis-value-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    background: transparent;
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 120ms ease, background-color 120ms ease;
+
+    &:hover {
+      border-color: rgba(0, 0, 0, 0.6);
+    }
+
+    &:focus-visible {
+      outline: 2px solid #1976d2;
+      outline-offset: 2px;
+    }
+
+    // Selected state uses a ring + check icon, never color alone.
+    &.selected {
+      border: 2px solid #1976d2;
+      background: rgba(25, 118, 210, 0.08);
+      font-weight: 600;
+    }
+
+    &.unavailable {
+      opacity: 0.45;
+      text-decoration: line-through;
+    }
+
+    .color-dot {
+      inline-size: 14px;
+      block-size: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    .selected-check {
+      font-size: 16px;
+      inline-size: 16px;
+      block-size: 16px;
+    }
+  }
+}
+
+.descriptive-info {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+}
+
+.sku-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 0;
+
+  .sku {
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+    font-size: 0.8rem;
+    opacity: 0.6;
+  }
+
+  .stock-warning {
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    &.out-of-stock {
+      color: #b3261e;
+    }
+
+    &.low-stock {
+      color: #e65100;
+    }
+  }
+}
+
+.select-options-hint {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  opacity: 0.75;
+}

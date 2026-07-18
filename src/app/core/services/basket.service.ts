@@ -1,4 +1,4 @@
-import { Basket, IBasketItem } from './../../shared/models/basket';
+import { Basket, IBasketItem, IBasketVariantSelection } from './../../shared/models/basket';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
@@ -186,9 +186,9 @@ export class BasketService {
  * @param {IProduct} item - The product item to add to the basket.
  * @param {number} [quantity=1] - The quantity of the item to add.
  */
-  addItemToBasket(item: IProduct, quantity: number = 1): void {
+  addItemToBasket(item: IProduct, quantity: number = 1, variant?: IBasketVariantSelection): void {
     // Map the product item to a basket item
-    const itemToAdd: IBasketItem = this.mapProductItemToBasketItem(item, quantity);
+    const itemToAdd: IBasketItem = this.mapProductItemToBasketItem(item, quantity, variant);
 
     // Get the current basket or create a new one if none exists
     const currentBasket = this.getCurrentBasketValue() ?? this.createBasket();
@@ -218,8 +218,8 @@ export class BasketService {
    * @returns {IBasketItem[]} The updated array of items in the basket.
    */
   private addOrUpdateItem(items: IBasketItem[], itemToAdd: IBasketItem, quantity: number): IBasketItem[] {
-    // Find the index of the item in the current items array
-    const itemIndex = items.findIndex(item => item.id === itemToAdd.id);
+    // Same product in two sizes = two lines: match on (product id, variant id).
+    const itemIndex = items.findIndex(item => this.isSameLine(item, itemToAdd));
 
     // If the item doesn't exist in the array, add it
     if (itemIndex === -1) {
@@ -267,17 +267,25 @@ export class BasketService {
  * @param {number} quantity - The quantity of the item.
  * @returns {IBasketItem} The mapped basket item.
  */
-  private mapProductItemToBasketItem(item: IProduct, quantity: number): IBasketItem {
-    // Map each property of the product item to the corresponding property of a basket item
+  private mapProductItemToBasketItem(item: IProduct, quantity: number, variant?: IBasketVariantSelection): IBasketItem {
+    // Map each property of the product item to the corresponding property of a basket item;
+    // a chosen variant contributes its own price, id, and display text.
     return {
       id: item.id,
       productName: item.name,
-      price: item.price,
+      price: variant?.price ?? item.price,
       pictureUrl: item.pictureUrl,
       quantity,
       brand: item.productBrand ?? "UNKNOWN BRAND",
-      type: item.productType ?? "UNKNOWN TYPE"
+      type: item.productType ?? "UNKNOWN TYPE",
+      productVariantId: variant?.id,
+      variantDescription: variant?.description ?? undefined
     };
+  }
+
+  /** Basket lines are unique per (product id, variant id); legacy lines have no variant id. */
+  private isSameLine(a: IBasketItem, b: IBasketItem): boolean {
+    return a.id === b.id && (a.productVariantId ?? null) === (b.productVariantId ?? null);
   }
 
 
@@ -435,8 +443,8 @@ export class BasketService {
       return;
     }
 
-    // Find the index of the item to update
-    const itemIndex = currentBasket.items.findIndex(x => x.id === item.id);
+    // Find the index of the item to update (lines are unique per product+variant)
+    const itemIndex = currentBasket.items.findIndex(x => this.isSameLine(x, item));
 
     if (newQuantity > 0) {
       // Update the item's quantity

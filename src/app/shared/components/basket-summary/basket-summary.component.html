@@ -1,11 +1,18 @@
 <section class="cart-container">
-  @for (item of items(); track item.id ?? item.productId) {
+  @for (item of items(); track $index) {
     <div class="cart-item">
       <div class="product-info">
         <img [src]="item.pictureUrl" [alt]="item.productName" class="product-image" title="product image">
         <div class="product-details">
           <h4>{{item.productName}}</h4>
-          <p><strong>{{ TranslationKeys.Basket.TypeLabel | translate }}</strong> {{item.type}} <strong>{{ TranslationKeys.Basket.SizeLabel | translate }}</strong> Large</p>
+          @if (item.variantDescription) {
+            <p class="variant-description">{{ item.variantDescription }}</p>
+          } @else if (item.type) {
+            <p><strong>{{ TranslationKeys.Basket.TypeLabel | translate }}</strong> {{item.type}}</p>
+          }
+          @if (item.sku) {
+            <p class="line-sku">{{ item.sku }}</p>
+          }
           <span class="price">{{item.price | currency}}</span>
         </div>
       </div>

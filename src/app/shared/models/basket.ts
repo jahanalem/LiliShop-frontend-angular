@@ -10,6 +10,7 @@ export interface IBasket {
 }
 
 export interface IBasketItem {
+  /** Product id; basket lines are unique per (id, productVariantId). */
   id         : number;
   productName: string;
   price      : number;
@@ -17,6 +18,17 @@ export interface IBasketItem {
   pictureUrl : string;
   brand      : string;
   type       : string;
+  /** The chosen variant (SKU); undefined on legacy lines — checkout resolves those server-side. */
+  productVariantId  ?: number;
+  /** Display text like "Size: M · Color: Yellow"; the server revalidates everything else. */
+  variantDescription?: string;
+}
+
+/** What the product page passes to the basket when the customer picked a concrete variant. */
+export interface IBasketVariantSelection {
+  id: number;
+  price: number;
+  description: string | null;
 }
 
 export class Basket implements IBasket {
