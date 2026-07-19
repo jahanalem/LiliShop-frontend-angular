@@ -95,7 +95,7 @@
   }
 
   @for (row of rows(); track row.key; let rowIndex = $index) {
-    <div class="variant-row" [class.row-selected]="row.selected">
+    <div class="variant-row" [class.row-selected]="row.selected" [class.row-locked]="row.hasOrders">
       <mat-checkbox class="row-select" [checked]="row.selected"
         (change)="toggleRowSelected(rowIndex, $event.checked)"
         [attr.aria-label]="TranslationKeys.Admin.Products.SelectAll | translate"></mat-checkbox>
@@ -105,15 +105,20 @@
         [attr.aria-label]="TranslationKeys.Admin.Common.Active | translate"></mat-checkbox>
 
       @for (attribute of definingAttributes(); track attribute.id) {
-        <mat-form-field appearance="outline" class="variant-axis-select">
+        <mat-form-field appearance="outline" class="variant-axis-select" [class.locked-field]="row.hasOrders">
           <mat-label>{{ attribute.name }}</mat-label>
           <mat-select [ngModel]="singleValue(row, attribute.id)" [ngModelOptions]="{ standalone: true }"
+            [disabled]="row.hasOrders"
             (ngModelChange)="setSingleValue(rowIndex, attribute.id, $event)">
             <mat-option [value]="null">—</mat-option>
             @for (value of attribute.values; track value.id) {
               <mat-option [value]="value.id">{{ value.name }}</mat-option>
             }
           </mat-select>
+          @if (row.hasOrders) {
+            <mat-icon matSuffix class="lock-icon"
+              [attr.aria-label]="TranslationKeys.Admin.Products.IdentityLockedHelper | translate">lock</mat-icon>
+          }
         </mat-form-field>
       }
 
@@ -134,12 +139,16 @@
         </mat-form-field>
       }
 
-      <mat-form-field appearance="outline" class="variant-sku"
+      <mat-form-field appearance="outline" class="variant-sku" [class.locked-field]="row.hasOrders"
         [hintLabel]="(row.hasOrders ? TranslationKeys.Admin.Products.SkuLockedHint : TranslationKeys.Admin.Products.SkuHint) | translate">
         <mat-label>{{ TranslationKeys.Admin.Products.SkuLabel | translate }}</mat-label>
         <input matInput maxlength="64" [ngModel]="row.sku" [ngModelOptions]="{ standalone: true }"
           [readonly]="row.hasOrders"
           (ngModelChange)="updateRow(rowIndex, { sku: $event })">
+        @if (row.hasOrders) {
+          <mat-icon matSuffix class="lock-icon"
+            [attr.aria-label]="TranslationKeys.Admin.Products.IdentityLockedHelper | translate">lock</mat-icon>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="variant-price">
@@ -170,6 +179,13 @@
           <mat-icon class="delete-icon">delete</mat-icon>
         </button>
       </span>
+
+      @if (row.hasOrders) {
+        <p class="identity-lock-note" role="note">
+          <mat-icon class="lock-icon">lock</mat-icon>
+          <span>{{ TranslationKeys.Admin.Products.IdentityLockedHelper | translate }}</span>
+        </p>
+      }
     </div>
   }
 

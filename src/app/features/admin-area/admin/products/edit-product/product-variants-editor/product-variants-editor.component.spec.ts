@@ -299,6 +299,38 @@ describe('ProductVariantsEditorComponent', () => {
     expect(deleteButtons[1].disabled).toBe(false);
   });
 
+  it('locks the defining-axis select and shows the identity-lock note for an ordered variant', async () => {
+    const ordered = { ...sizeVariant(1, 'P39-M', 101), hasOrders: true };
+    const { fixture } = await setup([ordered, sizeVariant(2, 'P39-S', 102)]);
+    fixture.detectChanges();
+
+    const rows: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('.variant-row');
+    // The ordered row shows the lock note + a lock icon on its identity fields; the other does not.
+    expect(rows[0].querySelector('.identity-lock-note')).toBeTruthy();
+    expect(rows[1].querySelector('.identity-lock-note')).toBeFalsy();
+    expect(rows[0].querySelector('.variant-axis-select .lock-icon')).toBeTruthy();
+    expect(rows[0].querySelector('.variant-sku .lock-icon')).toBeTruthy();
+
+    // Its Size (defining) select is disabled; the other row's is not.
+    const orderedSelect = rows[0].querySelector('.variant-axis-select mat-select')!;
+    const editableSelect = rows[1].querySelector('.variant-axis-select mat-select')!;
+    expect(orderedSelect.classList.contains('mat-mdc-select-disabled')).toBe(true);
+    expect(editableSelect.classList.contains('mat-mdc-select-disabled')).toBe(false);
+  });
+
+  it('keeps operational fields (price, active) editable for an ordered variant', async () => {
+    const ordered = { ...sizeVariant(1, 'P39-M', 101), hasOrders: true };
+    const { fixture } = await setup([ordered]);
+    fixture.detectChanges();
+
+    const row = fixture.nativeElement.querySelector('.variant-row');
+    const priceInput = row.querySelector('.variant-price input') as HTMLInputElement;
+    const activeCheckbox = row.querySelector('mat-checkbox input') as HTMLInputElement;
+    expect(priceInput.readOnly).toBe(false);
+    expect(priceInput.disabled).toBe(false);
+    expect(activeCheckbox.disabled).toBe(false);
+  });
+
   // --- Preserved links of retired attributes keep their defining-ness ------
 
   it('round-trips a preserved DESCRIPTIVE link as descriptive, not as a defining axis', async () => {

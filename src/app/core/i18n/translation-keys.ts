@@ -216,6 +216,7 @@ export const TranslationKeys = {
       GenerateFailed: 'Admin.Products.GenerateFailed',
       GenerateHint: 'Admin.Products.GenerateHint',
       GenerateVariants: 'Admin.Products.GenerateVariants',
+      IdentityLockedHelper: 'Admin.Products.IdentityLockedHelper',
       MissingAxisValues: 'Admin.Products.MissingAxisValues',
       NameLabel: 'Admin.Products.NameLabel',
       New: 'Admin.Products.New',
