@@ -14,7 +14,7 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { IDialogData } from 'src/app/shared/models/dialog-data.interface';
 import { IProductAttribute } from 'src/app/shared/models/productAttribute';
-import { IProductVariant, IVariantAttributeSelection, IVariantUpsertRow } from 'src/app/shared/models/productVariant';
+import { IProductVariant, IVariantAttributeSelection, IVariantGenerationRequest, IVariantUpsertRow } from 'src/app/shared/models/productVariant';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 import { TranslationService } from 'src/app/core/i18n/translation.service';
@@ -37,6 +37,8 @@ interface VariantRow {
   /** attributeId → chosen value ids (defining attributes use only the first). */
   selections: Record<number, number[]>;
   preserved: IVariantAttributeSelection[];
+  /** Transient UI flag: this row is picked for a bulk operation. Never sent to the server. */
+  selected: boolean;
 }
 
 @Component({
@@ -76,6 +78,13 @@ export class ProductVariantsEditorComponent implements OnInit {
 
   /** Generator state: defining attribute id → value ids picked for combination generation. */
   generatorSelections: Record<number, number[]> = {};
+
+  /** Optional SKU template for generation, e.g. "SHIRT-{PATTERN}-{SIZE}". */
+  generatorSkuPattern = '';
+
+  /** Bulk-edit inputs applied to the currently selected rows. */
+  bulkPrice: number | null = null;
+  bulkStock: number | null = null;
 
   private readonly variantService = inject(ProductVariantService);
   private readonly attributeService = inject(ProductAttributeService);
@@ -178,7 +187,8 @@ export class ProductVariantsEditorComponent implements OnInit {
       isActive: variant.isActive,
       position: variant.position,
       selections,
-      preserved
+      preserved,
+      selected: false
     };
   }
 
@@ -236,7 +246,8 @@ export class ProductVariantsEditorComponent implements OnInit {
       isActive: true,
       position: (Math.max(0, ...rows.map(r => r.position)) + 10),
       selections: {},
-      preserved: []
+      preserved: [],
+      selected: false
     };
   }
 
@@ -311,36 +322,47 @@ export class ProductVariantsEditorComponent implements OnInit {
   }
 
   /**
-   * Cartesian product of the picked values per DEFINING attribute, minus combinations already
-   * present. Rows arrive as drafts (blank SKU = server auto-generates); the batch save validates
-   * uniqueness server-side.
+   * Generate-then-review: the SERVER expands the cartesian product of the picked defining-axis
+   * values, skips combinations already saved on the product, and renders SKUs from the pattern.
+   * The returned drafts are appended as editable rows (nothing is persisted until Save). Drafts
+   * whose defining combination already matches an UNSAVED row in the editor are skipped too, so
+   * repeated generations never duplicate a pending row.
    */
   generateCombinations(): void {
-    const groups = this.definingAttributes()
+    const axes = this.definingAttributes()
       .map(attribute => ({ attributeId: attribute.id, valueIds: this.generatorSelections[attribute.id] ?? [] }))
       .filter(group => group.valueIds.length > 0);
-    if (groups.length === 0) {
+    if (axes.length === 0) {
       return;
     }
 
-    let combos: Record<number, number>[] = [{}];
-    for (const group of groups) {
-      combos = combos.flatMap(combo => group.valueIds.map(valueId => ({ ...combo, [group.attributeId]: valueId })));
-    }
+    const request: IVariantGenerationRequest = {
+      axes,
+      skuPattern: this.generatorSkuPattern.trim() || null
+    };
 
+    this.variantService.generateVariants(this.productId(), request).subscribe({
+      next: (drafts) => this.appendDrafts(drafts),
+      error: (error) => {
+        console.error(error);
+        this.errorMessage.set(error?.error?.message
+          ?? this.translationService.translate(TranslationKeys.Admin.Products.GenerateFailed));
+      }
+    });
+  }
+
+  private appendDrafts(drafts: IVariantUpsertRow[]): void {
     const existingSignatures = new Set(this.rows().map(row => this.signatureOf(row)));
     const newRows: VariantRow[] = [];
-    let currentRows = this.rows();
 
-    for (const combo of combos) {
-      const draft = this.createEmptyRow([...currentRows, ...newRows]);
-      draft.selections = Object.fromEntries(Object.entries(combo).map(([attrId, valueId]) => [Number(attrId), [valueId]]));
-      const signature = this.signatureOf(draft);
+    for (const draft of drafts) {
+      const row = this.draftToRow(draft);
+      const signature = this.signatureOf(row);
       if (existingSignatures.has(signature)) {
         continue;
       }
       existingSignatures.add(signature);
-      newRows.push(draft);
+      newRows.push(row);
     }
 
     if (newRows.length === 0) {
@@ -353,6 +375,80 @@ export class ProductVariantsEditorComponent implements OnInit {
     this.dirty.set(true);
     this.generatorOpen.set(false);
     this.generatorSelections = {};
+    this.generatorSkuPattern = '';
+  }
+
+  /** Turns a server DRAFT row into an editable in-memory row (always a new, unsaved row). */
+  private draftToRow(draft: IVariantUpsertRow): VariantRow {
+    const known = new Set(this.attributes().map(a => a.id));
+    const selections: Record<number, number[]> = {};
+    const preserved: IVariantAttributeSelection[] = [];
+
+    for (const selection of [...draft.axisValues, ...(draft.descriptiveValues ?? [])]) {
+      if (known.has(selection.attributeId)) {
+        (selections[selection.attributeId] ??= []).push(selection.valueId);
+      } else {
+        preserved.push(selection);
+      }
+    }
+
+    return {
+      id: 0,
+      sku: draft.sku ?? '',
+      price: draft.price,
+      quantityOnHand: draft.quantityOnHand,
+      isActive: draft.isActive,
+      position: draft.position,
+      selections,
+      preserved,
+      selected: false
+    };
+  }
+
+  // --- Bulk edit ----------------------------------------------------------
+
+  readonly selectedCount = computed(() => this.rows().filter(r => r.selected).length);
+
+  readonly allSelected = computed(() => this.rows().length > 0 && this.rows().every(r => r.selected));
+
+  toggleRowSelected(index: number, selected: boolean): void {
+    this.rows.update(rows => rows.map((row, i) => i === index ? { ...row, selected } : row));
+  }
+
+  toggleSelectAll(selected: boolean): void {
+    this.rows.update(rows => rows.map(row => ({ ...row, selected })));
+  }
+
+  /** Sets the given price on every selected row (drafts and saved rows alike). */
+  applyBulkPrice(): void {
+    if (this.bulkPrice === null || this.selectedCount() === 0) {
+      return;
+    }
+    const price = this.bulkPrice;
+    this.rows.update(rows => rows.map(row => row.selected ? { ...row, price } : row));
+    this.dirty.set(true);
+  }
+
+  /**
+   * Sets initial stock on selected DRAFT rows only. Saved variants must move stock through the
+   * ledger (adjustment dialog), so they are left untouched.
+   */
+  applyBulkStock(): void {
+    if (this.bulkStock === null || this.selectedCount() === 0) {
+      return;
+    }
+    const quantityOnHand = this.bulkStock;
+    this.rows.update(rows => rows.map(row =>
+      row.selected && row.id === 0 ? { ...row, quantityOnHand } : row));
+    this.dirty.set(true);
+  }
+
+  setSelectedActive(isActive: boolean): void {
+    if (this.selectedCount() === 0) {
+      return;
+    }
+    this.rows.update(rows => rows.map(row => row.selected ? { ...row, isActive } : row));
+    this.dirty.set(true);
   }
 
   /** Defining signature of a row (matches the backend's AxisSignature): sorted attr:value of defining axes. */

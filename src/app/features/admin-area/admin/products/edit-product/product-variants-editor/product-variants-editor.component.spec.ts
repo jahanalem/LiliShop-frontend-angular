@@ -17,8 +17,17 @@ describe('ProductVariantsEditorComponent', () => {
   let variantServiceMock: {
     getVariants: ReturnType<typeof vi.fn>;
     saveVariants: ReturnType<typeof vi.fn>;
+    generateVariants: ReturnType<typeof vi.fn>;
     deleteVariant: ReturnType<typeof vi.fn>;
   };
+
+  /** A server DRAFT row (shape of IVariantUpsertRow returned by the generate endpoint). */
+  function draftRow(sku: string, sizeValueId: number): IVariantUpsertRow {
+    return {
+      id: 0, sku, price: 50, isActive: true, position: 0, quantityOnHand: 0,
+      axisValues: [{ attributeId: 10, valueId: sizeValueId }], descriptiveValues: []
+    };
+  }
 
   const sizeAttr: IProductAttribute = {
     id: 10, code: 'size', name: 'Size', inputType: 'Select', swatchType: 'None',
@@ -54,6 +63,7 @@ describe('ProductVariantsEditorComponent', () => {
     variantServiceMock = {
       getVariants: vi.fn().mockReturnValue(of(variants)),
       saveVariants: vi.fn().mockImplementation((_id: number, _rows: IVariantUpsertRow[]) => of(variants)),
+      generateVariants: vi.fn().mockReturnValue(of([])),
       deleteVariant: vi.fn().mockReturnValue(of(undefined))
     };
 
@@ -141,15 +151,81 @@ describe('ProductVariantsEditorComponent', () => {
     expect(rows.map(r => component.singleValue(r, 10))).toEqual([101, 102]);
   });
 
-  it('generates only the missing size combinations as draft rows', async () => {
+  it('generates variants via the server and appends the returned drafts', async () => {
     const { component } = await setup([sizeVariant(1, 'P39-M', 101)]);
-    component.generatorSelections = { 10: [101, 102, 103] }; // M, S, L — M exists
+    // The server skips the existing M and returns only the missing S and L drafts.
+    variantServiceMock.generateVariants.mockReturnValue(of([draftRow('P39-S', 102), draftRow('P39-L', 103)]));
 
+    component.generatorSelections = { 10: [101, 102, 103] };
+    component.generatorSkuPattern = 'P39-{SIZE}';
     component.generateCombinations();
 
+    // Request carries the defining axis (from the selections) and the SKU pattern.
+    const [productId, request] = variantServiceMock.generateVariants.mock.calls[0];
+    expect(productId).toBe(39);
+    expect(request.axes).toEqual([{ attributeId: 10, valueIds: [101, 102, 103] }]);
+    expect(request.skuPattern).toBe('P39-{SIZE}');
+
     const drafts = component.rows().filter(r => r.id === 0);
-    expect(drafts.length).toBe(2); // S and L
+    expect(drafts.length).toBe(2);
+    expect(drafts.map(d => d.sku).sort()).toEqual(['P39-L', 'P39-S']);
     expect(drafts.map(d => component.singleValue(d, 10)).sort()).toEqual([102, 103]);
+  });
+
+  it('sends a null SKU pattern when the field is left blank', async () => {
+    const { component } = await setup([]);
+    component.generatorSelections = { 10: [101] };
+    component.generateCombinations();
+
+    expect(variantServiceMock.generateVariants.mock.calls[0][1].skuPattern).toBeNull();
+  });
+
+  it('does not duplicate a generated draft that matches an unsaved editor row', async () => {
+    const { component } = await setup([]);
+    component.addRow();
+    component.setSingleValue(0, 10, 101); // an unsaved Size M row already in the editor
+    // The server, unaware of the unsaved row, returns an M draft anyway.
+    variantServiceMock.generateVariants.mockReturnValue(of([draftRow('X', 101)]));
+
+    component.generatorSelections = { 10: [101] };
+    component.generateCombinations();
+
+    expect(component.rows().filter(r => r.id === 0).length).toBe(1); // M draft skipped as a duplicate
+  });
+
+  it('applies a bulk price to selected rows only', async () => {
+    const { component } = await setup([sizeVariant(1, 'P39-M', 101), sizeVariant(2, 'P39-S', 102)]);
+
+    component.toggleRowSelected(0, true);
+    component.bulkPrice = 99;
+    component.applyBulkPrice();
+
+    expect(component.rows()[0].price).toBe(99);
+    expect(component.rows()[1].price).toBe(50); // unselected row untouched
+    expect(component.dirty()).toBe(true);
+  });
+
+  it('applies bulk stock to selected draft rows but never to saved rows', async () => {
+    const { component } = await setup([sizeVariant(1, 'P39-M', 101)]); // saved row (id 1)
+    component.addRow();                    // draft row at index 1
+    component.setSingleValue(1, 10, 103);
+    component.toggleSelectAll(true);
+    component.bulkStock = 42;
+    component.applyBulkStock();
+
+    expect(component.rows()[0].quantityOnHand).toBe(5);  // saved row uses the ledger, untouched
+    expect(component.rows()[1].quantityOnHand).toBe(42); // draft row set
+  });
+
+  it('activates/deactivates every selected row', async () => {
+    const { component } = await setup([sizeVariant(1, 'P39-M', 101), sizeVariant(2, 'P39-S', 102)]);
+
+    component.toggleSelectAll(true);
+    expect(component.allSelected()).toBe(true);
+    expect(component.selectedCount()).toBe(2);
+
+    component.setSelectedActive(false);
+    expect(component.rows().every(r => !r.isActive)).toBe(true);
   });
 
   // Regression: the descriptive `mat-select multiple` binds [ngModel]="multiValue(row, attrId)",

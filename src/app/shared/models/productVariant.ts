@@ -38,6 +38,20 @@ export interface IVariantAttributeSelection {
   valueId: number;
 }
 
+/** One defining axis and the values to expand for it during bulk generation. */
+export interface IVariantAxisSelection {
+  attributeId: number;
+  valueIds: number[];
+}
+
+/** Request body for POST productvariants/product/{id}/generate. */
+export interface IVariantGenerationRequest {
+  axes: IVariantAxisSelection[];
+  descriptive?: IVariantAttributeSelection[];
+  /** e.g. "SHIRT-{PATTERN}-{SIZE}"; null/blank → SKUs auto-generated on save. */
+  skuPattern?: string | null;
+}
+
 /** One row of the admin batch-upsert payload (PUT productvariants/product/{id}). */
 export interface IVariantUpsertRow {
   id: number;

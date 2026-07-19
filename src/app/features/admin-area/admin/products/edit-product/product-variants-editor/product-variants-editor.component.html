@@ -46,6 +46,11 @@
             </mat-select>
           </mat-form-field>
         }
+        <mat-form-field appearance="outline" class="generator-field"
+          [hintLabel]="TranslationKeys.Admin.Products.SkuPatternHint | translate">
+          <mat-label>{{ TranslationKeys.Admin.Products.SkuPatternLabel | translate }}</mat-label>
+          <input matInput maxlength="64" [(ngModel)]="generatorSkuPattern" [ngModelOptions]="{ standalone: true }">
+        </mat-form-field>
         <button type="button" mat-flat-button [disabled]="!canGenerate" (click)="generateCombinations()">
           {{ TranslationKeys.Admin.Products.Generate | translate }}
         </button>
@@ -53,8 +58,48 @@
     </div>
   }
 
+  @if (rows().length > 0) {
+    <div class="bulk-toolbar">
+      <mat-checkbox [checked]="allSelected()" (change)="toggleSelectAll($event.checked)">
+        {{ TranslationKeys.Admin.Products.SelectAll | translate }}
+      </mat-checkbox>
+
+      @if (selectedCount() > 0) {
+        <span class="bulk-count">{{ selectedCount() }} {{ TranslationKeys.Admin.Products.Selected | translate }}</span>
+
+        <mat-form-field appearance="outline" class="bulk-input">
+          <mat-label>{{ TranslationKeys.Admin.Common.Price | translate }}</mat-label>
+          <input matInput type="number" min="0" [(ngModel)]="bulkPrice" [ngModelOptions]="{ standalone: true }">
+        </mat-form-field>
+        <button type="button" mat-stroked-button (click)="applyBulkPrice()">
+          {{ TranslationKeys.Admin.Products.ApplyPrice | translate }}
+        </button>
+
+        <mat-form-field appearance="outline" class="bulk-input"
+          [hintLabel]="TranslationKeys.Admin.Products.BulkStockDraftOnly | translate">
+          <mat-label>{{ TranslationKeys.Admin.Products.Stock | translate }}</mat-label>
+          <input matInput type="number" min="0" [(ngModel)]="bulkStock" [ngModelOptions]="{ standalone: true }">
+        </mat-form-field>
+        <button type="button" mat-stroked-button (click)="applyBulkStock()">
+          {{ TranslationKeys.Admin.Products.ApplyStock | translate }}
+        </button>
+
+        <button type="button" mat-stroked-button (click)="setSelectedActive(true)">
+          {{ TranslationKeys.Admin.Products.Activate | translate }}
+        </button>
+        <button type="button" mat-stroked-button (click)="setSelectedActive(false)">
+          {{ TranslationKeys.Admin.Products.Deactivate | translate }}
+        </button>
+      }
+    </div>
+  }
+
   @for (row of rows(); track $index) {
-    <div class="variant-row">
+    <div class="variant-row" [class.row-selected]="row.selected">
+      <mat-checkbox class="row-select" [checked]="row.selected"
+        (change)="toggleRowSelected($index, $event.checked)"
+        [attr.aria-label]="TranslationKeys.Admin.Products.SelectAll | translate"></mat-checkbox>
+
       <mat-checkbox [ngModel]="row.isActive" [ngModelOptions]="{ standalone: true }"
         (ngModelChange)="updateRow($index, { isActive: $event })"
         [attr.aria-label]="TranslationKeys.Admin.Common.Active | translate"></mat-checkbox>
