@@ -253,9 +253,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
       productBrand          : existing?.productBrand,
       productBrandId        : values.productBrandId ?? 0,
       isActive              : values.isActive,
-      // Sizes/stock are managed by the variants editor (which keeps these legacy rows in
-      // sync server-side); the product save must not touch them.
-      productCharacteristics: existing?.productCharacteristics ?? [],
+      // Sizes/stock are managed entirely by the variants editor; the product save never touches them.
       productPhotos         : existing?.productPhotos ?? [],
       discount              : discountPayload,
       translations          : this.buildTranslationsPayload(values),

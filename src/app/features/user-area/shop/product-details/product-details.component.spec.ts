@@ -25,7 +25,7 @@ describe('ProductDetailsComponent (variant selector)', () => {
   const product: IProduct = {
     id: 42, name: 'Casual Shirt', description: 'A shirt', price: 50,
     pictureUrl: 'x.png', picturePublicId: 'x', productTypeId: 1, productBrandId: 1,
-    isActive: true, productCharacteristics: [], productPhotos: []
+    isActive: true, productPhotos: []
   };
 
   const sizeAttr: IProductAttribute = { id: 10, code: 'size', name: 'Size', inputType: 'Select', swatchType: 'None', isFilterable: true, displayOrder: 20, isActive: true };
@@ -171,7 +171,7 @@ describe('ProductDetailsComponent (Color as a defining axis)', () => {
   const product: IProduct = {
     id: 40, name: 'Colour Tee', description: 'A tee', price: 30,
     pictureUrl: 'x.png', picturePublicId: 'x', productTypeId: 1, productBrandId: 1,
-    isActive: true, productCharacteristics: [], productPhotos: []
+    isActive: true, productPhotos: []
   };
 
   const sizeAttr: IProductAttribute = { id: 10, code: 'size', name: 'Size', inputType: 'Select', swatchType: 'None', isFilterable: true, displayOrder: 20, isActive: true };

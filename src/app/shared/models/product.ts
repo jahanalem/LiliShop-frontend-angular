@@ -1,5 +1,4 @@
 import { IProductPhoto } from './productPhoto';
-import { IProductCharacteristic } from "./productCharacteristic";
 import { ISingleDiscount } from './discount';
 
 import { IProductTranslation } from './localization';
@@ -17,7 +16,6 @@ export interface IProduct {
   productBrand          ?: string;
   productBrandId        :  number;
   isActive              :  boolean;
-  productCharacteristics: IProductCharacteristic[];
   productPhotos         : IProductPhoto[];
   /** Per-culture content sent on save; loaded separately via getProductTranslations. */
   translations          ?: IProductTranslation[];

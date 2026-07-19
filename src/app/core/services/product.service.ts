@@ -4,7 +4,6 @@ import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
 import { IBrand } from 'src/app/shared/models/brand';
 import { PaginationWithData, ProductPagination } from 'src/app/shared/models/pagination';
 import { IProduct, IProductAdmin } from 'src/app/shared/models/product';
-import { ISizeClassification } from 'src/app/shared/models/productCharacteristic';
 import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { IProductType } from 'src/app/shared/models/productType';
 import { environment } from 'src/environments/environment';
@@ -20,7 +19,6 @@ export class ProductService {
 
   brands: IBrand[]              = [];
   types : IProductType[]        = [];
-  sizes : ISizeClassification[] = [];
 
   productCache: Map<any, any> = new Map();
 
@@ -82,7 +80,6 @@ export class ProductService {
     const paramMappings: [keyof ProductQueryParams, string][] = [
       ['brandId', 'brandId'],
       ['typeId', 'typeId'],
-      ['sizeId', 'sizeId'],
       ['sort', 'sort'],
       ['search', 'search'],
       ['sale', 'sale'],
@@ -145,10 +142,6 @@ export class ProductService {
 
   getTypes(isActive: boolean | null = null): Observable<IProductType[]> {
     return this.fetchData(this.types, 'products/types', isActive);
-  }
-
-  getSizes(isActive: boolean | null = null): Observable<ISizeClassification[]> {
-    return this.fetchData(this.sizes, 'products/sizes', isActive);
   }
 
   setMainPhoto(photoId: number) {

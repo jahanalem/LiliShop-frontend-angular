@@ -226,9 +226,6 @@ export class ShopComponent implements OnInit {
     const params = this.productService.getShopParams();
 
     switch (filterType) {
-      case 'size':
-        params.sizeId = filterValue;
-        break;
       case 'brand':
         params.brandId = filterValue;
         break;
