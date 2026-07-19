@@ -131,6 +131,10 @@ describe('ProductVariantsEditorComponent (DOM)', () => {
     pickOption(fixture, 2, 'X-Small'); // row 1 Size
     pickOption(fixture, 3, 'Striped'); // row 1 Pattern
 
+    // An ACTIVE axis-less row may not coexist with axis rows (it would be unsellable in the
+    // storefront) — retire the placeholder default so the save passes the uniform-axes check.
+    component.updateRow(0, { isActive: false });
+
     component.save();
 
     const payload = variantServiceMock.saveVariants.mock.calls[0][1] as IVariantUpsertRow[];

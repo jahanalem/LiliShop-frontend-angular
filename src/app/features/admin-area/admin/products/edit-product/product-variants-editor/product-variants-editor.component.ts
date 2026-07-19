@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { ProductAttributeService } from 'src/app/core/services/product-attribute.service';
 import { ProductVariantService } from 'src/app/core/services/product-variant.service';
@@ -19,6 +20,13 @@ import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 import { TranslationService } from 'src/app/core/i18n/translation.service';
 import { VariantStockDialogComponent, VariantStockDialogData } from '../variant-stock-dialog/variant-stock-dialog.component';
+
+/** Link of an inactive/unknown attribute, round-tripped untouched (including its defining-ness). */
+interface PreservedLink {
+  attributeId: number;
+  valueId: number;
+  isDefining: boolean;
+}
 
 /**
  * One editable variant row. Which attributes DEFINE a variant is chosen per product (see
@@ -42,9 +50,11 @@ interface VariantRow {
   position: number;
   /** attributeId → chosen value ids (defining attributes use only the first). */
   selections: Record<number, number[]>;
-  preserved: IVariantAttributeSelection[];
+  preserved: PreservedLink[];
   /** Transient UI flag: this row is picked for a bulk operation. Never sent to the server. */
   selected: boolean;
+  /** The variant appears on orders: SKU locked (read-only input), deletion impossible. */
+  hasOrders: boolean;
 }
 
 @Component({
@@ -55,7 +65,7 @@ interface VariantRow {
   standalone: true,
   imports: [
     TranslatePipe, FormsModule, MatButtonModule, MatCheckboxModule, MatFormFieldModule,
-    MatIconModule, MatInputModule, MatSelectModule]
+    MatIconModule, MatInputModule, MatSelectModule, MatTooltipModule]
 })
 export class ProductVariantsEditorComponent implements OnInit {
   protected readonly TranslationKeys = TranslationKeys;
@@ -177,14 +187,14 @@ export class ProductVariantsEditorComponent implements OnInit {
   private toRow(variant: IProductVariant): VariantRow {
     const known = new Set(this.attributes().map(a => a.id));
     const selections: Record<number, number[]> = {};
-    const preserved: IVariantAttributeSelection[] = [];
+    const preserved: PreservedLink[] = [];
 
     for (const link of variant.attributeValues) {
       if (known.has(link.productAttributeId)) {
         (selections[link.productAttributeId] ??= []).push(link.productAttributeValueId);
       } else {
         // Link of an inactive/unknown attribute — round-trip it untouched (defining-ness kept).
-        preserved.push({ attributeId: link.productAttributeId, valueId: link.productAttributeValueId });
+        preserved.push({ attributeId: link.productAttributeId, valueId: link.productAttributeValueId, isDefining: link.isDefining });
       }
     }
 
@@ -198,7 +208,8 @@ export class ProductVariantsEditorComponent implements OnInit {
       position: variant.position,
       selections,
       preserved,
-      selected: false
+      selected: false,
+      hasOrders: variant.hasOrders ?? false
     };
   }
 
@@ -258,7 +269,8 @@ export class ProductVariantsEditorComponent implements OnInit {
       position: (Math.max(0, ...rows.map(r => r.position)) + 10),
       selections: {},
       preserved: [],
-      selected: false
+      selected: false,
+      hasOrders: false
     };
   }
 
@@ -393,15 +405,19 @@ export class ProductVariantsEditorComponent implements OnInit {
   private draftToRow(draft: IVariantUpsertRow): VariantRow {
     const known = new Set(this.attributes().map(a => a.id));
     const selections: Record<number, number[]> = {};
-    const preserved: IVariantAttributeSelection[] = [];
+    const preserved: PreservedLink[] = [];
 
-    for (const selection of [...draft.axisValues, ...(draft.descriptiveValues ?? [])]) {
-      if (known.has(selection.attributeId)) {
-        (selections[selection.attributeId] ??= []).push(selection.valueId);
-      } else {
-        preserved.push(selection);
+    const collect = (values: IVariantAttributeSelection[], isDefining: boolean): void => {
+      for (const selection of values) {
+        if (known.has(selection.attributeId)) {
+          (selections[selection.attributeId] ??= []).push(selection.valueId);
+        } else {
+          preserved.push({ ...selection, isDefining });
+        }
       }
-    }
+    };
+    collect(draft.axisValues, true);
+    collect(draft.descriptiveValues ?? [], false);
 
     return {
       key: this.nextRowKey++,
@@ -413,7 +429,8 @@ export class ProductVariantsEditorComponent implements OnInit {
       position: draft.position,
       selections,
       preserved,
-      selected: false
+      selected: false,
+      hasOrders: false
     };
   }
 
@@ -473,7 +490,9 @@ export class ProductVariantsEditorComponent implements OnInit {
       }
     }
     for (const p of row.preserved) {
-      pairs.push([p.attributeId, p.valueId]);
+      if (p.isDefining) {
+        pairs.push([p.attributeId, p.valueId]);
+      }
     }
     return pairs
       .sort((a, b) => a[0] - b[0] || a[1] - b[1])
@@ -487,9 +506,21 @@ export class ProductVariantsEditorComponent implements OnInit {
     this.errorMessage.set('');
     const definingIds = this.definingAttributeIds();
 
+    // The storefront can only sell a variant whose defining values cover every defining axis of
+    // the product, so all ACTIVE rows must use the same axis set. Catch a forgotten value (e.g.
+    // Pattern left "—") here with a translated message; the server enforces the same rule.
+    if (!this.hasUniformDefiningSets()) {
+      this.errorMessage.set(this.translationService.translate(TranslationKeys.Admin.Products.MissingAxisValues));
+      return;
+    }
+
     const payload: IVariantUpsertRow[] = this.rows().map(row => {
-      const axisValues: IVariantAttributeSelection[] = [...row.preserved];
+      const axisValues: IVariantAttributeSelection[] = [];
       const descriptiveValues: IVariantAttributeSelection[] = [];
+
+      for (const p of row.preserved) {
+        (p.isDefining ? axisValues : descriptiveValues).push({ attributeId: p.attributeId, valueId: p.valueId });
+      }
 
       for (const [attrIdStr, valueIds] of Object.entries(row.selections)) {
         const attributeId = Number(attrIdStr);
@@ -518,6 +549,32 @@ export class ProductVariantsEditorComponent implements OnInit {
       };
     });
 
+    this.saveVariants(payload);
+  }
+
+  /**
+   * True when every ACTIVE row carries values for the same set of defining attributes (preserved
+   * defining links of retired attributes included). Inactive rows are exempt — they are not
+   * sellable, so an old axis set may stay on them.
+   */
+  private hasUniformDefiningSets(): boolean {
+    const definingIds = this.definingAttributeIds();
+    const sets = new Set<string>(
+      this.rows()
+        .filter(row => row.isActive)
+        .map(row => {
+          const ids = [...definingIds].filter(id => (row.selections[id]?.length ?? 0) > 0);
+          for (const p of row.preserved) {
+            if (p.isDefining) {
+              ids.push(p.attributeId);
+            }
+          }
+          return ids.sort((a, b) => a - b).join('|');
+        }));
+    return sets.size <= 1;
+  }
+
+  private saveVariants(payload: IVariantUpsertRow[]): void {
     this.variantService.saveVariants(this.productId(), payload).subscribe({
       next: (variants) => {
         this.definingAttributeIds.set(this.deriveDefiningAttributeIds(variants));

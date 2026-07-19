@@ -29,6 +29,11 @@ export interface IProductVariant {
   weightGrams?: number | null;
   isActive: boolean;
   position: number;
+  /**
+   * True when an order line references this variant. From then on the SKU is locked (it appears
+   * on order documents) and the variant can only be deactivated, never deleted.
+   */
+  hasOrders?: boolean;
   attributeValues: IVariantAttributeValueLink[];
   inventory?: IVariantInventory | null;
 }

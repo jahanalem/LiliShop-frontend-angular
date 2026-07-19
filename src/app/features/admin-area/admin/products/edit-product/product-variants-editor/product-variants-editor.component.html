@@ -134,9 +134,11 @@
         </mat-form-field>
       }
 
-      <mat-form-field appearance="outline" class="variant-sku" [hintLabel]="TranslationKeys.Admin.Products.SkuHint | translate">
+      <mat-form-field appearance="outline" class="variant-sku"
+        [hintLabel]="(row.hasOrders ? TranslationKeys.Admin.Products.SkuLockedHint : TranslationKeys.Admin.Products.SkuHint) | translate">
         <mat-label>{{ TranslationKeys.Admin.Products.SkuLabel | translate }}</mat-label>
         <input matInput maxlength="64" [ngModel]="row.sku" [ngModelOptions]="{ standalone: true }"
+          [readonly]="row.hasOrders"
           (ngModelChange)="updateRow(rowIndex, { sku: $event })">
       </mat-form-field>
 
@@ -160,10 +162,14 @@
         </button>
       }
 
-      <button type="button" mat-icon-button (click)="removeRow(rowIndex)"
-        [attr.aria-label]="TranslationKeys.Common.Delete | translate">
-        <mat-icon class="delete-icon">delete</mat-icon>
-      </button>
+      <!-- The span carries the tooltip: disabled buttons swallow pointer events. -->
+      <span class="delete-wrapper" [matTooltip]="row.hasOrders ? (TranslationKeys.Admin.Products.VariantOrderedLock | translate) : ''">
+        <button type="button" mat-icon-button (click)="removeRow(rowIndex)"
+          [disabled]="row.hasOrders"
+          [attr.aria-label]="TranslationKeys.Common.Delete | translate">
+          <mat-icon class="delete-icon">delete</mat-icon>
+        </button>
+      </span>
     </div>
   }
 

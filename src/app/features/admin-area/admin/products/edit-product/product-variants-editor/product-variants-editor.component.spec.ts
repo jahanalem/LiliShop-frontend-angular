@@ -253,4 +253,66 @@ describe('ProductVariantsEditorComponent', () => {
     expect(component.multiValue(row, 20)).toEqual([201, 202]);
     expect(component.multiValue(row, 20)).toBe(component.multiValue(row, 20)); // stable reference
   });
+
+  // --- Uniform defining axes (post-M6 domain review) ------------------------
+
+  it('refuses to save when an active row misses a value for a defining axis', async () => {
+    const { component } = await setup([sizeVariant(1, 'P39-M', 101)]);
+
+    component.addRow(); // second ACTIVE row, size left "—"
+    component.save();
+
+    expect(variantServiceMock.saveVariants).not.toHaveBeenCalled();
+    expect(component.errorMessage()).toBeTruthy();
+  });
+
+  it('saves when the axis-less row is deactivated (retired variants keep their old axis set)', async () => {
+    const { component } = await setup([sizeVariant(1, 'P39-M', 101)]);
+
+    component.addRow();
+    component.updateRow(1, { isActive: false }); // retired row without a size value
+    component.save();
+
+    expect(variantServiceMock.saveVariants).toHaveBeenCalledTimes(1);
+  });
+
+  // --- SKU lock after first order (post-M6 domain review) -------------------
+
+  it('renders the SKU input read-only for a variant that appears on orders', async () => {
+    const ordered = { ...sizeVariant(1, 'P39-M', 101), hasOrders: true };
+    const { fixture, component } = await setup([ordered, sizeVariant(2, 'P39-S', 102)]);
+    fixture.detectChanges();
+
+    expect(component.rows().map(r => r.hasOrders)).toEqual([true, false]);
+    const skuInputs: NodeListOf<HTMLInputElement> = fixture.nativeElement.querySelectorAll('.variant-sku input');
+    expect(skuInputs[0].readOnly).toBe(true);
+    expect(skuInputs[1].readOnly).toBe(false);
+  });
+
+  it('disables the delete button for a variant that appears on orders', async () => {
+    const ordered = { ...sizeVariant(1, 'P39-M', 101), hasOrders: true };
+    const { fixture } = await setup([ordered, sizeVariant(2, 'P39-S', 102)]);
+    fixture.detectChanges();
+
+    const deleteButtons: NodeListOf<HTMLButtonElement> = fixture.nativeElement.querySelectorAll('.delete-wrapper button');
+    expect(deleteButtons[0].disabled).toBe(true);
+    expect(deleteButtons[1].disabled).toBe(false);
+  });
+
+  // --- Preserved links of retired attributes keep their defining-ness ------
+
+  it('round-trips a preserved DESCRIPTIVE link as descriptive, not as a defining axis', async () => {
+    // Attribute 99 is unknown to the editor (deactivated); its descriptive link must not silently
+    // become defining on save — that would change the variant's identity (AxisSignature).
+    const variant = sizeVariant(1, 'P39-M', 101);
+    variant.attributeValues = [...variant.attributeValues, link(1, 99, 999, false)];
+    const { component } = await setup([variant]);
+
+    component.updateRow(0, { price: 60 }); // any edit, then save
+    component.save();
+
+    const payload = variantServiceMock.saveVariants.mock.calls[0][1] as IVariantUpsertRow[];
+    expect(payload[0].axisValues).toEqual([{ attributeId: 10, valueId: 101 }]);
+    expect(payload[0].descriptiveValues).toEqual(expect.arrayContaining([{ attributeId: 99, valueId: 999 }]));
+  });
 });
