@@ -279,6 +279,15 @@ export class EditProductComponent implements OnInit, OnDestroy {
         this.translationsDirty.set(false);
         this.markPristine();
 
+        // A brand-new product was opened on the "/edit/-1" create sentinel; swap the URL for the
+        // real id so the address bar is correct, a refresh reloads the right product, and the
+        // Variants tab keeps working against the persisted id. (replaceUrl so Back doesn't return
+        // to the sentinel.)
+        if (!isUpdate && returnedProduct.id > 0) {
+          this.productIdFromUrl = returnedProduct.id;
+          this.router.navigate(['/admin/products/edit', returnedProduct.id], { replaceUrl: true });
+        }
+
         const action = isUpdate ? 'updated' : 'created';
         this.notificationService.showSuccess(`Success: Product ${action} successfully.`);
       },

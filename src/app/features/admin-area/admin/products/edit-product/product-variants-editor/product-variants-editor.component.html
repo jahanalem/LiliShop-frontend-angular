@@ -94,21 +94,21 @@
     </div>
   }
 
-  @for (row of rows(); track $index) {
+  @for (row of rows(); track row.key; let rowIndex = $index) {
     <div class="variant-row" [class.row-selected]="row.selected">
       <mat-checkbox class="row-select" [checked]="row.selected"
-        (change)="toggleRowSelected($index, $event.checked)"
+        (change)="toggleRowSelected(rowIndex, $event.checked)"
         [attr.aria-label]="TranslationKeys.Admin.Products.SelectAll | translate"></mat-checkbox>
 
       <mat-checkbox [ngModel]="row.isActive" [ngModelOptions]="{ standalone: true }"
-        (ngModelChange)="updateRow($index, { isActive: $event })"
+        (ngModelChange)="updateRow(rowIndex, { isActive: $event })"
         [attr.aria-label]="TranslationKeys.Admin.Common.Active | translate"></mat-checkbox>
 
       @for (attribute of definingAttributes(); track attribute.id) {
         <mat-form-field appearance="outline" class="variant-axis-select">
           <mat-label>{{ attribute.name }}</mat-label>
           <mat-select [ngModel]="singleValue(row, attribute.id)" [ngModelOptions]="{ standalone: true }"
-            (ngModelChange)="setSingleValue($index, attribute.id, $event)">
+            (ngModelChange)="setSingleValue(rowIndex, attribute.id, $event)">
             <mat-option [value]="null">—</mat-option>
             @for (value of attribute.values; track value.id) {
               <mat-option [value]="value.id">{{ value.name }}</mat-option>
@@ -121,7 +121,7 @@
         <mat-form-field appearance="outline" class="variant-axis-select">
           <mat-label>{{ attribute.name }}</mat-label>
           <mat-select multiple [ngModel]="multiValue(row, attribute.id)" [ngModelOptions]="{ standalone: true }"
-            (ngModelChange)="setMultiValue($index, attribute.id, $event)">
+            (ngModelChange)="setMultiValue(rowIndex, attribute.id, $event)">
             @for (value of attribute.values; track value.id) {
               <mat-option [value]="value.id">
                 @if (attribute.swatchType === 'ColorHex' && value.colorHex) {
@@ -137,30 +137,30 @@
       <mat-form-field appearance="outline" class="variant-sku" [hintLabel]="TranslationKeys.Admin.Products.SkuHint | translate">
         <mat-label>{{ TranslationKeys.Admin.Products.SkuLabel | translate }}</mat-label>
         <input matInput maxlength="64" [ngModel]="row.sku" [ngModelOptions]="{ standalone: true }"
-          (ngModelChange)="updateRow($index, { sku: $event })">
+          (ngModelChange)="updateRow(rowIndex, { sku: $event })">
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="variant-price">
         <mat-label>{{ TranslationKeys.Admin.Common.Price | translate }}</mat-label>
         <input matInput type="number" min="0" [ngModel]="row.price" [ngModelOptions]="{ standalone: true }"
-          (ngModelChange)="updateRow($index, { price: $event })">
+          (ngModelChange)="updateRow(rowIndex, { price: $event })">
       </mat-form-field>
 
       @if (row.id === 0) {
         <mat-form-field appearance="outline" class="variant-stock">
           <mat-label>{{ TranslationKeys.Admin.Products.Stock | translate }}</mat-label>
           <input matInput type="number" min="0" [ngModel]="row.quantityOnHand" [ngModelOptions]="{ standalone: true }"
-            (ngModelChange)="updateRow($index, { quantityOnHand: $event })">
+            (ngModelChange)="updateRow(rowIndex, { quantityOnHand: $event })">
         </mat-form-field>
       } @else {
-        <button type="button" mat-stroked-button class="stock-button" (click)="openStockDialog($index)"
+        <button type="button" mat-stroked-button class="stock-button" (click)="openStockDialog(rowIndex)"
           [attr.aria-label]="TranslationKeys.Admin.Inventory.History | translate">
           <mat-icon>inventory_2</mat-icon>
           {{ TranslationKeys.Admin.Products.Stock | translate }}: {{ row.quantityOnHand }}
         </button>
       }
 
-      <button type="button" mat-icon-button (click)="removeRow($index)"
+      <button type="button" mat-icon-button (click)="removeRow(rowIndex)"
         [attr.aria-label]="TranslationKeys.Common.Delete | translate">
         <mat-icon class="delete-icon">delete</mat-icon>
       </button>

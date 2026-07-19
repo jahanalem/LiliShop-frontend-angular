@@ -28,6 +28,12 @@ import { VariantStockDialogComponent, VariantStockDialogData } from '../variant-
  * links whose attribute is inactive/unknown are preserved untouched on save.
  */
 interface VariantRow {
+  /**
+   * Stable, client-only identity for this row instance. Draft rows all share id=0, so the template
+   * MUST track by this key (never by $index): `track $index` binds each stateful <mat-select> to a
+   * DOM position rather than to the row, which lets one row's selection bleed into another.
+   */
+  key: number;
   id: number;
   sku: string;
   price: number;
@@ -85,6 +91,9 @@ export class ProductVariantsEditorComponent implements OnInit {
   /** Bulk-edit inputs applied to the currently selected rows. */
   bulkPrice: number | null = null;
   bulkStock: number | null = null;
+
+  /** Monotonic source of stable per-row keys (client-only; never persisted). */
+  private nextRowKey = 1;
 
   private readonly variantService = inject(ProductVariantService);
   private readonly attributeService = inject(ProductAttributeService);
@@ -180,6 +189,7 @@ export class ProductVariantsEditorComponent implements OnInit {
     }
 
     return {
+      key: this.nextRowKey++,
       id: variant.id,
       sku: variant.sku,
       price: variant.price,
@@ -239,6 +249,7 @@ export class ProductVariantsEditorComponent implements OnInit {
 
   private createEmptyRow(rows: VariantRow[]): VariantRow {
     return {
+      key: this.nextRowKey++,
       id: 0,
       sku: '',
       price: this.defaultPrice(),
@@ -393,6 +404,7 @@ export class ProductVariantsEditorComponent implements OnInit {
     }
 
     return {
+      key: this.nextRowKey++,
       id: 0,
       sku: draft.sku ?? '',
       price: draft.price,
