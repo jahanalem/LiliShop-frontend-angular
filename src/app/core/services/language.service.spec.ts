@@ -75,6 +75,13 @@ describe('LanguageService', () => {
     service = TestBed.inject(LanguageService);
     httpMock = TestBed.inject(HttpTestingController);
 
+    // ensureCurrentIsActive() recovers an invalid code through the first-visit chain
+    // (geo → browser → default), so neutralize geo detection — otherwise the machine's real
+    // timezone (e.g. Europe/Berlin → DE) would pick German before the default is reached, making
+    // this test environment-dependent. With no country match it falls through to the default.
+    vi.spyOn(service, 'getTimezone').mockReturnValue('Etc/UTC');
+    vi.spyOn(service as any, 'reloadApp').mockImplementation(() => {});
+
     expect(service.currentCode()).toBe('xx');
     flushLanguages();
     expect(service.currentCode()).toBe('en');
