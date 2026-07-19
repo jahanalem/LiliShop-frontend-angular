@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
@@ -13,13 +13,14 @@ import { BasketService } from 'src/app/core/services/basket.service';
 import { AccountService } from 'src/app/core/services/account.service';
 import { SubscriptionService } from '../../../../core/services/subscription.service';
 import { IProduct } from 'src/app/shared/models/product';
+import { IBasket } from 'src/app/shared/models/basket';
 import { IProductAttribute } from 'src/app/shared/models/productAttribute';
 import { IProductVariant } from 'src/app/shared/models/productVariant';
 
 describe('ProductDetailsComponent (variant selector)', () => {
   let component: ProductDetailsComponent;
   let fixture: ComponentFixture<ProductDetailsComponent>;
-  let basketServiceMock: { addItemToBasket: ReturnType<typeof vi.fn> };
+  let basketServiceMock: { addItemToBasket: ReturnType<typeof vi.fn>; basket$: BehaviorSubject<IBasket | null> };
 
   const product: IProduct = {
     id: 42, name: 'Casual Shirt', description: 'A shirt', price: 50,
@@ -54,7 +55,7 @@ describe('ProductDetailsComponent (variant selector)', () => {
   ];
 
   beforeEach(async () => {
-    basketServiceMock = { addItemToBasket: vi.fn() };
+    basketServiceMock = { addItemToBasket: vi.fn(), basket$: new BehaviorSubject<IBasket | null>(null) };
 
     await TestBed.configureTestingModule({
       imports: [NoopAnimationsModule, ProductDetailsComponent],
@@ -116,6 +117,28 @@ describe('ProductDetailsComponent (variant selector)', () => {
     component.incrementQuantity();
     component.incrementQuantity(); // would be 4 — capped
     expect(component.quantity()).toBe(3);
+  });
+
+  it('subtracts units already in the basket from what can still be added (Test 3)', () => {
+    component.selectValue(10, 101); // variant 7 (P42-M), 3 on hand
+    expect(component.remainingQuantity()).toBe(3);
+    expect(component.canAddToBasket()).toBe(true);
+
+    // The customer already has all 3 units of this variant in their basket.
+    basketServiceMock.basket$.next({
+      id: 'b1',
+      items: [{ id: 42, productName: 'Casual Shirt', price: 50, quantity: 3, pictureUrl: 'x', brand: 'B', type: 'T', productVariantId: 7 }]
+    });
+
+    expect(component.basketQuantityForSelectedVariant()).toBe(3);
+    expect(component.remainingQuantity()).toBe(0);   // nothing left to add
+    expect(component.canAddToBasket()).toBe(false);  // add button disabled
+
+    component.incrementQuantity();                    // stepper cannot go past the remaining cap
+    expect(component.quantity()).toBe(1);
+
+    component.addItemToBasket();                       // guarded: does not enqueue an over-stock add
+    expect(basketServiceMock.addItemToBasket).not.toHaveBeenCalled();
   });
 
   it('sends the variant id, price, and description to the basket', () => {
@@ -184,7 +207,7 @@ describe('ProductDetailsComponent (Color as a defining axis)', () => {
         { provide: ActivatedRoute, useValue: { paramMap: of(new Map([['id', '40']]) as any) } },
         { provide: ProductService, useValue: { getProduct: vi.fn().mockReturnValue(of(product)) } },
         { provide: ProductVariantService, useValue: { getVariants: vi.fn().mockReturnValue(of(variants)) } },
-        { provide: BasketService, useValue: { addItemToBasket: vi.fn() } },
+        { provide: BasketService, useValue: { addItemToBasket: vi.fn(), basket$: of(null) } },
         { provide: AccountService, useValue: { currentUser$: of(null) } },
         { provide: SubscriptionService, useValue: { checkSubscription: vi.fn().mockReturnValue(of(false)) } },
         provideHttpClient(withXhr(), withInterceptorsFromDi()),

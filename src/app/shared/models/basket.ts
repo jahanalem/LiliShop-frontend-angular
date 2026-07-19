@@ -20,6 +20,8 @@ export interface IBasketItem {
   type       : string;
   /** The chosen variant (SKU); undefined on legacy lines — checkout resolves those server-side. */
   productVariantId  ?: number;
+  /** Variant SKU shown on the basket line (e.g. "P40-BROWN-M"); undefined on legacy lines. */
+  sku               ?: string;
   /** Display text like "Size: M · Color: Yellow"; the server revalidates everything else. */
   variantDescription?: string;
 }
@@ -27,6 +29,7 @@ export interface IBasketItem {
 /** What the product page passes to the basket when the customer picked a concrete variant. */
 export interface IBasketVariantSelection {
   id: number;
+  sku: string;
   price: number;
   description: string | null;
 }

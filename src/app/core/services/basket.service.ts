@@ -190,16 +190,38 @@ export class BasketService {
     // Map the product item to a basket item
     const itemToAdd: IBasketItem = this.mapProductItemToBasketItem(item, quantity, variant);
 
+    // Snapshot the pre-change state so a server rejection (e.g. insufficient stock) can roll back.
+    const previousBasket = this.snapshotBasket(this.getCurrentBasketValue());
+
     // Get the current basket or create a new one if none exists
     const currentBasket = this.getCurrentBasketValue() ?? this.createBasket();
 
     // Add or update the item in the basket
     currentBasket.items = this.addOrUpdateItem(currentBasket.items!, itemToAdd, quantity);
 
-    // Update the basket on the server
+    // Update the basket on the server, rolling back if the server refuses the change.
+    this.persistWithRollback(currentBasket, previousBasket);
+  }
+
+  /** Deep-enough copy so an in-place mutation of the live basket can be undone on a failed save. */
+  private snapshotBasket(basket: IBasket | null): IBasket | null {
+    return basket ? { ...basket, items: basket.items.map(i => ({ ...i })) } : null;
+  }
+
+  /**
+   * Persists the basket and, if the server rejects the write (the stock guard returns 400),
+   * restores the previous basket state — so the customer can never end up with more units on
+   * screen than the server actually stored. The user-facing reason is surfaced by the global
+   * errorInterceptor (ProblemDetails.detail), so this only owns the state rollback.
+   */
+  private persistWithRollback(currentBasket: IBasket, previousBasket: IBasket | null): void {
     this.setBasket(currentBasket).subscribe({
       next: () => console.log('Basket updated successfully'),
-      error: (error) => console.error('An error occurred while updating the basket', error)
+      error: () => {
+        this.basketSource.next(previousBasket);
+        this.shipping = previousBasket?.shippingPrice ?? 0;
+        this.calculateTotals();
+      }
     });
   }
 
@@ -279,6 +301,7 @@ export class BasketService {
       brand: item.productBrand ?? "UNKNOWN BRAND",
       type: item.productType ?? "UNKNOWN TYPE",
       productVariantId: variant?.id,
+      sku: variant?.sku,
       variantDescription: variant?.description ?? undefined
     };
   }
@@ -443,6 +466,9 @@ export class BasketService {
       return;
     }
 
+    // Snapshot before mutating so an over-stock increase can be rolled back on server rejection.
+    const previousBasket = this.snapshotBasket(currentBasket);
+
     // Find the index of the item to update (lines are unique per product+variant)
     const itemIndex = currentBasket.items.findIndex(x => this.isSameLine(x, item));
 
@@ -462,10 +488,7 @@ export class BasketService {
       }
     }
 
-    // Update the basket
-    this.setBasket(currentBasket).subscribe({
-      next: () => console.log('Basket updated successfully'),
-      error: (error) => console.error('An error occurred while updating basket', error)
-    });
+    // Update the basket; a rejected increase (beyond remaining stock) rolls back and notifies.
+    this.persistWithRollback(currentBasket, previousBasket);
   }
 }

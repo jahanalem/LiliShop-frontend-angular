@@ -6,6 +6,8 @@ import { SubscriptionService } from '../../../../core/services/subscription.serv
 import { forkJoin, of, switchMap } from 'rxjs';
 import { IProduct } from 'src/app/shared/models/product';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { ProductService } from 'src/app/core/services/product.service';
@@ -124,6 +126,31 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   readonly isOutOfStock = computed(() => this.availableQuantity() === 0);
 
+  /** Units of the selected variant the customer already holds in their basket. */
+  readonly basketQuantityForSelectedVariant = computed<number>(() => {
+    const variant = this.selectedVariant();
+    const productId = this.product()?.id;
+    if (!variant || !productId) {
+      return 0;
+    }
+    return this.basketItems()
+      .filter(i => i.id === productId && i.productVariantId === variant.id)
+      .reduce((sum, i) => sum + i.quantity, 0);
+  });
+
+  /**
+   * How many MORE units may still be added: available stock minus what is already in the basket.
+   * The quantity stepper and the add button are bound to this, so the customer can never queue up
+   * more than exists (the server enforces the same cap as the final authority).
+   */
+  readonly remainingQuantity = computed<number | null>(() => {
+    const stock = this.availableQuantity();
+    if (stock === null) {
+      return null;
+    }
+    return Math.max(0, stock - this.basketQuantityForSelectedVariant());
+  });
+
   readonly displayPrice = computed(() => this.selectedVariant()?.price ?? this.product().price);
   readonly displayPreviousPrice = computed(() => {
     const variant = this.selectedVariant();
@@ -157,14 +184,21 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   readonly canAddToBasket = computed(() => {
     const variant = this.selectedVariant();
     if (this.axes().length === 0 && this.activeVariants().length <= 1) {
-      return variant ? !this.isOutOfStock() : true; // product-level fallback when no variants exist
+      // product-level fallback when no variants exist: block only when a variant exists and nothing
+      // is left to add (stock exhausted or already fully in the basket).
+      return variant ? (this.remainingQuantity() ?? 1) > 0 : true;
     }
-    return variant !== null && !this.isOutOfStock();
+    return variant !== null && (this.remainingQuantity() ?? 0) > 0;
   });
 
   private activatedRoute      = inject(ActivatedRoute);
   private basketService       = inject(BasketService);
   private productService      = inject(ProductService);
+
+  /** The live basket lines, so the quantity cap can account for units already added. */
+  private readonly basketItems = toSignal(
+    this.basketService.basket$.pipe(map(basket => basket?.items ?? [])),
+    { initialValue: [] });
   private variantService      = inject(ProductVariantService);
   private subscriptionService = inject(SubscriptionService);
   private accountService      = inject(AccountService);
@@ -268,7 +302,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   incrementQuantity() {
-    const cap = this.availableQuantity();
+    const cap = this.remainingQuantity();
     this.quantity.update((value: number) => (cap !== null && value >= cap) ? value : value + 1);
   }
 
@@ -285,8 +319,15 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
     const variant = this.selectedVariant();
     if (variant) {
-      this.basketService.addItemToBasket(this.product(), this.quantity(), {
+      // Never send more than is still available (server enforces the same cap authoritatively).
+      const remaining = this.remainingQuantity();
+      const quantity = remaining === null ? this.quantity() : Math.min(this.quantity(), remaining);
+      if (quantity <= 0) {
+        return;
+      }
+      this.basketService.addItemToBasket(this.product(), quantity, {
         id: variant.id,
+        sku: variant.sku,
         price: variant.price,
         description: this.buildVariantDescription(variant)
       });
