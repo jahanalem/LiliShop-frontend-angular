@@ -17,6 +17,7 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'contact-us-messages', loadChildren: () => import('./contact-us-messages/contact-us-messages.routes').then(m => m.CONTACT_US_MESSAGES_ROUTES) },
       { path: 'users', loadChildren: () => import('./users/users.routes').then(m => m.USERS_ROUTES) },
       { path: 'subscribers/drop-price', loadChildren: () => import('./price-drop-subscription/price-drop-subscription.routes').then(m => m.PRICE_DROP_SUBSCRIPTION_ROUTES) },
+      { path: 'invoices', loadChildren: () => import('./invoices/invoices.routes').then(m => m.INVOICES_ROUTES) },
       { path: 'discounts', loadComponent: () => import('./discounts/discounts.component').then(c => c.DiscountsComponent) },
       { path: 'discounts/new', loadComponent: () => import('./discounts/edit-discount/edit-discount.component').then(c => c.EditDiscountComponent) },
       { path: 'discounts/edit/:id', loadComponent: () => import('./discounts/edit-discount/edit-discount.component').then(c => c.EditDiscountComponent) },

@@ -20,9 +20,11 @@ export interface IOrder {
 }
 
 export interface IOrderItem {
-  productId  : number;
-  productName: string;
-  pictureUrl : string;
-  price      : number;
-  quantity   : number;
+  productId         : number;
+  productName       : string;
+  pictureUrl        : string;
+  price             : number;
+  quantity          : number;
+  sku?              : string;
+  variantDescription?: string;
 }

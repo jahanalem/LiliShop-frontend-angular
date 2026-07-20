@@ -9,6 +9,23 @@
     [total]="orderDetails.total">
   </app-order-totals>
 
+  <!-- Invoice (present once the order is paid and its invoice is issued) -->
+  @if (invoice(); as inv) {
+    <div class="invoice-info">
+      <mat-card class="mat-elevation-z1">
+        <mat-card-header>
+          <mat-card-title>{{ TranslationKeys.Orders.Invoice | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ul class="address-list">
+            <li>{{ TranslationKeys.Orders.InvoiceNumber | translate }}: {{ inv.invoiceNumber }}</li>
+            <li>{{ TranslationKeys.Orders.InvoiceDate | translate }}: {{ inv.issueDate | date:'mediumDate' }}</li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
   <!-- Shipping Address -->
   <div class="shipping-address">
     <mat-card class="mat-elevation-z1">
