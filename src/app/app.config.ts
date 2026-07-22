@@ -1,5 +1,5 @@
 import { ApplicationConfig, LOCALE_ID, inject, provideAppInitializer, provideZonelessChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideCloudinaryLoader } from '@angular/common';
@@ -22,7 +22,9 @@ registerAppLocales();
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
-    provideRouter(routes),
+    // Scroll to top on every route navigation (e.g. shop -> product details);
+    // 'top' also restores position correctly on browser back/forward.
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' })),
     provideAnimations(),
     provideHttpClient(withXhr(), withInterceptors([languageInterceptor, jwtInterceptor, loadingInterceptor, errorInterceptor])),
     provideCloudinaryLoader('https://res.cloudinary.com/rouhi'),

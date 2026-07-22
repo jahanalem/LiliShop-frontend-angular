@@ -190,7 +190,7 @@ export class ShopComponent implements OnInit {
 
     requestAnimationFrame(() => {
       try {
-        document.body.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (e) {
         console.debug('Scroll method failed:', e);
       }
