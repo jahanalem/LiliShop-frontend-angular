@@ -616,6 +616,7 @@ export const TranslationKeys = {
   },
   Product: {
     AddToCart: 'Product.AddToCart',
+    ChooseOptions: 'Product.ChooseOptions',
     Loading: 'Product.Loading',
     NotifyPriceDrops: 'Product.NotifyPriceDrops',
     Sale: 'Product.Sale',

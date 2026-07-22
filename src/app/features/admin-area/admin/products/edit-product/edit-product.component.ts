@@ -39,6 +39,7 @@ import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 interface ProductFormModel {
   isActive: boolean;
+  hasVariants: boolean;
   name: string;
   description: string;
   price: number;
@@ -55,6 +56,7 @@ interface ProductFormModel {
 
 const EMPTY_FORM_MODEL: ProductFormModel = {
   isActive: false,
+  hasVariants: false,
   name: '',
   description: '',
   price: 0,
@@ -253,6 +255,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
       productBrand          : existing?.productBrand,
       productBrandId        : values.productBrandId ?? 0,
       isActive              : values.isActive,
+      hasVariants           : values.hasVariants ?? false,
       // Sizes/stock are managed entirely by the variants editor; the product save never touches them.
       productPhotos         : existing?.productPhotos ?? [],
       discount              : discountPayload,
@@ -451,6 +454,7 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
     return {
       isActive              : product.isActive,
+      hasVariants           : product.hasVariants ?? false,
       name                  : product.name,
       description           : product.description,
       price                 : product.previousPrice ?? product.price,

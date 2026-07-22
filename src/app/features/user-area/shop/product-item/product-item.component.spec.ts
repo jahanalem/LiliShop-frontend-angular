@@ -42,6 +42,7 @@ describe('ProductItemComponent', () => {
         productBrand: 'Test Product Brand',
         productBrandId: 1,
         isActive: true,
+        hasVariants: false,
         productPhotos: []
     };
 
@@ -69,6 +70,7 @@ describe('ProductItemComponent', () => {
             productBrand: 'Test Product Brand',
             productBrandId: 1,
             isActive: true,
+            hasVariants: false,
             productPhotos: []
         };
         fixture.componentRef.setInput('product', product);
@@ -91,6 +93,7 @@ describe('ProductItemComponent', () => {
             productBrand: 'Test Product Brand',
             productBrandId: 1,
             isActive: true,
+            hasVariants: false,
             productPhotos: []
         };
         fixture.componentRef.setInput('product', product);

@@ -33,11 +33,19 @@
       }
     </p>
 
-    <button mat-flat-button type="button" class="product-card__cta" (click)="addItemToBasket()"
-      [attr.aria-label]="'Add ' + p.name + ' to cart'">
-      <mat-icon>add_shopping_cart</mat-icon>
-      {{ TranslationKeys.Product.AddToCart | translate }}
-    </button>
+    @if (p.hasVariants) {
+      <a mat-flat-button [routerLink]="['/shop', p.id]" class="product-card__cta"
+        [attr.aria-label]="'Choose options for ' + p.name">
+        <mat-icon>tune</mat-icon>
+        {{ TranslationKeys.Product.ChooseOptions | translate }}
+      </a>
+    } @else {
+      <button mat-flat-button type="button" class="product-card__cta" (click)="addItemToBasket()"
+        [attr.aria-label]="'Add ' + p.name + ' to cart'">
+        <mat-icon>add_shopping_cart</mat-icon>
+        {{ TranslationKeys.Product.AddToCart | translate }}
+      </button>
+    }
   </div>
 </article>
 }
