@@ -33,4 +33,24 @@ export class InvoiceService {
   getInvoiceById(id: number): Observable<IInvoice> {
     return this.http.get<IInvoice>(`${this.baseUrl}invoices/${id}`);
   }
+
+  /** Customer: download the invoice PDF for one of their own orders. */
+  getInvoicePdfForOrder(orderId: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}orders/${orderId}/invoice/pdf`, { responseType: 'blob' });
+  }
+
+  /** Admin: download the invoice PDF. */
+  getAdminInvoicePdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}invoices/${id}/pdf`, { responseType: 'blob' });
+  }
+
+  /** Triggers a browser download of a fetched blob. */
+  savePdf(blob: Blob, invoiceNumber: string): void {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${invoiceNumber}.pdf`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
 }

@@ -7,10 +7,16 @@
           {{ TranslationKeys.Admin.Invoices.IssueDate | translate }}: {{ inv.issueDate | date:'medium' }}
         </p>
       </div>
-      <a mat-stroked-button routerLink="/admin/invoices">
-        <mat-icon>arrow_back</mat-icon>
-        {{ TranslationKeys.Common.Back | translate }}
-      </a>
+      <div class="detail-actions">
+        <button type="button" mat-flat-button (click)="downloadPdf()">
+          <mat-icon>download</mat-icon>
+          {{ TranslationKeys.Invoice.DownloadPdf | translate }}
+        </button>
+        <a mat-stroked-button routerLink="/admin/invoices">
+          <mat-icon>arrow_back</mat-icon>
+          {{ TranslationKeys.Common.Back | translate }}
+        </a>
+      </div>
     </header>
 
     <div class="admin-detail-grid">

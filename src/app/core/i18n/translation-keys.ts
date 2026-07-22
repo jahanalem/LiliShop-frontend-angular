@@ -524,6 +524,25 @@ export const TranslationKeys = {
   Home: {
     Welcome: 'Home.Welcome',
   },
+  Invoice: {
+    DownloadPdf: 'Invoice.DownloadPdf',
+    Pdf: {
+      Amount: 'Invoice.Pdf.Amount',
+      BillTo: 'Invoice.Pdf.BillTo',
+      Description: 'Invoice.Pdf.Description',
+      From: 'Invoice.Pdf.From',
+      IssueDate: 'Invoice.Pdf.IssueDate',
+      Number: 'Invoice.Pdf.Number',
+      OrderNumber: 'Invoice.Pdf.OrderNumber',
+      Quantity: 'Invoice.Pdf.Quantity',
+      Shipping: 'Invoice.Pdf.Shipping',
+      Subtotal: 'Invoice.Pdf.Subtotal',
+      Title: 'Invoice.Pdf.Title',
+      Total: 'Invoice.Pdf.Total',
+      UnitPrice: 'Invoice.Pdf.UnitPrice',
+      VatId: 'Invoice.Pdf.VatId',
+    },
+  },
   Mfa: {
     AuthCodeLabel: 'Mfa.AuthCodeLabel',
     BackToLogin: 'Mfa.BackToLogin',

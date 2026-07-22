@@ -38,4 +38,15 @@ export class InvoiceDetailComponent implements OnInit {
       error: (err) => console.log(err)
     });
   }
+
+  downloadPdf(): void {
+    const inv = this.invoice();
+    if (!inv) {
+      return;
+    }
+    this.invoiceService.getAdminInvoicePdf(inv.id).subscribe({
+      next: (blob) => this.invoiceService.savePdf(blob, inv.invoiceNumber),
+      error: (err) => console.log(err)
+    });
+  }
 }

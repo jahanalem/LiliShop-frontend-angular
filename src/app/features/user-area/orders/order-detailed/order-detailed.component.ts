@@ -1,6 +1,8 @@
 import { OrderTotalsComponent } from 'src/app/shared/components/order-totals/order-totals.component';
 import { BasketSummaryComponent } from 'src/app/shared/components/basket-summary/basket-summary.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { DatePipe } from '@angular/common';
 
 import { RouterModule } from '@angular/router';
@@ -21,7 +23,7 @@ import { TranslationService } from 'src/app/core/i18n/translation.service';
     styleUrls: ['./order-detailed.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [TranslatePipe, RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatCardModule, DatePipe]
+  imports: [TranslatePipe, RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatCardModule, MatButtonModule, MatIconModule, DatePipe]
 })
 export class OrderDetailedComponent implements OnInit {
   protected readonly TranslationKeys = TranslationKeys;
@@ -60,11 +62,23 @@ export class OrderDetailedComponent implements OnInit {
     });
   }
 
-  /** Paid orders have an invoice; a 404 (unpaid/not yet issued) is expected and shown as "no invoice". */
+  /** Paid orders have an invoice; a 204 (unpaid/not yet issued) is expected and shown as "no invoice". */
   private loadInvoice(orderId: number): void {
     this.invoiceService.getInvoiceForOrder(orderId).subscribe({
       next: (invoice) => this.invoice.set(invoice ?? undefined),
       error: () => this.invoice.set(undefined)
+    });
+  }
+
+  downloadInvoicePdf(): void {
+    const inv = this.invoice();
+    const order = this.order();
+    if (!inv || !order) {
+      return;
+    }
+    this.invoiceService.getInvoicePdfForOrder(order.id).subscribe({
+      next: (blob) => this.invoiceService.savePdf(blob, inv.invoiceNumber),
+      error: (err) => console.log(err)
     });
   }
 }

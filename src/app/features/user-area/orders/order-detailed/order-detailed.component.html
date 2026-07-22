@@ -21,6 +21,10 @@
             <li>{{ TranslationKeys.Orders.InvoiceNumber | translate }}: {{ inv.invoiceNumber }}</li>
             <li>{{ TranslationKeys.Orders.InvoiceDate | translate }}: {{ inv.issueDate | date:'mediumDate' }}</li>
           </ul>
+          <button type="button" mat-stroked-button (click)="downloadInvoicePdf()">
+            <mat-icon>download</mat-icon>
+            {{ TranslationKeys.Invoice.DownloadPdf | translate }}
+          </button>
         </mat-card-content>
       </mat-card>
     </div>
