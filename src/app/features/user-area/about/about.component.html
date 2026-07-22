@@ -64,8 +64,8 @@
         <h3 class="about-card__title">Project Overview &amp; Core Technologies</h3>
         <p>
           LiliShop is a modern, security-hardened e-commerce platform built with <strong>.NET 10</strong> and
-          <strong>Angular 22</strong>. It pairs a multi-language, mobile-friendly storefront with a powerful admin
-          panel — designed for a seamless shopping experience and robust management capabilities alike.
+          <strong>Angular 22</strong>. It pairs a database-driven multi-language, mobile-friendly storefront with a
+          powerful admin panel — designed for a seamless shopping experience and robust management capabilities alike.
         </p>
         <div class="lili-intro__actions">
           <a class="lili-btn lili-btn--primary"
@@ -79,6 +79,18 @@
             target="_blank" rel="noopener">
             <mat-icon>shield</mat-icon>
             <span>Security Series</span>
+          </a>
+          <a class="lili-btn lili-btn--ghost"
+            href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0062_LiliShop-Localization-Architecture-Deep-Dive.md"
+            target="_blank" rel="noopener">
+            <mat-icon>translate</mat-icon>
+            <span>Localization Deep Dive</span>
+          </a>
+          <a class="lili-btn lili-btn--ghost"
+            href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0063_Building-a-Modern-Product-Variant-and-Invoice-Architecture-in-LiliShop.md"
+            target="_blank" rel="noopener">
+            <mat-icon>inventory_2</mat-icon>
+            <span>Variants &amp; Invoicing</span>
           </a>
         </div>
       </div>
@@ -105,6 +117,16 @@
           <span class="lili-stat__value">MFA</span>
           <span class="lili-stat__label">Admin two-factor<br />TOTP + backup codes</span>
         </li>
+        <li class="lili-stat">
+          <span class="lili-stat__icon" aria-hidden="true">🧬</span>
+          <span class="lili-stat__value">Variants</span>
+          <span class="lili-stat__label">Admin-defined axes<br />colour · size · pattern</span>
+        </li>
+        <li class="lili-stat">
+          <span class="lili-stat__icon" aria-hidden="true">🧾</span>
+          <span class="lili-stat__value">Invoices</span>
+          <span class="lili-stat__label">Auto-issued PDFs<br />gapless numbering</span>
+        </li>
       </ul>
 
       <!-- ------------------------------------------ feature card grid -->
@@ -113,8 +135,30 @@
           <span class="lili-feature__icon"><mat-icon>travel_explore</mat-icon></span>
           <h3 class="lili-feature__title">Product Discovery</h3>
           <p class="lili-feature__text">
-            Browse a full catalog with filtering by brand, type &amp; size, name search, price/alphabetical sorting,
-            and a discounts-only view.
+            Browse a full catalog with faceted filtering by brand, type &amp; attributes (with colour swatches), name
+            search, price/alphabetical sorting, and a discounts-only view.
+          </p>
+        </article>
+
+        <article class="lili-feature lili-feature--new" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>style</mat-icon></span>
+          <h3 class="lili-feature__title">
+            Product Variants <span class="about-badge">New</span>
+          </h3>
+          <p class="lili-feature__text">
+            Every product sells as real variants with their own SKU, price &amp; stock. Variation axes — colour, size,
+            pattern — are <strong>defined by the admin, not by code</strong>, so a new axis needs no redeploy.
+          </p>
+        </article>
+
+        <article class="lili-feature lili-feature--new" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>inventory_2</mat-icon></span>
+          <h3 class="lili-feature__title">
+            Stock That Can't Oversell <span class="about-badge">New</span>
+          </h3>
+          <p class="lili-feature__text">
+            Checkout reserves stock for 30&nbsp;minutes, abandoned holds sweep themselves back onto the shelf, and every
+            movement lands in an <strong>append-only ledger</strong> — race-free by construction.
           </p>
         </article>
 
@@ -127,12 +171,26 @@
           </p>
         </article>
 
-        <article class="lili-feature" role="listitem">
-          <span class="lili-feature__icon"><mat-icon>language</mat-icon></span>
-          <h3 class="lili-feature__title">Multi-Language</h3>
+        <article class="lili-feature lili-feature--new" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>receipt_long</mat-icon></span>
+          <h3 class="lili-feature__title">
+            Automatic Invoicing <span class="about-badge">New</span>
+          </h3>
           <p class="lili-feature__text">
-            A storefront in <strong>11 languages</strong> — including full right-to-left support for Arabic &amp;
-            Persian — down to translated product, brand &amp; category names.
+            The moment a payment confirms, a gapless-numbered invoice is issued, rendered to <strong>PDF</strong> and
+            emailed in the buyer's own language — downloadable forever from the order page.
+          </p>
+        </article>
+
+        <article class="lili-feature lili-feature--new" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>language</mat-icon></span>
+          <h3 class="lili-feature__title">
+            Multi-Language <span class="about-badge">New</span>
+          </h3>
+          <p class="lili-feature__text">
+            A storefront in <strong>11 languages</strong> with full right-to-left support for Arabic &amp; Persian.
+            Every string lives in the database, so a translation fix — or a whole new language — goes live
+            <strong>without a redeploy</strong>.
           </p>
         </article>
 
@@ -194,26 +252,42 @@
               <h4>🔎 Product Discovery</h4>
               <ul>
                 <li>Browse and view a comprehensive product catalog.</li>
-                <li>Filter products by brand, type, and size.</li>
+                <li>Filter products by brand, type, and any variation attribute — colours render as swatches, sizes as chips, all straight from the admin-defined catalog.</li>
+                <li>Combine facets naturally: several values within one attribute widen the results, while values across different attributes must all be satisfied by the <em>same</em> variant.</li>
                 <li>Isolate products with active discounts.</li>
                 <li>Search for specific products by name.</li>
                 <li>Sort products by price (ascending/descending) and alphabetically.</li>
               </ul>
             </div>
             <div class="feature-category">
-              <h4>🌍 Language &amp; Localization</h4>
+              <h4>🧬 Choosing a Variant <span class="about-badge">New</span></h4>
+              <ul>
+                <li>Pick exactly what you want on the product page — for example Pattern <em>Tropical</em> and Size <em>M</em> — with the price and availability updating as you choose.</li>
+                <li>Combinations that are sold out or unavailable are greyed out <em>before</em> you click them, so you never chase a dead end.</li>
+                <li>Live per-variant availability, automatically capped by whatever you already placed in your basket.</li>
+                <li>The basket keeps each variant on its own line and shows exactly what you picked — “Size: M · Colour: Brown” — alongside its SKU.</li>
+                <li>Quantity changes are applied instantly and rolled back on screen if the server can no longer honour them.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🌍 Language &amp; Localization <span class="about-badge">New</span></h4>
               <ul>
                 <li>Use the storefront in 11 languages: English, German, Spanish, Russian, Hindi, Chinese, Turkish, Danish, Swedish, plus Persian and Arabic.</li>
-                <li>Full right-to-left (RTL) layout support for Persian and Arabic.</li>
-                <li>Switch language instantly from a dedicated language switcher — product, brand, and category names are translated too, not just UI labels.</li>
-                <li>Receive transactional emails in your selected language.</li>
+                <li><strong>Full right-to-left (RTL) layout</strong> for Persian and Arabic — the whole interface mirrors itself, and the correct direction is applied before the first paint, so an RTL page never flashes left-to-right while loading.</li>
+                <li>Switch language instantly from a switcher that shows the active language in its own script (Deutsch, فارسی, 中文) rather than just a flag or a globe.</li>
+                <li>Translation reaches everything, not only buttons and labels: product, brand and category names, validation messages, and the error messages the server itself sends back.</li>
+                <li><strong>Your first visit is already in your language.</strong> LiliShop infers a sensible default from your browser and device timezone — no IP lookup, no tracking — and an explicit choice you make is remembered and never silently overridden.</li>
+                <li>Dates, numbers and paginator labels follow your locale's own conventions, not a single hardcoded format.</li>
+                <li>Receive transactional emails — order confirmations, password resets, price-drop alerts and invoices — in your selected language, right-to-left ones included.</li>
               </ul>
             </div>
             <div class="feature-category">
               <h4>🛒 Purchasing &amp; Account Management</h4>
               <ul>
                 <li>Securely purchase products using Stripe, with card payments protected by 3D Secure / Strong Customer Authentication (SCA).</li>
-                <li>Access a detailed history of completed orders.</li>
+                <li>Access a detailed history of completed orders, each line showing the exact variant and SKU that was purchased.</li>
+                <li><strong>Receive a PDF invoice by email</strong> automatically as soon as payment is confirmed — attached to the message and written in your chosen language, right-to-left scripts included.</li>
+                <li>Re-download the invoice for any paid order at any time from the order detail page.</li>
                 <li>Register for an account using a traditional username/password combination or via Google social login.</li>
                 <li>Confirm registration through an email verification link.</li>
                 <li>Utilize a password recovery feature for forgotten passwords.</li>
@@ -292,6 +366,48 @@
               </ul>
             </div>
             <div class="feature-category">
+              <h4>🌍 Languages &amp; Translations <span class="about-badge">New</span></h4>
+              <ul>
+                <li><strong>Add or activate a language without a deployment.</strong> A language is a row of data, not a line of code — activating it makes it immediately available to the storefront switcher, the API, and the email pipeline, with no restart.</li>
+                <li>Manage each language's native name, English name, text direction, display order and country associations from a dedicated Languages screen; promoting a new default automatically demotes the previous one.</li>
+                <li><strong>Edit any UI string from the browser.</strong> A searchable, paginated translations editor lets an authorized non-developer fix a typo or reword a sentence and see it live moments later — no rebuild, no release, no developer in the loop.</li>
+                <li><strong>Completion tracking:</strong> a per-language progress readout ("German 92% complete") plus a missing-keys report that lists exactly which strings still need translating for a given language.</li>
+                <li>Translate business data — product names, descriptions, SEO fields, brands and categories — inline while editing the product itself, filling in only the languages you're ready for.</li>
+                <li>Every save bumps a global version counter and clears the caches, so an edit propagates to every running instance and every browser at once rather than waiting out a cache timer.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🧬 Attributes &amp; Variants <span class="about-badge">New</span></h4>
+              <ul>
+                <li><strong>Define your own variation axes:</strong> create attributes (Colour, Size, Pattern, Material, …) and their values from a dedicated admin screen — no code change, no redeploy, no developer involved.</li>
+                <li>Choose how each attribute presents itself: colour swatches with hex values, plain chips, single- or multi-select, filterable in the storefront or not, with an explicit sort order so sizes read XS → S → M → L → XL.</li>
+                <li>Translate attribute and value names per language, right beside the value itself.</li>
+                <li><strong>Per-product variant editor:</strong> manage SKU, price, stock, position and active state for every sellable combination in one table, with bulk price, stock and activation actions.</li>
+                <li><strong>Bulk generation:</strong> pick the axes, and the panel proposes every missing combination as an editable draft — nothing is saved until you review it, and re-running only ever proposes what is still missing.</li>
+                <li>Decide per product which attributes are <em>defining</em> (they make up the variant's identity) and which are merely <em>descriptive</em> (a striped shirt carrying two colours at once).</li>
+                <li><strong>Identity lock:</strong> once a variant has been ordered its SKU and defining attributes freeze — that identity already appears on invoices and shipping paperwork. Price, stock, images and availability stay fully editable.</li>
+                <li>Guard rails that explain themselves: deleting an attribute value still referenced by a discount is refused with a readable reason, not a database error.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>📦 Inventory Control <span class="about-badge">New</span></h4>
+              <ul>
+                <li>Adjust a variant's stock through a dedicated dialog that <strong>requires a written reason</strong> — corrections are never anonymous.</li>
+                <li>Review the full movement history inline: received, adjusted, reserved, released, deducted — with the timestamp and the admin who performed it.</li>
+                <li>See on-hand versus reserved quantities at a glance, so held checkout stock is never mistaken for sellable stock.</li>
+                <li>Rejected adjustments (for example one that would push availability negative) leave the number untouched and surface the server's own explanation.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🧾 Invoice Management <span class="about-badge">New</span></h4>
+              <ul>
+                <li>A searchable, paginated list of every issued invoice, with a full detail view of seller, buyer, line items and totals.</li>
+                <li>Download the exact same PDF the customer received, for any invoice.</li>
+                <li><strong>Read-only by design:</strong> there is no create, edit or delete — invoices are legal documents issued automatically on payment, and corrections belong to a future credit-note flow rather than an edit button.</li>
+                <li>Viewing invoices is available to support-tier admins, while stock-changing actions remain restricted to full administrators.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
               <h4>👥 User &amp; Access Management</h4>
               <ul>
                 <li>View a list of all registered users, with search (by name) and sort functionalities.</li>
@@ -306,7 +422,7 @@
                 <li><strong>Group Discounts:</strong> A sophisticated system for defining discounts applicable to specific product brands or product types within defined timeframes, managed via an intuitive admin interface.</li>
                 <li><strong>Multi-Campaign Engine:</strong> Multiple campaigns can run at once; the system automatically resolves and displays the best price per product and falls back to the next-best active promotion as campaigns expire.</li>
                 <li><em>Priority Note:</em> Single-product discounts take precedence over group discounts.</li>
-                <li><em>Future Enhancements:</em> Size-based and per-product conditions within group discounts are planned for future development.</li>
+                <li><em>Future Enhancements:</em> group-discount conditions can already target dynamic attribute values in the data model — the successor to the retired size-based targeting; surfacing that in the admin UI, together with per-product conditions, is next.</li>
               </ul>
             </div>
             <div class="feature-category">
@@ -314,6 +430,110 @@
               <ul>
                 <li>Integrate the Printess Editor within the admin panel, allowing for the export of designs as PDF or image files, with live render-status updates streamed over SignalR.</li>
                 <li>View and manage messages received from users via the 'Contact Us' page.</li>
+              </ul>
+            </div>
+          </ng-template>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Localization Architecture
+              <span class="about-badge">New</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <p class="feature-intro">
+              Most applications ship translations as files compiled into the build, which means every reworded sentence
+              is a code change, a review, a rebuild and a redeploy — and it only ever solves the frontend. LiliShop puts
+              the entire catalog in the database instead, behind the framework's own standard localization interface, so
+              one catalog serves three very different surfaces
+              (<a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0062_LiliShop-Localization-Architecture-Deep-Dive.md"
+                target="_blank" rel="noopener">read the 14-part deep dive</a>).
+            </p>
+            <div class="feature-category">
+              <h4>🗄️ One Catalog, Three Surfaces</h4>
+              <ul>
+                <li>The same translated string serves the Angular UI, the API's error messages, and the body of an email — so the German word for “confirm” can never read one way on a button and another way in a confirmation mail.</li>
+                <li>A single dependency-injection swap replaces the framework's file-based lookup with a database-backed one; every consuming line of code stays completely ordinary and untouched.</li>
+                <li>Around 570 keys across 11 languages, plus separate per-entity tables for catalog content, chosen deliberately over a column-per-language design that would need a schema migration for every new language.</li>
+                <li>Nothing ever falls through to a blank screen: requested language → its parent language → the shop default → the raw key, so a gap is visible in testing instead of invisible in production.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>⚡ Fast Despite Being Database-Driven</h4>
+              <ul>
+                <li>A two-tier cache — in-process plus a shared distributed layer — means a translated page load normally touches no database at all.</li>
+                <li>Correctness comes from explicit invalidation rather than expiry timing: an admin's save commits, then clears the tagged caches, in that order, so a stale value can never be re-cached in the gap.</li>
+                <li>A single global version counter lets the browser ask “has anything changed?” in a few bytes, and skip re-downloading the dictionary entirely when the answer is no.</li>
+                <li>The frontend applies its cached dictionary synchronously before the first render and refreshes in the background, so returning visitors never see a flash of raw keys.</li>
+                <li>Catalog translations are fetched for a whole page of products in one query — no N+1 — and a lookup failure degrades to default-language text rather than breaking the page.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🌐 Beyond Words: Direction, Locale &amp; Context</h4>
+              <ul>
+                <li>Right-to-left layout is done with CSS logical properties, so the same stylesheet mirrors itself for Persian and Arabic with almost no direction-specific overrides — while emails use explicit direction attributes instead, because email clients can't be trusted with modern CSS.</li>
+                <li>Emails are composed correctly from background jobs that have no web request at all: the language travels as an explicit parameter and links are built purely from configuration, so a job and a request produce byte-identical output.</li>
+                <li>Sending one price-drop campaign to hundreds of subscribers composes the message once per distinct language, not once per recipient.</li>
+                <li>Translation keys are code-generated into a typed object, so a misspelled key is a build error rather than a raw string surfacing in production.</li>
+                <li>Tested where silence is dangerous — fallback chains, cache invalidation, culture activation, and the signed unsubscribe token that has to work for a recipient who isn't logged in.</li>
+              </ul>
+            </div>
+          </ng-template>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Variants, Inventory &amp; Invoicing
+              <span class="about-badge">New</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <p class="feature-intro">
+              The catalog used to model a product as a single row with a hardcoded size enum — one axis, baked into the
+              code — and a paid order produced no document at all. Both were replaced by two deliberately separate
+              engines: a dynamic variant model backed by a real inventory ledger, and an invoicing engine that mints an
+              immutable legal document the moment a payment succeeds
+              (<a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0063_Building-a-Modern-Product-Variant-and-Invoice-Architecture-in-LiliShop.md"
+                target="_blank" rel="noopener">read the full engineering handbook</a>).
+            </p>
+            <div class="feature-category">
+              <h4>🧬 A Catalog That Grows Without a Redeploy</h4>
+              <ul>
+                <li>Attributes and their values are data, not enums — adding “Material” is an admin creating a row, not a schema change and a release.</li>
+                <li>Each variant carries a canonical <em>axis signature</em> of its defining values, so “no two variants of one product share the same combination” is enforced by a database unique index rather than by hopeful application code.</li>
+                <li>A variant's identity locks on first order; operational fields stay open. A different identity is a different variant — create a new one and retire the old.</li>
+                <li>Every active variant of a product must cover the same set of defining axes, so no variant can exist that a shopper could never actually select. When an axis does not apply, it gets an explicit value rather than a gap.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>📦 Stock Safety Without Locks</h4>
+              <ul>
+                <li>Every quantity change is a <strong>single guarded database statement</strong> — the availability check and the write are the same operation, so the read-modify-write window that lets two shoppers buy the last unit simply does not exist.</li>
+                <li>Checkout places an all-or-nothing hold: a basket reserves everything it needs or nothing at all, and editing the basket re-places the whole set rather than leaving phantom partial holds.</li>
+                <li>A recurring sweep returns abandoned holds to the shelf, so a closed tab never locks stock away.</li>
+                <li>A paid order is a promise already made to the customer's bank — the deduction path is idempotent under webhook replay and will never fail a payment over bookkeeping; a true oversell raises an alert for a human instead.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🧾 Documents That Never Change</h4>
+              <ul>
+                <li>Invoice numbers are allocated inside the same transaction as the invoice itself, so concurrent payments serialise and a rollback returns the number — the series can never gap, skip or duplicate.</li>
+                <li>Exactly one invoice per order, protected three times over: an idempotency check, a transactional row lock, and a database unique constraint.</li>
+                <li>Everything on the document is a snapshot — seller identity, buyer address, line descriptions, currency and totals — so it renders identically forever, even after the catalog, delivery prices or translations change.</li>
+                <li>PDF rendering is a pure function shared by the customer download, the admin download and the email attachment: all three are byte-for-byte the same document.</li>
+                <li>Delivery runs as a background job outside the invoice transaction, so an email outage can never undo an invoice that already legally exists.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>⚙️ Migrating Live Data, Carefully</h4>
+              <ul>
+                <li>Shipped as seven independently-deployable milestones, each one carrying existing production data forward before anything old was removed.</li>
+                <li>Each data migration <strong>verifies itself and aborts</strong> if the totals disagree — a migration that would quietly lose or duplicate stock fails loudly in a maintenance window instead of silently in production.</li>
+                <li>The legacy size enum and its join table were dropped only once every row had been proven to exist in the new model.</li>
+                <li>Backed by a layered test suite: pure-function tests for the snapshot builder and the PDF renderer, service tests for reservation and invoicing orchestration, a real-database integration test reproducing reported bugs, and template-level Angular tests that catch binding bugs component tests cannot.</li>
               </ul>
             </div>
           </ng-template>
@@ -329,14 +549,28 @@
               <li><strong>Frontend Framework:</strong> Angular 22</li>
               <li><strong>Programming Languages:</strong> C#, TypeScript</li>
               <li><strong>Database:</strong> Microsoft SQL Server with Entity Framework Core for data access.</li>
+              <li><strong>Catalog Model:</strong> an attribute/variant model where variation axes are admin-managed data, with a canonical axis signature per variant enforced by a unique index.</li>
+              <li><strong>Inventory:</strong> an append-only transaction ledger plus time-limited checkout reservations, with every movement applied through a single atomic, guarded SQL statement.</li>
+              <li><strong>Invoicing:</strong> immutable snapshot documents with gapless sequential numbering allocated under a transactional row lock; PDFs rendered server-side with QuestPDF, including right-to-left cultures.</li>
               <li><strong>Payment Processing:</strong> Stripe for handling online payments, with 3D Secure / SCA support.</li>
               <li><strong>Caching:</strong> Hybrid caching strategy utilizing Redis for performance optimization.</li>
-              <li><strong>Background Processing:</strong> Hangfire for managing background jobs (e.g., email notifications, discount expiration).</li>
+              <li><strong>Background Processing:</strong> Hangfire for managing background jobs (e.g., email notifications, discount expiration, invoice delivery, and the recurring sweep that releases expired stock reservations).</li>
               <li><strong>Real-Time Communication:</strong> SignalR for pushing live status updates (e.g., the Printess design pipeline) to connected clients.</li>
               <li><strong>Email Service:</strong> SendGrid for transactional email delivery, sent in the recipient's chosen language.</li>
               <li><strong>Cloud Services:</strong> Cloudinary for image storage and management, hosted on Azure.</li>
-              <li><strong>Localization:</strong> 11 languages including full RTL support, spanning UI, emails, API error messages, and admin-editable business data.</li>
-              <li><strong>Quality:</strong> End-to-end tests with Cypress and a growing xUnit unit-test suite.</li>
+              <li>
+                <strong>
+                  <a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0062_LiliShop-Localization-Architecture-Deep-Dive.md"
+                    target="_blank" rel="noopener">Localization</a>:
+                </strong>
+                A database-backed <code>IStringLocalizer</code> replacing the default resource-file store, so one catalog
+                serves UI, API errors and emails alike — with a two-tier cache, tag-based invalidation, a global version
+                counter driving ETag revalidation, and a live-swappable culture list that makes activating a language a
+                data change rather than a deployment. 11 languages, full RTL, plus per-entity translation tables for
+                catalog content.
+              </li>
+              <li><strong>Email Delivery:</strong> Localized transactional templates, with the invoice PDF attached to the “invoice issued” message.</li>
+              <li><strong>Quality:</strong> End-to-end tests with Cypress, a growing xUnit backend suite (pure-function, service-level and real-database integration tests), and Vitest specs on the Angular side down to template-level regression tests.</li>
               <li>
                 <strong>
                   <a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0026_Refactoring-LiliShop-with-Clean-Architecture.md"
@@ -364,6 +598,9 @@
           <mat-chip>SignalR</mat-chip>
           <mat-chip>SendGrid</mat-chip>
           <mat-chip>Cloudinary</mat-chip>
+          <mat-chip>QuestPDF</mat-chip>
+          <mat-chip>Vitest</mat-chip>
+          <mat-chip>Cypress</mat-chip>
         </mat-chip-set>
       </div>
     </section>

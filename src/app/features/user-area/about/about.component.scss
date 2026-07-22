@@ -314,6 +314,34 @@
   }
 }
 
+// ------------------------------------------------------------- new badge ----
+// Marks the most recently shipped work (variants, inventory, invoicing).
+.about-badge {
+  display: inline-block;
+  margin-inline-start: var(--ls-space-2);
+  padding: 0.1em var(--ls-space-2);
+  border-radius: var(--ls-radius-pill);
+  background: var(--ls-accent-strong);
+  color: var(--ls-on-accent);
+  font-size: var(--ls-fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: middle;
+  translate: 0 -1px;
+}
+
+.lili-feature--new {
+  border-color: var(--ls-border-strong);
+
+  .lili-feature__icon {
+    background: var(--ls-accent-strong);
+    color: var(--ls-on-accent);
+  }
+}
+
 .feature-intro {
   color: var(--ls-text-soft);
   line-height: 1.7;
@@ -338,6 +366,17 @@
 
   .mat-expansion-panel-header {
     font-weight: 600;
+  }
+
+  // Panel titles are flex containers, so the badge needs flex alignment
+  // rather than the inline `vertical-align` it uses inside headings.
+  .mat-expansion-panel-header-title {
+    align-items: center;
+
+    .about-badge {
+      flex: 0 0 auto;
+      translate: none;
+    }
   }
 }
 
@@ -367,6 +406,14 @@
     &::marker {
       color: var(--ls-accent);
     }
+  }
+
+  code {
+    padding: 0.1em 0.4em;
+    border-radius: var(--ls-radius-sm);
+    background: var(--ls-brand-soft);
+    color: var(--ls-brand-text);
+    font-size: 0.9em;
   }
 }
 
