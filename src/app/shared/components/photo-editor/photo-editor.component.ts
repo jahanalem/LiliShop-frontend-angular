@@ -73,6 +73,13 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
 
   product             = input.required<IProduct | undefined>();
 
+  /**
+   * Incremented by the parent after a variant change is persisted. The values a photo may be tagged
+   * with are derived from the product's variants, so a new token re-fetches the assignable list.
+   * Already-assigned tags are preserved across the refresh.
+   */
+  reloadToken         = input<number>(0);
+
   uploader            = signal<FileUploader | undefined>(undefined);
   hasBaseDropZoneOver = signal<boolean>(false);
   user                = signal<IUser | undefined>(undefined);
@@ -83,8 +90,15 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
 
   // ---------------------------------------------------- attribute-value tags (Plan B) ----
 
-  /** Values assignable to this product's photos (those used by its variants), localized. */
+  /** Values assignable to this product's photos right now (those used by its variants), localized. */
   readonly assignableValues = signal<IPhotoAttributeValueOption[]>([]);
+  /**
+   * Every value seen for this product so far, keyed by id. Chips render from here rather than from
+   * the current assignable list, so a tag whose value stopped being assignable (its last variant was
+   * deleted) keeps its proper "Attribute: Value" label and stays removable instead of silently
+   * vanishing. The picker still offers only currently assignable values.
+   */
+  private readonly knownValues = signal<ReadonlyMap<number, IPhotoAttributeValueOption>>(new Map());
   /** photoId → assigned value ids. The single source of truth for the chips. */
   readonly tagsByPhotoId    = signal<ReadonlyMap<number, number[]>>(new Map());
   /** The photo whose "assign values" picker is currently open (null = none). */
@@ -94,18 +108,10 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
   /** Bumped whenever the photo list is mutated imperatively, so the view model recomputes. */
   private readonly photosVersion = signal<number>(0);
 
-  private readonly valueById = computed(() => {
-    const map = new Map<number, IPhotoAttributeValueOption>();
-    for (const option of this.assignableValues()) {
-      map.set(option.valueId, option);
-    }
-    return map;
-  });
-
   /** Photos plus their resolved chips — precomputed so the template calls no functions. */
   readonly photoRows = computed(() => {
     this.photosVersion();
-    const byId = this.valueById();
+    const byId = this.knownValues();
     const tags = this.tagsByPhotoId();
 
     return (this.product()?.productPhotos ?? []).map(photo => ({
@@ -137,6 +143,8 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
 
   private cdr = inject(ChangeDetectorRef);
   private loadedTagsForProductId: number | null = null;
+  /** "productId:reloadToken" of the assignable-values request already in flight/applied. */
+  private loadedOptionsKey: string | null = null;
 
   constructor() {
     this.accountService.currentUser$.pipe(take(1)).subscribe({
@@ -155,25 +163,57 @@ export class PhotoEditorComponent implements OnInit, ControlValueAccessor {
 
     // Tagging needs database ids, so it only becomes available once the product has been saved
     // (staged workflow: create product → add variants → upload photos → tag them).
+    // The assigned tags live in the product graph, so they are seeded once per product.
     effect(() => {
       const product = this.product();
       if (!product?.id || this.loadedTagsForProductId === product.id) {
         return;
       }
       this.loadedTagsForProductId = product.id;
-
       this.seedTagsFromProduct(product.productPhotos ?? []);
+    });
 
-      this.productService.getAssignablePhotoAttributeValues(product.id).subscribe({
-        next: options => {
-          this.assignableValues.set(options ?? []);
-          this.cdr.markForCheck();
-        },
-        error: () => {
-          this.assignableValues.set([]);
-          this.cdr.markForCheck();
-        }
-      });
+    // The assignable values are DERIVED from the product's variants, so they must be re-fetched
+    // whenever the parent reports a persisted variant change — not just once per product.
+    effect(() => {
+      const productId = this.product()?.id;
+      const token = this.reloadToken();
+      if (!productId) {
+        return;
+      }
+
+      const requestKey = `${productId}:${token}`;
+      if (this.loadedOptionsKey === requestKey) {
+        return; // nothing relevant changed — do not re-issue the request
+      }
+      this.loadedOptionsKey = requestKey;
+
+      this.loadAssignableValues(productId);
+    });
+  }
+
+  private loadAssignableValues(productId: number): void {
+    this.productService.getAssignablePhotoAttributeValues(productId).subscribe({
+      next: options => {
+        const fresh = options ?? [];
+        this.assignableValues.set(fresh);
+
+        // Merge (never prune) so chips for values that are no longer assignable keep their label.
+        this.knownValues.update(known => {
+          const merged = new Map(known);
+          for (const option of fresh) {
+            merged.set(option.valueId, option);
+          }
+          return merged;
+        });
+
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        // Keep the previously known labels so existing chips survive a failed refresh.
+        this.assignableValues.set([]);
+        this.cdr.markForCheck();
+      }
     });
   }
 

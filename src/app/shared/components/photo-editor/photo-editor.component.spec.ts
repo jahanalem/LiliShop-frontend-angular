@@ -174,6 +174,103 @@ describe('PhotoEditorComponent (attribute-value tags)', () => {
     expect(component.tagsByPhotoId().has(1)).toBe(false);
   });
 
+  describe('refreshing after a variant change (no page reload)', () => {
+    // Reported bug: a product used only "Color: Red"; the admin saved a new variant with
+    // "Color: Yellow"; Yellow was missing from "Assign values" until the browser was refreshed.
+    // The parent bumps reloadToken after a persisted variant change, which must re-fetch.
+
+    const YELLOW_NEW = 203;
+    const withYellow: IPhotoAttributeValueOption[] = [
+      ...options,
+      { attributeId: 20, attributeName: 'Color', displayOrder: 10, valueId: YELLOW_NEW, valueName: 'Sunflower', colorHex: '#FFC107', sortOrder: 30 }
+    ];
+
+    it('loads the values exactly once until something actually changes', () => {
+      expect(productServiceMock.getAssignablePhotoAttributeValues).toHaveBeenCalledTimes(1);
+
+      // Re-rendering with the same product and the same token must not re-issue the request.
+      fixture.detectChanges();
+      expect(productServiceMock.getAssignablePhotoAttributeValues).toHaveBeenCalledTimes(1);
+    });
+
+    it('re-fetches and offers the newly used value when the token is bumped', () => {
+      component.openTagPicker(2);
+      expect(component.pickerOptions().map(o => o.valueId)).not.toContain(YELLOW_NEW);
+
+      // A variant using the new value was saved: parent increments reloadToken.
+      productServiceMock.getAssignablePhotoAttributeValues.mockReturnValue(of(withYellow));
+      fixture.componentRef.setInput('reloadToken', 1);
+      fixture.detectChanges();
+
+      expect(productServiceMock.getAssignablePhotoAttributeValues).toHaveBeenCalledTimes(2);
+      expect(component.pickerOptions().map(o => o.valueId)).toContain(YELLOW_NEW);
+    });
+
+    it('preserves already assigned tags across the refresh', () => {
+      expect(component.tagsByPhotoId().get(1)).toEqual([YELLOW]);
+
+      productServiceMock.getAssignablePhotoAttributeValues.mockReturnValue(of(withYellow));
+      fixture.componentRef.setInput('reloadToken', 1);
+      fixture.detectChanges();
+
+      expect(component.tagsByPhotoId().get(1)).toEqual([YELLOW]);
+      const chips = Array.from(fixture.nativeElement.querySelectorAll('.photo-tag__text'))
+        .map((el: any) => el.textContent.trim());
+      expect(chips).toEqual(['Color: Yellow']);
+    });
+
+    it('does not duplicate options that were already present', () => {
+      productServiceMock.getAssignablePhotoAttributeValues.mockReturnValue(of(withYellow));
+      fixture.componentRef.setInput('reloadToken', 1);
+      fixture.detectChanges();
+
+      const ids = component.assignableValues().map(o => o.valueId);
+      expect(new Set(ids).size).toBe(ids.length);
+
+      component.openTagPicker(2);
+      const pickerIds = component.pickerOptions().map(o => o.valueId);
+      expect(new Set(pickerIds).size).toBe(pickerIds.length);
+    });
+
+    it('drops a value from the picker once its last variant is gone', () => {
+      // Deleting the last variant that used Tropical makes it un-assignable.
+      const withoutTropical = options.filter(o => o.valueId !== TROPICAL);
+      productServiceMock.getAssignablePhotoAttributeValues.mockReturnValue(of(withoutTropical));
+      fixture.componentRef.setInput('reloadToken', 1);
+      fixture.detectChanges();
+
+      component.openTagPicker(2);
+      expect(component.pickerOptions().map(o => o.valueId)).not.toContain(TROPICAL);
+    });
+
+    it('keeps an assigned chip readable even after its value stops being assignable', () => {
+      component.addTag(2, TROPICAL);
+      fixture.detectChanges();
+
+      const withoutTropical = options.filter(o => o.valueId !== TROPICAL);
+      productServiceMock.getAssignablePhotoAttributeValues.mockReturnValue(of(withoutTropical));
+      fixture.componentRef.setInput('reloadToken', 1);
+      fixture.detectChanges();
+
+      // The tag still exists server-side, so its chip must keep its label and stay removable.
+      expect(component.tagsByPhotoId().get(2)).toEqual([TROPICAL]);
+      const chips = Array.from(fixture.nativeElement.querySelectorAll('.photo-tag__text'))
+        .map((el: any) => el.textContent.trim());
+      expect(chips).toContain('Pattern: Tropical');
+    });
+
+    it('keeps existing chips when the refresh request fails', () => {
+      productServiceMock.getAssignablePhotoAttributeValues.mockReturnValue(throwError(() => new Error('offline')));
+      fixture.componentRef.setInput('reloadToken', 1);
+      fixture.detectChanges();
+
+      const chips = Array.from(fixture.nativeElement.querySelectorAll('.photo-tag__text'))
+        .map((el: any) => el.textContent.trim());
+      expect(chips).toEqual(['Color: Yellow']);
+      expect(component.tagsByPhotoId().get(1)).toEqual([YELLOW]);
+    });
+  });
+
   it('keeps existing photo management intact (main photo selection)', () => {
     const product = component.product()!;
     component.setMainPhoto(product.productPhotos[1]);

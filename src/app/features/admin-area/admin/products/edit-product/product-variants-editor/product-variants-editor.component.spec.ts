@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
@@ -346,5 +346,61 @@ describe('ProductVariantsEditorComponent', () => {
     const payload = variantServiceMock.saveVariants.mock.calls[0][1] as IVariantUpsertRow[];
     expect(payload[0].axisValues).toEqual([{ attributeId: 10, valueId: 101 }]);
     expect(payload[0].descriptiveValues).toEqual(expect.arrayContaining([{ attributeId: 99, valueId: 999 }]));
+  });
+
+  describe('variantsChanged notification', () => {
+    // The photo editor derives its assignable attribute values from the product's variants, so it
+    // must be told whenever a variant change is PERSISTED — otherwise a value introduced by a new
+    // variant only shows up after a browser refresh.
+
+    it('emits after variants are saved successfully', async () => {
+      const { component } = await setup([sizeVariant(1, 'P39-M', 101)]);
+      const emitted = vi.fn();
+      component.variantsChanged.subscribe(emitted);
+
+      component.addRow();
+      component.setSingleValue(component.rows().length - 1, 10, 103); // Size L
+      component.save();
+
+      expect(variantServiceMock.saveVariants).toHaveBeenCalled();
+      expect(emitted).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not emit when the save fails', async () => {
+      const { component } = await setup([sizeVariant(1, 'P39-M', 101)]);
+      variantServiceMock.saveVariants.mockReturnValue(throwError(() => ({ error: { message: 'nope' } })));
+      const emitted = vi.fn();
+      component.variantsChanged.subscribe(emitted);
+
+      component.addRow();
+      component.setSingleValue(component.rows().length - 1, 10, 103);
+      component.save();
+
+      expect(emitted).not.toHaveBeenCalled();
+    });
+
+    it('emits after a variant is deleted successfully', async () => {
+      const { component } = await setup([sizeVariant(1, 'P39-M', 101), sizeVariant(2, 'P39-S', 102)]);
+      const emitted = vi.fn();
+      component.variantsChanged.subscribe(emitted);
+
+      component.removeRow(0);
+
+      expect(variantServiceMock.deleteVariant).toHaveBeenCalled();
+      expect(emitted).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not emit for bulk generation, which only returns unsaved drafts', async () => {
+      const { component } = await setup([sizeVariant(1, 'P39-M', 101)]);
+      variantServiceMock.generateVariants.mockReturnValue(of([draftRow('P39-L', 103)]));
+      const emitted = vi.fn();
+      component.variantsChanged.subscribe(emitted);
+
+      component.generatorSelections = { 10: [103] };
+      component.generateCombinations();
+
+      expect(variantServiceMock.generateVariants).toHaveBeenCalled();
+      expect(emitted).not.toHaveBeenCalled(); // nothing is assignable until the drafts are saved
+    });
   });
 });

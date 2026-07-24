@@ -99,4 +99,17 @@ describe('EditProductComponent', () => {
     expect(productServiceMock.updateProduct).toHaveBeenCalledTimes(1);
     expect(routerMock.navigate).not.toHaveBeenCalled();
   });
+
+  it('bumps the photo-editor reload token when the variants editor reports a change', async () => {
+    // The photo editor's assignable values are derived from the product's variants, so the parent
+    // relays a persisted variant change to it via this token instead of a page reload.
+    const { component } = await setup('49');
+    const before = component.variantsVersion();
+
+    component.onVariantsChanged();
+    expect(component.variantsVersion()).toBe(before + 1);
+
+    component.onVariantsChanged();
+    expect(component.variantsVersion()).toBe(before + 2);
+  });
 });

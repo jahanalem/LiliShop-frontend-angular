@@ -185,7 +185,8 @@
         @if (isProductIdValid()) {
           <app-product-variants-editor
             [productId]="adminProduct()?.id ?? 0"
-            [defaultPrice]="productModel().price" />
+            [defaultPrice]="productModel().price"
+            (variantsChanged)="onVariantsChanged()" />
         } @else {
           <p class="variants-create-first-hint">{{ TranslationKeys.Admin.Products.SaveProductFirstForVariants | translate }}</p>
         }
@@ -199,7 +200,7 @@
     <div class="form-right admin-form-card">
       @if (isProductIdValid()) {
         <h3>{{ TranslationKeys.Admin.Products.UploadPhoto | translate }}</h3>
-        <app-photo-editor [product]="adminProduct()"></app-photo-editor>
+        <app-photo-editor [product]="adminProduct()" [reloadToken]="variantsVersion()"></app-photo-editor>
       } @else {
         <div class="admin-banner is-danger">
           <mat-icon>image_not_supported</mat-icon>

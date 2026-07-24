@@ -156,6 +156,18 @@ export class EditProductComponent implements OnInit, OnDestroy {
 
   readonly isProductIdValid = computed(() => (this.adminProduct()?.id ?? 0) > 0);
 
+  /**
+   * Bumped every time the variants editor persists a change. The photo editor watches it and
+   * reloads the attribute values assignable to the product's photos, because that set is derived
+   * from the product's variants — without this the picker would keep serving the list fetched when
+   * the page first loaded until the admin refreshed the browser.
+   */
+  readonly variantsVersion = signal<number>(0);
+
+  onVariantsChanged(): void {
+    this.variantsVersion.update(version => version + 1);
+  }
+
   async ngOnInit(): Promise<void> {
     try {
       await Promise.all([this.loadBrands(), this.loadTypes()]);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -74,6 +74,14 @@ export class ProductVariantsEditorComponent implements OnInit {
   readonly productId = input.required<number>();
   /** Default price for newly added rows (the product's current price). */
   readonly defaultPrice = input<number>(0);
+
+  /**
+   * Raised after a variant change has been PERSISTED (save or delete). The set of attribute values
+   * a product's photos may be tagged with is derived from its variants, so the photo editor has to
+   * reload its options when this fires. Bulk generation deliberately does not emit: the backend
+   * returns unsaved drafts, so nothing is assignable until the subsequent save.
+   */
+  readonly variantsChanged = output<void>();
 
   readonly rows = signal<VariantRow[]>([]);
   readonly dirty = signal<boolean>(false);
@@ -298,7 +306,11 @@ export class ProductVariantsEditorComponent implements OnInit {
             return;
           }
           this.variantService.deleteVariant(row.id).subscribe({
-            next: () => this.rows.update(rows => rows.filter((_, i) => i !== index)),
+            next: () => {
+              this.rows.update(rows => rows.filter((_, i) => i !== index));
+              // Deleting the last variant carrying a value makes that value un-assignable.
+              this.variantsChanged.emit();
+            },
             error: (error) => {
               console.error(error);
               this.errorMessage.set(error?.error?.message ?? 'Delete failed.');
@@ -580,6 +592,9 @@ export class ProductVariantsEditorComponent implements OnInit {
         this.definingAttributeIds.set(this.deriveDefiningAttributeIds(variants));
         this.rows.set(variants.map(v => this.toRow(v)));
         this.dirty.set(false);
+        // Saved variants may introduce (or drop) attribute values — tell the parent so the photo
+        // editor can refresh what is assignable without a page reload.
+        this.variantsChanged.emit();
         this.notificationService.showSuccess(
           this.translationService.translate(TranslationKeys.Admin.Products.VariantsSaved));
       },
