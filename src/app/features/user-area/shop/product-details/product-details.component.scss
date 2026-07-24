@@ -120,7 +120,20 @@
 @media (max-width: 768px) {
   .product-row {
     flex-direction: column;
-    align-items: center;
+    /* `align-items: center` shrink-wrapped each column child to its content width,
+       which collapsed the gallery to the intrinsic width of its thumbnail strip
+       (~200px) regardless of the viewport. Stretch lets the sections fill the column
+       so the gallery can size fluidly. */
+    align-items: stretch;
+  }
+
+  /* In column mode `flex: 1 1 320px` sets a 320px *height* basis; whenever the
+     gallery was shorter than that, the leftover basis showed up as a large empty
+     gap above the product info. `flex: 0 0 auto` makes the section hug its content,
+     and `width: 100%` gives the gallery the full column to be fluid in. */
+  .product-image-section {
+    flex: 0 0 auto;
+    width: 100%;
   }
 
   .product-info {

@@ -30,7 +30,7 @@
               fill
               [priority]="image.index === 0"
               ngSrcset="320w, 480w, 640w, 960w, 1120w"
-              sizes="(max-width: 640px) 92vw, (max-width: 1024px) 55vw, 560px"
+              sizes="(max-width: 768px) min(100vw - 64px, 500px), 560px"
               [alt]="altFor(image)"
               (error)="onImageError(image.key)" />
           } @else {

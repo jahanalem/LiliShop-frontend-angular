@@ -186,6 +186,9 @@
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: thin;
+  // Centered when a few thumbs fit; `safe` falls back to start-aligned once they
+  // overflow, so the first thumbnail is never clipped out of the scroll range.
+  justify-content: safe center;
 }
 
 .gallery__thumb-item {
@@ -253,14 +256,22 @@
 }
 
 /* --------------------------------------------------------- responsive ---- */
-@media (max-width: 480px) {
-  .gallery__thumb {
-    inline-size: 54px;
+/* Tablet / mobile: the parent section now gives the gallery the full column width,
+   so the fluid `width: 100%` fills it. Cap it a little lower than desktop so the
+   stage lands in the ~420-520px range at 768px and stays visually balanced, while
+   `margin-inline: auto` keeps it centered. Narrow phones fall below the cap and the
+   stage tracks the column width fluidly (~300-340px at 375px). */
+@media (max-width: 768px) {
+  .gallery {
+    max-width: 500px;
   }
+}
 
-  .gallery__nav {
-    inline-size: 40px;
-    block-size: 40px;
+@media (max-width: 480px) {
+  // Keep the thumbnails proportional to the (now larger) stage, but hold the nav
+  // buttons at the full 44px touch target rather than shrinking them.
+  .gallery__thumb {
+    inline-size: 56px;
   }
 }
 
