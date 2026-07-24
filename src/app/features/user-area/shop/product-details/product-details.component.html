@@ -6,7 +6,8 @@
           [photos]="product().productPhotos"
           [fallbackUrl]="product().pictureUrl"
           [fallbackPublicId]="product().picturePublicId"
-          [productName]="product().name" />
+          [productName]="product().name"
+          [activePhotoId]="activeGalleryPhotoId()" />
       </div>
 
       @if(product().name){

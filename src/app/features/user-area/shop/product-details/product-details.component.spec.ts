@@ -242,3 +242,128 @@ describe('ProductDetailsComponent (Color as a defining axis)', () => {
     expect(component.selectedVariant()?.sku).toBe('P40-BLUE-S');
   });
 });
+
+describe('ProductDetailsComponent (attribute-aware gallery photo)', () => {
+  let component: ProductDetailsComponent;
+  let fixture: ComponentFixture<ProductDetailsComponent>;
+
+  const YELLOW = 201, GREEN = 202, TROPICAL = 301, FLORAL = 302, SIZE_L = 101;
+  const COLOR_ATTR = 20, PATTERN_ATTR = 30, SIZE_ATTR = 10;
+
+  const colorAttr: IProductAttribute = { id: COLOR_ATTR, code: 'color', name: 'Color', inputType: 'Select', swatchType: 'ColorHex', isFilterable: true, displayOrder: 10, isActive: true };
+  const patternAttr: IProductAttribute = { id: PATTERN_ATTR, code: 'pattern', name: 'Pattern', inputType: 'Select', swatchType: 'None', isFilterable: true, displayOrder: 20, isActive: true };
+  const sizeAttr: IProductAttribute = { id: SIZE_ATTR, code: 'size', name: 'Size', inputType: 'Select', swatchType: 'None', isFilterable: true, displayOrder: 30, isActive: true };
+
+  // Photo 1: Yellow · Photo 2: Tropical · Photo 3: Yellow+Tropical · Photo 4: Green (main, untagged fallback aside)
+  const product: IProduct = {
+    id: 60, name: 'Beach Shirt', description: 'A shirt', price: 70,
+    pictureUrl: 'main.png', picturePublicId: 'main', productTypeId: 1, productBrandId: 1,
+    isActive: true, hasVariants: true,
+    productPhotos: [
+      { id: 1, url: 'p1.png', publicId: 'p1', isMain: true, attributeValueIds: [YELLOW] },
+      { id: 2, url: 'p2.png', publicId: 'p2', isMain: false, attributeValueIds: [TROPICAL] },
+      { id: 3, url: 'p3.png', publicId: 'p3', isMain: false, attributeValueIds: [YELLOW, TROPICAL] },
+      { id: 4, url: 'p4.png', publicId: 'p4', isMain: false, attributeValueIds: [GREEN] }
+    ]
+  };
+
+  function link(variantId: number, attr: IProductAttribute, valueId: number, valueName: string) {
+    return {
+      id: valueId * 100 + variantId, productVariantId: variantId,
+      productAttributeId: attr.id, productAttributeValueId: valueId, isDefining: true,
+      productAttribute: attr,
+      productAttributeValue: { id: valueId, productAttributeId: attr.id, code: valueName.toLowerCase(), name: valueName, sortOrder: 0, isActive: true }
+    };
+  }
+
+  const variants: IProductVariant[] = [
+    {
+      id: 1, productId: 60, sku: 'P60-Y-TROP-L', price: 70, axisSignature: 'y', isActive: true, position: 1,
+      attributeValues: [link(1, colorAttr, YELLOW, 'Yellow'), link(1, patternAttr, TROPICAL, 'Tropical'), link(1, sizeAttr, SIZE_L, 'L')],
+      inventory: { id: 1, productVariantId: 1, quantityOnHand: 5, quantityReserved: 0 }
+    },
+    {
+      id: 2, productId: 60, sku: 'P60-G-FLOR-L', price: 70, axisSignature: 'g', isActive: true, position: 2,
+      attributeValues: [link(2, colorAttr, GREEN, 'Green'), link(2, patternAttr, FLORAL, 'Floral'), link(2, sizeAttr, SIZE_L, 'L')],
+      inventory: { id: 2, productVariantId: 2, quantityOnHand: 5, quantityReserved: 0 }
+    }
+  ];
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [NoopAnimationsModule, ProductDetailsComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: { paramMap: of(new Map([['id', '60']]) as any) } },
+        { provide: ProductService, useValue: { getProduct: vi.fn().mockReturnValue(of(product)) } },
+        { provide: ProductVariantService, useValue: { getVariants: vi.fn().mockReturnValue(of(variants)) } },
+        { provide: BasketService, useValue: { addItemToBasket: vi.fn(), basket$: of(null) } },
+        { provide: AccountService, useValue: { currentUser$: of(null) } },
+        { provide: SubscriptionService, useValue: { checkSubscription: vi.fn().mockReturnValue(of(false)) } },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+        provideCloudinaryLoader('https://res.cloudinary.com/rouhi')
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ProductDetailsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('activates no specific photo before anything is selected', () => {
+    // Size is the only single-value axis here? No: every axis has 2 values, so nothing is preselected.
+    expect(component.activeGalleryPhotoId()).toBeNull();
+  });
+
+  it('activates the photo matching a single selected value', () => {
+    component.selectValue(COLOR_ATTR, GREEN);
+
+    expect(component.activeGalleryPhotoId()).toBe(4);
+  });
+
+  it('activates the highest-scoring photo when several values are selected', () => {
+    component.selectValue(COLOR_ATTR, YELLOW);
+    component.selectValue(PATTERN_ATTR, TROPICAL);
+
+    // Photo 3 carries both Yellow and Tropical; photos 1 and 2 carry only one each.
+    expect(component.activeGalleryPhotoId()).toBe(3);
+  });
+
+  it('ignores selected values that no photo is tagged with (e.g. Size)', () => {
+    component.selectValue(SIZE_ATTR, SIZE_L);
+
+    // No photo is tagged with a size, so the gallery keeps its default photo.
+    expect(component.activeGalleryPhotoId()).toBeNull();
+  });
+
+  it('does not let an untagged axis dilute an otherwise matching selection', () => {
+    component.selectValue(COLOR_ATTR, YELLOW);
+    component.selectValue(PATTERN_ATTR, TROPICAL);
+    component.selectValue(SIZE_ATTR, SIZE_L); // resolves variant 1, adds no photo-relevant value
+
+    expect(component.activeGalleryPhotoId()).toBe(3);
+  });
+
+  it('falls back to no override when the selection matches no tagged photo', () => {
+    component.selectValue(COLOR_ATTR, GREEN);
+    component.selectValue(PATTERN_ATTR, FLORAL); // no photo tagged Floral; Green still matches photo 4
+
+    expect(component.activeGalleryPhotoId()).toBe(4);
+  });
+
+  it('returns to no override once the selection is cleared', () => {
+    component.selectValue(COLOR_ATTR, GREEN);
+    expect(component.activeGalleryPhotoId()).toBe(4);
+
+    component.selectValue(COLOR_ATTR, GREEN); // clicking the selected chip deselects it
+    expect(component.activeGalleryPhotoId()).toBeNull();
+  });
+
+  it('is deterministic: the first photo in display order wins a tie', () => {
+    // Yellow alone is carried by photo 1 and photo 3 (score 1 each) → the earlier photo wins.
+    component.selectValue(COLOR_ATTR, YELLOW);
+
+    expect(component.activeGalleryPhotoId()).toBe(1);
+    expect(component.activeGalleryPhotoId()).toBe(1); // stable across reads
+  });
+});

@@ -30,8 +30,17 @@ export class ProductItemComponent {
   product    = input.required<IProduct>();
   isPriority = input<boolean>(false);
 
+  /**
+   * "matched picture ?? default picture": when attribute filters are active the backend nominates the
+   * photo whose tags match them, so a Yellow filter shows the yellow shot instead of the default one.
+   * Falls back to the product's default picture whenever nothing matched (or no filter is active).
+   */
   readonly imageUrl = computed(() => {
-    return this.product().picturePublicId ?? this.product().pictureUrl;
+    const product = this.product();
+    return product.matchedPicturePublicId
+      || product.matchedPictureUrl
+      || product.picturePublicId
+      || product.pictureUrl;
   });
 
   readonly isDiscountActive = computed(() => {

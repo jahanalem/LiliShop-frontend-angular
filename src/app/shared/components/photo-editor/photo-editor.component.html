@@ -1,20 +1,101 @@
 @if (product()) {
   <div class="photo-grid">
-    @for (photo of product()!.productPhotos; track photo) {
+    @for (row of photoRows(); track row.photo.id) {
       <div class="photo-item">
-        <img src="{{photo.url}}" alt="photo of product" class="product-photo">
+        <img src="{{row.photo.url}}" alt="photo of product" class="product-photo">
         <div class="button-group">
-          <button mat-raised-button color="primary" type="button" [disabled]="photo.isMain" (click)="setMainPhoto(photo)">
+          <button mat-raised-button color="primary" type="button" [disabled]="row.photo.isMain" (click)="setMainPhoto(row.photo)">
             {{ TranslationKeys.Admin.Photos.Main | translate }}
           </button>
-          <button mat-raised-button color="warn" [disabled]="photo.isMain" (click)="deletePhoto(photo.id)" type="button"
+          <button mat-raised-button color="warn" [disabled]="row.photo.isMain" (click)="deletePhoto(row.photo.id)" type="button"
             [attr.title]="TranslationKeys.Common.Delete | translate">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
+
+        <!-- Attribute-value tags: real AttributeValue relationships, shown as "Attribute: Value" chips. -->
+        <div class="photo-tags">
+          <span class="photo-tags__label">Assigned values</span>
+
+          @if (row.tags.length > 0) {
+            <ul class="photo-tags__chips" role="list">
+              @for (tag of row.tags; track tag.valueId) {
+                <li class="photo-tag">
+                  @if (tag.colorHex) {
+                    <span class="photo-tag__dot" [style.background]="tag.colorHex" aria-hidden="true"></span>
+                  }
+                  <span class="photo-tag__text">{{ tag.attributeName }}: {{ tag.valueName }}</span>
+                  <button
+                    type="button"
+                    class="photo-tag__remove"
+                    (click)="removeTag(row.photo.id, tag.valueId)"
+                    [attr.aria-label]="'Remove ' + tag.attributeName + ': ' + tag.valueName">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="photo-tags__empty">No values assigned yet.</p>
+          }
+
+          <button
+            type="button"
+            mat-stroked-button
+            class="photo-tags__toggle"
+            [attr.aria-expanded]="openPickerPhotoId() === row.photo.id"
+            (click)="openTagPicker(row.photo.id)">
+            <mat-icon>sell</mat-icon>
+            Assign values
+          </button>
+
+          @if (openPickerPhotoId() === row.photo.id) {
+            <div class="tag-picker">
+              @if (assignableValues().length === 0) {
+                <p class="tag-picker__empty">
+                  No attribute values are available yet. Add variants to this product first — only
+                  values used by its variants can be assigned to a photo.
+                </p>
+              } @else {
+                <input
+                  type="text"
+                  class="tag-picker__search"
+                  [value]="tagSearch()"
+                  (input)="onTagSearch($any($event.target).value)"
+                  [placeholder]="TranslationKeys.Common.Search | translate"
+                  aria-label="Search attribute values" />
+
+                @if (pickerOptions().length > 0) {
+                  <ul class="tag-picker__options" role="list">
+                    @for (option of pickerOptions(); track option.valueId) {
+                      <li>
+                        <button type="button" class="tag-picker__option" (click)="addTag(row.photo.id, option.valueId)">
+                          @if (option.colorHex) {
+                            <span class="photo-tag__dot" [style.background]="option.colorHex" aria-hidden="true"></span>
+                          }
+                          {{ option.attributeName }}: {{ option.valueName }}
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="tag-picker__empty">No matching values.</p>
+                }
+              }
+
+              <button type="button" mat-button class="tag-picker__close" (click)="closeTagPicker()">
+                {{ TranslationKeys.Common.Close | translate }}
+              </button>
+            </div>
+          }
+        </div>
       </div>
     }
   </div>
+
+  @if (tagError()) {
+    <p class="photo-tags__error" role="alert">{{ tagError() }}</p>
+  }
 }
 
 <div class="upload-section">

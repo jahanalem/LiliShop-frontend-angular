@@ -20,6 +20,15 @@ export interface IProduct {
   productPhotos         : IProductPhoto[];
   /** Per-culture content sent on save; loaded separately via getProductTranslations. */
   translations          ?: IProductTranslation[];
+
+  /**
+   * Plan B: set by the shop list when attribute-value filters are active and one of the product's
+   * photos is tagged with those values. Purely additive — the card renders
+   * "matched picture ?? default picture"; the meaning of pictureUrl/picturePublicId is unchanged.
+   */
+  matchedPhotoId        ?: number | null;
+  matchedPictureUrl     ?: string | null;
+  matchedPicturePublicId?: string | null;
 }
 
 export interface IProductAdmin extends IProduct {

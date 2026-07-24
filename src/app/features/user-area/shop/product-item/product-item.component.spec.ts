@@ -102,4 +102,34 @@ describe('ProductItemComponent', () => {
         addButton.nativeElement.click();
         expect(basketServiceSpy.addItemToBasket).toHaveBeenCalledWith(product);
     });
+
+    describe('matched card image (attribute-aware photos)', () => {
+        it('prefers the matched picture when attribute filters produced one', () => {
+            fixture.componentRef.setInput('product', {
+                ...defaultProduct,
+                matchedPhotoId: 7,
+                matchedPicturePublicId: 'yellow-public-id',
+                matchedPictureUrl: 'https://cdn/yellow.jpg'
+            });
+
+            expect(component.imageUrl()).toBe('yellow-public-id');
+        });
+
+        it('falls back to the default picture when no photo matched', () => {
+            fixture.componentRef.setInput('product', {
+                ...defaultProduct,
+                matchedPhotoId: null,
+                matchedPicturePublicId: null,
+                matchedPictureUrl: null
+            });
+
+            expect(component.imageUrl()).toBe(defaultProduct.picturePublicId);
+        });
+
+        it('keeps the default picture when no attribute filter is active', () => {
+            fixture.componentRef.setInput('product', defaultProduct);
+
+            expect(component.imageUrl()).toBe(defaultProduct.picturePublicId);
+        });
+    });
 });

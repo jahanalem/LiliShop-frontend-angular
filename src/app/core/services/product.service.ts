@@ -8,6 +8,7 @@ import { ProductQueryParams } from 'src/app/shared/models/productQueryParams';
 import { IProductType } from 'src/app/shared/models/productType';
 import { environment } from 'src/environments/environment';
 import { IProductTranslation } from 'src/app/shared/models/localization';
+import { IPhotoAttributeValueOption, IProductPhoto } from 'src/app/shared/models/productPhoto';
 
 @Injectable({
   providedIn: 'root'
@@ -150,6 +151,18 @@ export class ProductService {
 
   deletePhoto(photoId: number) {
     return this.http.delete(`${this.baseUrl}products/delete-photo/${photoId}`);
+  }
+
+  /** Attribute values assignable to this product's photos (values used by its variants), localized. */
+  getAssignablePhotoAttributeValues(productId: number): Observable<IPhotoAttributeValueOption[]> {
+    return this.http.get<IPhotoAttributeValueOption[]>(`${this.baseUrl}products/${productId}/photo-attribute-values`);
+  }
+
+  /** Replaces a photo's attribute-value tags with the given set (add + remove in one call). */
+  setPhotoAttributeValues(productId: number, photoId: number, attributeValueIds: number[]): Observable<IProductPhoto> {
+    return this.http.put<IProductPhoto>(
+      `${this.baseUrl}products/${productId}/photos/${photoId}/attribute-values`,
+      { attributeValueIds });
   }
 
   clearProductCache(): void {

@@ -115,6 +115,61 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     }) ?? null;
   });
 
+  /**
+   * The attribute values currently implied by the customer's choice: the values picked on the
+   * defining axes, plus (once a variant resolves) that variant's own values, so descriptive-only
+   * attributes such as the two colors of a striped shirt also steer the gallery.
+   */
+  private readonly selectedAttributeValueIds = computed<ReadonlySet<number>>(() => {
+    const ids = new Set<number>(this.selection().values());
+    for (const link of this.selectedVariant()?.attributeValues ?? []) {
+      ids.add(link.productAttributeValueId);
+    }
+    return ids;
+  });
+
+  /**
+   * Plan B: the photo that best represents the current selection, fed to the gallery's existing
+   * `activePhotoId` input. Scoring is deterministic — most selected values matched first, then
+   * display order, then photo id. Only values that actually appear on a photo tag can contribute,
+   * so picking a Size never moves the gallery unless a photo is explicitly tagged with that size.
+   * Returns null when nothing matches, which leaves the gallery on its default (main) photo.
+   */
+  readonly activeGalleryPhotoId = computed<number | null>(() => {
+    const selected = this.selectedAttributeValueIds();
+    if (selected.size === 0) {
+      return null;
+    }
+
+    const photos = this.product()?.productPhotos ?? [];
+    let bestId: number | null = null;
+    let bestScore = 0;
+
+    for (let index = 0; index < photos.length; index++) {
+      const photo = photos[index];
+      const tags = photo?.attributeValueIds ?? [];
+      if (tags.length === 0) {
+        continue;
+      }
+
+      let score = 0;
+      for (const tag of tags) {
+        if (selected.has(tag)) {
+          score++;
+        }
+      }
+
+      // Strictly greater keeps the first photo in display order on a tie; ids ascend with that
+      // order, so the result is stable regardless of how the array was built.
+      if (score > bestScore) {
+        bestScore = score;
+        bestId = photo.id;
+      }
+    }
+
+    return bestId;
+  });
+
   readonly availableQuantity = computed<number | null>(() => {
     const variant = this.selectedVariant();
     if (!variant) {
