@@ -15,26 +15,10 @@
 }
 
 .product-image-section {
-  flex: 1;
+  flex: 1 1 320px;
   display: flex;
   justify-content: center;
-  align-items: center;
-}
-
-.product-image-container {
-  max-width: 500px;
-  padding: 1rem;
-  background-color: var(--ls-surface);
-  border: 1px solid var(--ls-border);
-  border-radius: var(--ls-radius-md);
-  box-shadow: var(--ls-shadow-sm);
-}
-
-.product-image {
-  width: 100%;
-  max-width: 300px;
-  height: auto;
-  border-radius: 10px;
+  align-items: flex-start;
 }
 
 .product-info-section {

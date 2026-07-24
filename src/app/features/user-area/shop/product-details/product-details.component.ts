@@ -16,7 +16,7 @@ import { INotificationSubscription } from 'src/app/shared/models/notificationSub
 import { AccountService } from 'src/app/core/services/account.service';
 import { IProductVariant } from 'src/app/shared/models/productVariant';
 
-import { NgOptimizedImage } from '@angular/common';
+import { ProductGalleryComponent } from './product-gallery/product-gallery.component';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
@@ -42,7 +42,7 @@ interface SelectorValue {
     styleUrls: ['./product-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [TranslatePipe, CommonModule, RouterModule, NgOptimizedImage, MatButtonModule, MatIconModule]
+  imports: [TranslatePipe, CommonModule, RouterModule, ProductGalleryComponent, MatButtonModule, MatIconModule]
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
   protected readonly TranslationKeys = TranslationKeys;
@@ -53,7 +53,6 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   isSubscribed              = signal<boolean>(false);
   currentUserId             = signal<number>(0);
   currentUserEmailConfirmed = signal<boolean>(false);
-  imagePublicId             = signal<string>('');
 
   /** attributeId → chosen valueId for the defining axes. */
   readonly selection = signal<ReadonlyMap<number, number>>(new Map());
@@ -238,9 +237,6 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
         this.variants.set(variants);
         this.preselectSingleOptions();
         this.quantity.set(1);
-        if (product.picturePublicId) {
-          this.imagePublicId.set(product.picturePublicId);
-        }
 
         this.checkSubscriptionStatus();
         this.cdRef.detectChanges();

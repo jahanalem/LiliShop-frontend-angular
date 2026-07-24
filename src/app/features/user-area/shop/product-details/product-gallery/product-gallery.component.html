@@ -1,0 +1,124 @@
+@if (count() > 0) {
+  <div
+    class="gallery"
+    role="group"
+    aria-roledescription="carousel"
+    [attr.aria-label]="(productName() || 'Product') + ' image gallery'">
+
+    <div
+      class="gallery__stage"
+      tabindex="0"
+      role="group"
+      aria-label="Product image. Use the left and right arrow keys to change image."
+      (keydown)="onKeydown($event)"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)">
+
+      @for (image of stageWindow(); track image.key) {
+        <figure
+          class="gallery__slide"
+          [class.is-active]="image.index === activeIndex()"
+          [attr.aria-hidden]="image.index === activeIndex() ? null : 'true'">
+          @if (isBroken(image.key)) {
+            <div class="gallery__broken" aria-hidden="true">
+              <mat-icon>broken_image</mat-icon>
+            </div>
+          } @else if (image.publicId) {
+            <img
+              class="gallery__img"
+              [ngSrc]="image.publicId"
+              fill
+              [priority]="image.index === 0"
+              ngSrcset="320w, 480w, 640w, 960w, 1120w"
+              sizes="(max-width: 640px) 92vw, (max-width: 1024px) 55vw, 560px"
+              [alt]="altFor(image)"
+              (error)="onImageError(image.key)" />
+          } @else {
+            <img
+              class="gallery__img"
+              [src]="image.url"
+              loading="lazy"
+              decoding="async"
+              [alt]="altFor(image)"
+              (error)="onImageError(image.key)" />
+          }
+        </figure>
+      }
+
+      @if (hasMultiple()) {
+        <button
+          type="button"
+          class="gallery__nav gallery__nav--prev"
+          (click)="prev()"
+          [disabled]="!canGoPrev()"
+          aria-label="Previous image">
+          <mat-icon aria-hidden="true">chevron_left</mat-icon>
+        </button>
+        <button
+          type="button"
+          class="gallery__nav gallery__nav--next"
+          (click)="next()"
+          [disabled]="!canGoNext()"
+          aria-label="Next image">
+          <mat-icon aria-hidden="true">chevron_right</mat-icon>
+        </button>
+        <span class="gallery__counter" aria-hidden="true">{{ activeIndex() + 1 }} / {{ count() }}</span>
+      }
+    </div>
+
+    <!-- Screen-reader announcement of the current position. -->
+    <p class="gallery__sr-status" aria-live="polite">
+      @if (hasMultiple()) {
+        Image {{ activeIndex() + 1 }} of {{ count() }}
+      }
+    </p>
+
+    @if (hasMultiple()) {
+      <ul class="gallery__thumbs" role="list">
+        @for (image of images(); track image.key) {
+          <li class="gallery__thumb-item">
+            <button
+              #thumb
+              type="button"
+              class="gallery__thumb"
+              [class.is-active]="image.index === activeIndex()"
+              [attr.aria-current]="image.index === activeIndex() ? 'true' : null"
+              [attr.aria-label]="'Show image ' + (image.index + 1) + ' of ' + count()"
+              (click)="select(image.index)">
+              <span class="gallery__thumb-frame">
+                @if (isBroken(image.key)) {
+                  <span class="gallery__thumb-broken" aria-hidden="true">
+                    <mat-icon>broken_image</mat-icon>
+                  </span>
+                } @else if (image.publicId) {
+                  <img
+                    class="gallery__thumb-img"
+                    [ngSrc]="image.publicId"
+                    fill
+                    ngSrcset="80w, 160w, 240w"
+                    sizes="80px"
+                    [alt]="altFor(image)"
+                    (error)="onImageError(image.key)" />
+                } @else {
+                  <img
+                    class="gallery__thumb-img"
+                    [src]="image.url"
+                    loading="lazy"
+                    decoding="async"
+                    [alt]="altFor(image)"
+                    (error)="onImageError(image.key)" />
+                }
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+} @else {
+  <div class="gallery gallery--empty">
+    <div class="gallery__stage gallery__stage--empty" role="img" [attr.aria-label]="(productName() || 'Product') + ' — no image available'">
+      <mat-icon aria-hidden="true">image_not_supported</mat-icon>
+    </div>
+  </div>
+}

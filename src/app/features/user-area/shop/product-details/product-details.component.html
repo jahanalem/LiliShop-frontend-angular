@@ -2,19 +2,11 @@
   <div class="product-container">
     <div class="product-row">
       <div class="product-image-section">
-        <div class="product-image-container">
-          @if (product().pictureUrl) {
-            <img
-              title="Product Image"
-              class="product-image"
-              [ngSrc]="imagePublicId()"
-              width="500"
-              height="500"
-              priority
-              [alt]="product().name"
-              />
-          }
-        </div>
+        <app-product-gallery
+          [photos]="product().productPhotos"
+          [fallbackUrl]="product().pictureUrl"
+          [fallbackPublicId]="product().picturePublicId"
+          [productName]="product().name" />
       </div>
 
       @if(product().name){

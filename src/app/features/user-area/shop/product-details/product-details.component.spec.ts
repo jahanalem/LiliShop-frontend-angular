@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideCloudinaryLoader } from '@angular/common';
 
 import { ProductDetailsComponent } from './product-details.component';
 import { ProductService } from 'src/app/core/services/product.service';
@@ -25,7 +26,7 @@ describe('ProductDetailsComponent (variant selector)', () => {
   const product: IProduct = {
     id: 42, name: 'Casual Shirt', description: 'A shirt', price: 50,
     pictureUrl: 'x.png', picturePublicId: 'x', productTypeId: 1, productBrandId: 1,
-    isActive: true, productPhotos: []
+    isActive: true, hasVariants: true, productPhotos: []
   };
 
   const sizeAttr: IProductAttribute = { id: 10, code: 'size', name: 'Size', inputType: 'Select', swatchType: 'None', isFilterable: true, displayOrder: 20, isActive: true };
@@ -67,7 +68,8 @@ describe('ProductDetailsComponent (variant selector)', () => {
         { provide: AccountService, useValue: { currentUser$: of(null) } },
         { provide: SubscriptionService, useValue: { checkSubscription: vi.fn().mockReturnValue(of(false)) } },
         provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        provideCloudinaryLoader('https://res.cloudinary.com/rouhi')
       ]
     }).compileComponents();
 
@@ -171,7 +173,7 @@ describe('ProductDetailsComponent (Color as a defining axis)', () => {
   const product: IProduct = {
     id: 40, name: 'Colour Tee', description: 'A tee', price: 30,
     pictureUrl: 'x.png', picturePublicId: 'x', productTypeId: 1, productBrandId: 1,
-    isActive: true, productPhotos: []
+    isActive: true, hasVariants: true, productPhotos: []
   };
 
   const sizeAttr: IProductAttribute = { id: 10, code: 'size', name: 'Size', inputType: 'Select', swatchType: 'None', isFilterable: true, displayOrder: 20, isActive: true };
@@ -211,7 +213,8 @@ describe('ProductDetailsComponent (Color as a defining axis)', () => {
         { provide: AccountService, useValue: { currentUser$: of(null) } },
         { provide: SubscriptionService, useValue: { checkSubscription: vi.fn().mockReturnValue(of(false)) } },
         provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
+        provideCloudinaryLoader('https://res.cloudinary.com/rouhi')
       ]
     }).compileComponents();
 

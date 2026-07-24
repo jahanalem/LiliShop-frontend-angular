@@ -23,7 +23,7 @@ describe('EditProductComponent', () => {
 
   const created: IProduct = {
     id: 49, name: 'Base', description: 'desc', price: 100, pictureUrl: '', picturePublicId: '',
-    productTypeId: 2, productBrandId: 3, isActive: true, productPhotos: []
+    productTypeId: 2, productBrandId: 3, isActive: true, hasVariants: false, productPhotos: []
   };
 
   async function setup(routeId: string) {
@@ -69,7 +69,7 @@ describe('EditProductComponent', () => {
     // A valid form for a base product (no pictures / variants yet).
     component.productModel.set({
       isActive: true, name: 'Base', description: 'desc', price: 100,
-      productBrandId: 3, productTypeId: 2,
+      productBrandId: 3, productTypeId: 2, hasVariants: false,
       isDiscountActive: false, discountAmount: null, isPercentage: true,
       discountStartDateDate: null, discountStartDateTime: null,
       discountEndDateDate: null, discountEndDateTime: null
@@ -86,7 +86,7 @@ describe('EditProductComponent', () => {
     const { component } = await setup('49');
     component.productModel.set({
       isActive: true, name: 'Base', description: 'desc', price: 100,
-      productBrandId: 3, productTypeId: 2,
+      productBrandId: 3, productTypeId: 2, hasVariants: false,
       isDiscountActive: false, discountAmount: null, isPercentage: true,
       discountStartDateDate: null, discountStartDateTime: null,
       discountEndDateDate: null, discountEndDateTime: null
