@@ -159,11 +159,4 @@ export class UsersComponent implements AfterViewInit, OnInit {
   applyFilter(filterValueEvent: Event) {
     this.searchService.applyFilter(filterValueEvent, this.paginator()!, this.userQueryParams());
   }
-
-  get existUser(): boolean {
-    if (this.users().length > 0) {
-      return true;
-    }
-    return false;
-  }
 }
