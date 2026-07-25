@@ -92,6 +92,12 @@
             <mat-icon>inventory_2</mat-icon>
             <span>Variants &amp; Invoicing</span>
           </a>
+          <a class="lili-btn lili-btn--ghost"
+            href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0064_Product-Photo-Attribute-Tagging-and-Filter-Aware-Images.md"
+            target="_blank" rel="noopener">
+            <mat-icon>image_search</mat-icon>
+            <span>Filter-Aware Photos</span>
+          </a>
         </div>
       </div>
 
@@ -127,6 +133,11 @@
           <span class="lili-stat__value">Invoices</span>
           <span class="lili-stat__label">Auto-issued PDFs<br />gapless numbering</span>
         </li>
+        <li class="lili-stat">
+          <span class="lili-stat__icon" aria-hidden="true">🖼️</span>
+          <span class="lili-stat__value">Photos</span>
+          <span class="lili-stat__label">Attribute-tagged<br />filter-aware images</span>
+        </li>
       </ul>
 
       <!-- ------------------------------------------ feature card grid -->
@@ -137,6 +148,18 @@
           <p class="lili-feature__text">
             Browse a full catalog with faceted filtering by brand, type &amp; attributes (with colour swatches), name
             search, price/alphabetical sorting, and a discounts-only view.
+          </p>
+        </article>
+
+        <article class="lili-feature lili-feature--new" role="listitem">
+          <span class="lili-feature__icon"><mat-icon>image_search</mat-icon></span>
+          <h3 class="lili-feature__title">
+            Filter-Aware Photos <span class="about-badge">New</span>
+          </h3>
+          <p class="lili-feature__text">
+            Filter by <strong>Yellow</strong> and every card shows its yellow shot instead of the default. Pick a
+            colour &amp; pattern on the product page and the gallery jumps to the matching photo — driven by
+            <strong>structured attribute tags</strong>, never free text.
           </p>
         </article>
 
@@ -541,6 +564,52 @@
 
         <mat-expansion-panel>
           <mat-expansion-panel-header>
+            <mat-panel-title>
+              Attribute-Aware Product Photos
+              <span class="about-badge">New</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <p class="feature-intro">
+              A product with several colours and patterns used to show one default image everywhere — filter the shop
+              by Yellow and the card still displayed the red shot, technically correct yet visually wrong. Now each
+              photo can be tagged with the very same structured attribute values its variants use, so the storefront
+              shows the picture that actually matches the customer's choice — without ever changing which products are
+              eligible for a filter
+              (<a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0064_Product-Photo-Attribute-Tagging-and-Filter-Aware-Images.md"
+                target="_blank" rel="noopener">read the end-to-end guide</a>).
+            </p>
+            <div class="feature-category">
+              <h4>🖼️ The Right Photo, Automatically</h4>
+              <ul>
+                <li>Filter the shop by <em>Yellow</em> and every product card swaps its default image for a photo tagged Yellow — the customer asked for yellow and finally sees yellow.</li>
+                <li>On the product page, choosing <em>Colour: Yellow</em> and <em>Pattern: Tropical</em> jumps the gallery straight to the photo that shows exactly that — while manual browsing (thumbnails, arrows, keyboard, swipe) still wins afterwards.</li>
+                <li>The best photo is chosen <strong>deterministically</strong> — most selected values matched first, then a stable tie-break — so the same selection always resolves to the same image.</li>
+                <li>Nothing to configure to stay safe: an untagged photo simply keeps the product's default image, so every existing product looks exactly as it did before.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🏷️ Structured Tags, Not Hashtags</h4>
+              <ul>
+                <li>A photo's <em>Yellow</em> is the <strong>same catalog value</strong> as a variant's Yellow — one row, one localized name, one colour swatch — not a free-text label that could drift or be mistyped.</li>
+                <li>Admins tag photos from a searchable picker of removable chips (“Colour: Yellow”, “Pattern: Tropical”), and only values actually used by the product's own variants can be assigned.</li>
+                <li>Each save <strong>replaces the whole tag set</strong> in a single call, so tagging is idempotent and a retry can never leave a photo half-tagged.</li>
+                <li>The picker refreshes the instant a variant change is persisted — no page reload, no polling, no timers — because the assignable values are derived from the product's variants.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🛡️ Presentation, Never Eligibility</h4>
+              <ul>
+                <li><strong>The rule that never breaks:</strong> variant filtering alone decides <em>whether</em> a product appears; photo tags only decide <em>which image</em> represents an already-eligible product. Tagging a photo Yellow can never pull a product into a Yellow result list.</li>
+                <li>The matching photo per card is chosen <strong>server-side in a single set-based, index-backed query</strong> — no N+1, and cards that don't need it pay nothing.</li>
+                <li>The separation is locked in by a dedicated test proving photo tags cannot change which products are returned — presentation and purchasability stay cleanly apart.</li>
+              </ul>
+            </div>
+          </ng-template>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
             <mat-panel-title>LiliShop: Technical Details</mat-panel-title>
           </mat-expansion-panel-header>
           <ng-template matExpansionPanelContent>
@@ -550,6 +619,7 @@
               <li><strong>Programming Languages:</strong> C#, TypeScript</li>
               <li><strong>Database:</strong> Microsoft SQL Server with Entity Framework Core for data access.</li>
               <li><strong>Catalog Model:</strong> an attribute/variant model where variation axes are admin-managed data, with a canonical axis signature per variant enforced by a unique index.</li>
+              <li><strong>Attribute-Aware Photos:</strong> a many-to-many join tags product photos with existing attribute values (unique-indexed, cascade from the photo); filtered shop cards and the product gallery resolve the best-matching image in a single index-backed query, kept strictly separate from variant eligibility.</li>
               <li><strong>Inventory:</strong> an append-only transaction ledger plus time-limited checkout reservations, with every movement applied through a single atomic, guarded SQL statement.</li>
               <li><strong>Invoicing:</strong> immutable snapshot documents with gapless sequential numbering allocated under a transactional row lock; PDFs rendered server-side with QuestPDF, including right-to-left cultures.</li>
               <li><strong>Payment Processing:</strong> Stripe for handling online payments, with 3D Secure / SCA support.</li>
