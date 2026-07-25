@@ -34,6 +34,7 @@
                 <mat-label>{{ TranslationKeys.Shop.SearchProducts | translate }}</mat-label>
                 <input matInput
                   [placeholder]="TranslationKeys.Shop.SearchPlaceholder | translate"
+                  [value]="shopParams().search ?? ''"
                   #search (keyup.enter)="onSearch()" />
                   @if (search.value) {
                     <button mat-icon-button matSuffix (click)="onSearch()" aria-label="Search">

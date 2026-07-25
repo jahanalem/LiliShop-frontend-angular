@@ -9,7 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 
 import { RouterModule } from '@angular/router';
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ProductService } from 'src/app/core/services/product.service';
 import { ProductAttributeService } from 'src/app/core/services/product-attribute.service';
@@ -46,9 +46,50 @@ export class ShopComponent implements OnInit {
   types      = signal<IProductType[]>([]);
   /** Filterable attributes (Size, Color, Pattern, …) rendered as facet checkbox groups. */
   facetAttributes = signal<IProductAttribute[]>([]);
-  /** attributeId → selected value ids; one attrValues entry per attribute goes to the API. */
-  private selectedFacets = signal<Record<number, number[]>>({});
   shopParams = signal<ProductQueryParams>({} as ProductQueryParams);
+
+  /**
+   * attributeId → selected value ids, DERIVED from the applied query params.
+   *
+   * This used to be its own writable signal, which is exactly why the checkboxes lost their state:
+   * the applied filters live in ProductService.shopParams and survive navigation (so the results
+   * came back filtered), while a component-local copy was recreated empty every time the shop page
+   * was rebuilt after returning from product details. Deriving it keeps one source of truth, so the
+   * results, the query params and the checkboxes can never disagree.
+   *
+   * attrValues carries value ids grouped per attribute but not the attribute ids themselves, so the
+   * grouping is reconstructed from the loaded facet attributes (a value belongs to exactly one
+   * attribute). Before the attributes have loaded this yields {}, and it recomputes when they arrive.
+   */
+  readonly selectedFacets = computed<Record<number, number[]>>(() => {
+    const entries = this.shopParams()?.attrValues ?? [];
+    if (entries.length === 0) {
+      return {};
+    }
+
+    const attributeIdByValueId = new Map<number, number>();
+    for (const attribute of this.facetAttributes()) {
+      for (const value of attribute.values ?? []) {
+        attributeIdByValueId.set(value.id, attribute.id);
+      }
+    }
+
+    const selected: Record<number, number[]> = {};
+    for (const entry of entries) {
+      for (const token of (entry ?? '').split(',')) {
+        const valueId = Number(token.trim());
+        if (!valueId) {
+          continue;
+        }
+        const attributeId = attributeIdByValueId.get(valueId);
+        if (attributeId === undefined) {
+          continue; // value no longer offered as a facet; the filter itself still applies
+        }
+        (selected[attributeId] ??= []).push(valueId);
+      }
+    }
+    return selected;
+  });
   totalCount = signal<number>(0);
   isLoading  = signal<boolean>(false);
 
@@ -70,7 +111,25 @@ export class ShopComponent implements OnInit {
   ];
 
   constructor() {
+    // Restore whatever filters are currently applied (the service holds them across navigation).
     this.shopParams.set(this.productService.getShopParams());
+  }
+
+  /**
+   * The single write path for filter state: produce a NEW params object, hand the SAME reference to
+   * both the service (which builds the request) and the view signal (which drives the controls).
+   *
+   * A fresh reference is required — signals compare by identity, so mutating the existing object in
+   * place would leave `selectedFacets` and the rest of the template stale. Sharing that one reference
+   * with the service is equally required, otherwise the two-way-bound selects would write into a
+   * component-only copy and drift from the params actually sent to the API.
+   */
+  private applyParams(mutate: (params: ProductQueryParams) => void): ProductQueryParams {
+    const next = Object.assign(new ProductQueryParams(), this.productService.getShopParams());
+    mutate(next);
+    this.productService.setShopParams(next);
+    this.shopParams.set(next);
+    return next;
   }
 
   async ngOnInit(): Promise<void> {
@@ -165,13 +224,12 @@ export class ShopComponent implements OnInit {
     if (facets[attributeId].length === 0) {
       delete facets[attributeId];
     }
-    this.selectedFacets.set(facets);
 
-    const params = this.productService.getShopParams();
-    params.attrValues = Object.values(facets).map(ids => ids.join(','));
-    params.pageNumber = 1;
-    this.productService.setShopParams(params);
-    this.shopParams.set(params);
+    // Writing the params is enough — the checkboxes read back out of them.
+    this.applyParams(params => {
+      params.attrValues = Object.values(facets).map(ids => ids.join(','));
+      params.pageNumber = 1;
+    });
     await this.getProducts();
   }
 
@@ -182,9 +240,10 @@ export class ShopComponent implements OnInit {
       console.log("prevent redundant calls.");
       return;
     }
-    params.pageNumber = event.pageNumber;
-    params.pageSize = event.pageSize;
-    this.shopParams.set(params);
+    this.applyParams(next => {
+      next.pageNumber = event.pageNumber;
+      next.pageSize = event.pageSize;
+    });
 
     await this.getProducts();
 
@@ -199,10 +258,11 @@ export class ShopComponent implements OnInit {
 
   // onSearch method
   async onSearch(): Promise<void> {
-    const params = this.productService.getShopParams();
-    params.search = this.searchTerm().nativeElement.value || '';
-    params.pageNumber = 1;
-    this.productService.setShopParams(params);
+    const term = this.searchTerm().nativeElement.value || '';
+    this.applyParams(params => {
+      params.search = term;
+      params.pageNumber = 1;
+    });
     await this.getProducts();
   }
 
@@ -211,10 +271,10 @@ export class ShopComponent implements OnInit {
     if (this.searchTerm()) {
       this.searchTerm().nativeElement.value = '';
     }
+    // Resetting the params clears the facet checkboxes too, since they are derived from them.
     const defaultParams = new ProductQueryParams();
-    this.selectedFacets.set({});
-    this.shopParams.set(defaultParams);
     this.productService.setShopParams(defaultParams);
+    this.shopParams.set(defaultParams);
     this.productService.clearProductCache();
     await this.getProducts();
     if (this.isMobileScreen()) {
@@ -223,27 +283,26 @@ export class ShopComponent implements OnInit {
   }
 
   async onFilterSelected(filterValue: any | null, filterType: string): Promise<void> {
-    const params = this.productService.getShopParams();
+    this.applyParams(params => {
+      switch (filterType) {
+        case 'brand':
+          params.brandId = filterValue;
+          break;
+        case 'type':
+          params.typeId = filterValue;
+          break;
+        case 'sort':
+          params.sort = filterValue;
+          break;
+        case 'sale':
+          params.sale = filterValue;
+          break;
+        default:
+          break;
+      }
 
-    switch (filterType) {
-      case 'brand':
-        params.brandId = filterValue;
-        break;
-      case 'type':
-        params.typeId = filterValue;
-        break;
-      case 'sort':
-        params.sort = filterValue;
-        break;
-      case 'sale':
-        params.sale = filterValue;
-        break;
-      default:
-        break;
-    }
-
-    params.pageNumber = 1;
-    this.productService.setShopParams(params);
+      params.pageNumber = 1;
+    });
     await this.getProducts();
   }
 }
