@@ -35,4 +35,4 @@ export interface IProductAdmin extends IProduct {
   discount       : Partial<ISingleDiscount> | null;
   scheduledPrice?: number;
 }
-
+ 

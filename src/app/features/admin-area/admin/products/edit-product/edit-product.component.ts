@@ -520,3 +520,4 @@ export class EditProductComponent implements OnInit, OnDestroy {
     return firstValueFrom(source$.pipe(takeUntil(this.destroy$)));
   }
 }
+ 
