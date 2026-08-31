@@ -41,8 +41,10 @@
 Cypress.Commands.add('typeInAppInput', (dataCy: string, text: string) => {
   return cy.get(`[data-cy="${dataCy}"]`)
     .find('input')
+    .focus()
     .type(text)
-    .blur();
+    // Google One Tap can take focus while this command is still queued.
+    .blur({ force: true });
 });
 
 Cypress.Commands.add('handleMaterialDialog', (expectedTitle: string) => {

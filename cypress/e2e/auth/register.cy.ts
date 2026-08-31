@@ -1,6 +1,14 @@
 describe('Registration Feature', () => {
   beforeEach(() => {
-    cy.visit('/account/register');
+    cy.visit('/account/register', {
+      onBeforeLoad(window) {
+        window.localStorage.setItem('ls-lang', JSON.stringify({
+          code: 'en',
+          dir: 'ltr',
+          source: 'user',
+        }));
+      },
+    });
   });
 
   it('should disable the register button by default when the form is empty', () => {
@@ -57,7 +65,7 @@ describe('Registration Feature', () => {
       cy.get('[data-cy="submit-button"]').should('not.be.disabled').click();
       cy.wait('@registerSuccessRequest');
 
-      cy.handleMaterialDialog('Email Confirmation Sent');
+      cy.handleMaterialDialog('Confirmation email sent');
 
       cy.location('pathname').should('eq', '/shop');
     });
