@@ -13,7 +13,7 @@
           @if (item.sku) {
             <p class="line-sku">{{ item.sku }}</p>
           }
-          <span class="price">{{item.price | currency}}</span>
+          <span class="price">{{item.price | money:currency()}}</span>
         </div>
       </div>
       <div class="quantity-controls">
@@ -30,7 +30,7 @@
         }
       </div>
       <div class="total-price" [style]="addPadding()">
-        <span>{{item.price * item.quantity | currency}}</span>
+        <span>{{item.price * item.quantity | money:currency()}}</span>
       </div>
       @if (isBasket()) {
         <button  mat-icon-button color="warn" (click)="removeBasketItem(item)">

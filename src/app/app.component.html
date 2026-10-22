@@ -1,1 +1,4 @@
+@if (shopCurrency.state() === 'error') {
+  <p role="alert">{{ currencyErrorMessage() }}</p>
+}
 <router-outlet></router-outlet>

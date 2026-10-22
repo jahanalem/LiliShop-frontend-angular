@@ -1,3 +1,4 @@
+import { MoneyPipe } from 'src/app/shared/pipes/money.pipe';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
@@ -19,7 +20,7 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
     styleUrls: ['./orders.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [TranslatePipe, CommonModule, RouterModule, MatChipsModule, MatButtonModule, MatTableModule, MatCardModule]
+  imports: [MoneyPipe, TranslatePipe, CommonModule, RouterModule, MatChipsModule, MatButtonModule, MatTableModule, MatCardModule]
 })
 export class OrdersComponent implements OnInit {
   protected readonly TranslationKeys = TranslationKeys;

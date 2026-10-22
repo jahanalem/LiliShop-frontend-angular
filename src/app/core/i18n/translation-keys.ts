@@ -445,6 +445,9 @@ export const TranslationKeys = {
     Sending: 'Contact.Sending',
     Sent: 'Contact.Sent',
   },
+  Currency: {
+    Unavailable: 'Currency.Unavailable',
+  },
   Email: {
     Common: {
       ButtonFallback: 'Email.Common.ButtonFallback',

@@ -1,3 +1,5 @@
+import { MoneyPipe } from 'src/app/shared/pipes/money.pipe';
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -42,9 +44,10 @@ interface SelectorValue {
     styleUrls: ['./product-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [TranslatePipe, CommonModule, RouterModule, ProductGalleryComponent, MatButtonModule, MatIconModule]
+  imports: [MoneyPipe, TranslatePipe, CommonModule, RouterModule, ProductGalleryComponent, MatButtonModule, MatIconModule]
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
   product                   = signal<IProduct>({} as IProduct);

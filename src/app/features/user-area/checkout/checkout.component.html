@@ -27,7 +27,7 @@
       <div class="checkout-summary">
         <mat-card>
           @if (basketTotals(); as basketTotals) {
-            <app-order-totals
+            <app-order-totals [currency]="shopCurrency.currency()"
               [shippingPrice]="basketTotals.shipping"
               [subtotal]="basketTotals.subtotal"
               [total]="basketTotals.total">

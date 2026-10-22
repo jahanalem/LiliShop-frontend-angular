@@ -1,3 +1,5 @@
+import { MoneyPipe } from 'src/app/shared/pipes/money.pipe';
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
@@ -13,13 +15,14 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 @Component({
   selector: 'app-user-price-drop-subscriptions',
-  imports: [TranslatePipe, CommonModule, MatProgressSpinnerModule, RouterLink, MatCardModule, MatTableModule, MatIcon],
+  imports: [MoneyPipe, TranslatePipe, CommonModule, MatProgressSpinnerModule, RouterLink, MatCardModule, MatTableModule, MatIcon],
   templateUrl: './user-price-drop-subscriptions.component.html',
   styleUrl: './user-price-drop-subscriptions.component.scss',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserPriceDropSubscriptionsComponent implements OnInit {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
   private subscriptionService = inject(SubscriptionService);

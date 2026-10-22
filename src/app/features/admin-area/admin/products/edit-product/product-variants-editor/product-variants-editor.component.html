@@ -69,6 +69,7 @@
 
         <mat-form-field appearance="outline" class="bulk-input">
           <mat-label>{{ TranslationKeys.Admin.Common.Price | translate }}</mat-label>
+          <span matSuffix>{{ shopCurrency.currency() ?? '—' }}</span>
           <input matInput type="number" min="0" [(ngModel)]="bulkPrice" [ngModelOptions]="{ standalone: true }">
         </mat-form-field>
         <button type="button" mat-stroked-button (click)="applyBulkPrice()">
@@ -153,6 +154,7 @@
 
       <mat-form-field appearance="outline" class="variant-price">
         <mat-label>{{ TranslationKeys.Admin.Common.Price | translate }}</mat-label>
+          <span matSuffix>{{ shopCurrency.currency() ?? '—' }}</span>
         <input matInput type="number" min="0" [ngModel]="row.price" [ngModelOptions]="{ standalone: true }"
           (ngModelChange)="updateRow(rowIndex, { price: $event })">
       </mat-form-field>

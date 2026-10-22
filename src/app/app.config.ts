@@ -10,6 +10,7 @@ import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { languageInterceptor } from './core/interceptors/language.interceptor';
 import { LanguageService } from './core/services/language.service';
+import { ShopCurrencyService } from './core/services/shop-currency.service';
 import { TranslationService } from './core/i18n/translation.service';
 import { registerAppLocales } from './core/i18n/locale-registry';
 import { LocalizedMatPaginatorIntl } from './core/i18n/localized-paginator-intl';
@@ -33,8 +34,9 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       inject(LanguageService).initialize();
       inject(TranslationService).initialize();
+      inject(ShopCurrencyService).initialize();
     }),
-    // The user's language drives currency/date/number formatting. Bound at
+    // Language controls number/date presentation; money always receives an explicit currency. Bound at
     // bootstrap; LanguageService.setLanguage() reloads the app to re-evaluate it.
     {
       provide: LOCALE_ID,

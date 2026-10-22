@@ -1,14 +1,14 @@
 @if(basket(); as currentBasket)
 {
   <div class="basket-container">
-    <app-basket-summary (increment)="incrementItemQuantity($event)"
+    <app-basket-summary [currency]="shopCurrency.currency()" (increment)="incrementItemQuantity($event)"
       (decrement)="decrementItemQuantity($event)" (remove)="removeBasketItem($event)"
       [items]="currentBasket.items">
     </app-basket-summary>
 
     @if(basketTotals(); as basketT)
     {
-      <app-order-totals [shippingPrice]="basketT.shipping" [subtotal]="basketT.subtotal" [total]="basketT.total">
+      <app-order-totals [currency]="shopCurrency.currency()" [shippingPrice]="basketT.shipping" [subtotal]="basketT.subtotal" [total]="basketT.total">
       </app-order-totals>
     }
 

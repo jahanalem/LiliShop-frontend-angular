@@ -4,14 +4,18 @@ import { IProduct } from '../models/product';
 import { IDiscount } from '../models/discount-system';
 import { TranslationService } from 'src/app/core/i18n/translation.service';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
+import { formatMoney } from '../currency';
+import { unavailableCurrency } from './money.pipe';
 
 @Pipe({
   name: 'formatValue',
-  standalone: true
+  standalone: true,
+  pure: false
 })
 export class FormatValuePipe implements PipeTransform {
-  // Language switches reload the app, so LOCALE_ID and the dictionary are stable for the
-  // lifetime of this (pure) pipe — same reasoning as the app-wide LOCALE_ID binding.
+  // Currency may arrive after the table first renders; refresh when its signal changes.
+  private shopCurrency = inject(ShopCurrencyService);
   private locale = inject(LOCALE_ID);
   private translationService = inject(TranslationService);
 
@@ -20,7 +24,7 @@ export class FormatValuePipe implements PipeTransform {
 
     switch (columnName) {
       case 'price':
-        return `$${value.toFixed(2)}`; // Formats value as currency
+        return formatMoney(value, this.shopCurrency.currency(), this.locale) ?? unavailableCurrency(this.translationService);
       case 'quantity':
         return this.translationService.translate(TranslationKeys.Admin.Common.Units, [value]);
       case 'createdDate':

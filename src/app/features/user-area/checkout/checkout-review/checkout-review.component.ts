@@ -1,3 +1,4 @@
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
 import { BasketSummaryComponent } from 'src/app/shared/components/basket-summary/basket-summary.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,6 +26,7 @@ import { TranslationService } from 'src/app/core/i18n/translation.service';
     imports: [TranslatePipe, BasketSummaryComponent, MatButtonModule, MatIconModule, CdkStepperModule]
 })
 export class CheckoutReviewComponent implements OnInit, OnDestroy {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
   appStepper = input.required<CdkStepper>();

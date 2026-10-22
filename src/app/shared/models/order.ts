@@ -17,6 +17,7 @@ export interface IOrder {
   subtotal      : number;
   status        : string;
   total         : number;
+  currency      : string | null;
 }
 
 export interface IOrderItem {

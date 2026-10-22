@@ -1,3 +1,5 @@
+import { MoneyPipe } from 'src/app/shared/pipes/money.pipe';
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
@@ -25,10 +27,11 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
   styleUrls: ['./price-drop-subscription.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
+  imports: [MoneyPipe,
     TranslatePipe,CommonModule, RouterModule, MatFormFieldModule, MatPaginatorModule, MatInputModule, MatTableModule, MatIconModule, MatSortModule]
 })
 export class PriceDropSubscriptionComponent implements OnInit, AfterViewInit, OnDestroy {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
   paginator = viewChild.required<MatPaginator>(MatPaginator);

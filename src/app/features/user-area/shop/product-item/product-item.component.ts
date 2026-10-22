@@ -1,4 +1,6 @@
-import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
+import { MoneyPipe } from 'src/app/shared/pipes/money.pipe';
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
+import { NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,8 +16,7 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
     styleUrls: ['./product-item.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [TranslatePipe, 
-        CurrencyPipe,
+    imports: [MoneyPipe, TranslatePipe,
         MatIconModule,
         MatButtonModule,
         RouterModule,
@@ -23,6 +24,7 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
     ]
 })
 export class ProductItemComponent {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
   private basketService = inject(BasketService);

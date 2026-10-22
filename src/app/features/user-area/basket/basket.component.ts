@@ -1,3 +1,4 @@
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
 import { OrderTotalsComponent } from 'src/app/shared/components/order-totals/order-totals.component';
 import { BasketSummaryComponent } from 'src/app/shared/components/basket-summary/basket-summary.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,6 +21,7 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
   imports: [TranslatePipe, RouterModule, OrderTotalsComponent, BasketSummaryComponent, MatButtonModule, MatIconModule, MatCardModule]
 })
 export class BasketComponent implements OnInit {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
   private basketService = inject(BasketService);

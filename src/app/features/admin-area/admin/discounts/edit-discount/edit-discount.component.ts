@@ -1,4 +1,7 @@
-import { Component, inject, signal, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { formatMoney } from 'src/app/shared/currency';
+import { unavailableCurrency } from 'src/app/shared/pipes/money.pipe';
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
+import { Component, computed, LOCALE_ID, inject, signal, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 
@@ -45,6 +48,7 @@ import { TranslationService } from 'src/app/core/i18n/translation.service';
   styleUrl: './edit-discount.component.scss'
 })
 export class EditDiscountComponent implements OnInit, OnDestroy {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
   isEditMode = false;
@@ -56,7 +60,13 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
 
   brands: IBrand[]       = [];
   types : IProductType[] = [];
-  tierOptions     = signal<ITierOption[]>([]);
+  private readonly tierValues = signal<Array<{ amount: number; isPercentage: boolean; isFreeShipping: boolean }>>([]);
+  readonly tierOptions = computed<ITierOption[]>(() => this.tierValues().map((tier, index) => {
+    let label = tier.isPercentage ? `${tier.amount}%`
+      : formatMoney(tier.amount, this.shopCurrency.currency(), this.locale) ?? unavailableCurrency(this.translationService);
+    if (tier.isFreeShipping) label += ` ${this.translationService.translate(TranslationKeys.Admin.Discounts.FreeShippingSuffix)}`;
+    return { label, value: index };
+  }));
 
   discount = signal<IDiscount | undefined>(undefined);
 
@@ -75,6 +85,8 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
   private translationService  = inject(TranslationService);
 
   destroy$ = new Subject<void>();
+
+  private readonly locale = inject(LOCALE_ID);
 
   constructor() { }
 
@@ -226,7 +238,6 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
           conditionGroupsArray.push(newGroup);
         });
 
-        this.tierOptions.set([...this.tierOptions()]);
       }
     } catch (error) {
       console.error("Error loading discount:", error);
@@ -376,21 +387,11 @@ export class EditDiscountComponent implements OnInit, OnDestroy {
   }
 
   private updateTierOptions(): void {
-    const updatedTiers = this.tiers.controls.map((tier, index) => {
-      const amount         = tier.get('amount')?.value;
-      const isPercentage   = tier.get('isPercentage')?.value;
-      const isFreeShipping = tier.get('isFreeShipping')?.value;
-
-      let label = `${amount}${isPercentage ? '%' : '€'}`;
-      if (isFreeShipping) label += ` ${this.translationService.translate(TranslationKeys.Admin.Discounts.FreeShippingSuffix)}`;
-
-      return {
-        label,
-        value: index
-      };
-    });
-
-    this.tierOptions.set(updatedTiers);
+    this.tierValues.set(this.tiers.controls.map(tier => ({
+      amount: tier.get('amount')?.value,
+      isPercentage: tier.get('isPercentage')?.value,
+      isFreeShipping: tier.get('isFreeShipping')?.value
+    })));
   }
 
   updateTargetEntityIdOptions(targetEntityType: DiscountTargetType): ITargetEntityOption[] {

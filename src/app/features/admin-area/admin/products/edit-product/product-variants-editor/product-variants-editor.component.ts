@@ -1,3 +1,4 @@
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -68,6 +69,7 @@ interface VariantRow {
     MatIconModule, MatInputModule, MatSelectModule, MatTooltipModule]
 })
 export class ProductVariantsEditorComponent implements OnInit {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
   /** Id of the (already saved) product whose variants are edited. */

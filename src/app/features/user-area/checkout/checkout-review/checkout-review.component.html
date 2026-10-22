@@ -1,5 +1,5 @@
 @if(basket(); as basket){
-<app-basket-summary
+<app-basket-summary [currency]="shopCurrency.currency()"
     [isBasket]="false"
     [items]="basket.items">
 </app-basket-summary>
