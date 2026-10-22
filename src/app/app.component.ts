@@ -1,11 +1,14 @@
 import { RouterModule } from '@angular/router';
-import { Component, AfterViewInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, AfterViewInit, ChangeDetectionStrategy, Injector, inject } from '@angular/core';
 import { AccountService } from './core/services/account.service';
 import { BasketService } from './core/services/basket.service';
 import { StorageService } from './core/services/storage.service';
 import { IconService } from './core/services/icon.service';
 import { LOCAL_STORAGE_KEYS } from './shared/constants/auth';
 import { firstValueFrom } from 'rxjs';
+import { ShopCurrencyService } from './core/services/shop-currency.service';
+import { TranslationService } from './core/i18n/translation.service';
+import { unavailableCurrency } from './shared/pipes/money.pipe';
 
 
 @Component({
@@ -17,6 +20,13 @@ import { firstValueFrom } from 'rxjs';
   imports: [RouterModule]
 })
 export class AppComponent implements AfterViewInit {
+  readonly shopCurrency = inject(ShopCurrencyService);
+  private readonly injector = inject(Injector);
+
+  currencyErrorMessage(): string {
+    return unavailableCurrency(this.injector.get(TranslationService));
+  }
+
   isTesting = false;
 
   private basketService  = inject(BasketService);

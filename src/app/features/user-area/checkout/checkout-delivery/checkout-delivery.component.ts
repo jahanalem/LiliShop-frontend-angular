@@ -1,3 +1,5 @@
+import { MoneyPipe } from 'src/app/shared/pipes/money.pipe';
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ChangeDetectionStrategy, Component, inject, input, OnDestroy, OnInit, output, signal } from '@angular/core';
@@ -20,9 +22,10 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
   styleUrls: ['./checkout-delivery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [TranslatePipe, MatRadioModule,  CommonModule, MatButtonModule, MatIconModule, CdkStepperModule]
+  imports: [MoneyPipe, TranslatePipe, MatRadioModule,  CommonModule, MatButtonModule, MatIconModule, CdkStepperModule]
 })
 export class CheckoutDeliveryComponent implements OnInit, OnDestroy {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
   checkoutForm = input.required<CheckoutForm>();

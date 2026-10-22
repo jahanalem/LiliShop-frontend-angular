@@ -1,3 +1,4 @@
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
 import { OrderTotalsComponent } from 'src/app/shared/components/order-totals/order-totals.component';
 import { MatCardModule } from '@angular/material/card';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
@@ -42,6 +43,7 @@ export interface CheckoutData {
   imports: [TranslatePipe, MatStepperModule, CheckoutAddressComponent, CheckoutDeliveryComponent, CheckoutReviewComponent, CheckoutPaymentComponent, OrderTotalsComponent, MatCardModule]
 })
 export class CheckoutComponent implements OnInit {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
   basketTotals = signal<IBasketTotals | null>(null);

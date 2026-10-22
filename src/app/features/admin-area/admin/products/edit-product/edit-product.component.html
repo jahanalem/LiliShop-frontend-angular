@@ -94,7 +94,7 @@
           <mat-label>{{ TranslationKeys.Admin.Products.BasePrice | translate }}</mat-label>
           <input [formField]="productForm.price" matInput #inputPrice type="number" step="0.01"
            >
-          <span matPrefix>€&nbsp;</span>
+          <span matPrefix>{{ shopCurrency.currency() ?? '—' }}&nbsp;</span>
         </mat-form-field>
 
         <div class="admin-banner">
@@ -116,6 +116,7 @@
           <div class="admin-form-row">
             <mat-form-field appearance="outline" class="input-field">
               <mat-label>{{ TranslationKeys.Admin.Products.DiscountAmount | translate }}</mat-label>
+              <span matSuffix>{{ productModel().isPercentage ? '%' : (shopCurrency.currency() ?? '—') }}</span>
               <input [formField]="productForm.discountAmount" matInput type="number" step="0.01"
                >
             </mat-form-field>

@@ -15,7 +15,7 @@
     <!-- Total Column -->
     <ng-container matColumnDef="total">
       <mat-header-cell *matHeaderCellDef> {{ TranslationKeys.Orders.Total | translate }} </mat-header-cell>
-      <mat-cell *matCellDef="let order"> {{order.total | currency}} </mat-cell>
+      <mat-cell *matCellDef="let order"> {{order.total | money:order.currency}} </mat-cell>
     </ng-container>
 
     <!-- Status Column -->

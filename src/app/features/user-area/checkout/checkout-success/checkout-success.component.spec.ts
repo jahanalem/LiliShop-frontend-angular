@@ -49,6 +49,7 @@ describe('CheckoutSuccessComponent', () => {
             shippingPrice: 10,
             subtotal: 100,
             total: 110,
+            currency: 'eur',
             status: 'Pending',
             deliveryMethod: 'Standard',
             shipToAddress: {

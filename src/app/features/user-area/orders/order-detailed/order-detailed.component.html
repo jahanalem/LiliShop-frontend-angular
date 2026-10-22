@@ -2,8 +2,8 @@
 {
 <div class="order-container mat-elevation-z2">
   <!-- Product Summary -->
-  <app-basket-summary [isOrder]="true" [isBasket]="false" [items]="orderDetails.orderItems"></app-basket-summary>
-  <app-order-totals
+  <app-basket-summary [currency]="orderDetails.currency" [isOrder]="true" [isBasket]="false" [items]="orderDetails.orderItems"></app-basket-summary>
+  <app-order-totals [currency]="orderDetails.currency"
     [shippingPrice]="orderDetails.shippingPrice"
     [subtotal]="orderDetails.subtotal"
     [total]="orderDetails.total">

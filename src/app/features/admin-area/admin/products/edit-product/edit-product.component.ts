@@ -1,3 +1,4 @@
+import { ShopCurrencyService } from 'src/app/core/services/shop-currency.service';
 import { PhotoEditorComponent } from 'src/app/shared/components/photo-editor/photo-editor.component';
 import { ProductVariantsEditorComponent } from './product-variants-editor/product-variants-editor.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -81,6 +82,7 @@ const EMPTY_FORM_MODEL: ProductFormModel = {
     TranslatePipe,FormField, FormsModule, MatFormFieldModule, MatInputModule, MatTableModule, MatIconModule, MatSelectModule, MatCheckboxModule, MatTooltipModule, MatTabsModule, MatDatepickerModule, MatTimepickerModule, MatNativeDateModule, PhotoEditorComponent, ProductVariantsEditorComponent, MatButtonModule],
 })
 export class EditProductComponent implements OnInit, OnDestroy {
+  readonly shopCurrency = inject(ShopCurrencyService);
   protected readonly TranslationKeys = TranslationKeys;
 
 

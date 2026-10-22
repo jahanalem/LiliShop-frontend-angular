@@ -1,3 +1,4 @@
+import { MoneyPipe } from 'src/app/shared/pipes/money.pipe';
 
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,7 +30,7 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
     styleUrls: ['./basket-summary.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-  imports: [TranslatePipe, 
+  imports: [MoneyPipe, TranslatePipe,
     CommonModule, RouterModule,
     MatDialogModule,
     MatIconModule,
@@ -51,6 +52,7 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
 
 })
 export class BasketSummaryComponent implements OnInit {
+  currency = input<string | null | undefined>(null);
   protected readonly TranslationKeys = TranslationKeys;
 
 

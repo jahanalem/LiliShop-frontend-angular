@@ -26,10 +26,10 @@
 
     <p class="product-card__price">
       @if (p.previousPrice) {
-        <span class="product-card__price-current product-card__price-current--sale">{{ p.price | currency }}</span>
-        <s class="product-card__price-old">{{ p.previousPrice | currency }}</s>
+        <span class="product-card__price-current product-card__price-current--sale">{{ p.price | money:shopCurrency.currency() }}</span>
+        <s class="product-card__price-old">{{ p.previousPrice | money:shopCurrency.currency() }}</s>
       } @else {
-        <span class="product-card__price-current">{{ p.price | currency }}</span>
+        <span class="product-card__price-current">{{ p.price | money:shopCurrency.currency() }}</span>
       }
     </p>
 

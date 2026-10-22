@@ -18,14 +18,14 @@
             @if (isDiscountActive()) {
               <div class="price-section">
                 <p class="original-price" style="text-decoration: line-through; color: #888;">
-                  {{ displayPreviousPrice() | currency }}
+                  {{ displayPreviousPrice() | money:shopCurrency.currency() }}
                 </p>
                 <p class="price" style="color: #e53935; font-weight: bold;">
-                  {{ displayPrice() | currency }}
+                  {{ displayPrice() | money:shopCurrency.currency() }}
                 </p>
                 </div>
             } @else {
-              <p class="price">{{ displayPrice() | currency }}</p>
+              <p class="price">{{ displayPrice() | money:shopCurrency.currency() }}</p>
             }
 
             @for (axis of axes(); track axis.attributeId) {
