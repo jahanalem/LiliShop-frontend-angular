@@ -16,6 +16,11 @@ export class MoneyPipe implements PipeTransform {
   private readonly translations = inject(TranslationService);
 
   transform(value: number | null | undefined, currency: unknown): string {
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      const key = TranslationKeys.Money.AmountUnavailable;
+      const label = this.translations.translate(key);
+      return label === key ? 'Amount unavailable' : label;
+    }
     return formatMoney(value, currency, this.locale) ?? unavailableCurrency(this.translations);
   }
 }

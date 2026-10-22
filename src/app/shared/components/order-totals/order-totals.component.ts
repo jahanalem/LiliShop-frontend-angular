@@ -53,9 +53,9 @@ export class OrderTotalsComponent implements OnInit {
   currency = input<string | null | undefined>(null);
   protected readonly TranslationKeys = TranslationKeys;
 
-  shippingPrice = input<number>(0);
+  shippingPrice = input<number | null | undefined>(0);
   subtotal      = input<number>(0);
-  total         = input<number>(0);
+  total         = input<number | null | undefined>(0);
 
   constructor() { }
 

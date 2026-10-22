@@ -12,11 +12,12 @@ export interface IOrder {
   orderDate     : string;
   shipToAddress : IAddress;
   deliveryMethod: string;
-  shippingPrice : number;
+  shippingPrice : number | null;
   orderItems    : IOrderItem[];
   subtotal      : number;
   status        : string;
-  total         : number;
+  total         : number | null;
+  moneySnapshotState?: 'Unresolved' | 'Captured' | 'RecoveredFromInvoice';
   currency      : string | null;
 }
 

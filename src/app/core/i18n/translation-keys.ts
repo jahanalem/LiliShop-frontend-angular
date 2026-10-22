@@ -448,6 +448,9 @@ export const TranslationKeys = {
   Currency: {
     Unavailable: 'Currency.Unavailable',
   },
+  Money: {
+    AmountUnavailable: 'Money.AmountUnavailable',
+  },
   Email: {
     Common: {
       ButtonFallback: 'Email.Common.ButtonFallback',

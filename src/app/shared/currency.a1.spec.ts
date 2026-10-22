@@ -313,4 +313,17 @@ describe('A1 currency regression: real consuming views', () => {
     const suffixes = [...fixture.nativeElement.querySelectorAll('.tier-group [matSuffix]')].map((node: any) => node.textContent.trim());
     expect(suffixes).toEqual(['GBP', '%']);
   });
+  for (const locale of ['en', 'de', 'fa']) {
+    it(`A3 shows unresolved order amounts separately from currency and confirmed zero in ${locale}`, async () => {
+      await setup(locale, 'eur', [{ ...savedOrder, shippingPrice: null, total: null, moneySnapshotState: 'Unresolved' }]);
+      const list = await render(OrdersComponent);
+      expect(text(list, '.mat-column-total:not(mat-header-cell)')).toContain('Amount unavailable');
+      const detail = await render(OrderDetailedComponent);
+      const amounts = [...detail.nativeElement.querySelectorAll('app-order-totals strong')].map((n: any) => clean(n.textContent));
+      expect(amounts).toEqual([expectedMoney(59.8, 'USD', locale), 'Amount unavailable', 'Amount unavailable']);
+      expect(text(detail, '.cart-item .price')).toBe(expectedMoney(29.9, 'USD', locale));
+      expect(text(detail, 'app-order-totals')).not.toContain('Currency unavailable');
+    });
+  }
+
 });
