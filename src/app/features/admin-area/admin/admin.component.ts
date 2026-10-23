@@ -48,6 +48,7 @@ export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit 
 
   // Labels are translation keys — the sidenav renders them through the translate pipe.
   navItems = [
+    { name: 'Fulfillment.Queue', link: '/admin/fulfillment', icon: 'pending_actions' },
     { name: TranslationKeys.Admin.Nav.Dashboard, link: '/admin',                     icon: 'dashboard' },
     { name: TranslationKeys.Admin.Nav.Products,  link: '/admin/products',            icon: 'storefront' },
     { name: TranslationKeys.Admin.Nav.Brands,    link: '/admin/brands',              icon: 'verified' },

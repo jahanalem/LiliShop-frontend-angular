@@ -1,0 +1,57 @@
+<section class="container py-4">
+  <h1>{{ t('Queue') }}</h1>
+  @if (error()) { <p role="alert">{{ t('Conflict') }}</p> }
+  <label for="operator-reason">{{ t('OperatorReason') }}</label>
+  <input id="operator-reason" class="form-control mb-3" maxlength="250" [(ngModel)]="reason" />
+  @if (control(); as c) {
+    <p>{{ t('Worker') }}: {{ t(c.enabled ? 'Enabled' : 'Disabled') }}
+      <button mat-stroked-button [disabled]="busy() || !reason.trim()" (click)="toggle()">{{ t(c.enabled ? 'Disable' : 'Enable') }}</button>
+    </p>
+  }
+  @if (id) {
+    <a routerLink="/admin/fulfillment">{{ t('Back') }}</a>
+    <button mat-button (click)="load()">{{ t('Refresh') }}</button>
+    @if (detail(); as d) {
+      <dl class="mt-3">
+        <dt>{{ t('Order') }}</dt><dd>{{ d.orderId }}</dd>
+        <dt>{{ t('Handoff') }}</dt><dd>{{ d.id }}</dd>
+        <dt>{{ t('Attempt') }}</dt><dd>{{ d.attemptId }}</dd>
+        <dt>{{ t('Lines') }}</dt><dd>{{ d.lines.length }} / {{ d.totalLines }}</dd>
+      </dl>
+      @if (d.execution; as e) {
+        <p>{{ t('State') }}: {{ t(e.state) }} · {{ t('Stage') }}: {{ t(e.stage) }}</p>
+        <p>{{ t('Attempts') }}: {{ e.attempts }} · {{ t('NextAttempt') }}: {{ e.nextAttemptAt | date:'medium' }}</p>
+        <p>{{ t('Lease') }}: {{ e.leaseUntil | date:'medium' }} · {{ t('Reason') }}: {{ e.reason }}</p>
+        <button mat-raised-button [disabled]="busy() || !reason.trim() || !canRetry(e.state)" (click)="retry()">{{ t('RetryAction') }}</button>
+        @if (e.invoiceId) { <a class="ms-3" [routerLink]="['/admin/invoices', e.invoiceId]">{{ t('InvoiceLink') }}</a> }
+      }
+      <table class="table mt-3"><thead><tr><th>{{ t('Line') }}</th><th>{{ t('Quantity') }}</th><th>{{ t('Reservation') }}</th><th>{{ t('Ledger') }}</th></tr></thead>
+        <tbody>@for (line of d.lines; track line.orderItemId) { <tr><td>{{ line.orderItemId }}</td><td>{{ line.quantity }}</td><td>{{ line.reservationId }}</td><td>{{ line.deductionId }}</td></tr> }</tbody>
+      </table>
+      @if (d.email; as m) {
+        <h2>{{ t('Email') }}</h2><p>{{ t(m.state) }} · {{ t('Attempts') }}: {{ m.attempts }}</p>
+        <p>{{ m.id }} · {{ t('Reason') }}: {{ m.reason }} · {{ t('NextAttempt') }}: {{ m.nextAttemptAt | date:'medium' }}</p>
+        @if (m.state === 'UnknownDelivery') { <p role="status">{{ t('UnknownPolicy') }}</p> }
+        <button mat-stroked-button [disabled]="busy() || !reason.trim() || !canRetry(m.state)" (click)="retry(true)">{{ t('RetryEmail') }}</button>
+      }
+      <h2 class="mt-4">{{ t('Audit') }}</h2>
+      <table class="table"><thead><tr><th>{{ t('Time') }}</th><th>{{ t('Actor') }}</th><th>{{ t('Action') }}</th><th>{{ t('Reason') }}</th></tr></thead>
+        <tbody>@for (a of d.audit; track a.id) { <tr><td>{{ a.createdAt | date:'medium' }}</td><td>{{ a.actor }}</td><td>{{ t(a.action) }}</td><td>{{ a.reason }}</td></tr> }</tbody>
+      </table>
+    } @else { <p>{{ t('Loading') }}</p> }
+  } @else {
+    <label for="work-filter">{{ t('Filter') }}</label>
+    <select id="work-filter" class="form-select mb-3" [(ngModel)]="state" (ngModelChange)="filter()">
+      @for (s of filters; track s) { <option [value]="s">{{ t(s || 'All') }}</option> }
+    </select>
+    @if (list(); as result) {
+      <table class="table"><thead><tr><th>{{ t('Order') }}</th><th>{{ t('State') }}</th><th>{{ t('Stage') }}</th><th>{{ t('Email') }}</th><th>{{ t('Details') }}</th></tr></thead>
+        <tbody>@for (row of result.data; track row.id) { <tr><td>{{ row.orderId }}</td><td>{{ t(row.state) }}</td><td>{{ t(row.stage) }}</td><td>{{ t(row.emailState) }}</td><td><a [routerLink]="['/admin/fulfillment', row.id]">{{ t('Details') }}</a></td></tr> }</tbody>
+      </table>
+      @if (!result.count) { <p>{{ t('Empty') }}</p> }
+      <button mat-button [disabled]="page <= 1" (click)="move(-1)">{{ t('Previous') }}</button>
+      <span>{{ page }}</span>
+      <button mat-button [disabled]="page * result.pageSize >= result.count" (click)="move(1)">{{ t('Next') }}</button>
+    }
+  }
+</section>

@@ -1,3 +1,5 @@
+import { FulfillmentService } from 'src/app/core/services/fulfillment.service';
+import { TranslationService } from 'src/app/core/i18n/translation.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -7,6 +9,8 @@ describe('CheckoutSuccessComponent server truth',()=>{
   function render(state:string,id:string|null='saved',failed=false) {
     const status=vi.fn().mockReturnValue(failed ? throwError(()=>new Error('offline')) : of({id:'saved',state,orderId:42}));
     TestBed.configureTestingModule({providers:[provideRouter([]),
+      {provide:TranslationService,useValue:{translate:(key:string)=>key}},
+      {provide:FulfillmentService,useValue:{status:()=>of({processing:'Pending',email:'Pending',completedLines:0,totalLines:1})}},
       {provide:ActivatedRoute,useValue:{snapshot:{queryParamMap:convertToParamMap(id?{checkout:id}:{})}}},
       {provide:CheckoutService,useValue:{status}}]});
     const fixture=TestBed.createComponent(CheckoutSuccessComponent);fixture.detectChanges();return {fixture,status};

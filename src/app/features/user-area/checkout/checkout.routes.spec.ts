@@ -63,6 +63,11 @@ describe('checkout status router integration', () => {
     const request = http.expectOne(request => request.url.endsWith(`/checkout/${id}`));
     expect(request.request.method).toBe('GET');
     request.flush(view);
+    if (view.state === 'PaymentVerified') {
+      const progress = http.expectOne(r => r.url.endsWith(`/fulfillment/orders/${view.orderId}`));
+      expect(progress.request.method).toBe('GET');
+      progress.flush({ orderId: view.orderId, paymentReceived: true, processing: 'Pending', completedLines: 0, totalLines: 1, invoiceId: null, email: 'Pending' });
+    }
     harness.detectChanges();
   }
 

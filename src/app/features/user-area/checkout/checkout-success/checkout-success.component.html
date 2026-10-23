@@ -1,13 +1,21 @@
 <section class="confirmation-container">
   <div class="confirmation-card">
-    <h2 class="confirmation-title">Payment status</h2>
+    <h2 class="confirmation-title">{{ t('PaymentTitle') }}</h2>
     <p class="confirmation-message" role="status" aria-live="polite">{{ message() }}</p>
+    @if (processing(); as progress) {
+      <div role="status" aria-live="polite">
+        <p>{{ t(progress.processing === 'Complete' ? 'ProcessingComplete' : progress.processing === 'ReviewRequired' ? 'ProcessingReview' : 'ProcessingPending') }}</p>
+        <p>{{ t('Lines') }}: {{ progress.completedLines }} / {{ progress.totalLines }}</p>
+        <p>{{ t(progress.email === 'Accepted' ? 'EmailAccepted' : progress.email === 'UnknownDelivery' ? 'EmailUnknown' : progress.email === 'ReviewRequired' ? 'EmailReview' : 'EmailPending') }}</p>
+      </div>
+    }
+    @if (processingError()) { <p role="status">{{ t('ProcessingUnavailable') }}</p> }
     <div class="confirmation-buttons">
-      <button mat-stroked-button (click)="refresh()">Check again</button>
+      <button mat-stroked-button (click)="refresh()">{{ t('Refresh') }}</button>
       @if (checkout()?.orderId; as orderId) {
-        <a mat-raised-button color="primary" [routerLink]="['/orders',orderId]">View your order</a>
+        <a mat-raised-button color="primary" [routerLink]="['/orders',orderId]">{{ t('ViewOrder') }}</a>
       } @else {
-        <a mat-raised-button color="primary" routerLink="/orders">View your orders</a>
+        <a mat-raised-button color="primary" routerLink="/orders">{{ t('ViewOrders') }}</a>
       }
     </div>
   </div>
