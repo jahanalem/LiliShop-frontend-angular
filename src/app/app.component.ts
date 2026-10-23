@@ -61,9 +61,7 @@ export class AppComponent implements AfterViewInit {
 
   async loadCurrentUser(): Promise<void> {
     const token = this.storageService.get<string>(LOCAL_STORAGE_KEYS.AUTH_TOKEN);
-    if (!token) {
-      return;
-    }
+    // Publish anonymous state as well, so direct guarded navigation can finish.
     try {
       await firstValueFrom(this.accountService.loadCurrentUser(token));
     }

@@ -71,13 +71,13 @@ describe('AppComponent', () => {
         expect(accountServiceSpy.loadCurrentUser).toHaveBeenCalledWith('test_token');
     });
 
-    it('should not load current user if token does not exist in local storage', () => {
+    it('publishes anonymous state so guarded direct routes can resolve without a token', () => {
         vi.spyOn(localStorage, 'getItem').mockReturnValue(null);
         accountServiceSpy.loadCurrentUser.mockReturnValue(of(null));
 
         component.loadCurrentUser();
 
-        expect(accountServiceSpy.loadCurrentUser).not.toHaveBeenCalled();
+        expect(accountServiceSpy.loadCurrentUser).toHaveBeenCalledWith(null);
     });
 
     it('should handle basketService errors gracefully', async () => {
