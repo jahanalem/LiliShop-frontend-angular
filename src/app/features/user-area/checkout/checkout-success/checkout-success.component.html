@@ -1,32 +1,13 @@
 <section class="confirmation-container">
   <div class="confirmation-card">
-    <div class="confirmation-icon">
-      <i class="fa fa-check"></i>
-    </div>
-    <h2 class="confirmation-title">
-      {{ TranslationKeys.Checkout.ThankYou | translate: [(currentUser$ | async)?.displayName ?? ''] }}
-    </h2>
-    <p class="confirmation-message">
-      {{ TranslationKeys.Checkout.NotShippedNote | translate }}
-    </p>
+    <h2 class="confirmation-title">Payment status</h2>
+    <p class="confirmation-message" role="status" aria-live="polite">{{ message() }}</p>
     <div class="confirmation-buttons">
-      @if (order()) {
-        <button
-          mat-raised-button
-          color="primary"
-          routerLink="/orders/{{ order().id }}"
-          >
-          {{ TranslationKeys.Checkout.ViewYourOrder | translate }}
-        </button>
-      }
-      @if (!order()) {
-        <button
-          mat-raised-button
-          color="primary"
-          routerLink="/orders"
-          >
-          {{ TranslationKeys.Checkout.ViewYourOrders | translate }}
-        </button>
+      <button mat-stroked-button (click)="refresh()">Check again</button>
+      @if (checkout()?.orderId; as orderId) {
+        <a mat-raised-button color="primary" [routerLink]="['/orders',orderId]">View your order</a>
+      } @else {
+        <a mat-raised-button color="primary" routerLink="/orders">View your orders</a>
       }
     </div>
   </div>

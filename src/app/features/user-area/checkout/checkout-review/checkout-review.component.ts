@@ -42,7 +42,7 @@ export class CheckoutReviewComponent implements OnInit, OnDestroy {
   constructor() { }
 
   ngOnInit(): void {
-    this.basketService.basket$.subscribe(basket => {
+    this.basketService.basket$.pipe(takeUntil(this.destroy$)).subscribe(basket => {
       this.basket.set(basket);
     });
   }
@@ -56,13 +56,7 @@ export class CheckoutReviewComponent implements OnInit, OnDestroy {
     this.accountService.getCurrentUser().subscribe(() => {
       this.accountService.currentUser$.pipe(take(1)).subscribe((user: IUser | null) => {
         if (user?.emailConfirmed) {
-          this.basketService.createPaymentIntent().pipe(takeUntil(this.destroy$)).subscribe({
-            next: () => { this.appStepper()?.next(); },
-            error: error => {
-              console.error(error);
-              //TODO: Show a proper message to the user
-            }
-          });
+          this.appStepper()?.next();
         } else {
           const dialogData: IDialogData = {
             content: this.translationService.translate(TranslationKeys.Checkout.EmailConfirmContent),

@@ -2,14 +2,13 @@ import { TextInputComponent } from 'src/app/shared/components/text-input/text-in
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { PaymentIntentResult, Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement, StripeElementStyle } from '@stripe/stripe-js';
-import { AfterViewInit, ChangeDetectionStrategy, Component, DOCUMENT, effect, ElementRef, inject, Injector, input, OnDestroy, signal, viewChild } from '@angular/core';
-import { IBasket } from 'src/app/shared/models/basket';
-import { NavigationExtras, Router } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
+import { Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement, StripeElementStyle } from '@stripe/stripe-js';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DOCUMENT, effect, ElementRef, inject, Injector, input, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { lastValueFrom, Subscription, timer, exhaustMap, take } from 'rxjs';
+import { CheckoutView } from 'src/app/shared/models/checkout';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { CheckoutService } from 'src/app/core/services/checkout.service';
-import { IOrder, IOrderToCreate } from 'src/app/shared/models/order';
 import { getStripeInstance } from 'src/app/core/helpers/stripe-utils';
 import { environment } from 'src/environments/environment';
 import { NotificationService } from 'src/app/core/services/notification.service';
@@ -18,7 +17,6 @@ import { type CheckoutForm } from '../checkout.component';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 import { TranslatePipe } from 'src/app/core/i18n/translate.pipe';
 import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
-import { TranslationService } from 'src/app/core/i18n/translation.service';
 
 @Component({
   selector: 'app-checkout-payment',
@@ -28,7 +26,7 @@ import { TranslationService } from 'src/app/core/i18n/translation.service';
   standalone: true,
   imports: [TranslatePipe, TextInputComponent, MatButtonModule, MatIconModule, MatCardModule, CdkStepperModule]
 })
-export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
+export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnInit {
   protected readonly TranslationKeys = TranslationKeys;
 
   checkoutForm = input.required<CheckoutForm>();
@@ -49,9 +47,19 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   cardExpiryValid = signal(false);
   cardCvcValid = signal(false);
   loading = signal(false);
+  readonly checkout = signal<CheckoutView|null>(null);
+  readonly statusMessage = signal('');
+  private polling?: Subscription;
+  private destroyed = false;
+
+  ngOnInit(): void {
+    this.polling = this.checkoutService.retainedStatus().subscribe({
+      next: view => { if(view) { this.acceptStatus(view); if(view.state==='Preparing' || view.state==='Ready') this.pollStatus(view.id); } },
+      error: () => this.statusMessage.set('Your saved payment status is unavailable. Please retry; your checkout identity is retained.')
+    });
+  }
 
   private basketService = inject(BasketService);
-  private translationService = inject(TranslationService);
   private checkoutService = inject(CheckoutService);
   public notificationService = inject(NotificationService);
   private router = inject(Router);
@@ -60,6 +68,8 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   private document = inject(DOCUMENT);
 
   ngOnDestroy(): void {
+    this.destroyed=true;
+    this.polling?.unsubscribe();
     try {
       this.cardNumber?.destroy();
       this.cardExpiry?.destroy();
@@ -88,7 +98,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
 
     // Stripe Elements render inside a cross-origin iframe and can't read our
     // --ls-* CSS variables, so without an explicit color the card text keeps
-    // Stripe's default near-black — invisible on the dark-mode surface. Push
+    // Stripe's default near-black ط£آ¢أ¢â€ڑآ¬أ¢â‚¬â€Œ invisible on the dark-mode surface. Push
     // resolved theme colors in again whenever the theme is toggled.
     effect(() => {
       this.themeService.theme();
@@ -138,85 +148,74 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   }
 
   async submitOrder(): Promise<void> {
+    if(this.loading() || this.destroyed) return;
     this.loading.set(true);
-
-    const basket = this.basketService.getCurrentBasketValue();
-    if (!basket) {
-      this.loading.set(false);
-      return;
-    }
-
+    const basket=this.basketService.getCurrentBasketValue();
+    if(!basket) { this.loading.set(false); return; }
     try {
-      const [createdOrder, paymentResult] = await Promise.all([
-        this.createOrder(basket),
-        this.confirmPaymentWithStripe(basket),
-      ]);
-
-      if (paymentResult.paymentIntent) {
-        this.handleSuccessfulPayment(createdOrder, basket);
-      } else {
-        this.notificationService.showError(paymentResult.error.message ?? this.translationService.translate(TranslationKeys.ClientError.Unexpected));
-      }
-    } catch (error) {
-      console.error('An error occurred while submitting the order:', error);
-    } finally {
-      this.loading.set(false);
-    }
+      const deliveryMethodId=this.checkoutForm().delivery.deliveryMethod().value();
+      if(deliveryMethodId==null) throw new Error('Delivery method required');
+      const prepared=await lastValueFrom(this.checkoutService.prepareCheckout({basketId:basket.id,deliveryMethodId,
+        shipToAddress:this.checkoutForm().address().value(),
+        lines:basket.items.map(item=>({productId:item.id,productVariantId:item.productVariantId??undefined,quantity:item.quantity}))}));
+      if(this.destroyed) return;
+      this.acceptStatus(prepared);
+      if(prepared.state!=='Ready') { if(prepared.state==='Preparing') this.pollStatus(prepared.id); return; }
+      const confirmation=await lastValueFrom(this.checkoutService.confirmation(prepared.id));
+      if(this.destroyed) return;
+      this.acceptStatus(confirmation.checkout);
+      if(!confirmation.clientSecret) { this.pollStatus(prepared.id); return; }
+      const result=await this.stripe.confirmCardPayment(confirmation.clientSecret, {payment_method: {
+        card:this.cardNumber,billing_details:{name:this.checkoutForm().payment.nameOnCard().value()}
+      }});
+      if(this.destroyed) return;
+      if(result.error) this.notificationService.showError(result.error.message ?? 'Payment confirmation could not be completed.');
+      // A browser callback, including success, cannot release an order. Read signed server verification.
+      this.statusMessage.set('Checking payment status. You can safely reload this page.');
+      this.pollStatus(prepared.id);
+    } catch(error: any) {
+      const code=error?.error?.code;
+      this.statusMessage.set(code==='checkout_paused' || code==='fulfillment_release_not_ready'
+        ? 'Checkout is temporarily unavailable. Your saved checkout is retained.'
+        : code==='checkout_input_changed' ? 'Your purchase changed. Resume or cancel the saved checkout before starting another.'
+        : 'Payment status is uncertain. Retry the saved checkout; do not start another payment.');
+    } finally { this.loading.set(false); }
   }
 
-  private handleSuccessfulPayment(createdOrder: IOrder, basket: IBasket): void {
-    this.basketService.deleteBasket(basket).subscribe({
-      next: () => console.log('Basket deleted'),
-      error: (error: any) => console.error('Error deleting basket:', error),
-    });
-
-    const navigationExtras: NavigationExtras = { state: { order: createdOrder } };
-    this.router.navigate(['checkout/success'], navigationExtras);
-  }
-
-  public async confirmPaymentWithStripe(basket: IBasket): Promise<PaymentIntentResult> {
-    if (!basket.clientSecret) {
-      const errorMsg = 'Client secret is missing';
-      this.notificationService.showError(errorMsg);
-      throw new Error(errorMsg);
-    }
-
-    const paymentMethodDetails = {
-      card: this.cardNumber,
-      billing_details: {
-        // Read the leaf value straight off the form node.
-        name: this.checkoutForm().payment.nameOnCard().value(),
-      },
-    };
-
-    return this.stripe.confirmCardPayment(basket.clientSecret, {
-      payment_method: paymentMethodDetails,
+  private pollStatus(id: string): void {
+    this.polling?.unsubscribe();
+    this.polling=timer(0,2000).pipe(take(15),exhaustMap(()=>this.checkoutService.status(id))).subscribe({
+      next: view => this.acceptStatus(view),
+      error: () => this.statusMessage.set('Payment status is unavailable. Your saved checkout is retained; please check again.')
     });
   }
-
-  public async createOrder(basket: IBasket): Promise<IOrder> {
-    try {
-      const orderToCreate = this.getOrderToCreate(basket);
-      return await lastValueFrom(this.checkoutService.createOrder(orderToCreate));
-    } catch (error) {
-      console.error('Error creating order:', error);
-      throw error;
-    }
-  }
-
-  private getOrderToCreate(basket: IBasket): IOrderToCreate {
-    // Read group/leaf values from the shared form node.
-    const deliveryMethodId = this.checkoutForm().delivery.deliveryMethod().value();
-    if (deliveryMethodId == null) {
-      throw new Error('No delivery method selected');
-    }
-    const shipToAddress = this.checkoutForm().address().value();
-
-    return {
-      basketId: basket.id,
-      deliveryMethodId,
-      shipToAddress,
+  private acceptStatus(view: CheckoutView): void {
+    this.checkout.set(view);
+    const messages: Record<CheckoutView['state'],string> = {
+      Preparing:'Preparing your saved checkout. Please check again shortly.', Ready:'Your checkout is ready for payment.',
+      Verifying:'Checking payment status. Please wait before trying again.', PaymentVerified:'Payment received. Your order is awaiting processing.',
+      ReviewRequired:'Your payment needs review. Please contact support before paying again.',
+      Expired:'This checkout has expired. Check its payment status before starting another.', Cancelled:'This checkout was cancelled.'
     };
+    this.statusMessage.set(messages[view.state]);
+    if(['PaymentVerified','ReviewRequired','Expired','Cancelled'].includes(view.state)) this.polling?.unsubscribe();
+    if(view.state==='PaymentVerified') this.router.navigate(['checkout/success'], {queryParams:{checkout:view.id}});
+  }
+  async resumeSavedCheckout(): Promise<void> {
+    if(this.loading()) return;
+    this.loading.set(true);
+    try {const view=await lastValueFrom(this.checkoutService.resumeSavedCheckout());if(view) this.acceptStatus(view);}
+    catch {this.statusMessage.set('The saved checkout is unavailable. Its identity is retained; please check again.');}
+    finally {this.loading.set(false);}
+  }
+  async cancelSavedCheckout(): Promise<void> {
+    if(this.loading()) return;
+    this.loading.set(true);
+    try {
+      const view=await lastValueFrom(this.checkoutService.cancelSavedCheckout());
+      if(view) { this.acceptStatus(view); if(view.state==='Cancelled') this.checkout.set(null); }
+    } catch { this.statusMessage.set('The saved checkout could not be cancelled. Resume it to establish its status first.'); }
+    finally { this.loading.set(false); }
   }
 
   onChange(event: any): void {
@@ -238,6 +237,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy {
   isActivatedSubmitButton(): boolean | undefined {
     return (
       this.loading() ||
+      ['ReviewRequired','PaymentVerified','Expired','Cancelled'].includes(this.checkout()?.state ?? '') ||
       this.checkoutForm().payment().invalid() ||
       !this.cardNumberValid() ||
       !this.cardExpiryValid() ||

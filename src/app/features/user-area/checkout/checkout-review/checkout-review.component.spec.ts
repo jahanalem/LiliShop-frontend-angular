@@ -63,7 +63,7 @@ describe('CheckoutReviewComponent', () => {
         expect(component.basket()).toBeNull();
     });
 
-    it('should call createPaymentIntent and stepper.next() on success', () => {
+    it('advances to payment without creating a provider intent', () => {
         const dummyBasket: IBasket = {
             id: 'test_basket_id',
             items: [
@@ -86,18 +86,14 @@ describe('CheckoutReviewComponent', () => {
         mockBasketService.createPaymentIntent.mockReturnValue(of(dummyBasket));
         component.createPaymentIntent();
 
-        expect(mockBasketService.createPaymentIntent).toHaveBeenCalled();
+        expect(mockBasketService.createPaymentIntent).not.toHaveBeenCalled();
         expect(stepper.next).toHaveBeenCalled();
     });
 
-    it('should handle error in createPaymentIntent', () => {
-        const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
-        const error = { message: 'Error creating payment intent.' };
-        mockBasketService.createPaymentIntent.mockReturnValue(throwError(() => error));
-
+    it('never invokes the retired provider preparation even when it would fail', () => {
+        mockBasketService.createPaymentIntent.mockReturnValue(throwError(() => new Error('Retired path')));
         component.createPaymentIntent();
-
-        expect(mockBasketService.createPaymentIntent).toHaveBeenCalled();
-        expect(consoleSpy).toHaveBeenCalledWith(error);
+        expect(mockBasketService.createPaymentIntent).not.toHaveBeenCalled();
+        expect(stepper.next).toHaveBeenCalled();
     });
 });

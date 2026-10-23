@@ -32,14 +32,14 @@
   </button>
 </div>
 
-<mat-card class="alert-card">
-  <mat-card-content>
-    For testing the payment, you can use the following information:<br />
-    Name on card: whatever!<br />
-    card No.: 4242 4242 4242 4242<br />
-    Date: 12/25<br />
-    CVC: 123<br /><br />
-    For more test cards, visit
-    <a href="https://stripe.com/docs/terminal/references/testing" target="_blank" rel="noopener">this link</a>.
-  </mat-card-content>
-</mat-card>
+<p role="status" aria-live="polite">{{ statusMessage() }}</p>
+@if (statusMessage() && checkout()?.state !== 'PaymentVerified') {
+  <button mat-stroked-button [disabled]="loading()" (click)="resumeSavedCheckout()">Resume saved checkout</button>
+}
+@if (checkout(); as saved) {
+  <p>Saved total: {{ saved.total }} {{ saved.currency }}</p>
+  @if (saved.state !== 'PaymentVerified') {
+    <button mat-stroked-button [disabled]="loading()" (click)="cancelSavedCheckout()">Cancel saved checkout</button>
+    <p>Cancelling closes this checkout locally. If you already submitted payment, check its status or contact support before paying again.</p>
+  }
+}

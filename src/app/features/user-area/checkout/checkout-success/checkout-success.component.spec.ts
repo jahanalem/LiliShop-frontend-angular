@@ -1,73 +1,20 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { MockedObject } from "vitest";
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
-import { of } from 'rxjs';
-import { AccountService } from 'src/app/core/services/account.service';
-import { IUser } from 'src/app/shared/models/user';
-import { IOrder } from 'src/app/shared/models/order';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { of, throwError } from 'rxjs';
+import { CheckoutService } from 'src/app/core/services/checkout.service';
 import { CheckoutSuccessComponent } from './checkout-success.component';
-
-describe('CheckoutSuccessComponent', () => {
-    let component: CheckoutSuccessComponent;
-    let fixture: ComponentFixture<CheckoutSuccessComponent>;
-    let mockAccountService: MockedObject<AccountService>;
-    let mockRouter: MockedObject<Router>;
-
-    beforeEach(async () => {
-        mockAccountService = {
-            currentUser$: of<IUser | null>(null)
-        } as unknown as MockedObject<AccountService>;
-        mockRouter = {
-            getCurrentNavigation: vi.fn().mockName("Router.getCurrentNavigation")
-        } as unknown as MockedObject<Router>;
-
-        await TestBed.configureTestingModule({
-            imports: [CheckoutSuccessComponent],
-            providers: [
-                provideRouter([]),
-                { provide: AccountService, useValue: mockAccountService }
-            ]
-        }).compileComponents();
-    });
-
-    beforeEach(() => {
-        fixture = TestBed.createComponent(CheckoutSuccessComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
-    it('should initialize with order data from router navigation state', () => {
-        const testOrder: IOrder = {
-            id: 1,
-            orderDate: '24.04.2023',
-            orderItems: [],
-            shippingPrice: 10,
-            subtotal: 100,
-            total: 110,
-            currency: 'eur',
-            status: 'Pending',
-            deliveryMethod: 'Standard',
-            shipToAddress: {
-                firstName: 'John',
-                lastName: 'Doe',
-                street: '123 Main St.',
-                city: 'Anytown',
-                state: 'CA',
-                zipCode: '12345'
-            },
-            buyerEmail: 's.r.alem@xxx.com'
-        };
-
-        mockRouter.getCurrentNavigation.mockReturnValue({
-            extras: { state: { order: testOrder } }
-        } as any);
-
-        component.initializeOrderFromNavigationState(mockRouter.getCurrentNavigation());
-        expect(component.order()).toEqual(testOrder);
-    });
+describe('CheckoutSuccessComponent server truth',()=>{
+  function render(state:string,id:string|null='saved',failed=false) {
+    const status=vi.fn().mockReturnValue(failed ? throwError(()=>new Error('offline')) : of({id:'saved',state,orderId:42}));
+    TestBed.configureTestingModule({providers:[provideRouter([]),
+      {provide:ActivatedRoute,useValue:{snapshot:{queryParamMap:convertToParamMap(id?{checkout:id}:{})}}},
+      {provide:CheckoutService,useValue:{status}}]});
+    const fixture=TestBed.createComponent(CheckoutSuccessComponent);fixture.detectChanges();return {fixture,status};
+  }
+  it('renders received only after server verification',()=>{const {fixture,status}=render('PaymentVerified');expect(status).toHaveBeenCalledWith('saved');expect(fixture.nativeElement.textContent).toContain('Payment received');});
+  it('does not claim payment from a success route',()=>{const {fixture}=render('Ready');expect(fixture.nativeElement.textContent).toContain('has not been verified');expect(fixture.nativeElement.textContent).not.toContain('Payment received');});
+  it('renders review and suppresses success',()=>{const {fixture}=render('ReviewRequired');expect(fixture.nativeElement.textContent).toContain('needs review');});
+  it('reloads a checkout using its durable query identity',()=>{const {fixture,status}=render('PaymentVerified');fixture.componentInstance.refresh();expect(status).toHaveBeenCalledTimes(2);});
+  it('handles a missing identity without trusting navigation state',()=>{const {fixture,status}=render('Ready',null);expect(status).not.toHaveBeenCalled();expect(fixture.nativeElement.textContent).toContain('No saved checkout');});
+  it('shows uncertainty on server failure',()=>{const {fixture}=render('Ready','saved',true);expect(fixture.nativeElement.textContent).toContain('status is unavailable');});
 });
