@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement, StripeElementStyle } from '@stripe/stripe-js';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DOCUMENT, effect, ElementRef, inject, Injector, input, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { lastValueFrom, Subscription, timer, exhaustMap, take } from 'rxjs';
+import { lastValueFrom, Subscription, timer, exhaustMap, take, filter, timeout } from 'rxjs';
 import { CheckoutView } from 'src/app/shared/models/checkout';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { CheckoutService } from 'src/app/core/services/checkout.service';
@@ -47,9 +47,11 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
   cardExpiryValid = signal(false);
   cardCvcValid = signal(false);
   loading = signal(false);
+  private readonly confirmationPending = signal(false);
   readonly checkout = signal<CheckoutView|null>(null);
   readonly statusMessage = signal('');
   private polling?: Subscription;
+  private stripeReady?: Subscription;
   private destroyed = false;
 
   ngOnInit(): void {
@@ -69,6 +71,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
 
   ngOnDestroy(): void {
     this.destroyed=true;
+    this.stripeReady?.unsubscribe();
     this.polling?.unsubscribe();
     try {
       this.cardNumber?.destroy();
@@ -80,6 +83,17 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
   }
 
   ngAfterViewInit(): void {
+    if (typeof window.Stripe === 'function') { this.mountCardElements(); return; }
+    // The consent-controlled script loads asynchronously, including on direct entry and reload.
+    this.stripeReady=timer(0,100).pipe(filter(()=>typeof window.Stripe==='function'),take(1),
+      timeout({first:30000})).subscribe({
+        next:()=>this.mountCardElements(),
+        error:()=>this.statusMessage.set('Payment form could not load. Allow payment cookies and reload to try again. Your saved checkout is retained.')
+      });
+  }
+
+  private mountCardElements(): void {
+    if(this.destroyed) return;
     this.stripe = getStripeInstance(environment.stripePublishableKey);
     const elements = this.stripe.elements();
     const style = this.buildStripeElementStyle();
@@ -148,7 +162,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
   }
 
   async submitOrder(): Promise<void> {
-    if(this.loading() || this.destroyed) return;
+    if(this.loading() || this.destroyed || this.confirmationPending()) return;
     this.loading.set(true);
     const basket=this.basketService.getCurrentBasketValue();
     if(!basket) { this.loading.set(false); return; }
@@ -170,6 +184,8 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
       }});
       if(this.destroyed) return;
       if(result.error) this.notificationService.showError(result.error.message ?? 'Payment confirmation could not be completed.');
+      if(!result.error && ['succeeded','processing'].includes(result.paymentIntent?.status ?? ''))
+        this.confirmationPending.set(true);
       // A browser callback, including success, cannot release an order. Read signed server verification.
       this.statusMessage.set('Checking payment status. You can safely reload this page.');
       this.pollStatus(prepared.id);
@@ -184,7 +200,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
 
   private pollStatus(id: string): void {
     this.polling?.unsubscribe();
-    this.polling=timer(0,2000).pipe(take(15),exhaustMap(()=>this.checkoutService.status(id))).subscribe({
+    this.polling=timer(0,2000).pipe(take(61),exhaustMap(()=>this.checkoutService.status(id))).subscribe({
       next: view => this.acceptStatus(view),
       error: () => this.statusMessage.set('Payment status is unavailable. Your saved checkout is retained; please check again.')
     });
@@ -192,7 +208,9 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
   private acceptStatus(view: CheckoutView): void {
     this.checkout.set(view);
     const messages: Record<CheckoutView['state'],string> = {
-      Preparing:'Preparing your saved checkout. Please check again shortly.', Ready:'Your checkout is ready for payment.',
+      Preparing:'Preparing your saved checkout. Please check again shortly.', Ready: this.confirmationPending()
+        ? 'Waiting for server confirmation. Use Resume saved checkout to check again before paying.'
+        : 'Your checkout is ready for payment.',
       Verifying:'Checking payment status. Please wait before trying again.', PaymentVerified:'Payment received. Your order is awaiting processing.',
       ReviewRequired:'Your payment needs review. Please contact support before paying again.',
       Expired:'This checkout has expired. Check its payment status before starting another.', Cancelled:'This checkout was cancelled.'
@@ -236,7 +254,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
 
   isActivatedSubmitButton(): boolean | undefined {
     return (
-      this.loading() ||
+      this.loading() || this.confirmationPending() ||
       ['ReviewRequired','PaymentVerified','Expired','Cancelled'].includes(this.checkout()?.state ?? '') ||
       this.checkoutForm().payment().invalid() ||
       !this.cardNumberValid() ||

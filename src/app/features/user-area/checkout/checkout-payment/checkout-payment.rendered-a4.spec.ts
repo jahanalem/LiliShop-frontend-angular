@@ -58,6 +58,43 @@ describe('rendered A4 payment states',()=>{
     const {fixture,component}=render({confirmation:vi.fn().mockReturnValue(throwError(()=>new Error('offline')))});
     await component.submitOrder();fixture.detectChanges();expect(fixture.nativeElement.textContent).toContain('status is uncertain');expect(fixture.nativeElement.textContent).not.toContain('synthetic-secret');expect(stripe.confirmCardPayment).not.toHaveBeenCalled();fixture.destroy();
   });
+  it('observes server verification beyond the first thirty seconds',async()=>{
+    const status=vi.fn().mockImplementation(()=>of(status.mock.calls.length>21?{...ready,state:'PaymentVerified'}:ready));
+    const {fixture,component,router}=render({status});
+    try {
+      await component.submitOrder();await vi.advanceTimersByTimeAsync(46000);
+      expect(router.navigate).toHaveBeenCalledWith(['checkout/success'],{queryParams:{checkout:'saved'}});
+      expect(stripe.confirmCardPayment).toHaveBeenCalledOnce();
+    } finally { fixture.destroy(); }
+  });
+  it('keeps submitted payment pending without another confirmation or paid claim',async()=>{
+    const {fixture,component,service,router}=render();
+    try {
+      await component.submitOrder();await vi.advanceTimersByTimeAsync(2000);fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('[role=status]').textContent).toContain('Waiting for server confirmation');
+      expect(fixture.nativeElement.querySelector('button[mat-raised-button]').disabled).toBe(true);
+      await component.submitOrder();expect(service.prepareCheckout).toHaveBeenCalledOnce();
+      expect(stripe.confirmCardPayment).toHaveBeenCalledOnce();expect(router.navigate).not.toHaveBeenCalled();
+      await vi.advanceTimersByTimeAsync(130000);const calls=service.status.mock.calls.length;
+      await vi.advanceTimersByTimeAsync(60000);expect(service.status).toHaveBeenCalledTimes(calls);
+      expect(fixture.nativeElement.textContent).toContain('Resume saved checkout');
+    } finally { fixture.destroy(); }
+  });
+  it('mounts card fields when asynchronously loaded Stripe.js becomes ready',async()=>{
+    vi.stubGlobal('Stripe',undefined);
+    const {fixture,component}=render();
+    try {
+      expect(component.cardNumber).toBeUndefined();
+      vi.stubGlobal('Stripe',function(){return stripe;});await vi.advanceTimersByTimeAsync(200);
+      expect(component.cardNumber).toBeDefined();expect(component.cardNumber.mount).toHaveBeenCalledOnce();
+    } finally {fixture.destroy();}
+  });
+  it('does not mount deferred card fields after the checkout is destroyed',async()=>{
+    vi.stubGlobal('Stripe',undefined);
+    const {fixture,component}=render();fixture.destroy();
+    vi.stubGlobal('Stripe',function(){return stripe;});await vi.advanceTimersByTimeAsync(40000);
+    expect(component.cardNumber).toBeUndefined();
+  });
   it('navigates only when server status is PaymentVerified',async()=>{
     const {fixture,component,router}=render({status:vi.fn().mockReturnValue(of({...ready,state:'PaymentVerified'}))});
     await component.submitOrder();await vi.advanceTimersByTimeAsync(0);expect(router.navigate).toHaveBeenCalledWith(['checkout/success'],{queryParams:{checkout:'saved'}});fixture.destroy();
