@@ -131,7 +131,7 @@
         <li class="lili-stat">
           <span class="lili-stat__icon" aria-hidden="true">🧾</span>
           <span class="lili-stat__value">Invoices</span>
-          <span class="lili-stat__label">Auto-issued PDFs<br />gapless numbering</span>
+          <span class="lili-stat__label">Background PDFs<br />saved invoice data</span>
         </li>
         <li class="lili-stat">
           <span class="lili-stat__icon" aria-hidden="true">🖼️</span>
@@ -141,7 +141,54 @@
       </ul>
 
       <!-- ------------------------------------------ feature card grid -->
+      <p class="lili-features__context">
+        The latest checkout and recovery work is sandbox-validated, with live activation still pending;
+        the live demo may show an earlier version.
+      </p>
       <div class="lili-features" role="list">
+        <article class="lili-feature lili-feature--new" role="listitem">
+          <span class="lili-feature__icon" aria-hidden="true"><mat-icon>account_balance_wallet</mat-icon></span>
+          <h3 class="lili-feature__title">
+            <span>Saved Order Totals</span><span class="about-badge">New</span>
+          </h3>
+          <p class="lili-feature__text">
+            Item prices, shipping cost, total and currency are saved with each order. Later catalog or shipping-price
+            changes do not rewrite that purchase. Order and invoice views use the saved currency, while missing
+            historical values stay clearly unavailable.
+          </p>
+          <a class="lili-feature__link"
+            href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0068_Durable_Checkout_and_Verified_Payments_in_LiliShop.md#normalize-the-requested-purchase-then-price-it-once"
+            target="_blank" rel="noopener noreferrer">Read about saved purchases</a>
+        </article>
+
+        <article class="lili-feature lili-feature--new" role="listitem">
+          <span class="lili-feature__icon" aria-hidden="true"><mat-icon>verified_user</mat-icon></span>
+          <h3 class="lili-feature__title">
+            <span>Verified, Resumable Checkout</span><span class="about-badge">New</span>
+          </h3>
+          <p class="lili-feature__text">
+            Stripe payment facts are verified on the server before a purchase is marked paid. Reloads and interrupted
+            responses keep the same saved checkout, so customers can resume it and read the payment status from the server.
+          </p>
+          <a class="lili-feature__link"
+            href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0070_Testing_and_Hardening_Checkout_and_Order_Recovery_in_LiliShop.md#the-browser-must-wait-without-inventing-success"
+            target="_blank" rel="noopener noreferrer">Read about checkout recovery</a>
+        </article>
+
+        <article class="lili-feature lili-feature--new" role="listitem">
+          <span class="lili-feature__icon" aria-hidden="true"><mat-icon>sync</mat-icon></span>
+          <h3 class="lili-feature__title">
+            <span>Recoverable Order Processing</span><span class="about-badge">New</span>
+          </h3>
+          <p class="lili-feature__text">
+            Inventory and invoice work can continue after interruptions by recognizing completed product lines.
+            Authorized admins can inspect eligible failures and retry with an audit trail. Customers can refresh
+            processing progress separately from payment and email status.
+          </p>
+          <a class="lili-feature__link"
+            href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0069_Recoverable_Fulfillment_Inventory_Invoices_and_Email_in_LiliShop.md#recovery-through-the-api-and-angular"
+            target="_blank" rel="noopener noreferrer">Read about order recovery</a>
+        </article>
         <article class="lili-feature" role="listitem">
           <span class="lili-feature__icon"><mat-icon>travel_explore</mat-icon></span>
           <h3 class="lili-feature__title">Product Discovery</h3>
@@ -151,10 +198,10 @@
           </p>
         </article>
 
-        <article class="lili-feature lili-feature--new" role="listitem">
+        <article class="lili-feature" role="listitem">
           <span class="lili-feature__icon"><mat-icon>image_search</mat-icon></span>
           <h3 class="lili-feature__title">
-            Filter-Aware Photos <span class="about-badge">New</span>
+            Filter-Aware Photos
           </h3>
           <p class="lili-feature__text">
             Filter by <strong>Yellow</strong> and every card shows its yellow shot instead of the default. Pick a
@@ -163,10 +210,10 @@
           </p>
         </article>
 
-        <article class="lili-feature lili-feature--new" role="listitem">
+        <article class="lili-feature" role="listitem">
           <span class="lili-feature__icon"><mat-icon>style</mat-icon></span>
           <h3 class="lili-feature__title">
-            Product Variants <span class="about-badge">New</span>
+            Product Variants
           </h3>
           <p class="lili-feature__text">
             Every product sells as real variants with their own SKU, price &amp; stock. Variation axes — colour, size,
@@ -174,14 +221,15 @@
           </p>
         </article>
 
-        <article class="lili-feature lili-feature--new" role="listitem">
+        <article class="lili-feature" role="listitem">
           <span class="lili-feature__icon"><mat-icon>inventory_2</mat-icon></span>
           <h3 class="lili-feature__title">
-            Stock That Can't Oversell <span class="about-badge">New</span>
+            Reserved Stock &amp; Movement History
           </h3>
           <p class="lili-feature__text">
-            Checkout reserves stock for 30&nbsp;minutes, abandoned holds sweep themselves back onto the shelf, and every
-            movement lands in an <strong>append-only ledger</strong> — race-free by construction.
+            Time-limited checkout holds protect available stock. Guarded updates check quantities before a change,
+            and an <strong>append-only ledger</strong> records movements. Verified or consumed holds are not released
+            merely because their time limit has passed.
           </p>
         </article>
 
@@ -189,26 +237,27 @@
           <span class="lili-feature__icon"><mat-icon>shopping_cart_checkout</mat-icon></span>
           <h3 class="lili-feature__title">Secure Checkout</h3>
           <p class="lili-feature__text">
-            Card payments via <strong>Stripe</strong> with 3D&nbsp;Secure/SCA. Totals are re-validated server-side and
-            orders confirm only through a verified Stripe webhook.
+            Card entry uses <strong>Stripe</strong>, with 3D&nbsp;Secure / Strong Customer Authentication (SCA)
+            support when additional authentication is required.
           </p>
         </article>
 
-        <article class="lili-feature lili-feature--new" role="listitem">
+        <article class="lili-feature" role="listitem">
           <span class="lili-feature__icon"><mat-icon>receipt_long</mat-icon></span>
           <h3 class="lili-feature__title">
-            Automatic Invoicing <span class="about-badge">New</span>
+            Automatic Invoicing
           </h3>
           <p class="lili-feature__text">
-            The moment a payment confirms, a gapless-numbered invoice is issued, rendered to <strong>PDF</strong> and
-            emailed in the buyer's own language — downloadable forever from the order page.
+            After verified payment and stock processing, an invoice is issued in the background from saved purchase
+            data. Its <strong>PDF</strong> is available from the order page once issued; localized email delivery has
+            its own separate status.
           </p>
         </article>
 
-        <article class="lili-feature lili-feature--new" role="listitem">
+        <article class="lili-feature" role="listitem">
           <span class="lili-feature__icon"><mat-icon>language</mat-icon></span>
           <h3 class="lili-feature__title">
-            Multi-Language <span class="about-badge">New</span>
+            Multi-Language
           </h3>
           <p class="lili-feature__text">
             A storefront in <strong>11 languages</strong> with full right-to-left support for Arabic &amp; Persian.
@@ -283,7 +332,7 @@
               </ul>
             </div>
             <div class="feature-category">
-              <h4>🧬 Choosing a Variant <span class="about-badge">New</span></h4>
+              <h4>🧬 Choosing a Variant</h4>
               <ul>
                 <li>Pick exactly what you want on the product page — for example Pattern <em>Tropical</em> and Size <em>M</em> — with the price and availability updating as you choose.</li>
                 <li>Combinations that are sold out or unavailable are greyed out <em>before</em> you click them, so you never chase a dead end.</li>
@@ -293,7 +342,7 @@
               </ul>
             </div>
             <div class="feature-category">
-              <h4>🌍 Language &amp; Localization <span class="about-badge">New</span></h4>
+              <h4>🌍 Language &amp; Localization</h4>
               <ul>
                 <li>Use the storefront in 11 languages: English, German, Spanish, Russian, Hindi, Chinese, Turkish, Danish, Swedish, plus Persian and Arabic.</li>
                 <li><strong>Full right-to-left (RTL) layout</strong> for Persian and Arabic — the whole interface mirrors itself, and the correct direction is applied before the first paint, so an RTL page never flashes left-to-right while loading.</li>
@@ -307,10 +356,13 @@
             <div class="feature-category">
               <h4>🛒 Purchasing &amp; Account Management</h4>
               <ul>
-                <li>Securely purchase products using Stripe, with card payments protected by 3D Secure / Strong Customer Authentication (SCA).</li>
+                <li>Pay by card through Stripe, with 3D Secure / Strong Customer Authentication (SCA) support.</li>
+                <li>Keep the same saved checkout across reloads or interrupted responses, and resume it to check server-verified payment status.</li>
+                <li>Review purchased prices, saved shipping cost, total and currency in order history. Historical values that were not saved remain explicitly unavailable.</li>
+                <li>Use <strong>Check again</strong> to refresh product-line processing progress, invoice availability and the separate invoice-email status.</li>
                 <li>Access a detailed history of completed orders, each line showing the exact variant and SKU that was purchased.</li>
-                <li><strong>Receive a PDF invoice by email</strong> automatically as soon as payment is confirmed — attached to the message and written in your chosen language, right-to-left scripts included.</li>
-                <li>Re-download the invoice for any paid order at any time from the order detail page.</li>
+                <li>An issued invoice can be prepared as a localized PDF email attachment, including right-to-left languages. Background mail processing and its status are separate from payment.</li>
+                <li>Download an invoice from the order detail page when it is available, using its saved financial data and currency.</li>
                 <li>Register for an account using a traditional username/password combination or via Google social login.</li>
                 <li>Confirm registration through an email verification link.</li>
                 <li>Utilize a password recovery feature for forgotten passwords.</li>
@@ -357,7 +409,7 @@
             <div class="feature-category">
               <h4>🛡️ Access Control &amp; Integrity</h4>
               <ul>
-                <li><strong>Payment Integrity:</strong> Every price and quantity is re-validated against the database before checkout; orders confirm only via a cryptographically verified Stripe webhook.</li>
+                <li><strong>Payment Integrity:</strong> The server prices the purchase and verifies Stripe payment facts against that saved agreement; a browser success response alone cannot mark it paid.</li>
                 <li><strong>Broken Access Control (IDOR):</strong> Requests can only ever reach data that belongs to the caller, with a properly secured admin dashboard.</li>
                 <li><strong>SSRF Protection:</strong> The Printess callback validates both the sender and the target address before acting.</li>
               </ul>
@@ -389,7 +441,7 @@
               </ul>
             </div>
             <div class="feature-category">
-              <h4>🌍 Languages &amp; Translations <span class="about-badge">New</span></h4>
+              <h4>🌍 Languages &amp; Translations</h4>
               <ul>
                 <li><strong>Add or activate a language without a deployment.</strong> A language is a row of data, not a line of code — activating it makes it immediately available to the storefront switcher, the API, and the email pipeline, with no restart.</li>
                 <li>Manage each language's native name, English name, text direction, display order and country associations from a dedicated Languages screen; promoting a new default automatically demotes the previous one.</li>
@@ -400,7 +452,7 @@
               </ul>
             </div>
             <div class="feature-category">
-              <h4>🧬 Attributes &amp; Variants <span class="about-badge">New</span></h4>
+              <h4>🧬 Attributes &amp; Variants</h4>
               <ul>
                 <li><strong>Define your own variation axes:</strong> create attributes (Colour, Size, Pattern, Material, …) and their values from a dedicated admin screen — no code change, no redeploy, no developer involved.</li>
                 <li>Choose how each attribute presents itself: colour swatches with hex values, plain chips, single- or multi-select, filterable in the storefront or not, with an explicit sort order so sizes read XS → S → M → L → XL.</li>
@@ -413,7 +465,7 @@
               </ul>
             </div>
             <div class="feature-category">
-              <h4>📦 Inventory Control <span class="about-badge">New</span></h4>
+              <h4>📦 Inventory Control</h4>
               <ul>
                 <li>Adjust a variant's stock through a dedicated dialog that <strong>requires a written reason</strong> — corrections are never anonymous.</li>
                 <li>Review the full movement history inline: received, adjusted, reserved, released, deducted — with the timestamp and the admin who performed it.</li>
@@ -422,12 +474,20 @@
               </ul>
             </div>
             <div class="feature-category">
-              <h4>🧾 Invoice Management <span class="about-badge">New</span></h4>
+              <h4>🧾 Invoice Management</h4>
               <ul>
                 <li>A searchable, paginated list of every issued invoice, with a full detail view of seller, buyer, line items and totals.</li>
-                <li>Download the exact same PDF the customer received, for any invoice.</li>
-                <li><strong>Read-only by design:</strong> there is no create, edit or delete — invoices are legal documents issued automatically on payment, and corrections belong to a future credit-note flow rather than an edit button.</li>
+                <li>Download a PDF generated from the same saved invoice data used for the customer view and email attachment.</li>
+                <li><strong>Read-only by design:</strong> the admin view has no create, edit or delete actions. Invoices are issued through background order processing; corrections would need a separate credit-note flow.</li>
                 <li>Viewing invoices is available to support-tier admins, while stock-changing actions remain restricted to full administrators.</li>
+              </ul>
+            </div>
+            <div class="feature-category">
+              <h4>🔄 Order Processing &amp; Recovery</h4>
+              <ul>
+                <li>SuperAdmins can inspect the processing queue, completed product lines, invoice-email state and recorded audit history.</li>
+                <li>Eligible idle failures can be retried with a written reason and a current revision check. Completed work is recognized; conflicting evidence requires review.</li>
+                <li>Uncertain invoice-email delivery is held for review rather than automatically resent, with its status shown separately from inventory and invoice progress.</li>
               </ul>
             </div>
             <div class="feature-category">
@@ -462,7 +522,6 @@
           <mat-expansion-panel-header>
             <mat-panel-title>
               Localization Architecture
-              <span class="about-badge">New</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <ng-template matExpansionPanelContent>
@@ -510,7 +569,6 @@
           <mat-expansion-panel-header>
             <mat-panel-title>
               Variants, Inventory &amp; Invoicing
-              <span class="about-badge">New</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <ng-template matExpansionPanelContent>
@@ -518,7 +576,7 @@
               The catalog used to model a product as a single row with a hardcoded size enum — one axis, baked into the
               code — and a paid order produced no document at all. Both were replaced by two deliberately separate
               engines: a dynamic variant model backed by a real inventory ledger, and an invoicing engine that mints an
-              immutable legal document the moment a payment succeeds
+              invoice snapshot after verified payment and stock processing
               (<a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0063_Building-a-Modern-Product-Variant-and-Invoice-Architecture-in-LiliShop.md"
                 target="_blank" rel="noopener">read the full engineering handbook</a>).
             </p>
@@ -532,22 +590,22 @@
               </ul>
             </div>
             <div class="feature-category">
-              <h4>📦 Stock Safety Without Locks</h4>
+              <h4>📦 Guarded Stock &amp; Recovery</h4>
               <ul>
-                <li>Every quantity change is a <strong>single guarded database statement</strong> — the availability check and the write are the same operation, so the read-modify-write window that lets two shoppers buy the last unit simply does not exist.</li>
-                <li>Checkout places an all-or-nothing hold: a basket reserves everything it needs or nothing at all, and editing the basket re-places the whole set rather than leaving phantom partial holds.</li>
-                <li>A recurring sweep returns abandoned holds to the shelf, so a closed tab never locks stock away.</li>
-                <li>A paid order is a promise already made to the customer's bank — the deduction path is idempotent under webhook replay and will never fail a payment over bookkeeping; a true oversell raises an alert for a human instead.</li>
+                <li><strong>Guarded SQL updates</strong> check quantity conditions when changing stock, while row locks and transactions coordinate order processing.</li>
+                <li>Checkout prepares the required stock holds together and binds them to the saved payment attempt, so recovery can check the original reservation evidence.</li>
+                <li>Expiry sweeps release eligible unpaid holds. Verified or consumed holds are not released simply because their expiry time has passed.</li>
+                <li>Each newly processed product line has a durable completion record. Recovery checks committed work before skipping it, and conflicting evidence stops for review.</li>
               </ul>
             </div>
             <div class="feature-category">
-              <h4>🧾 Documents That Never Change</h4>
+              <h4>🧾 Saved Invoice Data</h4>
               <ul>
-                <li>Invoice numbers are allocated inside the same transaction as the invoice itself, so concurrent payments serialise and a rollback returns the number — the series can never gap, skip or duplicate.</li>
-                <li>Exactly one invoice per order, protected three times over: an idempotency check, a transactional row lock, and a database unique constraint.</li>
-                <li>Everything on the document is a snapshot — seller identity, buyer address, line descriptions, currency and totals — so it renders identically forever, even after the catalog, delivery prices or translations change.</li>
-                <li>PDF rendering is a pure function shared by the customer download, the admin download and the email attachment: all three are byte-for-byte the same document.</li>
-                <li>Delivery runs as a background job outside the invoice transaction, so an email outage can never undo an invoice that already legally exists.</li>
+                <li>Invoice numbers are allocated inside the invoice transaction under a row lock; a rollback does not consume a number.</li>
+                <li>Transaction checks and a unique order-to-invoice constraint guard against creating a second invoice for the same order.</li>
+                <li>Seller identity, buyer address, line descriptions, currency and totals are saved with the invoice. Later catalog or shipping-price changes do not rewrite its financial content.</li>
+                <li>Customer downloads, admin downloads and email attachments share one PDF renderer for consistent presentation of the saved invoice data.</li>
+                <li>The invoice and email work are recorded together, while rendering and sending happen outside that transaction. Email status remains separate from the issued invoice.</li>
               </ul>
             </div>
             <div class="feature-category">
@@ -566,7 +624,6 @@
           <mat-expansion-panel-header>
             <mat-panel-title>
               Attribute-Aware Product Photos
-              <span class="about-badge">New</span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <ng-template matExpansionPanelContent>
@@ -620,13 +677,17 @@
               <li><strong>Database:</strong> Microsoft SQL Server with Entity Framework Core for data access.</li>
               <li><strong>Catalog Model:</strong> an attribute/variant model where variation axes are admin-managed data, with a canonical axis signature per variant enforced by a unique index.</li>
               <li><strong>Attribute-Aware Photos:</strong> a many-to-many join tags product photos with existing attribute values (unique-indexed, cascade from the photo); filtered shop cards and the product gallery resolve the best-matching image in a single index-backed query, kept strictly separate from variant eligibility.</li>
-              <li><strong>Inventory:</strong> an append-only transaction ledger plus time-limited checkout reservations, with every movement applied through a single atomic, guarded SQL statement.</li>
-              <li><strong>Invoicing:</strong> immutable snapshot documents with gapless sequential numbering allocated under a transactional row lock; PDFs rendered server-side with QuestPDF, including right-to-left cultures.</li>
-              <li><strong>Payment Processing:</strong> Stripe for handling online payments, with 3D Secure / SCA support.</li>
+              <li><strong>Inventory:</strong> an append-only movement ledger, time-limited reservations and guarded stock updates, with durable per-line progress for recoverable order processing.</li>
+              <li><strong>Invoicing:</strong> saved financial snapshots and sequential numbering allocated in the invoice transaction; QuestPDF renders localized PDFs, including right-to-left cultures.</li>
+              <li><strong>Payment Processing:</strong> Stripe with 3D Secure / SCA support, durable webhook intake and server verification against the saved amount, currency and purchase association.</li>
+              <li><strong>Saved Money:</strong> purchased prices, shipping, totals and currency are retained with orders and invoices; missing historical values are shown as unavailable rather than inferred from today's catalog.</li>
+              <li><strong>Recovery:</strong> bounded background retries recognize completed product lines; the SuperAdmin queue checks authorization and current revision and records retry reasons in its audit trail.</li>
               <li><strong>Caching:</strong> Hybrid caching strategy utilizing Redis for performance optimization.</li>
-              <li><strong>Background Processing:</strong> Hangfire for managing background jobs (e.g., email notifications, discount expiration, invoice delivery, and the recurring sweep that releases expired stock reservations).</li>
+              <li><strong>Background Processing:</strong> Hangfire schedules payment recovery, stock and invoice work, email processing and eligible reservation cleanup. Customer processing status is refreshed manually.</li>
               <li><strong>Real-Time Communication:</strong> SignalR for pushing live status updates (e.g., the Printess design pipeline) to connected clients.</li>
-              <li><strong>Email Service:</strong> SendGrid for transactional email delivery, sent in the recipient's chosen language.</li>
+              <li><strong>Email Service:</strong> SendGrid first, with Gmail/SMTP fallback for general and legacy mail. Durable invoice mail has separate transport wiring
+                (<a href="https://github.com/jahanalem/LinkedIn2GitHub/blob/main/0070_Testing_and_Hardening_Checkout_and_Order_Recovery_in_LiliShop.md#email-has-two-current-delivery-paths"
+                  target="_blank" rel="noopener noreferrer">read about email delivery paths</a>).</li>
               <li><strong>Cloud Services:</strong> Cloudinary for image storage and management, hosted on Azure.</li>
               <li>
                 <strong>
@@ -639,7 +700,7 @@
                 data change rather than a deployment. 11 languages, full RTL, plus per-entity translation tables for
                 catalog content.
               </li>
-              <li><strong>Email Delivery:</strong> Localized transactional templates, with the invoice PDF attached to the “invoice issued” message.</li>
+              <li><strong>Email Delivery:</strong> localized templates and an invoice PDF attachment; provider acceptance and confirmed inbox delivery are different observations, with uncertain sends reserved for review.</li>
               <li><strong>Quality:</strong> End-to-end tests with Cypress, a growing xUnit backend suite (pure-function, service-level and real-database integration tests), and Vitest specs on the Angular side down to template-level regression tests.</li>
               <li>
                 <strong>

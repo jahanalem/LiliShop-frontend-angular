@@ -254,9 +254,18 @@
 // ------------------------------------------------------- feature card grid --
 .lili-features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: var(--ls-space-4);
   margin-bottom: var(--ls-space-4);
+
+  &__context {
+    color: var(--ls-text-soft);
+    font-size: var(--ls-fs-sm);
+    line-height: 1.65;
+    border-inline-start: 3px solid var(--ls-accent);
+    padding-inline-start: var(--ls-space-3);
+    margin: 0 0 var(--ls-space-5);
+  }
 
   &__hint {
     text-align: center;
@@ -269,6 +278,7 @@
 .lili-feature {
   @include mx.card;
   padding: var(--ls-space-5);
+  min-inline-size: 0;
   transition:
     transform var(--ls-dur) var(--ls-ease),
     box-shadow var(--ls-dur) var(--ls-ease),
@@ -314,8 +324,22 @@
   }
 }
 
+.lili-feature__link {
+  align-self: flex-start;
+  margin-block-start: auto;
+  font-size: var(--ls-fs-sm);
+  font-weight: 600;
+  text-decoration-thickness: 1px;
+  overflow-wrap: anywhere;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+    border-radius: var(--ls-radius-sm);
+  }
+}
+
 // ------------------------------------------------------------- new badge ----
-// Marks the most recently shipped work (variants, inventory, invoicing).
+// Marks the latest saved-checkout and order-recovery additions.
 .about-badge {
   display: inline-block;
   margin-inline-start: var(--ls-space-2);
@@ -335,6 +359,31 @@
 
 .lili-feature--new {
   border-color: var(--ls-border-strong);
+  display: flex;
+  flex-direction: column;
+
+  .lili-feature__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--ls-space-2);
+    min-block-size: 2.5em;
+
+    > span:first-child {
+      flex: 1 1 12ch;
+      min-inline-size: 0;
+    }
+  }
+
+  .about-badge {
+    flex: 0 0 auto;
+    margin-inline-start: 0;
+    translate: none;
+  }
+
+  .lili-feature__text {
+    margin-block-end: var(--ls-space-5);
+  }
 
   .lili-feature__icon {
     background: var(--ls-accent-strong);
