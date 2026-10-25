@@ -19,6 +19,7 @@ export const fulfillmentFallback: Record<string, string> = {
   "ProcessingUnavailable": "Order processing status is currently unavailable. Your order remains accessible.",
   "EmailPending": "Invoice email is pending.",
   "EmailAccepted": "The mail provider accepted your invoice email. Inbox arrival is not confirmed.",
+  "EmailSent": "Your invoice email has been sent. Please check your inbox or spam folder.",
   "EmailUnknown": "The invoice email outcome is uncertain. Please use your order page to access the invoice.",
   "EmailReview": "Invoice email needs attention. Your invoice remains available on your order page.",
   "Queue": "Paid order processing",

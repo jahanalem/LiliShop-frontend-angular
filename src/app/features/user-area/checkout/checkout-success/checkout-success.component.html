@@ -6,7 +6,7 @@
       <div role="status" aria-live="polite">
         <p>{{ t(progress.processing === 'Complete' ? 'ProcessingComplete' : progress.processing === 'ReviewRequired' ? 'ProcessingReview' : 'ProcessingPending') }}</p>
         <p>{{ t('Lines') }}: {{ progress.completedLines }} / {{ progress.totalLines }}</p>
-        <p>{{ t(progress.email === 'Accepted' ? 'EmailAccepted' : progress.email === 'UnknownDelivery' ? 'EmailUnknown' : progress.email === 'ReviewRequired' ? 'EmailReview' : 'EmailPending') }}</p>
+        <p>{{ t(progress.email === 'Accepted' ? 'EmailSent' : progress.email === 'UnknownDelivery' ? 'EmailUnknown' : progress.email === 'ReviewRequired' ? 'EmailReview' : 'EmailPending') }}</p>
       </div>
     }
     @if (processingError()) { <p role="status">{{ t('ProcessingUnavailable') }}</p> }

@@ -553,6 +553,7 @@ export const TranslationKeys = {
     EmailAccepted: 'Fulfillment.EmailAccepted',
     EmailPending: 'Fulfillment.EmailPending',
     EmailReview: 'Fulfillment.EmailReview',
+    EmailSent: 'Fulfillment.EmailSent',
     EmailUnknown: 'Fulfillment.EmailUnknown',
     Empty: 'Fulfillment.Empty',
     Enable: 'Fulfillment.Enable',

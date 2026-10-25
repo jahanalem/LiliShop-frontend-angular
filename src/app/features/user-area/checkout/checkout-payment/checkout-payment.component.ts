@@ -5,12 +5,11 @@ import { MatCardModule } from '@angular/material/card';
 import { Stripe, StripeCardCvcElement, StripeCardExpiryElement, StripeCardNumberElement, StripeElementStyle } from '@stripe/stripe-js';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DOCUMENT, effect, ElementRef, inject, Injector, input, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { lastValueFrom, Subscription, timer, exhaustMap, take, filter, timeout } from 'rxjs';
+import { lastValueFrom, Subscription, timer, exhaustMap, take, filter, timeout, switchMap, map, of } from 'rxjs';
 import { CheckoutView } from 'src/app/shared/models/checkout';
 import { BasketService } from 'src/app/core/services/basket.service';
 import { CheckoutService } from 'src/app/core/services/checkout.service';
 import { getStripeInstance } from 'src/app/core/helpers/stripe-utils';
-import { environment } from 'src/environments/environment';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import { ThemeService } from 'src/app/core/services/theme.service';
 import { type CheckoutForm } from '../checkout.component';
@@ -53,6 +52,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
   private polling?: Subscription;
   private stripeReady?: Subscription;
   private destroyed = false;
+  private readonly paymentFormReady = signal(false);
 
   ngOnInit(): void {
     this.polling = this.checkoutService.retainedStatus().subscribe({
@@ -83,18 +83,23 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
   }
 
   ngAfterViewInit(): void {
-    if (typeof window.Stripe === 'function') { this.mountCardElements(); return; }
-    // The consent-controlled script loads asynchronously, including on direct entry and reload.
-    this.stripeReady=timer(0,100).pipe(filter(()=>typeof window.Stripe==='function'),take(1),
-      timeout({first:30000})).subscribe({
-        next:()=>this.mountCardElements(),
-        error:()=>this.statusMessage.set('Payment form could not load. Allow payment cookies and reload to try again. Your saved checkout is retained.')
-      });
+    // Use the public key selected by this backend, then wait for the consent-controlled script.
+    this.stripeReady=this.checkoutService.paymentConfiguration().pipe(
+      switchMap(config=>{
+        const key=config?.publishableKey;
+        if(typeof key!=='string' || !/^pk_test_[A-Za-z0-9]+$/.test(key)) throw new Error('Payment form configuration unavailable');
+        return typeof window.Stripe==='function' ? of(key)
+          : timer(0,100).pipe(filter(()=>typeof window.Stripe==='function'),take(1),map(()=>key));
+      }), timeout({first:30000})
+    ).subscribe({
+      next:key=>this.mountCardElements(key),
+      error:()=>this.statusMessage.set('Payment form is temporarily unavailable. Check payment cookie consent and try again. Your saved checkout is retained.')
+    });
   }
 
-  private mountCardElements(): void {
+  private mountCardElements(publishableKey: string): void {
     if(this.destroyed) return;
-    this.stripe = getStripeInstance(environment.stripePublishableKey);
+    this.stripe = getStripeInstance(publishableKey);
     const elements = this.stripe.elements();
     const style = this.buildStripeElementStyle();
 
@@ -121,6 +126,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
       this.cardExpiry?.update({ style: nextStyle });
       this.cardCvc?.update({ style: nextStyle });
     }, { injector: this.injector });
+    this.paymentFormReady.set(true);
   }
 
   /**
@@ -254,7 +260,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
 
   isActivatedSubmitButton(): boolean | undefined {
     return (
-      this.loading() || this.confirmationPending() ||
+      !this.paymentFormReady() || this.loading() || this.confirmationPending() ||
       ['ReviewRequired','PaymentVerified','Expired','Cancelled'].includes(this.checkout()?.state ?? '') ||
       this.checkoutForm().payment().invalid() ||
       !this.cardNumberValid() ||

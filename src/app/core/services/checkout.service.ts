@@ -1,6 +1,6 @@
 import { BasketService } from './basket.service';
 import { AccountService } from './account.service';
-import { CheckoutInput, CheckoutView, CheckoutConfirmation } from 'src/app/shared/models/checkout';
+import { CheckoutInput, CheckoutView, CheckoutConfirmation, CheckoutPaymentConfiguration } from 'src/app/shared/models/checkout';
 
 import { catchError, map, Observable, of, from, firstValueFrom, switchMap, take, tap } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -45,6 +45,10 @@ export class CheckoutService {
         return of([]);
       })
     );
+  }
+
+  paymentConfiguration(): Observable<CheckoutPaymentConfiguration> {
+    return this.http.get<CheckoutPaymentConfiguration>(`${this.baseUrl}checkout/payment-configuration`);
   }
 
   private async storageKey(): Promise<string> {

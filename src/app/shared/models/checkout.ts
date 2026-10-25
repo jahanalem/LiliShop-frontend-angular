@@ -11,3 +11,5 @@ export interface CheckoutView {
   reviewReason: string|null;
 }
 export interface CheckoutConfirmation { checkout: CheckoutView; clientSecret: string|null; }
+
+export interface CheckoutPaymentConfiguration { publishableKey: string; }

@@ -10,12 +10,13 @@ import { NotificationService } from 'src/app/core/services/notification.service'
 import { TranslationService } from 'src/app/core/i18n/translation.service';
 import { ThemeService } from 'src/app/core/services/theme.service';
 import { TextInputComponent } from 'src/app/shared/components/text-input/text-input.component';
+const stripeConstructor=vi.fn(function(){return stripe;});
 const stripe={confirmCardPayment:vi.fn(),elements:()=>({create:()=>({mount:vi.fn(),on:vi.fn(),update:vi.fn(),destroy:vi.fn()})})};
 @Component({selector:'app-text-input',template:'',inputs:['label','field']}) class TextFieldStub {}
 describe('rendered A4 payment states',()=>{
   const ready={id:'saved',attemptId:'attempt',state:'Ready',orderId:1,expiresAt:'2026-10-23T06:20:00Z',subtotal:60,shipping:5,total:65,currency:'eur',reviewReason:null};
   function render(overrides:any={}) {
-    const service={retainedStatus:vi.fn().mockReturnValue(of(null)),prepareCheckout:vi.fn().mockReturnValue(of(ready)),
+    const service={paymentConfiguration:vi.fn().mockReturnValue(of({publishableKey:'pk_test_deployment'})),retainedStatus:vi.fn().mockReturnValue(of(null)),prepareCheckout:vi.fn().mockReturnValue(of(ready)),
       confirmation:vi.fn().mockReturnValue(of({checkout:ready,clientSecret:'synthetic-secret'})),status:vi.fn().mockReturnValue(of(ready)),...overrides};
     const router={navigate:vi.fn()};
     TestBed.configureTestingModule({providers:[{provide:CdkStepper,useValue:{previous:vi.fn()}},
@@ -30,8 +31,34 @@ describe('rendered A4 payment states',()=>{
     component.cardNumberValid.set(true);component.cardExpiryValid.set(true);component.cardCvcValid.set(true);fixture.detectChanges();
     return {fixture,component,service,router};
   }
-  beforeEach(()=>{vi.stubGlobal('Stripe',function(){return stripe;});stripe.confirmCardPayment.mockReset();stripe.confirmCardPayment.mockResolvedValue({paymentIntent:{status:'succeeded'}});vi.useFakeTimers();});
+  beforeEach(()=>{stripeConstructor.mockClear();vi.stubGlobal('Stripe',stripeConstructor);stripe.confirmCardPayment.mockReset();stripe.confirmCardPayment.mockResolvedValue({paymentIntent:{status:'succeeded'}});vi.useFakeTimers();});
   afterEach(()=>{vi.useRealTimers();vi.unstubAllGlobals();});
+  it('uses the server-selected public key before mounting Stripe',()=>{
+    const {fixture,service}=render();
+    expect(service.paymentConfiguration).toHaveBeenCalledOnce();
+    expect(stripeConstructor).toHaveBeenCalledWith('pk_test_deployment');fixture.destroy();
+  });
+  it('waits for deployment configuration even when Stripe.js is already loaded',()=>{
+    const config=new Subject<any>();const {fixture,component}=render({paymentConfiguration:()=>config});
+    expect(stripeConstructor).not.toHaveBeenCalled();expect(component.cardNumber).toBeUndefined();
+    config.next({publishableKey:'pk_test_anotherdeployment'});config.complete();
+    expect(stripeConstructor).toHaveBeenCalledWith('pk_test_anotherdeployment');fixture.destroy();
+  });
+  it('keeps the form disabled when server configuration fails without falling back to a build-time key',()=>{
+    const {fixture,component}=render({paymentConfiguration:()=>throwError(()=>new Error('offline'))});fixture.detectChanges();
+    expect(stripeConstructor).not.toHaveBeenCalled();expect(component.cardNumber).toBeUndefined();
+    expect(fixture.nativeElement.querySelector('button[mat-raised-button]').disabled).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Payment form is temporarily unavailable');fixture.destroy();
+  });
+  it.each(['pk_live_synthetic','sk_test_private','pk_test_bad key'])('rejects invalid public configuration %s',publishableKey=>{
+    const {fixture,component}=render({paymentConfiguration:()=>of({publishableKey})});
+    expect(stripeConstructor).not.toHaveBeenCalled();expect(component.cardNumber).toBeUndefined();fixture.destroy();
+  });
+  it('cancels configuration loading when the checkout is destroyed',()=>{
+    const config=new Subject<any>();const {fixture,component}=render({paymentConfiguration:()=>config});fixture.destroy();
+    config.next({publishableKey:'pk_test_deferred'});config.complete();
+    expect(stripeConstructor).not.toHaveBeenCalled();expect(component.cardNumber).toBeUndefined();
+  });
   it('renders a disabled submit while preparation is pending and ignores repeated clicks',async()=>{
     const pending=new Subject<any>();const {fixture,component,service}=render({prepareCheckout:vi.fn().mockReturnValue(pending)});
     const submitted=component.submitOrder();await component.submitOrder();fixture.detectChanges();
