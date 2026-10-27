@@ -47,7 +47,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
   cardCvcValid = signal(false);
   loading = signal(false);
   private readonly confirmationPending = signal(false);
-  readonly checkout = signal<CheckoutView|null>(null);
+  readonly checkout = signal<CheckoutView | null>(null);
   readonly statusMessage = signal('');
   private polling?: Subscription;
   private stripeReady?: Subscription;
@@ -56,7 +56,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
 
   ngOnInit(): void {
     this.polling = this.checkoutService.retainedStatus().subscribe({
-      next: view => { if(view) { this.acceptStatus(view); if(view.state==='Preparing' || view.state==='Ready') this.pollStatus(view.id); } },
+      next: view => { if (view) { this.acceptStatus(view); if (view.state === 'Preparing' || view.state === 'Ready') this.pollStatus(view.id); } },
       error: () => this.statusMessage.set('Your saved payment status is unavailable. Please retry; your checkout identity is retained.')
     });
   }
@@ -70,7 +70,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
   private document = inject(DOCUMENT);
 
   ngOnDestroy(): void {
-    this.destroyed=true;
+    this.destroyed = true;
     this.stripeReady?.unsubscribe();
     this.polling?.unsubscribe();
     try {
@@ -84,21 +84,21 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
 
   ngAfterViewInit(): void {
     // Use the public key selected by this backend, then wait for the consent-controlled script.
-    this.stripeReady=this.checkoutService.paymentConfiguration().pipe(
-      switchMap(config=>{
-        const key=config?.publishableKey;
-        if(typeof key!=='string' || !/^pk_test_[A-Za-z0-9]+$/.test(key)) throw new Error('Payment form configuration unavailable');
-        return typeof window.Stripe==='function' ? of(key)
-          : timer(0,100).pipe(filter(()=>typeof window.Stripe==='function'),take(1),map(()=>key));
-      }), timeout({first:30000})
+    this.stripeReady = this.checkoutService.paymentConfiguration().pipe(
+      switchMap(config => {
+        const key = config?.publishableKey;
+        if (typeof key !== 'string' || !/^pk_test_[A-Za-z0-9]+$/.test(key)) throw new Error('Payment form configuration unavailable');
+        return typeof window.Stripe === 'function' ? of(key)
+          : timer(0, 100).pipe(filter(() => typeof window.Stripe === 'function'), take(1), map(() => key));
+      }), timeout({ first: 30000 })
     ).subscribe({
-      next:key=>this.mountCardElements(key),
-      error:()=>this.statusMessage.set('Payment form is temporarily unavailable. Check payment cookie consent and try again. Your saved checkout is retained.')
+      next: key => this.mountCardElements(key),
+      error: () => this.statusMessage.set('Payment form is temporarily unavailable. Check payment cookie consent and try again. Your saved checkout is retained.')
     });
   }
 
   private mountCardElements(publishableKey: string): void {
-    if(this.destroyed) return;
+    if (this.destroyed) return;
     this.stripe = getStripeInstance(publishableKey);
     const elements = this.stripe.elements();
     const style = this.buildStripeElementStyle();
@@ -168,76 +168,121 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
   }
 
   async submitOrder(): Promise<void> {
-    if(this.loading() || this.destroyed || this.confirmationPending()) return;
+    if (this.loading() || this.destroyed || this.confirmationPending()) {
+      return;
+    }
+
     this.loading.set(true);
-    const basket=this.basketService.getCurrentBasketValue();
-    if(!basket) { this.loading.set(false); return; }
+    const basket = this.basketService.getCurrentBasketValue();
+
+    if (!basket) {
+      this.loading.set(false); return;
+    }
     try {
-      const deliveryMethodId=this.checkoutForm().delivery.deliveryMethod().value();
-      if(deliveryMethodId==null) throw new Error('Delivery method required');
-      const prepared=await lastValueFrom(this.checkoutService.prepareCheckout({basketId:basket.id,deliveryMethodId,
-        shipToAddress:this.checkoutForm().address().value(),
-        lines:basket.items.map(item=>({productId:item.id,productVariantId:item.productVariantId??undefined,quantity:item.quantity}))}));
-      if(this.destroyed) return;
+      const deliveryMethodId = this.checkoutForm().delivery.deliveryMethod().value();
+      if (deliveryMethodId == null) {
+        throw new Error('Delivery method required');
+      }
+
+      const prepared = await lastValueFrom(this.checkoutService.prepareCheckout({
+        basketId: basket.id,
+        deliveryMethodId,
+        shipToAddress: this.checkoutForm().address().value(),
+        lines: basket.items.map(item => ({
+          productId: item.id,
+          productVariantId: item.productVariantId ?? undefined,
+          quantity: item.quantity
+        }))
+      }));
+
+      if (this.destroyed) {
+        return;
+      }
+
       this.acceptStatus(prepared);
-      if(prepared.state!=='Ready') { if(prepared.state==='Preparing') this.pollStatus(prepared.id); return; }
-      const confirmation=await lastValueFrom(this.checkoutService.confirmation(prepared.id));
-      if(this.destroyed) return;
+
+      if (prepared.state !== 'Ready') {
+        if (prepared.state === 'Preparing')
+          this.pollStatus(prepared.id);
+        return;
+      }
+
+      const confirmation = await lastValueFrom(this.checkoutService.confirmation(prepared.id));
+
+      if (this.destroyed) {
+        return;
+      }
+
       this.acceptStatus(confirmation.checkout);
-      if(!confirmation.clientSecret) { this.pollStatus(prepared.id); return; }
-      const result=await this.stripe.confirmCardPayment(confirmation.clientSecret, {payment_method: {
-        card:this.cardNumber,billing_details:{name:this.checkoutForm().payment.nameOnCard().value()}
-      }});
-      if(this.destroyed) return;
-      if(result.error) this.notificationService.showError(result.error.message ?? 'Payment confirmation could not be completed.');
-      if(!result.error && ['succeeded','processing'].includes(result.paymentIntent?.status ?? ''))
+
+      if (!confirmation.clientSecret) {
+        this.pollStatus(prepared.id);
+        return;
+      }
+
+      const result = await this.stripe.confirmCardPayment(confirmation.clientSecret, {
+        payment_method: {
+          card: this.cardNumber,
+          billing_details: { name: this.checkoutForm().payment.nameOnCard().value() }
+        }
+      });
+
+      if (this.destroyed) {
+        return;
+      }
+      if (result.error) {
+        this.notificationService.showError(result.error.message ?? 'Payment confirmation could not be completed.');
+      }
+      if (!result.error && ['succeeded', 'processing'].includes(result.paymentIntent?.status ?? '')) {
         this.confirmationPending.set(true);
+      }
+      
       // A browser callback, including success, cannot release an order. Read signed server verification.
       this.statusMessage.set('Checking payment status. You can safely reload this page.');
       this.pollStatus(prepared.id);
-    } catch(error: any) {
-      const code=error?.error?.code;
-      this.statusMessage.set(code==='checkout_paused' || code==='fulfillment_release_not_ready'
+    } catch (error: any) {
+      const code = error?.error?.code;
+      this.statusMessage.set(code === 'checkout_paused' || code === 'fulfillment_release_not_ready'
         ? 'Checkout is temporarily unavailable. Your saved checkout is retained.'
-        : code==='checkout_input_changed' ? 'Your purchase changed. Resume or cancel the saved checkout before starting another.'
-        : 'Payment status is uncertain. Retry the saved checkout; do not start another payment.');
+        : code === 'checkout_input_changed' ? 'Your purchase changed. Resume or cancel the saved checkout before starting another.'
+          : 'Payment status is uncertain. Retry the saved checkout; do not start another payment.');
     } finally { this.loading.set(false); }
   }
 
   private pollStatus(id: string): void {
     this.polling?.unsubscribe();
-    this.polling=timer(0,2000).pipe(take(61),exhaustMap(()=>this.checkoutService.status(id))).subscribe({
+    this.polling = timer(0, 2000).pipe(take(61), exhaustMap(() => this.checkoutService.status(id))).subscribe({
       next: view => this.acceptStatus(view),
       error: () => this.statusMessage.set('Payment status is unavailable. Your saved checkout is retained; please check again.')
     });
   }
   private acceptStatus(view: CheckoutView): void {
     this.checkout.set(view);
-    const messages: Record<CheckoutView['state'],string> = {
-      Preparing:'Preparing your saved checkout. Please check again shortly.', Ready: this.confirmationPending()
+    const messages: Record<CheckoutView['state'], string> = {
+      Preparing: 'Preparing your saved checkout. Please check again shortly.', Ready: this.confirmationPending()
         ? 'Waiting for server confirmation. Use Resume saved checkout to check again before paying.'
         : 'Your checkout is ready for payment.',
-      Verifying:'Checking payment status. Please wait before trying again.', PaymentVerified:'Payment received. Your order is awaiting processing.',
-      ReviewRequired:'Your payment needs review. Please contact support before paying again.',
-      Expired:'This checkout has expired. Check its payment status before starting another.', Cancelled:'This checkout was cancelled.'
+      Verifying: 'Checking payment status. Please wait before trying again.', PaymentVerified: 'Payment received. Your order is awaiting processing.',
+      ReviewRequired: 'Your payment needs review. Please contact support before paying again.',
+      Expired: 'This checkout has expired. Check its payment status before starting another.', Cancelled: 'This checkout was cancelled.'
     };
     this.statusMessage.set(messages[view.state]);
-    if(['PaymentVerified','ReviewRequired','Expired','Cancelled'].includes(view.state)) this.polling?.unsubscribe();
-    if(view.state==='PaymentVerified') this.router.navigate(['checkout/success'], {queryParams:{checkout:view.id}});
+    if (['PaymentVerified', 'ReviewRequired', 'Expired', 'Cancelled'].includes(view.state)) this.polling?.unsubscribe();
+    if (view.state === 'PaymentVerified') this.router.navigate(['checkout/success'], { queryParams: { checkout: view.id } });
   }
   async resumeSavedCheckout(): Promise<void> {
-    if(this.loading()) return;
+    if (this.loading()) return;
     this.loading.set(true);
-    try {const view=await lastValueFrom(this.checkoutService.resumeSavedCheckout());if(view) this.acceptStatus(view);}
-    catch {this.statusMessage.set('The saved checkout is unavailable. Its identity is retained; please check again.');}
-    finally {this.loading.set(false);}
+    try { const view = await lastValueFrom(this.checkoutService.resumeSavedCheckout()); if (view) this.acceptStatus(view); }
+    catch { this.statusMessage.set('The saved checkout is unavailable. Its identity is retained; please check again.'); }
+    finally { this.loading.set(false); }
   }
   async cancelSavedCheckout(): Promise<void> {
-    if(this.loading()) return;
+    if (this.loading()) return;
     this.loading.set(true);
     try {
-      const view=await lastValueFrom(this.checkoutService.cancelSavedCheckout());
-      if(view) { this.acceptStatus(view); if(view.state==='Cancelled') this.checkout.set(null); }
+      const view = await lastValueFrom(this.checkoutService.cancelSavedCheckout());
+      if (view) { this.acceptStatus(view); if (view.state === 'Cancelled') this.checkout.set(null); }
     } catch { this.statusMessage.set('The saved checkout could not be cancelled. Resume it to establish its status first.'); }
     finally { this.loading.set(false); }
   }
@@ -261,7 +306,7 @@ export class CheckoutPaymentComponent implements AfterViewInit, OnDestroy, OnIni
   isActivatedSubmitButton(): boolean | undefined {
     return (
       !this.paymentFormReady() || this.loading() || this.confirmationPending() ||
-      ['ReviewRequired','PaymentVerified','Expired','Cancelled'].includes(this.checkout()?.state ?? '') ||
+      ['ReviewRequired', 'PaymentVerified', 'Expired', 'Cancelled'].includes(this.checkout()?.state ?? '') ||
       this.checkoutForm().payment().invalid() ||
       !this.cardNumberValid() ||
       !this.cardExpiryValid() ||
