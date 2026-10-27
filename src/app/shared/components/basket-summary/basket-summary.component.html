@@ -1,6 +1,6 @@
 <section class="cart-container">
   @for (item of items(); track $index) {
-    <div class="cart-item">
+    <div class="cart-item" [class.read-only]="!isBasket()">
       <div class="product-info">
         <img [src]="item.pictureUrl" [alt]="item.productName" class="product-image" title="product image">
         <div class="product-details">
@@ -11,9 +11,9 @@
             <p><strong>{{ TranslationKeys.Basket.TypeLabel | translate }}</strong> {{item.type}}</p>
           }
           @if (item.sku) {
-            <p class="line-sku">{{ item.sku }}</p>
+            <p class="line-sku"><bdi>{{ item.sku }}</bdi></p>
           }
-          <span class="price">{{item.price | money:currency()}}</span>
+          <span class="price"><bdi>{{item.price | money:currency()}}</bdi></span>
         </div>
       </div>
       <div class="quantity-controls">
@@ -29,8 +29,8 @@
           </button>
         }
       </div>
-      <div class="total-price" [style]="addPadding()">
-        <span>{{item.price * item.quantity | money:currency()}}</span>
+      <div class="total-price">
+        <bdi>{{item.price * item.quantity | money:currency()}}</bdi>
       </div>
       @if (isBasket()) {
         <button  mat-icon-button color="warn" (click)="removeBasketItem(item)">

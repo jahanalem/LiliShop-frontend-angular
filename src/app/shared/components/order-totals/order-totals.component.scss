@@ -1,50 +1,85 @@
+:host {
+  display: block;
+  min-inline-size: 0;
+}
+
 .order-summary-container {
-  margin: 0 auto;
-  padding: 16px;
-  background-color: var(--ls-surface-2);
-  border-radius: var(--ls-radius-sm);
+  background-color: var(--ls-surface);
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius-md);
+  box-shadow: var(--ls-shadow-sm);
 }
 
 .order-summary-header {
-  padding: 16px;
+  padding: var(--ls-space-5);
   background-color: var(--ls-brand);
   color: var(--ls-on-brand);
-  border-radius: var(--ls-radius-sm);
-  text-align: center;
+  border-radius: var(--ls-radius-md) var(--ls-radius-md) 0 0;
+  text-align: start;
+
+  h6 {
+    color: inherit;
+    margin: 0;
+    font-size: var(--ls-fs-md);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
 }
 
 .order-summary-content {
-  padding: 16px;
+  padding: var(--ls-space-5);
+}
+
+.order-summary-content p {
+  color: var(--ls-text-soft);
+  font-size: var(--ls-fs-sm);
+  line-height: 1.6;
+  margin-block: 0 var(--ls-space-3);
 }
 
 .order-summary-list {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .order-summary-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--ls-space-3);
+  padding-block: var(--ls-space-4);
   border-bottom: 1px solid var(--ls-border);
-}
 
-.order-summary-item span {
-  font-size: 16px;
-  color: var(--ls-text-soft);
-}
+  span {
+    min-inline-size: 0;
+    font-size: var(--ls-fs-sm);
+    color: var(--ls-text-soft);
+    overflow-wrap: anywhere;
+  }
 
-.order-summary-item strong {
-  font-size: 16px;
-  color: var(--ls-text);
+  strong {
+    max-inline-size: 100%;
+    font-size: var(--ls-fs-base);
+    color: var(--ls-text);
+    text-align: end;
+    overflow-wrap: anywhere;
+  }
 }
 
 .order-total {
-  font-weight: bold;
+  border-bottom: 0;
+  padding-block-end: 0;
+
+  span, strong {
+    color: var(--ls-text);
+    font-size: var(--ls-fs-md);
+    font-weight: 700;
+  }
 }
 
-.total-price {
-  color: var(--ls-brand-text);
-  font-size: 18px;
+@media (max-width: 400px) {
+  .order-summary-item {
+    grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  }
 }

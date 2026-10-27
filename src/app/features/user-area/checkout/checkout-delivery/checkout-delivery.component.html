@@ -4,8 +4,7 @@
   <mat-radio-group [value]="checkoutForm().delivery.deliveryMethod().value()">
     @for (dMethod of deliveryMethods(); track dMethod.id) {
       <mat-radio-button (click)="onDeliveryMethodChange(dMethod)" [value]="dMethod.id" class="delivery-option">
-        <strong>{{ dMethod.shortName }} - {{ dMethod.price | money:shopCurrency.currency() }}</strong>
-        <br />
+        <strong class="delivery-title"><span>{{ dMethod.shortName }} - </span><bdi>{{ dMethod.price | money:shopCurrency.currency() }}</bdi></strong>
         <span class="label-description">{{ dMethod.description }}</span>
       </mat-radio-button>
     }

@@ -1,40 +1,47 @@
+@use 'styles/purchase' as purchase;
+
 .checkout-section {
-  margin-top: 16px;
-  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 0 var(--ls-space-4);
 }
 
 .header-container {
+  grid-column: 1 / -1;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  gap: var(--ls-space-3);
+  margin-block-end: var(--ls-space-4);
+
+  h4 {
+    margin: 0;
+    font-size: var(--ls-fs-lg);
+  }
+
+  button {
+    min-block-size: 44px;
+    block-size: auto;
+    white-space: normal;
+  }
 }
 
-.form-field {
-  margin-bottom: 16px;
+.form-field, app-text-input {
+  min-inline-size: 0;
+}
+
+app-text-input {
+  display: block;
 }
 
 .action-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
+  @include purchase.actions;
+  margin-block-start: var(--ls-space-2);
 }
 
-button[mat-button] {
-  margin: 8px 0;
-}
-
-button[mat-raised-button] {
-  margin: 8px 0;
-}
-
-@media (max-width: 768px) {
-  .action-buttons {
-    flex-direction: column;
-  }
-
-  button[mat-button], button[mat-raised-button] {
-    width: 100%;
-    margin: 8px 0;
+@media (max-width: 600px) {
+  .checkout-section {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

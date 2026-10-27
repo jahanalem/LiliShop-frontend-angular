@@ -1,48 +1,77 @@
+@use '@angular/material' as mat;
+
+:host {
+  display: block;
+}
+
 .checkout-section {
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-  width: 100%;
+  padding: var(--ls-space-6) var(--ls-space-4);
 }
 
 .checkout-container {
-  max-width: 1200px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  max-inline-size: 1200px;
+  margin-inline: auto;
 }
 
 .checkout-content {
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  align-items: start;
+  gap: var(--ls-space-6);
 }
 
 .checkout-stepper {
-  flex: 2;
+  min-inline-size: 0;
+  border: 1px solid var(--ls-border);
+  border-radius: var(--ls-radius-md);
+  background: var(--ls-surface);
+  box-shadow: var(--ls-shadow-sm);
+}
+
+mat-stepper {
+  @include mat.form-field-overrides((
+    container-height: 3.5rem,
+    container-vertical-padding: 1rem,
+    filled-with-label-container-padding-top: 1.5rem,
+    filled-with-label-container-padding-bottom: .5rem,
+  ));
+  @include mat.stepper-overrides((
+    container-color: var(--ls-surface),
+    header-label-text-color: var(--ls-text-soft),
+    header-selected-state-label-text-color: var(--ls-text),
+    header-selected-state-label-text-weight: 700,
+  ));
+  border-radius: var(--ls-radius-md);
+}
+
+.checkout-step-label {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
 }
 
 .checkout-summary {
-  flex: 1;
+  min-inline-size: 0;
+
+  mat-card {
+    background: transparent;
+    box-shadow: none;
+  }
 }
 
-.stepper-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   .checkout-content {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .checkout-section {
+    padding-inline: var(--ls-space-2);
   }
 
-  .stepper-actions {
-    flex-direction: column;
-  }
-
-  .stepper-actions button {
-    margin-top: 8px;
+  .checkout-step-label {
+    font-size: var(--ls-fs-xs);
   }
 }

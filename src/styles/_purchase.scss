@@ -1,0 +1,69 @@
+@use '@angular/material' as mat;
+
+@mixin actions {
+  @include mat.button-overrides((
+    protected-container-color: var(--ls-brand),
+    protected-label-text-color: var(--ls-on-brand),
+  ));
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ls-space-3);
+  margin-block: var(--ls-space-6) var(--ls-space-2);
+
+  button {
+    flex: 1 1 12rem;
+    min-inline-size: 0;
+    min-block-size: 48px;
+    block-size: auto;
+    padding: 12px 20px;
+    white-space: normal;
+    line-height: 1.4;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  button:focus-visible {
+    outline: 2px solid var(--ls-focus-ring);
+    outline-offset: 3px;
+  }
+
+  mat-icon:not(.loading-spinner):dir(rtl) {
+    transform: scaleX(-1);
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+
+    button {
+      flex: none;
+      inline-size: 100%;
+    }
+  }
+}
+
+// Material has no public horizontal-padding token for step headers.
+// Keep this override confined to the existing checkout instance.
+@mixin stepper-layout {
+  app-checkout .checkout-stepper {
+    // The decorative number shares Material's fixed 24px icon circle.
+    // Keep it inside that circle when the surrounding text is enlarged.
+    .mat-step-icon {
+      font-size: 16px;
+    }
+
+    .mat-horizontal-stepper-header {
+      min-inline-size: 0;
+    }
+
+    @media (max-width: 600px) {
+      .mat-horizontal-stepper-header {
+        padding-inline: var(--ls-space-2);
+      }
+
+      .mat-horizontal-content-container {
+        padding-inline: var(--ls-space-4);
+      }
+    }
+  }
+}

@@ -9,15 +9,15 @@
       <ul class="order-summary-list">
         <li class="order-summary-item">
           <span>{{ TranslationKeys.OrderTotals.Subtotal | translate }}</span>
-          <strong>{{subtotal() | money:currency()}}</strong>
+          <strong><bdi>{{subtotal() | money:currency()}}</bdi></strong>
         </li>
         <li class="order-summary-item">
           <span>{{ TranslationKeys.OrderTotals.Shipping | translate }}</span>
-          <strong>{{shippingPrice() | money:currency()}}</strong>
+          <strong><bdi>{{shippingPrice() | money:currency()}}</bdi></strong>
         </li>
         <li class="order-summary-item order-total">
           <span>{{ TranslationKeys.OrderTotals.Total | translate }}</span>
-          <strong class="total-price">{{total() | money:currency()}}</strong>
+          <strong class="total-price"><bdi>{{total() | money:currency()}}</bdi></strong>
         </li>
       </ul>
     </div>

@@ -12,6 +12,7 @@
 @use './styles/theme-colors' as brand;
 @use './styles/tokens';
 @use './styles/mixins' as mx;
+@use './styles/purchase' as purchase;
 
 // --------------------------------------------------------------------------
 // 1. Material theme — emits --mat-sys-* tokens as light-dark() pairs so the
@@ -346,3 +347,6 @@ label.xng-breadcrumb-trail {
     opacity: 1;
   }
 }
+
+// Only the checkout stepper needs compact headers at narrow widths.
+@include purchase.stepper-layout;

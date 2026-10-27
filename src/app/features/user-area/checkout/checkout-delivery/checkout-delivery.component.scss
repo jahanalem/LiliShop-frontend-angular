@@ -1,23 +1,50 @@
-.delivery-section {
-  margin-top: 16px;
+@use 'styles/purchase' as purchase;
+
+.delivery-section h4 {
+  margin-block-end: var(--ls-space-5);
+  font-size: var(--ls-fs-lg);
 }
 
 .delivery-option {
   display: block;
-  margin-bottom: 16px;
+  margin-block-end: var(--ls-space-3);
+  padding: var(--ls-space-3);
+  border: 1px solid var(--ls-border-strong);
+  border-radius: var(--ls-radius-sm);
+  background: var(--ls-surface);
+
+  &:hover {
+    background: var(--ls-hover);
+  }
+
+  &.mat-mdc-radio-checked {
+    border-color: var(--ls-brand-text);
+    background: var(--ls-brand-soft);
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--ls-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.delivery-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ls-space-1) var(--ls-space-3);
+  margin-block-end: var(--ls-space-1);
+  color: var(--ls-text);
+  overflow-wrap: anywhere;
 }
 
 .label-description {
+  display: block;
   color: var(--ls-text-soft);
-  font-size: 0.875rem;
+  font-size: var(--ls-fs-sm);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .action-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
-}
-
-.action-buttons button {
-  margin: 8px 0;
+  @include purchase.actions;
 }
