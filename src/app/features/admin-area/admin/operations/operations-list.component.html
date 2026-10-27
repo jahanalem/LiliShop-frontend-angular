@@ -1,0 +1,64 @@
+<section class="operations">
+
+  <div class="heading"><div><p class="eyebrow">LiliShop &middot; {{ 'Title' | opsText }}</p><h1>{{ title }}</h1><p class="intro">{{ intro }}</p></div><button mat-stroked-button (click)="refresh()" [disabled]="loading()"><mat-icon>refresh</mat-icon>{{ 'Refresh' | opsText }}</button></div>
+
+  <app-ops-nav />
+
+  @if(summary();as s){<div class="metrics" aria-describedby="metrics-scope">
+
+    <div class="metric"><div class="number">{{ s.processingBacklog }}</div><small>{{ 'ProcessingBacklog' | opsText }}</small></div>
+
+    <div class="metric"><div class="number">{{ s.inboxBacklog }}</div><small>{{ 'InboxBacklog' | opsText }}</small></div>
+
+    <div class="metric attention"><div class="number">{{ s.checkoutReviews }}</div><small>{{ 'CheckoutReviews' | opsText }}</small></div>
+
+    <div class="metric attention"><div class="number">{{ s.mailUnknown }}</div><small>{{ 'MailUnknown' | opsText }}</small></div>
+
+  </div><p id="metrics-scope" class="muted">{{ 'BacklogHelp' | opsText }} &middot; {{ time(s.asOf) }} UTC</p>}
+
+  @if(contextError()){<p class="notice" role="status">{{ 'ContextUnavailable' | opsText }}</p>}
+
+  <div class="toolbar">
+
+    <mat-form-field appearance="outline" class="search"><mat-label>{{ 'Search' | opsText }}</mat-label><mat-icon matPrefix>search</mat-icon><input matInput maxlength="256" [ngModel]="query.search" (ngModelChange)="search($event)" aria-describedby="search-help" /></mat-form-field>
+
+    @if(kind!=='audit'){<mat-form-field appearance="outline"><mat-label>{{ (kind==='mail'?'ProcessingState':'State') | opsText }}</mat-label><mat-select id="operations-state" [ngModel]="query.state" (ngModelChange)="filter({state:$event})"><mat-option value="">{{ 'All' | opsText }}</mat-option>@for(s of states;track s){<mat-option [value]="s">{{ s | opsText }}</mat-option>}</mat-select></mat-form-field>}
+
+    @if(kind==='processing'||kind==='mail'){<mat-form-field appearance="outline"><mat-label>{{ 'MailState' | opsText }}</mat-label><mat-select id="operations-mail-state" [ngModel]="query.mailState" (ngModelChange)="filter({mailState:$event})"><mat-option value="">{{ 'All' | opsText }}</mat-option>@for(s of mailStates;track s){<mat-option [value]="s">{{ s | opsText }}</mat-option>}</mat-select></mat-form-field>}
+
+    @if(kind==='checkouts'){<mat-form-field appearance="outline"><mat-label>{{ 'Verification' | opsText }}</mat-label><mat-select [ngModel]="query.verification" (ngModelChange)="filter({verification:$event})"><mat-option value="">{{ 'All' | opsText }}</mat-option>@for(v of ['verified','unverified','missing'];track v){<mat-option [value]="v">{{ v | opsText }}</mat-option>}</mat-select></mat-form-field>}
+
+    @if(kind==='checkouts'||kind==='inbox'){<mat-form-field appearance="outline"><mat-label>{{ 'Mode' | opsText }}</mat-label><mat-select [ngModel]="query.mode" (ngModelChange)="filter({mode:$event})"><mat-option value="">{{ 'All' | opsText }}</mat-option><mat-option value="test">{{ 'test' | opsText }}</mat-option><mat-option value="live">{{ 'live' | opsText }}</mat-option></mat-select></mat-form-field>}
+
+    @if(kind==='inbox'||kind==='processing'||kind==='mail'){<mat-form-field appearance="outline"><mat-label>{{ 'Timing' | opsText }}</mat-label><mat-select [ngModel]="query.timing" (ngModelChange)="filter({timing:$event})"><mat-option value="">{{ 'All' | opsText }}</mat-option>@for(s of timings;track s){<mat-option [value]="s">{{ s | opsText }}</mat-option>}</mat-select></mat-form-field>}
+
+    @if(kind==='audit'){<mat-form-field appearance="outline"><mat-label>{{ 'Scope' | opsText }}</mat-label><mat-select [ngModel]="query.scope" (ngModelChange)="filter({scope:$event})"><mat-option value="">{{ 'All' | opsText }}</mat-option><mat-option value="checkout">{{ 'checkout' | opsText }}</mat-option><mat-option value="fulfillment">{{ 'fulfillment' | opsText }}</mat-option></mat-select></mat-form-field>}
+
+    <mat-form-field appearance="outline" class="compact"><mat-label>{{ 'Sort' | opsText }}</mat-label><mat-select [ngModel]="query.sort" (ngModelChange)="filter({sort:$event})">@for(s of sorts;track s){<mat-option [value]="s">{{ s | opsText }}</mat-option>}</mat-select></mat-form-field>
+
+    <mat-form-field appearance="outline" class="compact"><mat-label>{{ 'Direction' | opsText }}</mat-label><mat-select [ngModel]="query.direction" (ngModelChange)="filter({direction:$event})"><mat-option value="desc">{{ 'desc' | opsText }}</mat-option><mat-option value="asc">{{ 'asc' | opsText }}</mat-option></mat-select></mat-form-field>
+
+  </div>
+
+  <p id="search-help" class="muted">{{ 'SearchHint' | opsText }}</p>
+
+  <div class="section-heading"><p class="muted">{{ 'FilterScope' | opsText }}: {{ count() }} &middot; {{ 'UTC' | opsText }}</p>@if(filtered){<button mat-button (click)="clear()">{{ 'Clear' | opsText }}</button>}</div>
+
+  @if(error()){<div class="error" role="alert"><mat-icon>error_outline</mat-icon><h2>{{ error() | opsText }}</h2><button mat-stroked-button (click)="refresh()">{{ 'Refresh' | opsText }}</button>@if(error()==='InvalidFilters'){<button mat-button (click)="clear()">{{ 'Clear' | opsText }}</button>}</div>}
+
+  @else if(loading()){<div class="loading" role="status"><mat-spinner diameter="30" /><span>{{ 'Loading' | opsText }}</span></div>}
+
+  @else if(!rows().length){<div class="empty"><mat-icon>inbox</mat-icon><h2>{{ (filtered?'NoMatches':'Empty') | opsText }}</h2><p class="muted">{{ (filtered?'NoMatchesHelp':'EmptyHelp') | opsText }}</p></div>}
+
+  @else {<div class="table-panel"><div class="table-scroll"><table><thead><tr><th scope="col">{{ 'Record' | opsText }}</th><th scope="col">{{ 'Context' | opsText }}</th><th scope="col">{{ evidenceLabel | opsText }}</th><th scope="col">{{ 'Time' | opsText }} &middot; UTC</th><th scope="col">{{ 'Details' | opsText }}</th></tr></thead>
+
+    <tbody>@for(row of rows();track row.key){<tr><td><span class="record-number">{{ row.title }}</span><bdi class="record">{{ row.secondary }}</bdi>@if(row.orderId){<small><a [routerLink]="['/admin/operations/orders',row.orderId]" [queryParams]="detailQuery()">{{ 'Order' | opsText }} #{{ row.orderId }}</a></small>}</td><td><div class="statuses"><app-ops-badge [value]="row.state" />@if(row.mailState){<app-ops-badge [value]="row.mailState" />}</div>@if(row.reason){<small class="reason">{{ row.reason }}</small>}</td><td><bdi>{{ row.evidence }}</bdi><small>{{ row.timing | opsText }}</small></td><td>{{ time(row.when) }}</td><td>@if(row.route){<a mat-button [routerLink]="row.route" [queryParams]="detailQuery()" [attr.aria-label]="t('Details')+': '+row.title">{{ 'Details' | opsText }}<mat-icon>arrow_forward</mat-icon></a>}</td></tr>}</tbody></table></div>
+
+    <mat-paginator [length]="count()" [pageIndex]="query.page-1" [pageSize]="query.pageSize" [pageSizeOptions]="[10,25,50,100]" (page)="paginate($event)" showFirstLastButtons [attr.aria-label]="t('FilterScope')" /></div>}
+
+  @if(asOf()){<p class="muted as-of">{{ 'Updated' | opsText }}: {{ time(asOf()) }} UTC &middot; {{ 'ReadOnly' | opsText }}</p>}
+
+  @if(kind==='processing'&&control();as c){<section class="panel worker"><h2>{{ 'OperatorActions' | opsText }}</h2><p class="muted">{{ 'Worker' | opsText }}: {{ (c.enabled?'Enabled':'Disabled') | opsText }} &middot; {{ 'Revision' | opsText }} {{ c.revision }}</p><div class="actions"><mat-form-field appearance="outline"><mat-label>{{ 'OperatorReason' | opsText }}</mat-label><input matInput id="operator-reason" maxlength="250" [(ngModel)]="reason" /></mat-form-field><button mat-stroked-button [disabled]="busy()||!reason.trim()" (click)="toggle()">{{ (c.enabled?'Disable':'Enable') | opsText }}</button></div>@if(actionError()){<p role="alert">{{ actionError() | opsText }}</p>}</section>}
+
+</section>
+

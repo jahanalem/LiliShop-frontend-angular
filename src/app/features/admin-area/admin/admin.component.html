@@ -44,14 +44,16 @@
 
     <mat-nav-list class="nav-list">
       @for (item of navItems; track item.name) {
+        @if (!item.superAdminOnly || isSuperAdmin()) {
         <a mat-list-item
            routerLink="{{ item.link }}"
            [routerLinkActiveOptions]="{ exact: true }"
            routerLinkActive="active-nav-item"
            class="nav-item">
           <mat-icon matListItemIcon class="nav-icon">{{ item.icon }}</mat-icon>
-          <span matListItemTitle class="nav-item-name">{{ item.name | translate }}</span>
+          <span matListItemTitle class="nav-item-name">{{ item.name === 'Operations.Title' ? ('Title' | opsText) : (item.name | translate) }}</span>
         </a>
+        }
       }
     </mat-nav-list>
   </mat-sidenav>

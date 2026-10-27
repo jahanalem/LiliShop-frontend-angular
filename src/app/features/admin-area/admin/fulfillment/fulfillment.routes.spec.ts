@@ -1,3 +1,5 @@
+import { MatSelectHarness } from '@angular/material/select/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
@@ -21,7 +23,7 @@ import { USER_LAYOUT_ROUTES } from 'src/app/features/user-area/user-layout.route
 describe('A5 actual admin and customer routes', () => {
   let http: HttpTestingController;
   const id = '22222222-2222-4222-8222-222222222222';
-  const detail = {id,orderId:12,attemptId:'attempt',createdAt:'2026-10-23T10:00:00Z',totalLines:2,lines:[],audit:[],
+  const detail = {id,orderId:12,attemptId:'attempt',checkoutId:'checkout',currency:'eur',historicalHandoffState:'BlockedAwaitingA5',createdAt:'2026-10-23T10:00:00Z',totalLines:2,lines:[],audit:[],
     execution:{state:'Retry',stage:'Inventory',revision:4,attempts:2,nextAttemptAt:'2026-10-23T10:00:00Z',invoiceId:null},email:null};
   function configure(role: string|null = 'SuperAdmin') {
     const checkout = USER_LAYOUT_ROUTES[0].children!.find(x => x.path === 'checkout')!;
@@ -36,7 +38,7 @@ describe('A5 actual admin and customer routes', () => {
     ]});
     http=TestBed.inject(HttpTestingController);
   }
-  function control() { http.expectOne(r=>r.url.endsWith('/fulfillment/control')).flush({enabled:false,revision:3}); }
+  function control() { http.expectOne(r=>r.url.endsWith('/operations/summary')).flush({processingBacklog:0,inboxBacklog:0,checkoutReviews:0,mailUnknown:0,asOf:'2026-10-27T10:00:00Z'});http.expectOne(r=>r.url.endsWith('/fulfillment/control')).flush({enabled:false,revision:3}); }
   afterEach(()=>{http?.verify();localStorage.clear();});
 
   it.each([null,'Customer','Administrator'])('protects the actual admin lazy route from %s',async role=>{
@@ -45,16 +47,16 @@ describe('A5 actual admin and customer routes', () => {
   });
   it('renders the real paginated list and sends its filter to the server',async()=>{
     configure();const h=await RouterTestingHarness.create('/admin/fulfillment');control();
-    const first=http.expectOne(r=>r.url.endsWith('/fulfillment'));expect(first.request.params.get('page')).toBe('1');
+    const first=http.expectOne(r=>r.url.endsWith('/operations/processing'));expect(first.request.params.get('page')).toBe('1');
     first.flush({page:1,pageSize:25,count:1,data:[{...detail,state:'Retry',stage:'Inventory',emailState:'Pending'}]});h.detectChanges();
     expect(h.routeNativeElement?.textContent).toContain('Retry scheduled');
-    const select=h.routeNativeElement!.querySelector('select')!;select.value='ReviewRequired';select.dispatchEvent(new Event('change'));h.detectChanges();
-    const filtered=http.expectOne(r=>r.url.endsWith('/fulfillment'));expect(filtered.request.params.get('state')).toBe('ReviewRequired');
+    const select=await TestbedHarnessEnvironment.loader(h.fixture).getHarness(MatSelectHarness.with({selector:'#operations-state'}));await select.open();await select.clickOptions({text:'Needs review'});await h.fixture.whenStable();h.detectChanges();
+    const filtered=http.expectOne(r=>r.url.endsWith('/operations/processing'));expect(filtered.request.params.get('state')).toBe('ReviewRequired');
     filtered.flush({page:1,pageSize:25,count:0,data:[]});
   });
   it('requires reason and revision and suppresses repeated retry clicks',async()=>{
-    configure();const h=await RouterTestingHarness.create(`/admin/fulfillment/${id}`);control();
-    http.expectOne(r=>r.url.endsWith(`/fulfillment/${id}`)).flush(detail);h.detectChanges();
+    configure();const h=await RouterTestingHarness.create(`/admin/fulfillment/${id}`);
+    http.expectOne(r=>r.url.endsWith(`/operations/processing/${id}`)).flush(detail);h.detectChanges();
     const buttons=()=>Array.from(h.routeNativeElement!.querySelectorAll('button'));
     let retry=buttons().find(b=>b.textContent?.trim()==='Retry processing')!;expect(retry.disabled).toBe(true);
     const input=h.routeNativeElement!.querySelector('input')!;input.value='Investigated failure';input.dispatchEvent(new Event('input'));h.detectChanges();
@@ -64,22 +66,22 @@ describe('A5 actual admin and customer routes', () => {
     expect(h.routeNativeElement?.textContent).toContain('Refresh the current state');
   });
   it('shows uncertain email with invoice access and no permitted resend',async()=>{
-    configure();const h=await RouterTestingHarness.create(`/admin/fulfillment/${id}`);control();
-    http.expectOne(r=>r.url.endsWith(`/fulfillment/${id}`)).flush({...detail,execution:{...detail.execution,state:'Complete',invoiceId:77},
+    configure();const h=await RouterTestingHarness.create(`/admin/fulfillment/${id}`);
+    http.expectOne(r=>r.url.endsWith(`/operations/processing/${id}`)).flush({...detail,execution:{...detail.execution,state:'Complete',invoiceId:77},
       email:{id:'mail',state:'UnknownDelivery',revision:7,attempts:1}});h.detectChanges();
     expect(h.routeNativeElement?.textContent).toContain('Automatic resend is disabled');
-    expect(h.routeNativeElement?.querySelector('a[href="/admin/invoices/77"]')).not.toBeNull();
+    expect(h.routeNativeElement?.querySelector('a[href^="/admin/invoices/77"]')).not.toBeNull();
     const button=Array.from(h.routeNativeElement!.querySelectorAll('button')).find(b=>b.textContent?.includes('Retry known email'))!;
     expect(button.disabled).toBe(true);http.expectNone(r=>r.method==='POST');
   });
   it('changes only the separately revisioned worker control',async()=>{
     configure();const h=await RouterTestingHarness.create('/admin/fulfillment');control();
-    http.expectOne(r=>r.url.endsWith('/fulfillment')).flush({page:1,pageSize:25,count:0,data:[]});h.detectChanges();
-    const input=h.routeNativeElement!.querySelector('input')!;input.value='Isolated validation';input.dispatchEvent(new Event('input'));h.detectChanges();
-    Array.from(h.routeNativeElement!.querySelectorAll('button')).find(b=>b.textContent?.includes('Enable isolated worker'))!.click();
+    http.expectOne(r=>r.url.endsWith('/operations/processing')).flush({page:1,pageSize:25,count:0,data:[]});h.detectChanges();
+    const input=h.routeNativeElement!.querySelector<HTMLInputElement>('#operator-reason')!;input.value='Isolated validation';input.dispatchEvent(new Event('input'));h.detectChanges();
+    Array.from(h.routeNativeElement!.querySelectorAll('button')).find(b=>b.textContent?.includes('Enable worker'))!.click();
     const request=http.expectOne(r=>r.method==='PUT');expect(request.request.url).toContain('/fulfillment/control');
-    expect(request.request.body).toEqual({revision:3,enabled:true,reason:'Isolated validation'});request.flush({enabled:true,revision:4});
-    http.expectOne(r=>r.url.endsWith('/fulfillment')).flush({page:1,pageSize:25,count:0,data:[]});
+    expect(request.request.body).toEqual({revision:3,enabled:true,reason:'Isolated validation'});request.flush({enabled:true,revision:4});control();
+    http.expectOne(r=>r.url.endsWith('/operations/processing')).flush({page:1,pageSize:25,count:0,data:[]});
     http.expectNone(r=>r.url.includes('/checkout'));
   });
   it('loads customer completion and uncertain mail from authorized reads without resubmitting payment',async()=>{

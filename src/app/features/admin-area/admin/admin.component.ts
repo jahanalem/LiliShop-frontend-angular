@@ -2,7 +2,9 @@ import { AccountService } from 'src/app/core/services/account.service';
 import { Component, OnDestroy, ChangeDetectionStrategy, viewChild, inject, AfterViewInit, OnInit } from '@angular/core';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { delay, filter, Subject, takeUntil } from 'rxjs';
+import { delay, filter, map, Subject, takeUntil } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { OperationsTextPipe } from './operations/operations-ui';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { BusyService } from 'src/app/core/services/busy.service';
 import { MatToolbarModule } from "@angular/material/toolbar";
@@ -31,7 +33,7 @@ import { TranslationKeys } from 'src/app/core/i18n/translation-keys';
       MatDividerModule,
       MatListModule,
       MatButtonModule,
-      TranslatePipe
+      TranslatePipe, OperationsTextPipe
     ]
 })
 export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit {
@@ -47,8 +49,11 @@ export default class AdminComponent implements OnDestroy, AfterViewInit, OnInit 
   protected readonly TranslationKeys = TranslationKeys;
 
   // Labels are translation keys — the sidenav renders them through the translate pipe.
+  readonly isSuperAdmin = toSignal(this.accountService.currentUser$.pipe(map(user => user?.role === 'SuperAdmin')), {initialValue:false});
+
   navItems = [
-    { name: 'Fulfillment.Queue', link: '/admin/fulfillment', icon: 'pending_actions' },
+    { name: 'Operations.Title', link: '/admin/operations', icon: 'monitoring', superAdminOnly: true },
+    { name: 'Fulfillment.Queue', link: '/admin/fulfillment', icon: 'pending_actions', superAdminOnly: true },
     { name: TranslationKeys.Admin.Nav.Dashboard, link: '/admin',                     icon: 'dashboard' },
     { name: TranslationKeys.Admin.Nav.Products,  link: '/admin/products',            icon: 'storefront' },
     { name: TranslationKeys.Admin.Nav.Brands,    link: '/admin/brands',              icon: 'verified' },

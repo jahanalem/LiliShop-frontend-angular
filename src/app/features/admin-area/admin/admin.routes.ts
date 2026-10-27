@@ -10,6 +10,8 @@ export const ADMIN_ROUTES: Routes = [
     canMatch: [authGuard],
     data: { policy: PolicyNames.RequireAtLeastAdminPanelViewerRole },
     children: [
+      { path: 'operations', canMatch: [authGuard], data: { policy: PolicyNames.RequireSuperAdminRole },
+        loadChildren: () => import('./operations/operations.routes').then(m => m.OPERATIONS_ROUTES) },
       { path: 'fulfillment', canMatch: [authGuard], data: { policy: PolicyNames.RequireSuperAdminRole },
         loadChildren: () => import('./fulfillment/fulfillment.routes').then(m => m.FULFILLMENT_ROUTES) },
       { path: 'products', loadChildren: () => import('./products/products.routes').then(m => m.PRODUCTS_ROUTES) },

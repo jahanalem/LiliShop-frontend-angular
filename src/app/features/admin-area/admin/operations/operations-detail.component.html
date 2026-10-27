@@ -1,0 +1,48 @@
+<section class="operations">
+
+  <div class="heading"><div><p class="eyebrow">LiliShop &middot; {{ 'ReadOnly' | opsText }}</p><h1>{{ (kind==='orders'?'Order':kind) | opsText }}</h1></div><button mat-stroked-button (click)="refresh()" [disabled]="loading()||busy()"><mat-icon>refresh</mat-icon>{{ 'Refresh' | opsText }}</button></div>
+
+  <app-ops-nav /><a mat-button [routerLink]="backPath" [queryParams]="backQuery"><mat-icon>arrow_back</mat-icon>{{ 'Back' | opsText }}</a>
+
+  @if(error()){<div class="error" role="alert"><h2>{{ error() | opsText }}</h2><button mat-stroked-button (click)="refresh()">{{ 'Refresh' | opsText }}</button></div>}
+
+  @else if(loading()){<div class="loading" role="status"><mat-spinner diameter="30" />{{ 'Loading' | opsText }}</div>}
+
+  @else {
+
+    <nav class="links" [attr.aria-label]="'Details' | opsText">@for(link of links();track link.label){<a mat-stroked-button [routerLink]="link.path" [queryParams]="linkQuery">{{ link.label | opsText }}<mat-icon>arrow_forward</mat-icon></a>}</nav>
+
+    @if(checkout();as d){<div class="details-grid"><section class="panel"><h2>{{ 'Checkout' | opsText }}</h2><dl class="facts"><dt>{{ 'Checkout' | opsText }}</dt><dd><app-ops-id [value]="d.checkout.id" /></dd><dt>{{ 'State' | opsText }}</dt><dd><app-ops-badge [value]="d.checkout.state" /></dd><dt>{{ 'Created' | opsText }}</dt><dd>{{ time(d.checkout.createdAt) }} UTC</dd><dt>{{ 'Expires' | opsText }}</dt><dd>{{ time(d.checkout.expiresAt) }} UTC</dd><dt>{{ 'Reason' | opsText }}</dt><dd class="reason">{{ d.checkout.reason??t('NotRecorded') }}</dd><dt>{{ 'Order' | opsText }}</dt><dd>{{ d.checkout.orderId??t('NoOrder') }}</dd></dl></section>
+
+      <section class="panel"><h2>{{ 'Payment' | opsText }}</h2><dl class="facts"><dt>{{ 'Attempt' | opsText }}</dt><dd><app-ops-id [value]="d.checkout.attemptId" /></dd><dt>{{ 'ProviderAmount' | opsText }}</dt><dd><bdi>{{ minor(d.checkout.amountMinor,d.checkout.currency) }}</bdi></dd><dt>{{ 'Verification' | opsText }}</dt><dd>{{ (d.checkout.verifiedAt?'verified':d.checkout.attemptId?'unverified':'missing') | opsText }}</dd><dt>{{ 'VerifiedAt' | opsText }}</dt><dd>{{ time(d.checkout.verifiedAt) }} UTC</dd><dt>{{ 'Mode' | opsText }}</dt><dd>{{ (d.checkout.liveMode===null?'Unavailable':d.checkout.liveMode?'live':'test') | opsText }}</dd><dt>PaymentIntent</dt><dd><app-ops-id [value]="d.paymentIntentId" /></dd><dt>{{ 'Event' | opsText }}</dt><dd><app-ops-id [value]="d.verifiedEventId" /></dd></dl></section></div>}
+
+    @if(receipt();as d){<div class="details-grid"><section class="panel"><h2>{{ 'inbox' | opsText }} #{{ d.receipt.id }}</h2><dl class="facts"><dt>{{ 'Event' | opsText }}</dt><dd><app-ops-id [value]="d.receipt.eventId" /></dd><dt>{{ 'EventType' | opsText }}</dt><dd>{{ d.receipt.eventType }}</dd><dt>{{ 'State' | opsText }}</dt><dd><app-ops-badge [value]="d.receipt.state" /></dd><dt>{{ 'Timing' | opsText }}</dt><dd>{{ d.receipt.timing | opsText }}</dd><dt>{{ 'Attempts' | opsText }}</dt><dd>{{ d.receipt.deliveryAttempts }}</dd><dt>{{ 'Version' | opsText }}</dt><dd><bdi>{{ d.receipt.apiVersion }}</bdi></dd><dt>{{ 'Mode' | opsText }}</dt><dd>{{ (d.receipt.liveMode?'live':'test') | opsText }}</dd><dt>{{ 'Reason' | opsText }}</dt><dd class="reason">{{ d.receipt.reason??t('NotRecorded') }}</dd></dl></section>
+
+      <section class="panel"><h2>{{ (d.association==='Unresolved'?'UnresolvedAssociation':d.association) | opsText }}</h2><p class="muted">{{ 'AssociationHelp' | opsText }}</p><dl class="facts"><dt>{{ 'ReceiptProof' | opsText }}</dt><dd>{{ (d.verificationRecorded?'Yes':'No') | opsText }}</dd><dt>{{ 'ProviderAmount' | opsText }}</dt><dd><bdi>{{ minor(d.amountMinor,d.currency) }}</bdi></dd><dt>{{ 'Received' | opsText }}</dt><dd>{{ time(d.receipt.receivedAt) }} UTC</dd><dt>{{ 'NextAttempt' | opsText }}</dt><dd>{{ time(d.receipt.nextAttemptAt) }} UTC</dd><dt>{{ 'CompletedAt' | opsText }}</dt><dd>{{ time(d.receipt.completedAt) }} UTC</dd></dl>@if(d.attemptId){<app-ops-id [value]="d.attemptId" />}</section></div>}
+
+    @if(moneyRecord();as m){<section class="panel"><div class="section-heading"><h2>{{ 'SnapshotState' | opsText }}</h2><app-ops-badge [value]="m.snapshotState" /></div>@if(!m.complete){<p class="notice">{{ 'UnresolvedMoney' | opsText }}</p>}<div class="money-grid"><div><small>{{ 'Subtotal' | opsText }}</small><bdi>{{ money(m.subtotal,m.currency) }}</bdi></div><div><small>{{ 'Shipping' | opsText }}</small><bdi>{{ money(m.shipping,m.currency) }}</bdi></div><div><small>{{ 'Total' | opsText }}</small><bdi>{{ money(m.total,m.currency) }}</bdi></div></div><dl class="facts"><dt>{{ 'Currency' | opsText }}</dt><dd><bdi>{{ m.currency?.toUpperCase()??t('Unavailable') }}</bdi></dd><dt>{{ 'RecordedAt' | opsText }}</dt><dd>{{ time(m.recordedAt) }} UTC</dd><dt>{{ 'EvidenceInvoice' | opsText }}</dt><dd>@if(m.evidenceInvoiceId){<a [routerLink]="['/admin/invoices',m.evidenceInvoiceId]">{{ 'Invoice' | opsText }} #{{ m.evidenceInvoiceId }}</a>}@else { {{ (m.evidenceStatus==='Unavailable'?'EvidenceUnavailable':'NotRecorded') | opsText }} }</dd></dl></section>}
+
+    @if(order();as d){<section class="panel"><h2>{{ 'Order' | opsText }} #{{ d.id }}</h2><p>{{ d.status }} &middot; {{ time(d.orderDate) }} UTC</p><h3>{{ 'Lines' | opsText }}</h3><app-ops-lines [lines]="d.lines" [currency]="d.money.currency" /></section>}
+
+    @if(work();as d){<section class="panel"><div class="section-heading"><h2>{{ 'processing' | opsText }} &middot; {{ 'Order' | opsText }} #{{ d.orderId }}</h2><app-ops-badge [value]="d.execution?.state??'NotInitialized'" /></div><dl class="facts"><dt>{{ 'Handoff' | opsText }}</dt><dd><app-ops-id [value]="d.id" /></dd><dt>{{ 'Attempt' | opsText }}</dt><dd><app-ops-id [value]="d.attemptId" /></dd></dl><details class="muted"><summary>{{ 'HistoricalLabel' | opsText }}</summary><p><bdi>{{ d.historicalHandoffState }}</bdi> &middot; {{ 'HistoricalHelp' | opsText }}</p></details>
+
+      @if(d.execution;as e){<dl class="facts"><dt>{{ 'Stage' | opsText }}</dt><dd>{{ e.stage | opsText }}</dd><dt>{{ 'Attempts' | opsText }}</dt><dd>{{ e.attempts }} &middot; {{ 'CycleAttempts' | opsText }} {{ e.cycleAttempts }}</dd><dt>{{ 'NextAttempt' | opsText }}</dt><dd>{{ time(e.nextAttemptAt) }} UTC</dd><dt>{{ 'CompletedAt' | opsText }}</dt><dd>{{ time(e.completedAt) }} UTC</dd><dt>{{ 'Reason' | opsText }}</dt><dd class="reason">{{ e.reason??t('NotRecorded') }}</dd></dl>}@else{<p class="notice">{{ 'PendingExecution' | opsText }}</p>}
+
+      <h3>{{ 'Lines' | opsText }}</h3><app-ops-lines [lines]="d.lines" [currency]="d.currency" />
+
+      <a [routerLink]="['/admin/operations/audit']" [queryParams]="{search:d.id}">{{ 'ViewHistory' | opsText }}</a>
+
+    </section>
+
+    @if(d.email;as m){<section class="panel"><h2>{{ 'mail' | opsText }}</h2><app-ops-badge [value]="m.state" /><p>{{ 'Attempts' | opsText }} {{ m.attempts }} &middot; {{ time(m.nextAttemptAt) }} UTC</p>@if(m.state==='UnknownDelivery'){<p class="notice">{{ 'UnknownPolicy' | opsText }}</p>}@if(m.state==='Accepted'){<p class="notice">{{ 'EmailAcceptedHelp' | opsText }}</p>}</section>}
+
+    <section class="panel"><h2>{{ 'OperatorActions' | opsText }}</h2><div class="actions"><mat-form-field appearance="outline"><mat-label>{{ 'OperatorReason' | opsText }}</mat-label><input matInput id="operator-reason" maxlength="250" [(ngModel)]="reason" /></mat-form-field><button mat-raised-button [disabled]="busy()||!reason.trim()||!canRetry(d.execution?.state)" (click)="retry()">{{ 'RetryProcessing' | opsText }}</button><button mat-stroked-button [disabled]="busy()||!reason.trim()||!canRetry(d.email?.state)" (click)="retry(true)">{{ 'RetryEmail' | opsText }}</button></div>@if(actionError()){<p role="alert">{{ actionError() | opsText }}</p>}</section>}
+
+    @if(mail();as m){<section class="panel"><div class="section-heading"><h2>{{ 'mail' | opsText }} &middot; {{ 'Invoice' | opsText }} #{{ m.invoiceId }}</h2><app-ops-badge [value]="m.state" /></div><dl class="facts"><dt>{{ 'Record' | opsText }}</dt><dd><app-ops-id [value]="m.id" /></dd><dt>{{ 'ProcessingState' | opsText }}</dt><dd><app-ops-badge [value]="m.processingState" /></dd><dt>{{ 'Attempts' | opsText }}</dt><dd>{{ m.attempts }} &middot; {{ 'CycleAttempts' | opsText }} {{ m.cycleAttempts }}</dd><dt>{{ 'Timing' | opsText }}</dt><dd>{{ m.timing | opsText }}</dd><dt>{{ 'NextAttempt' | opsText }}</dt><dd>{{ time(m.nextAttemptAt) }} UTC</dd><dt>{{ 'SendStarted' | opsText }}</dt><dd>{{ time(m.sendStartedAt) }} UTC</dd><dt>{{ 'AcceptedAt' | opsText }}</dt><dd>{{ time(m.acceptedAt) }} UTC</dd><dt>{{ 'Reason' | opsText }}</dt><dd class="reason">{{ m.reason??t('NotRecorded') }}</dd></dl>@if(m.state==='UnknownDelivery'){<p class="notice">{{ 'UnknownPolicy' | opsText }}</p>}@if(m.state==='Accepted'){<p class="notice">{{ 'EmailAcceptedHelp' | opsText }}</p>}</section>}
+
+    @if(loadedAt()){<p class="muted">{{ 'Updated' | opsText }}: {{ time(loadedAt()) }} UTC</p>}
+
+  }
+
+</section>
+

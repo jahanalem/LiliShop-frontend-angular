@@ -1,3 +1,4 @@
+import { HANDLE_ERROR_LOCALLY } from './local-error-handling';
 import { inject } from '@angular/core';
 import { HttpRequest, HttpEvent, HttpErrorResponse, HttpInterceptorFn, HttpHandlerFn } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -15,7 +16,7 @@ export const errorInterceptor: HttpInterceptorFn = (request: HttpRequest<any>, n
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
        // Skip 401 errors as they are handled by jwtInterceptor
-       if (error.status === 401) {
+       if (error.status === 401 || request.context.get(HANDLE_ERROR_LOCALLY)) {
         return throwError(() => error);
       }
       if (error.error instanceof ErrorEvent) {
